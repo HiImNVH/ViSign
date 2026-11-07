@@ -87,6 +87,30 @@
 - [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
-**Reviewer result**: `PENDING`
+## 8. Independent integration review — P1/Huy
 
-**Reviewer note**: Chờ Huy/Cường/Hiển verify từ `origin/main`.
+Review time: `2026-11-07T13:55:07+07:00` trên commit evidence
+`18a07aef641b424ddf4772249623b1bc04a4b926` từ `origin/main`.
+
+| Gate | Kết quả độc lập |
+|---|---|
+| API | `uv sync --locked`, Ruff, mypy và pytest: PASS; 1 test passed |
+| AI | `uv sync --locked`, Ruff, mypy và pytest: PASS; 1 test passed |
+| AI imports | `av`, MediaPipe, NumPy, OpenCV, Torch, scikit-learn, Matplotlib, YAML: PASS |
+| Web | `npm ci`, lint, typecheck, Vitest empty smoke và Vite build: PASS |
+| Production dependency audit | `npm audit --omit=dev`: 0 vulnerability |
+| Git hygiene | Worktree sạch sau gate; generated environments/build output đều bị ignore |
+
+Ghi chú không chặn:
+
+- `npm audit` đầy đủ báo 10 `moderate` ở lint toolchain dev-only qua `minimatch`; production audit
+  sạch. Không chạy `npm audit fix --force`; T092 sẽ đánh giá/fix có kiểm soát.
+- `uv` in cảnh báo root `pyproject.toml` không có `[project]`; root chỉ giữ shared Ruff/mypy/pytest
+  config, còn API/AI có project và lockfile riêng. Cảnh báo không làm sai environment hoặc gate.
+- P3/Cường vẫn phải review dependency/pin AI của T003; P5/Hiển vẫn phải review web toolchain T004/T006
+  trước khi CP1 chuyển hoàn toàn sang `VERIFIED`.
+
+**Reviewer result**: `P1_VERIFIED`; `P3` và `P5` còn `PENDING`.
+
+**Reviewer note**: Implementation/gate không cần sửa trước specialized review; hai rủi ro đã được
+ghi rõ để T092 và owner liên quan xử lý.

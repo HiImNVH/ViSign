@@ -10,7 +10,7 @@
 | Canonical ownership | Spec Kit, `docs/team/`, CI coordination, verification, presentation |
 | Allowed commit scopes | `spec`, `docs`, `ci`, `verify`, `release` |
 | Current checkpoint | `CP1` |
-| Integration window | `CLOSED` cho P1; `ACTIVE` cho P2/Tín |
+| Integration window | `ACTIVE` cho P1 — CP1 review/T008 docs |
 | Last updated | `2026-11-07` |
 
 ## Current assignments
@@ -19,6 +19,8 @@
 |---|---|---|---|---|
 | `T085-T086 / CP0` | `VERIFIED` | Spec Kit, rubric, member/checkpoint docs | Không còn blocker | P2/Tín |
 | `T086 / CP1` | `PUSHED` | Member commit frame và đồng bộ Git workflow | Chờ P2/Tín verify từ `origin/main` | P2/Tín |
+| `T001-T007 / CP1` | `P1_VERIFIED` | Toolchain evidence | Chờ P3 review T003 và P5 review T004/T006 | P3/Cường, P5/Hiển |
+| `T008 / CP1` | `REVIEW` | `data/README.md` | Push candidate rồi chờ P4/Quang review | P4/Quang |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
 
@@ -26,15 +28,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T086 / CP1` |
-| Proposed commit | `CP1 T086(docs): standardize member commit ledgers` |
-| Exact staged paths | `docs/team/git-checkpoints.md`, `docs/team/member-template.md`, `members/`, smoke evidence |
-| Pre-commit sync | `2026-11-07T13:39:12+07:00`; `origin/main=abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4`; behind/ahead `0/0` |
-| Gate commands | member-frame validator, sync-rule validator, `git diff --cached --check` |
-| Smoke evidence | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` |
-| Local commit | `9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f` |
-| Pre-push sync | `2026-11-07T13:40:22+07:00`; `git pull --rebase origin main` up to date; behind/ahead `0/1` trước push |
-| Push status | `PUSHED` — chờ P2/Tín verification |
+| Task/checkpoint | `T001-T008 / CP1` |
+| Proposed commit | `CP1 T001-T008(docs): review setup and document raw data` |
+| Exact staged paths | `data/README.md`, T001–T007 evidence, P1/P2/P4 logs, implementation status, T008 evidence |
+| Pre-commit sync | Re-sync sau CP2 push của Tín: stash → `git pull --rebase` → pop; resolve conflict ledger P2 (giữ cả hai dòng); base `5dc97a6` |
+| Gate commands | API/AI/Web independent gates, production audit, data README validator, diff check |
+| Smoke evidence | T001–T007 owner evidence + `docs/evidence/checkpoints/CP1/T008-p1-huy-data-guidance-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `NOT_PUSHED` |
 
 ## Commit ledger
 
@@ -43,6 +45,7 @@
 | `CP0/T085-T086` | Bootstrap Spec Kit governance | `CP0 T085-T086(spec): bootstrap Spec Kit governance` | `5102bbbbe7efcf327a64477051bfc6137e9b5bce` | [commit](https://github.com/HiImNVH/ViSign/commit/5102bbbbe7efcf327a64477051bfc6137e9b5bce) | PASS | P2/Tín | `VERIFIED` |
 | `CP0/T086` | Record baseline smoke evidence | `CP0 T086(docs): record baseline smoke evidence` | `22226b25d17e70ce48b153914d7eee1e15e8d3f4` | [commit](https://github.com/HiImNVH/ViSign/commit/22226b25d17e70ce48b153914d7eee1e15e8d3f4) | PASS | P2/Tín | `VERIFIED` |
 | `CP1/T086` | Standardize five member commit ledgers | `CP1 T086(docs): standardize member commit ledgers` | `9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f` | [commit](https://github.com/HiImNVH/ViSign/commit/9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f) | PASS | P2/Tín | `PUSHED` |
+| `CP1/T001-T008` | Review setup and document raw data | `CP1 T001-T008(docs): review setup and document raw data` | `PENDING` | `PENDING` | PASS local | P3/P5/P4 | `REVIEW` |
 
 ## Handoff
 
