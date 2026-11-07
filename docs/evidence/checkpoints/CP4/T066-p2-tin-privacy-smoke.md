@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` (artifact model) |
 | Candidate commit | `CP4 T066(security): audit prediction privacy and sweep stale clips` |
-| Commit | `PENDING` |
+| Commit | `961f59d7ef1465ac3146a8c5d481ffe2da496183` — [961f59d](https://github.com/HiImNVH/ViSign/commit/961f59d7ef1465ac3146a8c5d481ffe2da496183); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) |
 | Ngày/giờ | `2026-11-07T22:43+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 

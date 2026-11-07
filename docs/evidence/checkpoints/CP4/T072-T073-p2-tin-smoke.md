@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` (hai mã lỗi mới phía FE, D3) |
 | Candidate commit | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract` |
-| Commit | `PENDING` |
+| Commit | `d72ab3259547022decdebb1b1382f8ea7f0cce33` — [d72ab32](https://github.com/HiImNVH/ViSign/commit/d72ab3259547022decdebb1b1382f8ea7f0cce33); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) |
 | Ngày/giờ | `2026-11-07T22:34+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 
