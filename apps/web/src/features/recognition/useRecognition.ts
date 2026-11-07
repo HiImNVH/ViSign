@@ -30,6 +30,7 @@ export function useRecognition(api?: Api) {
   const camera = useCameraCapture();
   const [model, setModel] = useState<ModelStatus>({ status: 'loading' });
   const [prediction, setPrediction] = useState<CapturedPrediction | null>(null);
+  const [compatibilityError, setCompatibilityError] = useState<InferenceApiError | null>(null);
   const metadataController = useRef<AbortController | null>(null);
   const metadataGeneration = useRef(0);
   const readyMetadataGeneration = useRef(0);
@@ -113,6 +114,7 @@ export function useRecognition(api?: Api) {
   const clearPrediction = useCallback(() => {
     abortRequest();
     setPrediction(null);
+    setCompatibilityError(null);
   }, [abortRequest]);
 
   const enableCamera = useCallback(() => camera.session.enable(camera.videoRef.current), [camera.session, camera.videoRef]);
@@ -154,8 +156,16 @@ export function useRecognition(api?: Api) {
       }
     } catch (error) {
       if (isCurrentRequest()) {
-        setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
-          error: asApiError(error) } });
+        const typedError = asApiError(error);
+        if (typedError.kind === 'route-not-found' || typedError.status === 404) {
+          // A missing API route invalidates this upload. Release the clip, but retain safe guidance.
+          camera.session.cancel();
+          setPrediction(null);
+          setCompatibilityError(typedError);
+        } else {
+          setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
+            error: typedError } });
+        }
       }
     } finally {
       if (activeRequest.current === request) activeRequest.current = null;
@@ -168,6 +178,6 @@ export function useRecognition(api?: Api) {
 
   return {
     state, model, camera, enableCamera, startRecording, stopRecording,
-    submit, cancel, reset, reloadModelInfo,
+    submit, cancel, reset, reloadModelInfo, compatibilityError,
   };
 }

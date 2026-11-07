@@ -6,6 +6,8 @@ type Props =
   | { type: 'api'; error: InferenceApiError; stage: 'model' | 'prediction' };
 
 function predictionMessage(error: InferenceApiError): string | null {
+  if (error.kind === 'route-not-found' || error.status === 404) return predictionErrors.apiRouteNotFound;
+  if (error.kind === 'method-not-allowed' || error.status === 405) return predictionErrors.apiMethodNotAllowed;
   if (error.kind === 'cancelled') return null;
   if (error.kind === 'network') return predictionErrors.network;
   if (error.kind === 'timeout') return predictionErrors.timeout;
@@ -24,6 +26,8 @@ export function RecognitionError(props: Props) {
 
   // Metadata errors should always offer the existing explicit reconnect action.
   // Prediction errors can be retried by an explicit submit or a fresh capture.
-  const message = props.stage === 'model' ? vi.recognition.modelUnavailable : predictionMessage(props.error);
+  const compatibility = props.error.kind === 'route-not-found' || props.error.kind === 'method-not-allowed'
+    || props.error.status === 404 || props.error.status === 405;
+  const message = props.stage === 'model' && !compatibility ? vi.recognition.modelUnavailable : predictionMessage(props.error);
   return message ? <p role="alert">{message}</p> : null;
 }
