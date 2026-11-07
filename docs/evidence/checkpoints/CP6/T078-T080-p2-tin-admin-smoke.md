@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` (smoke T082 với backend thật); `P3 Cường` (giao diện runner pilot) |
 | Candidate commit | `CP6 T078-T080(api): add opt-in admin inspect and single-job pilot API` |
-| Commit | `PENDING` |
+| Commit | `70f2601972ddab16685d6a84c3b1a6bad1ba2332` — [70f2601](https://github.com/HiImNVH/ViSign/commit/70f2601972ddab16685d6a84c3b1a6bad1ba2332); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42417975667) |
 | Ngày/giờ | `2026-11-08T04:52+07:00` |
-| Status | `PASS` local; chờ CI |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 

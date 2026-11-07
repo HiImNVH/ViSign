@@ -57,9 +57,9 @@
 | Pre-commit sync | `PASS` — `0 0` trên `6d9a958` |
 | Gate commands | 30 test admin (5 lần liên tiếp đạt), 15/15 mutation; như CI 401 passed, 3 skipped và 44 passed, 2 skipped; Ruff, format, mypy 69 file; có `serving` 465 passed, 4 skipped; live uvicorn với pipeline thật |
 | Smoke evidence | `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `PENDING` |
+| Local commit | `70f2601` |
+| Pre-push sync | `PASS` — `0 1` trên `6d9a958` |
+| Push status | `PUSHED` `6d9a958..70f2601`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42417975667) |
 
 ## Commit ledger
 
@@ -110,6 +110,7 @@
 | `CP7/T095 Docker` | Đóng gói Docker/Compose local, bàn giao P1 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | Image web OK, image API tới unpack; `compose config`; 417 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P1/Huy | `HANDOFF` |
 | `CP5/T065 API` | Pool bộ detector tạo sẵn ở thread nền, đóng ngoài đường găng | `CP5 T065(api): prewarm single-use detector sets off the request path` | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` | [commit](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b) | 16 unit + 3 integration, 14 mutation; 439 passed với clip thật; A/B 76 cặp; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) | P1/Huy, P3/Cường | `VERIFIED` |
 | `CP5-CP7/T065,T095 verify` | Đo lấy mẫu trước khi chuyển RGB; review bản vá libEGL của P1 | `CP5-CP7 T065,T095(verify): measure RGB-first sampling, review EGL fix` | `c73c8b3174076dd6d08e8aba34865288549b2cab` | [commit](https://github.com/HiImNVH/ViSign/commit/c73c8b3174076dd6d08e8aba34865288549b2cab) | 32 clip × 3 cỡ, 32/32 giống hệt; ELF `libmediapipe.so`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42413030409) | P3/Cường, P1/Huy | `PUSHED` |
+| `CP6/T078-T080` | API công cụ admin nội bộ: inspect, pilot một job, lịch sử | `CP6 T078-T080(api): add opt-in admin inspect and single-job pilot API` | `70f2601972ddab16685d6a84c3b1a6bad1ba2332` | [commit](https://github.com/HiImNVH/ViSign/commit/70f2601972ddab16685d6a84c3b1a6bad1ba2332) | 30 test, 15/15 mutation; live uvicorn với pipeline thật; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42417975667) | P1/Huy, P5/Hiển, P3/Cường | `PUSHED` |
 
 ## Handoff
 
