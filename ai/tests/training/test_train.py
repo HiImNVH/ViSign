@@ -223,3 +223,101 @@ def test_full_cli_requires_exact_p0_catalog(
     info = json.loads((output / "model_info.json").read_text(encoding="utf-8"))
     assert info["artifactKind"] == "full"
     assert info["meanings"] == meanings and info["demoReady"] is False
+
+
+def test_evaluation_cli_reads_only_test_and_preserves_artifact(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    training_files: tuple[list[str], dict[str, Any]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from visign_ai.evaluation import evaluate
+
+    args, schema = training_files
+    artifact = tmp_path / "artifact"
+    monkeypatch.setattr(sys, "argv", [*args, "--output", str(artifact)])
+    assert train.main() == 0
+    model_info = artifact / "model_info.json"
+    original = model_info.read_bytes()
+    for index in range(2):
+        features: NDArray[np.float32] = np.zeros((32, 234), dtype=np.float32)
+        features[:, 156:] = 1
+        write_sequence(
+            tmp_path / f"test-{index}.npz",
+            f"test-{index}",
+            {
+                "schema": schema,
+                "tensor": features,
+                "tensor_mask": features[:, 156:] == 1,
+                "target": np.linspace(0, 1000, 32),
+            },
+        )
+    for path in tmp_path.glob("train-*.npz"):
+        path.unlink()
+    for path in tmp_path.glob("validation-*.npz"):
+        path.unlink()
+
+    output = tmp_path / "evaluation"
+    manifest = tmp_path / "pilot.csv"
+    eval_args = [
+        "evaluate",
+        "--artifact",
+        str(artifact),
+        "--manifest",
+        str(manifest),
+        "--feature-root",
+        str(tmp_path),
+        "--output",
+        str(output),
+    ]
+    monkeypatch.setattr(sys, "argv", eval_args)
+    assert evaluate.main() == 0
+    report = json.loads((output / "evaluation-report.json").read_text(encoding="utf-8"))
+    assert report["testSampleCounts"] == {"SOT": 1, "CAM_ON": 1}
+    assert report["splitAudit"]["mode"] == "video-held-out"
+    assert report["splitAudit"]["passed"] is True
+    assert report["splitAudit"]["testSessionCount"] == 2
+    assert report["testSamplesWithoutSigner"] == 2
+    assert report["demoReady"] is False
+    assert report["latencyMs"]["p95"] >= report["latencyMs"]["p50"] >= 0
+    assert (
+        (output / "confusion-matrix.png").read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    )
+    assert model_info.read_bytes() == original
+    assert evaluate.main() == 2
+    assert "Output exists" in capsys.readouterr().err
+
+    manifest.write_bytes(manifest.read_bytes() + b"\n")
+    invalid_output = tmp_path / "invalid"
+    monkeypatch.setattr(sys, "argv", [*eval_args[:-1], str(invalid_output)])
+    assert evaluate.main() == 2
+    assert "manifestSha256" in capsys.readouterr().err
+    assert not invalid_output.exists()
+
+
+def test_evaluation_split_rejects_session_leakage_and_reports_signer_mode() -> None:
+    from visign_ai.evaluation.evaluate import audit_split
+
+    rows = [
+        {
+            "sampleId": split,
+            "classLabel": "SOT_HCM_1",
+            "meaningId": "SOT",
+            "landmarkPath": f"{split}.npz",
+            "split": split,
+            "recordingSessionId": f"video-{index}",
+            "signerId": f"S{index:03}",
+            "licenseStatus": "approved",
+            "verificationStatus": "verified",
+        }
+        for index, split in enumerate(("train", "validation", "test"), 1)
+    ]
+    meanings = {"SOT_HCM_1": "SOT"}
+    assert audit_split(rows, meanings)["mode"] == "signer-held-out"
+    rows[2]["signerId"] = rows[0]["signerId"]
+    report = audit_split(rows, meanings)
+    assert report["mode"] == "video-held-out"
+    assert report["signerOverlapCount"] == 1
+    rows[2]["recordingSessionId"] = rows[0]["recordingSessionId"]
+    with pytest.raises(ValueError, match="recordingSessionId leakage"):
+        audit_split(rows, meanings)
