@@ -9,7 +9,7 @@
 | Role | Project manager / integration owner |
 | Canonical ownership | Spec Kit, `docs/team/`, CI coordination, verification, presentation |
 | Allowed commit scopes | `spec`, `docs`, `ci`, `verify`, `release` |
-| Current checkpoint | `CP1` |
+| Current checkpoint | `CP2` (CP1 `VERIFIED`) |
 | Integration window | `ACTIVE` cho P1 — CP1 review/T008 docs |
 | Last updated | `2026-11-07` |
 
@@ -30,7 +30,7 @@
 | `T008 + T004 engines / CP1 review` | `DONE` | evidence T008-p4-quang, T004-p2-tin-node-engines | P1_VERIFIED; ZIP chưa bị ignore → đề xuất P2/P1 | P4/Quang, P2/Tín |
 | `T024-T026, T037, T099 / CP2-CP3 review` | `DONE` | evidence T024-T025, T026, T037, T099 | P1_VERIFIED; `modelVersion` chốt theo OpenAPI; CI chặn thêm zip/7z/rar | P2/Tín |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
-| `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
+| `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 
 ## Commit đang chuẩn bị
 

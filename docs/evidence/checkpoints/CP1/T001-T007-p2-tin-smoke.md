@@ -132,3 +132,23 @@ Hai tệp này giữ nguyên tại commit được kiểm thử.
 Ghi chú — Package AI yêu cầu Python 3.12, khóa phiên bản thư viện chính và tách dependency dev. Môi trường CPU đáp ứng smoke test T003. Bốn test browser và một test MediaPipe với clip tham chiếu được skip vì lượt review này không cấu hình fixture tùy chọn. Cảnh báo về root `pyproject.toml` không chặn gate của project `ai`.
 
 **Reviewer result**: `VERIFIED` cho T003.
+
+## CP1 closure — P1/Huy
+
+Closure time: `2026-11-07T18:18:30+07:00` trên `origin/main` `fc7d606`.
+
+| Task | Reviewer độc lập | Evidence | Kết quả |
+|---|---|---|---|
+| T001–T007 | P1/Huy | mục 8 file này | `P1_VERIFIED` |
+| T003 | P3/Cường | mục review P3 file này | `VERIFIED` |
+| T004, T006 | P5/Hiển | `docs/evidence/checkpoints/CP1/T004-T006-p5-hien-review.md` | `P5_VERIFIED` (lint, typecheck, 42 Vitest, build, 21 Playwright) |
+| T004 engines fix | P1/Huy, P5/Hiển | `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md` | `P1_VERIFIED`; P5 review chạy trên toolchain đã có fix |
+| T008 | P1/Huy | `docs/evidence/checkpoints/CP1/T008-p4-quang-smoke.md` | `P1_VERIFIED` |
+| T086 | P2/Tín | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | `VERIFIED` |
+| CI | GitHub Actions `quality.yml` | các run trên `main` | success |
+
+Ghi chú mang sang checkpoint sau: P5 review T004/T006 chạy khi worktree của P5 có thay đổi T039 chưa
+commit (đã ghi trong review P5); toolchain và lockfile không đổi nên không ảnh hưởng kết luận CP1.
+`.gitignore` chưa chặn `*.zip` (đề xuất P2); CI hygiene đã chặn file nén.
+
+**CP1 result**: `VERIFIED` — T001–T008 và T086 được đánh `[X]` trong `tasks.md`.

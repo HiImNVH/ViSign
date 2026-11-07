@@ -30,8 +30,9 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 - 2026-11-07 lead quyết định dữ liệu: giữ đúng 10 ý nghĩa P0; full gate chia theo video gốc (`video-held-out`,
   FR-015 mới), không tuyên bố unseen-signer; nguồn/giấy phép khai một lần ở mức bộ dữ liệu (video giáo dục
   công khai). Ánh xạ tên file của Quang ở `data-convention.md` mục 8, chờ Quang xác nhận 2 điểm còn lại.
-- CP1: T003, T086 `VERIFIED`; T008 (bản P4 `c034e6e`) và T004 engines fix (`84478b2`) `P1_VERIFIED`.
-  Còn chặn đóng CP1: P5/Hiển review T004/T006.
+- **CP1 `VERIFIED`** (2026-11-07): đủ review độc lập P1/P2/P3/P5; T001–T008 và T086 đánh `[X]`.
+  Chi tiết: mục "CP1 closure" trong `docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md`.
+- Hạ tầng: nhóm chốt hoàn thiện bản local trước; AWS (`infra/aws/`) là kế hoạch, chưa triển khai.
 - 2026-11-07 lead chuyển hạ tầng từ Google Cloud sang AWS (Free Plan/credit thân thiện hơn): một EC2
   chạy web + API qua Compose, ECR theo commit SHA, model trên S3 có version, CloudFront HTTPS, deploy
   bằng GitHub OIDC + SSM; `infra/gcp/` đổi thành `infra/aws/`. Rủi ro: EC2 free tier 1 GB RAM có thể
@@ -51,7 +52,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Chờ 4 review CP1 (P2/P3/P4/P5); thu xác nhận T098/T099; duyệt schema khi có clip |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | CP1 đã chốt; điều phối đóng CP2 (T098, T099 P5, T013, schema review); review T017/T030/T037 |
 | P2 | Tín | `services/inference-api/`, `infra/aws/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; T019–T023 P1_VERIFIED, chờ P3/P5; T099 mở — xác nhận quy ước API |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003; T014–T016 chờ review; xác nhận data-convention D1–D4 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW | Review T008; T098 mở — xác nhận data-convention D1–D4 rồi đóng băng |

@@ -94,14 +94,14 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 
 **Purpose**: Tạo cấu trúc monorepo và toolchain tối thiểu.
 
-- [ ] T001 Tạo các thư mục nguồn theo `plan.md` gồm `apps/web/`, `services/inference-api/`, `ai/`, `data/`, `tests/`, `docs/`, `members/`, `.github/workflows/` và `infra/aws/`
-- [ ] T002 [P] Khởi tạo Python 3.12 project và dependency groups cho API trong `services/inference-api/pyproject.toml`
-- [ ] T003 [P] Khởi tạo Python 3.12 project và dependency groups cho AI trong `ai/pyproject.toml`
-- [ ] T004 [P] Khởi tạo React TypeScript Vite app và test scripts trong `apps/web/package.json`
-- [ ] T005 [P] Cấu hình Ruff, mypy và pytest dùng chung cho Python trong `pyproject.toml`
-- [ ] T006 [P] Cấu hình ESLint, TypeScript type-check, Vitest và Playwright trong `apps/web/eslint.config.js`, `apps/web/tsconfig.json`, `apps/web/vite.config.ts` và `apps/web/playwright.config.ts`
-- [ ] T007 Cập nhật `.gitignore` để loại raw video, processed artifacts, model binaries, file tạm và secret nhưng giữ manifest/metadata trong `.gitignore`
-- [ ] T008 [P] Viết hướng dẫn đặt raw material ngoài repository và quy tắc quyền sử dụng trong `data/README.md`
+- [X] T001 Tạo các thư mục nguồn theo `plan.md` gồm `apps/web/`, `services/inference-api/`, `ai/`, `data/`, `tests/`, `docs/`, `members/`, `.github/workflows/` và `infra/aws/`
+- [X] T002 [P] Khởi tạo Python 3.12 project và dependency groups cho API trong `services/inference-api/pyproject.toml`
+- [X] T003 [P] Khởi tạo Python 3.12 project và dependency groups cho AI trong `ai/pyproject.toml`
+- [X] T004 [P] Khởi tạo React TypeScript Vite app và test scripts trong `apps/web/package.json`
+- [X] T005 [P] Cấu hình Ruff, mypy và pytest dùng chung cho Python trong `pyproject.toml`
+- [X] T006 [P] Cấu hình ESLint, TypeScript type-check, Vitest và Playwright trong `apps/web/eslint.config.js`, `apps/web/tsconfig.json`, `apps/web/vite.config.ts` và `apps/web/playwright.config.ts`
+- [X] T007 Cập nhật `.gitignore` để loại raw video, processed artifacts, model binaries, file tạm và secret nhưng giữ manifest/metadata trong `.gitignore`
+- [X] T008 [P] Viết hướng dẫn đặt raw material ngoài repository và quy tắc quyền sử dụng trong `data/README.md`
 
 **Checkpoint**: Cả ba project cài dependency, lint và chạy test rỗng thành công.
 
@@ -310,7 +310,7 @@ production, đồng thời giữ lịch sử đóng góp/checkpoint rõ ràng c�
 workflow và production smoke/rollback mà không cần hỏi người viết code.
 
 - [ ] T085 [P] [US5] Duy trì ma trận 8 nhóm/100 điểm với owner, task, artifact, gate và trạng thái tại `docs/team/judging-criteria-mapping.md`
-- [ ] T086 [P] [US5] Thiết lập quy tắc direct-main tuần tự, integration queue, commit format/scope theo từng thành viên, pre-push gates, mẫu smoke evidence có SHA/Actions/report/cloud link và 5 workspace logs tại `docs/team/git-checkpoints.md`, `docs/team/checkpoint-evidence-template.md`, `docs/team/member-template.md`, `members/README.md` và `members/p1-huy/README.md` đến `members/p5-hien/README.md`
+- [X] T086 [P] [US5] Thiết lập quy tắc direct-main tuần tự, integration queue, commit format/scope theo từng thành viên, pre-push gates, mẫu smoke evidence có SHA/Actions/report/cloud link và 5 workspace logs tại `docs/team/git-checkpoints.md`, `docs/team/checkpoint-evidence-template.md`, `docs/team/member-template.md`, `members/README.md` và `members/p1-huy/README.md` đến `members/p5-hien/README.md`
 - [ ] T087 [P] [US5] Viết hồ sơ sáng tạo và tính khả thi gồm đối tượng sử dụng, pain point, điểm khác biệt, comparison, phạm vi áp dụng và bằng chứng user validation tại `docs/innovation-feasibility.md`
 - [ ] T088 [P] [US5] Audit FE/UI/UX theo responsive, accessibility, camera usability, module/component boundaries và visual consistency; lưu screenshot/test evidence tại `docs/frontend-quality-report.md`
 - [ ] T089 [P] [US5] Viết tests/report cho OOD, signer/lighting/angle edge cases, false accept, class imbalance/bias, stability và giải thích decision rule tại `ai/tests/evaluation/test_safety_robustness.py` và `docs/ai-safety-report.md`
