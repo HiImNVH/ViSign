@@ -126,3 +126,12 @@ Ghi chú không chặn — xử lý ở task sau:
 - **T023**: `VERIFIED` (P1; P5 không yêu cầu sửa logging), `[X]`.
 - **T022**: mở — P5 `CHANGES_REQUESTED`: chặn `cors_allow_credentials=True` qua cấu hình (áp dụng cả wiring T026).
 - Follow-up đã push: [`b139007`](https://github.com/HiImNVH/ViSign/commit/b1390074e57aafa57c8ad3e8f5c928dae2d6d932); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).
+
+## Task closure update — P1/Huy
+
+Kiểm chứng P1 `2026-11-07T19:16:21+07:00` trên `f00eefe` (fix `6ee9e61`, `542e33f`, `b139007`): `PredictionResponse` từ chối
+`accepted=false` + `text="unexpected"` và `accepted=true` + `classLabel="   "`, chấp nhận đúng
+`Không nhận diện được`; `Settings(cors_allow_credentials=True)` và biến môi trường
+`CORS_ALLOW_CREDENTIALS=true` đều bị từ chối, `cors_origins=["*"]` vẫn bị từ chối; API + contract 179 passed.
+
+- **T022**: `VERIFIED`, `[X]` — đóng mục CORS `CHANGES_REQUESTED` của P5.

@@ -95,3 +95,18 @@ Ghi chú quy trình: `fc7d606` là merge commit (`git pull` kiểu merge), trái
 của P1; không cần sửa lịch sử, chỉ tránh lặp lại.
 
 **Reviewer result**: `VERIFIED` (P2) — đóng mục `CHANGES_REQUESTED` thiếu test; các ghi chú `LOW` trước vẫn là đề xuất.
+
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T19:16:21+07:00` trên `f00eefe` (gồm test `57311bf`, P2 re-review `69495d4`).
+
+| Gate | Kết quả |
+|---|---|
+| `pytest ai/tests -q` | 29 passed, 5 skipped |
+| Ruff, mypy | PASS (12 source files) |
+| Error path (`--dataset-root` là file) | exit 2, thông báo ra stderr, không crash |
+| `--help` trên console Windows mặc định | **Crash** `UnicodeEncodeError: 'charmap' codec can't encode character '\u1eeb'` — `description=__doc__` tiếng Việt in ra stdout `cp1252`; chạy với `PYTHONIOENCODING=utf-8` thì hiển thị đúng |
+
+**Reviewer result**: `CHANGES_REQUESTED` (P1, mức thấp) — cả nhóm dùng Windows nên `--help` phải chạy được.
+Đề xuất: đầu `main()` gọi `sys.stdout.reconfigure(errors="backslashreplace")` (hoặc `encoding="utf-8"`),
+và thêm test gọi `main(["--help"])` với stdout `cp1252`. Hành vi trích xuất đã được P2 và P1 xác nhận.

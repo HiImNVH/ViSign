@@ -17,7 +17,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | CP0 | `VERIFIED` | Spec Kit, rubric, member/checkpoint docs — `docs/evidence/checkpoints/CP0/` |
 | CP1 | `VERIFIED` | T001–T008, T086 `[X]`; closure trong `docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md` |
 | CP2 | `OPEN` | Đóng khi đủ bảng "CP2 còn mở" bên dưới |
-| CP3 | `NOT OPEN` | Đã có T030/T037/T039/T040 trên `main` theo micro-commit; không đóng trước CP2 |
+| CP3 | `NOT OPEN` | T039 `[X]`; T030/T037/T040 trên `main` theo micro-commit; không đóng trước CP2 |
 | CP7 | `PARTIAL` | T091 quality CI chạy trên mọi push; AWS (`infra/aws/`) là kế hoạch, chưa triển khai |
 
 ### CP2 còn mở
@@ -28,13 +28,12 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T024–T025 temporary clip | P2 → P1 | `VERIFIED`, `[X]` |
 | T021 error catalog, T023 logging | P2 → P1, P5 | `VERIFIED`, `[X]` |
 | T019 model metadata | P2 → P1, P3 | P1_VERIFIED; chờ P3 xác nhận metadata/`demoReady` (T059) |
-| T020 rejected-response text | P2 | `CHANGES_REQUESTED` (P5): `accepted=false` phải dùng đúng `Không nhận diện được`; `classLabel` không được rỗng/khoảng trắng |
-| CORS T022/T026 | P2 | `CHANGES_REQUESTED` (P5): chặn `cors_allow_credentials=True` qua cấu hình |
+| T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng |
 | T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
-| T017 batch extraction CLI | P3 → P2, P1 | P3 đã thêm test (`57311bf`); chờ P2 review lại và P1 review |
+| T017 batch extraction CLI | P3 → P2, P1 | P2 `VERIFIED`; P1 `CHANGES_REQUESTED` thấp: `--help` crash trên console Windows `cp1252` |
 | T013 registry 10 meaning P0 | P4 → P3, P1 | Hoàn thành local trên máy P4, **chưa push** |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
-| T040 typed API client | P5 → P2 | Đã push `240d290`; chờ review |
+| T040 typed API client | P5 → P2 | P2_VERIFIED phần contract; tích hợp endpoint thật chờ T038/T060 |
 
 ### Quyết định lead 2026-11-07
 
@@ -67,8 +66,8 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
 | P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Điều phối đóng CP2; review T017; duyệt schema khi có clip; T085/T087/T093 |
-| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | Sửa T020 + CORS theo P5; review lại T017; review T040 |
-| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Gửi clip đại diện cho schema review; tối ưu latency decode; xác nhận T098 |
+| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | T020/T022/T026 xong; tiếp T038/T060 endpoint để mở E2E |
+| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Sửa `--help` T017; gửi clip đại diện; tối ưu latency decode; xác nhận T098 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | ACTIVE | Push T013; xác nhận vùng `O`/variant rồi đóng băng T098 |
 | P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | T040 chờ review; tiếp CP3 khi có endpoint T038/T060 |
 

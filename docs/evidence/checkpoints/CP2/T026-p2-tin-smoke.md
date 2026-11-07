@@ -94,3 +94,12 @@ Ghi chú không chặn:
 
 Nguồn giá trị `allow_credentials` của CORS middleware (`Settings.cors_allow_credentials`) nay có kiểu `Literal[False]`;
 chi tiết và kiểm thử tại follow-up trong `docs/evidence/checkpoints/CP2/T022-T023-p2-tin-smoke.md`.
+
+## Task closure — P1/Huy
+
+Kiểm chứng P1 `2026-11-07T19:16:21+07:00` trên `f00eefe` (fix `6ee9e61`, `542e33f`, `b139007`): `PredictionResponse` từ chối
+`accepted=false` + `text="unexpected"` và `accepted=true` + `classLabel="   "`, chấp nhận đúng
+`Không nhận diện được`; `Settings(cors_allow_credentials=True)` và biến môi trường
+`CORS_ALLOW_CREDENTIALS=true` đều bị từ chối, `cors_origins=["*"]` vẫn bị từ chối; API + contract 179 passed.
+
+- **T026**: `VERIFIED`, `[X]` — CORS wiring dùng `Settings` đã chặn credential.

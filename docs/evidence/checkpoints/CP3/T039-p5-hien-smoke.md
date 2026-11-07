@@ -129,3 +129,8 @@ Phát hiện:
    `apps/web/README.md` còn ghi "Node.js 22.12+", P5 cập nhật khi sửa mục 1.
 
 **Reviewer result**: `CHANGES_REQUESTED` (P2) — chỉ mục 1; phần còn lại đạt. P1 còn `PENDING`.
+
+## Task closure — P1/Huy
+
+`2026-11-07T19:16:21+07:00`: P2 re-review `VERIFIED` (`e07720d`) sau fix `useLayoutEffect` (`39209c7`); CI các commit sau đều
+xanh, không còn lỗi focus. **T039**: `VERIFIED`, `[X]`. CP3 vẫn chưa đóng.

@@ -138,3 +138,12 @@ Ghi chú không chặn:
 - T020 chờ P5 kiểm lại cả hai điểm (`6ee9e61` và commit này).
 - Follow-up đã push: [`542e33f`](https://github.com/HiImNVH/ViSign/commit/542e33f9061a9b9a8374b8c4cabf378805f7a320); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42371289103).
 - Follow-up T020 lần 1 đã push: [`6ee9e61`](https://github.com/HiImNVH/ViSign/commit/6ee9e613e5fcafa5ed2fdcbc83aaf863d110d00d); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).
+
+## Task closure update — P1/Huy
+
+Kiểm chứng P1 `2026-11-07T19:16:21+07:00` trên `f00eefe` (fix `6ee9e61`, `542e33f`, `b139007`): `PredictionResponse` từ chối
+`accepted=false` + `text="unexpected"` và `accepted=true` + `classLabel="   "`, chấp nhận đúng
+`Không nhận diện được`; `Settings(cors_allow_credentials=True)` và biến môi trường
+`CORS_ALLOW_CREDENTIALS=true` đều bị từ chối, `cors_origins=["*"]` vẫn bị từ chối; API + contract 179 passed.
+
+- **T020**: `VERIFIED`, `[X]` — đóng mục `CHANGES_REQUESTED` của P5.
