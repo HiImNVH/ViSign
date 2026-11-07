@@ -22,7 +22,7 @@
 | `T091 / CP7 review` | `DONE` | `docs/evidence/checkpoints/CP7/T091-p1-huy-quality-ci-smoke.md` | `P2_VERIFIED`; 4 ghi chú không chặn | P2/Tín là reviewer |
 | `T039 / CP3 review` | `DONE` | `docs/evidence/checkpoints/CP3/T039-p5-hien-smoke.md` | `CHANGES_REQUESTED`: test focus flaky làm đỏ CI; đề xuất `useLayoutEffect` (30/30 pass) | P2/Tín là reviewer |
 | `T004 / CP1 fix` | `P1_VERIFIED` | `apps/web/package.json`, lockfile | Huy verify `d3afdff`; `plan.md`/`quickstart.md` đã cập nhật; chờ Hiển (kèm `apps/web/README.md`) | P5/Hiển, P1/Huy |
-| `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
+| `T019-T021 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/domain/`, unit tests | P1_VERIFIED; P5: T021 `P5_VERIFIED`, T020 đã sửa chữ bị từ chối theo yêu cầu P5 (chờ P5 kiểm lại); T019 chờ Cường | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
 | `T026 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | Huy verify `6cc3900`; chờ Hiển xem CORS/expose header | P1/Huy, P5/Hiển (CORS) |

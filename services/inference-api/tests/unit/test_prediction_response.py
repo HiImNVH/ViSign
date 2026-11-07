@@ -6,8 +6,9 @@ from typing import Any
 
 import pytest
 from pydantic import ValidationError
-from visign_api.domain.prediction import PredictionResponse
+from visign_api.domain.prediction import REJECTED_PREDICTION_TEXT, PredictionResponse
 
+# Quy uoc API muc 4: response bi tu choi luon mang dung chu nay
 REJECTED_TEXT = "Không nhận diện được"
 
 
@@ -80,6 +81,8 @@ def test_present_diagnostics_are_serialized() -> None:
         {"classLabel": None},
         {"classLabel": ""},
         {"accepted": False, "text": REJECTED_TEXT, "classLabel": "XIN_CHAO_HCM_1"},
+        {"accepted": False, "text": "unexpected", "classLabel": None},
+        {"accepted": False, "text": "Xin chào", "classLabel": None},
         {"confidence": 1.2},
         {"processingTimeMs": -1},
         {"timingsMs": {"decode": -1, "extract": 0, "infer": 0}},
@@ -99,3 +102,7 @@ def test_invalid_state_combinations_are_rejected(
 ) -> None:
     with pytest.raises(ValidationError):
         build_response(**invalid_overrides)
+
+
+def test_rejected_text_constant_matches_published_convention() -> None:
+    assert REJECTED_PREDICTION_TEXT == REJECTED_TEXT

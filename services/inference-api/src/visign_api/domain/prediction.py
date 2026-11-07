@@ -14,6 +14,8 @@ from pydantic import (
 from visign_api.domain.request_id import ensure_uuid
 
 OPTIONAL_DIAGNOSTIC_FIELDS = ("timingsMs", "qualityHints")
+# docs/contracts/api-conventions.md muc 2: ket qua bi tu choi khong bao gio mang chu cua mot lop
+REJECTED_PREDICTION_TEXT = "Không nhận diện được"
 
 
 class PredictionTimings(BaseModel):
@@ -49,8 +51,8 @@ class PredictionResponse(BaseModel):
         ensure_uuid(self.requestId)
         if self.accepted:
             ensure_accepted_state(self)
-        elif self.classLabel is not None:
-            raise ValueError("PredictionResponse bi tu choi phai co classLabel = null")
+        else:
+            ensure_rejected_state(self)
         return self
 
     # Khong ghi kieu tra ve de FastAPI giu schema OpenAPI cua model thay vi dict tu do
@@ -69,3 +71,12 @@ def ensure_accepted_state(accepted_response: PredictionResponse) -> None:
         raise ValueError("PredictionResponse duoc chap nhan phai co text tieng Viet")
     if not accepted_response.classLabel:
         raise ValueError("PredictionResponse duoc chap nhan phai co classLabel")
+
+
+def ensure_rejected_state(rejected_response: PredictionResponse) -> None:
+    if rejected_response.classLabel is not None:
+        raise ValueError("PredictionResponse bi tu choi phai co classLabel = null")
+    if rejected_response.text != REJECTED_PREDICTION_TEXT:
+        raise ValueError(
+            "PredictionResponse bi tu choi phai co text 'Khong nhan dien duoc'"
+        )

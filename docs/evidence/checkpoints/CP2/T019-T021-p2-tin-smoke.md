@@ -110,3 +110,15 @@ Ghi chú không chặn:
 **Reviewer result**: `P1_VERIFIED`; `P3` (metadata T019) và `P5` (response/error shape) còn `PENDING`.
 
 **Reviewer note**: Không cần sửa trước specialized review.
+
+## Follow-up sau review P5 — T020 (`2026-11-07T19:05+07:00`)
+
+| # | Ghi chú P5 | Xử lý |
+|---|---|---|
+| T020 | `accepted=false`, `classLabel=null`, `text="unexpected"` vẫn hợp lệ, trái quy ước API mục 4 | Thêm hằng `REJECTED_PREDICTION_TEXT = "Không nhận diện được"` và `ensure_rejected_state()`: response bị từ chối phải có `classLabel = null` **và** đúng chữ này |
+
+- Test viết trước: thêm 2 trường hợp không hợp lệ (`"unexpected"`, `"Xin chào"` khi bị từ chối) và test hằng khớp quy ước →
+  RED (import lỗi); sau khi sửa 18 passed.
+- Bắt hồi quy: bỏ kiểm chữ → 2 failed; khôi phục giống hệt.
+- Toàn bộ API + contract `-W error`: 176 passed, 1 skipped; Ruff, `ruff format --check`, mypy đạt.
+- Ảnh hưởng: chỉ siết validation domain; OpenAPI/TS không đổi (OpenAPI không có `const` cho `text`).
