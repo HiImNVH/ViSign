@@ -39,23 +39,26 @@
 | `T072, T073 / CP4` | `DONE` | `services/inference-api/src/visign_api/{api/error_handlers.py,domain/errors.py}`, `contracts/openapi.yaml` | `P1_VERIFIED`, `[X]` (Huy `0242745`); câu chữ 404/405 trong `vi.ts` chuyển P5 | P1/Huy, P5/Hiển |
 | `T066 / CP4` | `DONE` | `tests/integration/test_prediction_privacy.py`, `inference/temporary_clip.py` | `P1_VERIFIED`, `[X]` (Huy `0242745`) | P1/Huy, P3/Cường |
 | `T064 / CP4` | `DONE` | `tests/integration/test_prediction_pipeline.py`, `t036_artifact_builder.py` | `P1_VERIFIED`, `[X]` (Huy `c875ae5`); phần cần clip đại diện chạy local qua `VISIGN_CP2_REFERENCE_WEBM` | P1/Huy, P3/Cường |
-| `T092 / CP4` | `REVIEW` | `tests/security/`, `scripts/security_audit.py`, `api/security_headers.py`, `docs/security-report.md` | Đã push `2561c7d`; chờ P1 review; rate limit 429 chờ lead chọn WAF ở biên hay limiter trong API | P1/Huy |
+| `T065 / CP5 review` | `DONE` | review trong `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md` | `P2_VERIFIED` ứng viên `fd2656f`: A/B 76 cặp clip thật cùng đầu ra, p95 qua API 3.484 → 3.221 ms; đề nghị P3 thêm unit test nhánh song song | P2/Tín là reviewer |
+| `T092 / CP4` | `DONE` | `tests/security/`, `scripts/security_audit.py`, `api/security_headers.py`, `docs/security-report.md` | `P1_VERIFIED`, `[X]` (Huy `b23c10f`); rate limit 429 chờ lead chọn WAF ở biên hay limiter trong API | P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
+| `T095 / CP7 Docker` | `HANDOFF` → P1/Huy | `infra/aws/docker/`, `infra/aws/nginx/`, `infra/aws/compose.*.yml`, lock torch CPU | Build qua mọi bước, chưa smoke vì ổ C: máy build hết chỗ; Huy build/smoke rồi làm AWS khi chốt tài khoản và instance (`CP7/T095-p2-tin-docker-handoff.md`) | P1/Huy |
+| `T065 / CP5 API` | `PLANNED` | `services/inference-api/src/visign_api/inference/` | Tích hợp `prepare_detectors` của P3 (`592db9c`): tạo bộ detector ở worker nền, đóng sau request, xử lý đổi artifact và shutdown; đo lại p95 HTTP kèm parity (SC-002) | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T092` (CP4) |
-| Proposed commit | `CP4 T092(security): add security audit, headers and docs lockdown` |
-| Exact staged paths | 11 path, xem evidence `CP4/T092-p2-tin-security-smoke.md` |
-| Pre-commit sync | `PASS` — `0 0` trên `231f8d2` (sau khi pull review P1 `c875ae5`, P3 T065/T089/T094/T083 và P5 T074–T075, T100–T104) |
-| Gate commands | `python scripts/security_audit.py` 5/5 PASS (417 passed + 3 skipped); như CI 355 + 44 passed; 25 test bảo mật, 14/14 mutation |
-| Smoke evidence | `docs/evidence/checkpoints/CP4/T092-p2-tin-security-smoke.md` |
-| Local commit | `2561c7d` |
-| Pre-push sync | `PASS` — `0 1` trên `231f8d2` |
-| Push status | `PUSHED` `231f8d2..2561c7d`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) |
+| Task/checkpoint | `T065` review (CP5), `T095` Docker bàn giao (CP7) |
+| Proposed commit | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` |
+| Exact staged paths | 14 path: evidence T065 và T095, README này, `infra/aws/README.md`, `infra/aws/docker/` (4), `infra/aws/nginx/` (2), `infra/aws/compose.*.yml` (2), API `pyproject.toml`, `uv.lock` |
+| Pre-commit sync | `PASS` — `0 0` trên `a255a7c` (sau khi pull review P1 T092/T065, P3 `592db9c`, P5 web và schema v0.3 `a255a7c`) |
+| Gate commands | API + contract + integration + security 417 passed, 3 skipped (extra `serving`); như CI 355 passed, 2 skipped, Ruff, mypy 58 file; `docker compose config`; image web build OK, image API qua mọi bước tới unpack |
+| Smoke evidence | `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; review trong `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `PENDING` |
 
 ## Commit ledger
 
@@ -109,10 +112,11 @@
   mọi `*.webm` nên golden clip T014/T064 cần ngoại lệ có review; vị trí E2E T032 (`tests/e2e/`) khác
   Playwright `testDir` (`apps/web/tests/`).
 - Required input: Cường review `ai/pyproject.toml`; Hiển review web toolchain; T099 vẫn chờ lead.
-- Next owner/action: Huy review T092, chốt rate limit 429 (WAF ở biên hay limiter trong API với mã mới, FE xử lý
-  trước theo D3) và thêm `tests/integration`, `tests/security`, `ruff format --check` vào CI; Cường format
-  `ai/src/visign_ai/evaluation/metrics.py`; Tín review T065 `fd2656f` (detector tạo/đóng song song trên từng worker,
-  đóng vẫn nằm trước khi trả kết quả) rồi chuẩn bị Docker/Compose local cho T095; Huy chốt phạm vi T095.
+- Next owner/action: Huy nhận phần Docker/Compose T095 (build, smoke local, rồi AWS sau khi chốt tài khoản và
+  instance) theo `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; Huy chốt rate limit 429 (WAF ở biên
+  hay limiter trong API, FE xử lý trước theo D3) và thêm `tests/integration`, `tests/security`, `ruff format --check`
+  vào CI; Cường format `ai/src/visign_ai/evaluation/metrics.py` và thêm unit test nhánh `parallel-by-group`; Tín tích
+  hợp `prepare_detectors` vào API (SC-002).
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
@@ -121,3 +125,4 @@
 |---|---|---|---|
 | 2026-11-07 | P1/Huy | P2/Tín | Nhận T001–T007, CP1 integration window active |
 | 2026-11-08 | P2/Tín | P1/Huy | T092 `2561c7d` chờ review; quyết định rate limit 429 và bổ sung CI theo mục 7–8 `docs/security-report.md` |
+| 2026-11-08 | P2/Tín | P1/Huy | Bàn giao Docker/Compose T095: build qua mọi bước, chưa smoke; `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md` |

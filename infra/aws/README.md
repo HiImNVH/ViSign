@@ -82,6 +82,30 @@ Before automated deployment control is enabled:
 - Confirm the workflow cannot deploy without `production` environment approval.
 - Record stack ID, role ARN, workflow run and reviewer result in the CP7 evidence; never record tokens.
 
+## Đóng gói và chạy thử local (T095, chưa dùng AWS)
+
+| File | Vai trò |
+|---|---|
+| `docker/inference-api.Dockerfile` | Image API: `uv sync --locked` với extra `serving` (torch bản CPU trên Linux), tải detector MediaPipe theo `ai/configs/download-manifest.json` và kiểm SHA-256, uvicorn một worker, user 10001 |
+| `docker/web.Dockerfile` | Build Vite bằng `npm ci` + `npm run build` (typecheck như CI), phục vụ bằng `nginx-unprivileged` |
+| `nginx/default.conf`, `nginx/security-headers.conf` | Static kèm security header; `/api/` chuyển nguyên trạng tới `inference-api:8000`; body tối đa 11 MiB |
+| `compose.production.yml` | Hai container trên EC2: root filesystem chỉ đọc, `/tmp` là tmpfs, bỏ mọi capability, giới hạn RAM, log xoay vòng; artifact gắn chỉ đọc từ `MODEL_ARTIFACT_DIR` |
+| `compose.local.yml` | Build từ mã nguồn, chỉ mở `127.0.0.1:8080` |
+
+Chạy local (PowerShell, cần Docker Desktop):
+
+```powershell
+$env:MODEL_ARTIFACT_DIR = "D:\duong-dan\artifact"  # thư mục có model.pt, model_info.json, feature_schema.json
+docker compose -f infra/aws/compose.production.yml -f infra/aws/compose.local.yml up --build -d
+# Mở http://127.0.0.1:8080; dừng bằng cùng lệnh với "down"
+```
+
+Trên EC2 (T095): đặt `INFERENCE_API_IMAGE`, `WEB_IMAGE` theo ECR digest, tải artifact từ S3 private vào
+`MODEL_ARTIFACT_DIR` bằng instance role rồi chạy `docker compose -f infra/aws/compose.production.yml up -d`.
+CloudFront: default behavior trỏ origin cổng 80 (cache static); `/api/*` trỏ cùng origin, `CachingDisabled`, cho
+mọi method, forward body/query/header contract. Trạng thái build, việc còn lại và bàn giao:
+`docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`.
+
 ## Temporary manual deployment boundary
 
 - Tín đăng nhập bằng AWS Builder ID của chính mình và chọn project `Rubber Ducking`.

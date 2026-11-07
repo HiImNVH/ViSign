@@ -97,3 +97,34 @@ nền và chính sách timeout/đổi artifact thuộc API của P2.
 
 Schema hiện tại giữ tối đa 64 frame. Phương án 48 cần schema version mới, trích
 lại và train/evaluate trên dữ liệu đã audit trước khi chọn cho serving.
+
+## Independent review — P2/Tín
+
+Review `2026-11-08T00:45+07:00` trên `dc9e357` (extractor `fd2656f`; bộ detector chuẩn bị sẵn `592db9c` đến
+sau, không nằm trong phép đo này). Từ `c875ae5` đến `dc9e357`, đường trích đặc trưng chỉ khác
+`holistic_extractor.py`, nên A/B dưới đây thay đúng hàm `extract` của `c875ae5` vào một server.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Ruff, mypy AI | PASS, mypy 29 file |
+| Pytest AI | 78 passed, 6 skipped (1 symlink Windows, 4 cần `VISIGN_BROWSER_FIXTURES`, 1 cần clip tham chiếu); cấp clip tham chiếu thì `test_video_pipeline.py` 15 passed |
+| Integration API với clip người thật | `services/inference-api/tests/integration` + `tests/integration` có `VISIGN_CP2_REFERENCE_WEBM`: 40 passed, 0 skipped (parity offline ↔ API, đổi artifact T064) |
+| A/B qua uvicorn thật | Hai server cùng máy, cùng artifact `pilot-gru-test-v1`; 38 clip người thật × 2 vòng, đảo thứ tự baseline/candidate theo từng clip và từng vòng |
+| Đầu ra | 76/76 cặp cùng mã, nhãn và `accepted`; confidence lệch 0; 12 lượt `CLIP_TOO_LONG` giống nhau ở hai bên |
+| Độ trễ (64 request 200 mỗi bên) | Processing p50/p95 3.208/3.484 → 2.940/3.221 ms; extract 3.022/3.260 → 2.759/3.044 ms; nhanh hơn ở 97% cặp, trung vị giảm 246 ms/request; request đầu sau khởi động 4.342 → 2.753 ms |
+| Lỗi trong worker (probe detector giả) | Lần lượt cho hand, pose, face lỗi: lỗi nổi lên luồng gọi, 3/3 detector được tạo và đóng trên chính worker, không còn thread sót. Phía API, lỗi bất ngờ trả 500 `PREDICTION_FAILED` và vẫn giải phóng slot, clip tạm (test T045/T050) |
+
+Nhận xét:
+
+- Đầu ra giống hệt và p95 qua API giảm khoảng 8%. Bước đóng detector giờ chạy song song trong worker nhưng vẫn nằm
+  trước khi `extract` trả kết quả. Bộ detector chuẩn bị sẵn của `592db9c` cho phép API tạo trước và đóng sau
+  request: P2 nhận bàn giao, tích hợp vào API rồi đo lại độ trễ HTTP kèm parity.
+- Khi một detector lỗi, luồng gọi vẫn chờ hai worker còn lại chạy hết clip rồi mới báo lỗi. Chấp nhận được vì hiếm.
+- Chưa có unit test cho nhánh `parallel-by-group` (thứ tự kết quả theo frame, đóng detector khi lỗi). Đề nghị P3 thêm
+  test bằng detector giả như probe trên; không chặn.
+- Số tuyệt đối thấp hơn lần đo T037 trên cùng máy (p95 4,73 s ở `0f3c557`) dù pipeline không đổi giữa hai mốc, nên
+  chỉ dùng A/B xen kẽ để so sánh tương đối. SC-002 vẫn chưa đạt (p95 3,22 s trên CPU Windows); cần đo trên host
+  production (T095).
+
+**Reviewer result**: `P2_VERIFIED` cho ứng viên khởi tạo detector song song (parity, dọn tài nguyên, độ trễ qua API).
+T065 giữ `[ ]` theo P1: chờ số đo production và SC-002.

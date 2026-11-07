@@ -1,0 +1,50 @@
+# infra/aws/compose.production.yml
+# Hai container tren mot EC2 (T095): web (nginx, cong 80 cua host lam origin cho CloudFront) va inference-api (mot
+# worker, khong mo cong ra host). Image dat theo commit SHA/ECR digest qua bien moi truong; artifact model tai tu
+# S3 private vao MODEL_ARTIFACT_DIR va gan chi doc.
+name: visign
+
+services:
+  inference-api:
+    image: ${INFERENCE_API_IMAGE:-visign/inference-api:local}
+    restart: unless-stopped
+    environment:
+      MODEL_ARTIFACT_PATH: /models/artifact
+      # Web goi API cung origin qua CloudFront nen khong can CORS
+      CORS_ORIGINS: "[]"
+      API_DOCS_ENABLED: "false"
+    volumes:
+      - type: bind
+        source: ${MODEL_ARTIFACT_DIR:?Dat MODEL_ARTIFACT_DIR toi thu muc artifact da tai tu S3}
+        target: /models/artifact
+        read_only: true
+    expose:
+      - "8000"
+    read_only: true
+    tmpfs:
+      # Clip tam va file spool multipart chi nam trong RAM va mat khi container dung
+      - /tmp:size=128m,mode=1777
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1536m
+    logging: &rotated-logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  web:
+    image: ${WEB_IMAGE:-visign/web:local}
+    restart: unless-stopped
+    depends_on:
+      inference-api:
+        condition: service_healthy
+    ports:
+      - "80:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 128m
+    logging: *rotated-logs

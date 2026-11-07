@@ -1,0 +1,10 @@
+# Context cua image inference-api: chi gui dung file can build, khong gui .venv, du lieu, video hay secret
+*
+!ai/pyproject.toml
+!ai/src
+!ai/configs
+!services/inference-api/pyproject.toml
+!services/inference-api/uv.lock
+!services/inference-api/src
+**/__pycache__
+**/*.pyc

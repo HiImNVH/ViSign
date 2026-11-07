@@ -17,7 +17,8 @@ dependencies = [
 
 [project.optional-dependencies]
 # May phuc vu that cai them pipeline chung cua P3: uv sync --project services/inference-api --extra serving
-serving = ["visign-ai"]
+# torch khai bao truc tiep (cung phien ban visign-ai) de image Linux lay ban CPU, khong keo bo CUDA (T095)
+serving = ["visign-ai", "torch==2.11.0"]
 
 [dependency-groups]
 dev = [
@@ -38,3 +39,9 @@ packages = ["src/visign_api"]
 
 [tool.uv.sources]
 visign-ai = { path = "../../ai", editable = true }
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

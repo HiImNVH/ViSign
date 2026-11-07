@@ -1,0 +1,10 @@
+# Context cua image web: ma nguon apps/web va cau hinh nginx; bo node_modules, ban build va ket qua test cu
+*
+!apps/web
+!infra/aws/nginx/default.conf
+!infra/aws/nginx/security-headers.conf
+apps/web/node_modules
+apps/web/dist
+apps/web/test-results
+apps/web/playwright-report
+apps/web/.vite

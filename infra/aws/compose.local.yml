@@ -1,0 +1,16 @@
+# infra/aws/compose.local.yml
+# Chay thu local tu ma nguon, khong dung AWS: build hai image tu goc repo va chi mo web tai 127.0.0.1:8080.
+# MODEL_ARTIFACT_DIR=<thu muc artifact> docker compose -f infra/aws/compose.production.yml \
+#   -f infra/aws/compose.local.yml up --build
+services:
+  inference-api:
+    build:
+      context: ../..
+      dockerfile: infra/aws/docker/inference-api.Dockerfile
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/aws/docker/web.Dockerfile
+    ports: !override
+      - "127.0.0.1:8080:8080"
