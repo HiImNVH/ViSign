@@ -3,7 +3,7 @@
 | Mục | Kết quả |
 |---|---|
 | Baseline kiểm thử | `779d4b3794d67a58e013db084eedb39cb2dcf7cc` |
-| Trạng thái | PUSHED · bản sửa CI ở local |
+| Trạng thái | PUSHED · CI đạt · P2 CHANGES_REQUESTED |
 | Schema | `visign-xy-32-v0.3-draft` |
 | Commit | [4a5aa5295702197d9509302d4bcf07a1dcd0d154](https://github.com/HiImNVH/ViSign/commit/4a5aa5295702197d9509302d4bcf07a1dcd0d154) |
 
@@ -39,7 +39,7 @@ D1–D4 đã được Quang xác nhận. Danh sách thử nghiệm chỉ dùng I
 
 Gate ánh xạ lỗi quét PipelineError trong thư mục landmark. Bốn mã thao tác file của CLI bị tính vào tập lỗi API. Bản sửa dùng BatchSampleError riêng ở CLI, giữ nguyên JSON/mã lỗi batch và catalog API.
 
-Tái lập trước sửa · 1 fail, 14 pass ở test ánh xạ. Sau sửa · API và contract 145 pass, 1 skip. AI 20 pass, smoke CLI đạt. Ruff và mypy của API/AI đều đạt. GitHub Actions cho bản sửa chờ commit và push.
+Tái lập trước sửa · 1 fail, 14 pass ở test ánh xạ. Sau sửa · API và contract 145 pass, 1 skip. AI 20 pass, smoke CLI đạt. Ruff và mypy của API/AI đều đạt. Bản sửa [bc642c1ce92805261d26ed11302d29775461e215](https://github.com/HiImNVH/ViSign/commit/bc642c1ce92805261d26ed11302d29775461e215) đã push. [GitHub Actions 42364019259](https://github.com/HiImNVH/ViSign/actions/runs/42364019259) đạt.
 
 ## Independent review — P2/Tín
 
@@ -74,3 +74,9 @@ Phát hiện:
    có dấu (comment nên không dấu). Evidence còn ghi "bản sửa CI ở local" dù `bc642c1` đã push.
 
 **Reviewer result**: `CHANGES_REQUESTED` (P2) — chỉ mục 1; hành vi CLI đúng qua smoke. P1 còn `PENDING`.
+
+## P3 follow-up · Test tự động cho CLI
+
+Đã thêm test tại [test_extract_manifest.py](../../../../ai/tests/landmarks/test_extract_manifest.py) theo mục 1 trong review P2. Test dùng pipeline giả để chạy độc lập với detector và video thật. Phạm vi gồm CSV lỗi/trùng ID, đường dẫn thoát root và symlink, thiếu file, sai hash, lỗi pipeline, nội dung NPZ, bảo toàn artifact khi chạy lại và mã thoát 0/1/2.
+
+Gate local trên Windows: 13 test T017 pass, 1 skip do quyền tạo symlink. Toàn AI với fixture: 33 pass, 1 skip. API và contract: 173 pass, 1 skip. Ruff, mypy của AI/API và smoke CLI với MediaPipe thật đều đạt. Chờ commit, CI và P2/P1 review lại.
