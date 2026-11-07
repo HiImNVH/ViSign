@@ -61,6 +61,9 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 
 ## Phạm vi và thiết kế
 
+- Camera chiếm toàn bộ chiều ngang; các nút điều khiển và vùng **Văn bản dịch** nằm
+  bên dưới trên cả desktop và điện thoại. Khi chưa tích hợp API, vùng dịch ghi
+  “Chưa có bản dịch.”, không dùng trạng thái quay làm kết quả nhận diện.
 - T004: package, lockfile, entrypoint React và trang khởi đầu.
 - T006: ESLint, strict TypeScript, Vitest và Playwright.
 - T039: camera và capture local; T031/T028 chỉ triển khai phần test/copy phục vụ camera.

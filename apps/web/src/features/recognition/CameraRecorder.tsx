@@ -21,6 +21,7 @@ function CameraControls({ session, view, enable }: { session: CameraSession; vie
     {view.phase === 'recording' && <button className="primary-button stop-button" onClick={() => session.stop()}><span className="stop-mark" aria-hidden="true" />Kết thúc</button>}
     {view.phase === 'stopping' && <span className="finishing-label">Đang hoàn tất…</span>}
     {(view.phase === 'recording' || view.phase === 'stopping' || view.phase === 'captured') && <button className="quiet-button" onClick={() => session.cancel()}>Hủy đoạn quay</button>}
+    {['preview', 'recording', 'stopping', 'captured'].includes(view.phase) && <button className="quiet-button camera-off" onClick={() => session.reset()}>Tắt camera</button>}
   </div>;
 }
 
@@ -31,8 +32,7 @@ function CaptureFeedback({ view }: { view: CameraView }) {
   }
   if (view.phase === 'captured') return <div className="capture-feedback"><h3>Đã quay xong</h3>
     <p>Đoạn quay dài {(view.durationMs / 1000).toFixed(1)} giây đã sẵn sàng và chưa được gửi đi. Bạn có thể quay lại hoặc hủy.</p></div>;
-  return <div className="capture-feedback"><h3>{view.phase === 'recording' ? 'Hãy thực hiện ký hiệu' : 'Một ký hiệu mỗi lần'}</h3>
-    <p>{view.phase === 'recording' ? 'Chọn Kết thúc khi xong. Đoạn quay tự dừng sau 5 giây.' : 'Giữ hai tay và phần thân trên trong khung. Bật camera chỉ mở hình xem trước.'}</p></div>;
+  return <div className="capture-feedback"><p>{view.phase === 'recording' ? 'Thực hiện ký hiệu rồi chọn Kết thúc. Đoạn quay tự dừng sau 5 giây.' : 'Giữ hai tay và phần thân trên trong khung. Bật camera chỉ mở hình xem trước.'}</p></div>;
 }
 
 export function CameraRecorder() {
@@ -49,12 +49,13 @@ export function CameraRecorder() {
   return <section ref={panel} className="camera-workspace" aria-labelledby="camera-heading">
     <div className="workspace-heading"><h2 id="camera-heading">Một ký hiệu, một lần quay.</h2>
       <span className={`status-badge status-${view.phase}`} role="status"><span aria-hidden="true" />{vi.states[view.phase]}</span></div>
-    <div className="capture-layout"><div className="camera-column">
+    <div className="capture-layout">
       <CameraViewport videoRef={videoRef} active={active} />
       <CameraControls session={session} view={view} enable={() => void session.enable(videoRef.current)} />
-    </div><aside className="capture-sidebar" aria-label="Hướng dẫn và trạng thái đoạn quay">
+      <section className="translation-panel" aria-labelledby="translation-heading">
+        <h3 id="translation-heading">Văn bản dịch</h3><p className="translation-empty">Chưa có bản dịch.</p>
+      </section>
       <CaptureFeedback view={view} /><p className="privacy-note">{vi.privacy}</p>
-      {active && <button className="quiet-button camera-off" onClick={() => session.reset()}>Tắt camera</button>}
-    </aside></div>
+    </div>
   </section>;
 }

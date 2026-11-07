@@ -27,11 +27,11 @@
 | Field | Value |
 |---|---|
 | Task/checkpoint | `T039 / CP3` — chuẩn bị local theo yêu cầu; không đóng checkpoint |
-| Proposed commit | `CP3 T039(web): add explicit camera capture and cleanup` |
-| Exact staged paths | `apps/web/README.md`, `package.json`, `playwright.config.ts`, `src/App.tsx`, `src/styles.css`, `src/components/CameraHelp.tsx`, `src/content/vi.ts`, `src/features/recognition/{CameraRecorder.tsx,cameraSession.ts,useCameraCapture.ts}`, `tests/App.test.tsx`, `tests/setup.ts`, `tests/recognition/{cameraSession.test.ts,recognition-flow.test.tsx}`, `tests/browser/{smoke.spec.ts,camera.spec.ts,cameraFixture.ts}`; member README và CP3 smoke evidence |
-| Pre-commit sync | 2026-11-07T13:50:37+07:00: dùng CP1 của Tín trên `18a07aef641b424ddf4772249623b1bc04a4b926`; khôi phục candidate, clean install theo lockfile của nhóm và chạy lại toàn bộ gate |
+| Proposed commit | `CP3 T039(ui): restore large camera and text below` |
+| Exact staged paths | `apps/web/src/features/recognition/CameraRecorder.tsx`, `apps/web/src/styles.css`, `apps/web/tests/browser/camera.spec.ts`, `apps/web/README.md`, member README và `docs/evidence/checkpoints/CP3/T039-p5-hien-layout-smoke.md` |
+| Pre-commit sync | Fetch `origin/main` tại `18a07aef641b424ddf4772249623b1bc04a4b926`; remote-only count 0, local camera commit `edd328d` đã có; chạy lại toàn bộ gate |
 | Gate commands | `npm.cmd run typecheck`; `VISIGN_BROWSER_CHANNEL=msedge npm.cmd run check` (PowerShell đặt env riêng) |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-smoke.md` |
+| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-layout-smoke.md` |
 | Local commit | `PENDING` |
 | Pre-push sync | `PENDING` |
 | Push status | `NOT_PUSHED` — chờ foundation của Tín, Huy mở window và review độc lập |
@@ -42,6 +42,7 @@
 |---|---|---|---|---|---|---|---|
 | `CP2/T040` | Versioned inference API client | `CP2 T040(web): add versioned inference API client` | `PENDING` | `PENDING` | `NOT_RUN` | P2/Tín, P1/Huy | `BLOCKED` |
 | `CP3/T039` | Explicit local camera capture và resource cleanup | `CP3 T039(web): add explicit camera capture and cleanup` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; lint/typecheck/build PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
+| `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
 
 ## Handoff
 

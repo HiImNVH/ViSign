@@ -1,5 +1,17 @@
 // apps/web/tests/browser/camera.spec.ts - Kiem tra MediaRecorder that voi camera Y4M va khong upload.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function expectVerticalLayout(page: Page) {
+  const camera = await page.locator('.camera-viewport').boundingBox();
+  const actions = await page.getByRole('group', { name: 'Điều khiển camera' }).boundingBox();
+  const translation = await page.getByRole('region', { name: 'Văn bản dịch' }).boundingBox();
+  if (!camera || !actions || !translation) throw new Error('Missing camera layout');
+  expect(camera.width).toBeGreaterThan((page.viewportSize()?.width ?? 0) * .75);
+  expect(actions.y).toBeGreaterThanOrEqual(camera.y + camera.height);
+  expect(translation.y).toBeGreaterThanOrEqual(actions.y + actions.height);
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Chưa có bản dịch.');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+}
 
 test('explicitly records and discards a real WebM clip, then releases camera', async ({ page }, testInfo) => {
   const outbound: string[] = [];
@@ -7,8 +19,10 @@ test('explicitly records and discards a real WebM clip, then releases camera', a
   page.on('pageerror', error => runtimeErrors.push(error.message));
   page.on('request', request => { if (request.method() !== 'GET' || new URL(request.url()).pathname.startsWith('/api/')) outbound.push(request.url()); });
   await page.goto('/');
+  await expectVerticalLayout(page);
   await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
+  await expectVerticalLayout(page);
   const preview = page.getByLabel('Hình ảnh xem trước từ camera');
   await expect.poll(() => preview.evaluate(video => (video as HTMLVideoElement).videoWidth)).toBeGreaterThan(0);
   await expect.poll(() => preview.evaluate(video => (video as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
@@ -19,6 +33,7 @@ test('explicitly records and discards a real WebM clip, then releases camera', a
   await page.waitForTimeout(500);
   await page.getByRole('button', { name: 'Kết thúc', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+  await expectVerticalLayout(page);
   await expect(page.getByText(/đã sẵn sàng và chưa được gửi đi/)).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('camera-captured.png'), fullPage: true });
   await page.getByRole('button', { name: 'Hủy đoạn quay', exact: true }).click();
