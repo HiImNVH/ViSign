@@ -73,4 +73,4 @@ tài nguyên device), vì người dùng thật có thể gặp; (2) làm bộ t
 - Focused unit `npx.cmd vitest run tests/recognition/cameraSession.test.ts`: **30 PASS**; post-change `npx.cmd playwright test tests/accessibility/recognition-accessibility.spec.ts --repeat-each=3 --retries=0 --workers=1`: **63 PASS**.
 - Full gate `cd apps/web; $env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check`: **exit 0**, ESLint/TypeScript/Vite PASS, **168 unit PASS / 4 skip**, **84 Edge browser PASS / 12 skip**. Skips: 9 optional T088 screenshot specs; 3 T040 live API specs.
 - **Follow-up status: TEST_PASS / READY_FOR_INDEPENDENT_REREVIEW.** Historical P1 `CHANGES_REQUESTED` is preserved. Requires P1/P2 to re-run on the environment that originally failed; no self-VERIFIED and T063 remains `[ ]`.
-- Follow-up commit: PENDING full SHA / GitHub link after push.
+- Follow-up commit: [`a6d8a9d28330a68df7e16076ead1bd3febfb4872`](https://github.com/HiImNVH/ViSign/commit/a6d8a9d28330a68df7e16076ead1bd3febfb4872), pushed to `origin/main` on 2026-11-08.
