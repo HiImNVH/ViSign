@@ -192,7 +192,7 @@ decision rule, không chứng minh khả năng từ chối mọi động tác ng
 ## 14. Các nâng cấp bị hoãn
 
 **Decision**: Giữ npm/package-lock và mypy. Tailwind/shadcn, DVC/MLflow, alternative model, ONNX,
-browser overlay và client-side extraction vẫn là M2/M1. Container packaging, CI và Google Cloud được
+browser overlay và client-side extraction vẫn là M2/M1. Container packaging, CI và AWS được
 nâng thành commitment do rubric, nhưng chỉ triển khai sau local vertical slice ổn định.
 
 **Rationale**: Chúng không đóng lỗ hổng correctness đang chặn pilot và có thể làm phình MVP.
@@ -271,16 +271,32 @@ một integration queue, mỗi lần chỉ một người pull/rebase, test, com
 - Mỗi người dùng nhánh dài hạn: loại theo quy trình nhóm đã chốt.
 - Nhiều người push song song lên main: loại vì dễ làm evidence/test gắn sai commit.
 
-## 20. Google Cloud Run cho production rubric
+## 20. AWS single-host production cho production rubric
 
-**Decision**: Dùng hai Cloud Run services cho web và inference API, Google Cloud Storage cho model
-artifact, Secret Manager cho secret và GitHub Actions cho quality/deploy. Admin API bị tắt production.
+**Decision**: Dùng CloudFront làm HTTPS/public entrypoint, một EC2 instance tại `ap-southeast-1` chạy
+hai container `web` và `inference-api`, ECR lưu image, private S3 lưu model artifact, SSM Parameter
+Store lưu cấu hình nhạy cảm, CloudWatch cho log/metric và AWS Budgets cho cảnh báo. GitHub Actions
+deploy bằng OIDC + Systems Manager, không dùng access key hoặc SSH. Admin API bị tắt production.
 
-**Rationale**: Cloud Run cung cấp HTTPS/public URL và scale-to-zero phù hợp ngân sách demo; tách web
-và API cho phép cấu hình CPU/RAM khác nhau mà không đưa Kubernetes/database vào MVP.
+**Rationale**: Tài khoản hiện có AWS Free Plan/credit nhưng Google Cloud yêu cầu khoản thanh toán kích
+hoạt mà nhóm không thể đáp ứng. Single-host giảm chi phí nền so với Fargate + ALB, vẫn giữ ranh giới
+container web/API, public HTTPS, health/smoke, least privilege và rollback có thể kiểm chứng. CloudFront
+cho web và `/api/*` cùng origin công khai, tránh CORS và không cần mua domain trong MVP.
 
 **Alternatives considered**:
 
 - Chỉ demo local: loại vì không đáp ứng tiêu chí AWS/Google Cloud 10 điểm.
-- GKE/Kubernetes: loại vì vượt nhu cầu và tăng chi phí/vận hành.
-- AWS EC2/ECS: khả thi nhưng nhóm chọn một provider để tránh nhân đôi IaC/runbook/test matrix.
+- Google Cloud Run: phù hợp kỹ thuật nhưng tài khoản hiện tại chưa thể kích hoạt billing nếu không trả
+  trước; không chọn để tránh blocker tài chính.
+- AWS App Runner: loại vì AWS đã đóng App Runner cho khách hàng mới; tài liệu AWS khuyến nghị ECS
+  Express Mode cho khách hàng cần managed container.
+- ECS Express Mode/Fargate + ALB: loại cho MVP vì nhiều tài nguyên tính phí nền hơn single EC2 và không
+  cần autoscaling cho một máy demo.
+- Lambda/API Gateway: loại vì model MediaPipe/PyTorch, cold start và trần payload đồng bộ không phù hợp
+  contract WebM tối đa 10 MiB.
+- EKS/Kubernetes: loại vì vượt nhu cầu và tăng chi phí/vận hành.
+
+**Primary references**:
+
+- AWS Free Tier plans: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html
+- App Runner availability change: https://docs.aws.amazon.com/apprunner/latest/dg/apprunner-availability-change.html

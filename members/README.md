@@ -5,7 +5,7 @@ Mỗi thư mục thành viên là nhật ký phối hợp, không phải bản s
 | Member | Folder | Canonical ownership |
 |---|---|---|
 | P1 Huy | `members/p1-huy/` | Spec Kit, queue, CI coordination, verification, presentation |
-| P2 Tín | `members/p2-tin/` | `services/inference-api/`, `infra/gcp/`, security |
+| P2 Tín | `members/p2-tin/` | `services/inference-api/`, `infra/aws/`, security |
 | P3 Cường | `members/p3-cuong/` | `ai/landmarks`, `ai/training`, `ai/evaluation` |
 | P4 Quang | `members/p4-quang/` | `data/`, `ai/dataset`, dataset evidence |
 | P5 Hiển | `members/p5-hien/` | `apps/web/`, frontend tests/UX evidence |

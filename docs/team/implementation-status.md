@@ -32,6 +32,10 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
   công khai). Ánh xạ tên file của Quang ở `data-convention.md` mục 8, chờ Quang xác nhận 2 điểm còn lại.
 - CP1: T003, T086 `VERIFIED`; T008 (bản P4 `c034e6e`) và T004 engines fix (`84478b2`) `P1_VERIFIED`.
   Còn chặn đóng CP1: P5/Hiển review T004/T006.
+- 2026-11-07 lead chuyển hạ tầng từ Google Cloud sang AWS (Free Plan/credit thân thiện hơn): một EC2
+  chạy web + API qua Compose, ECR theo commit SHA, model trên S3 có version, CloudFront HTTPS, deploy
+  bằng GitHub OIDC + SSM; `infra/gcp/` đổi thành `infra/aws/`. Rủi ro: EC2 free tier 1 GB RAM có thể
+  không đủ cho decode + MediaPipe + torch (review T014–T016 ước 250–600 MB/request) — P2 benchmark trước khi chốt instance.
 - T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
 - CP2 T022–T023 (config/logging) của P2 tại `fb56354`: P1_VERIFIED; P5 review CORS còn pending.
   T014–T016: P1_REVIEWED và P2_VERIFIED (serving); representative-clip review schema còn pending.
@@ -48,7 +52,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
 | P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Chờ 4 review CP1 (P2/P3/P4/P5); thu xác nhận T098/T099; duyệt schema khi có clip |
-| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; T019–T023 P1_VERIFIED, chờ P3/P5; T099 mở — xác nhận quy ước API |
+| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; T019–T023 P1_VERIFIED, chờ P3/P5; T099 mở — xác nhận quy ước API |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003; T014–T016 chờ review; xác nhận data-convention D1–D4 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW | Review T008; T098 mở — xác nhận data-convention D1–D4 rồi đóng băng |
 | P5 | Hiển | `apps/web/`, frontend tests/UX evidence | REVIEW | Review T004/T006; xác nhận API convention D1–D4 với Tín |

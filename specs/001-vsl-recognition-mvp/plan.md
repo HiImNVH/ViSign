@@ -1,6 +1,6 @@
 # Implementation Plan: ViSign VSL Recognition MVP
 
-**Branch**: `001-vsl-recognition-mvp` | **Date**: 2026-10-19 | **Updated**: 2026-11-07 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-vsl-recognition-mvp` | **Date**: 2026-10-19 | **Updated**: 2026-11-07 (AWS deployment) | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/001-vsl-recognition-mvp/spec.md`
 
@@ -35,7 +35,7 @@ Thứ tự checkpoint bắt buộc:
 5. **CP4**: Rejection/error/privacy/HTTP routing và negative-path E2E.
 6. **CP5**: Dataset/model/evaluation evidence, pilot rồi full 10 nghĩa.
 7. **CP6**: Admin tool nội bộ nếu không làm chậm public MVP.
-8. **CP7**: CI/CD, security, cost, community evidence và Google Cloud production.
+8. **CP7**: CI/CD, security, cost, community evidence và AWS production.
 9. **CP8**: Full verification, usability, demo rehearsal và presentation/Q&A.
 
 Chi tiết lệnh pull/test/commit/push và gate của từng checkpoint nằm tại
@@ -56,8 +56,9 @@ cơ sở dữ liệu và không lưu video dự đoán của người dùng
 unit; Playwright với fake-camera Y4M cho E2E; script đánh giá xuất confusion matrix, macro-F1,
 recall từng lớp, negative/OOD false-accept report và latency từng stage
 
-**Target Platform**: Windows 11 cho local development; Chromium hiện đại có camera; production trên
-Google Cloud Run với HTTPS và bản local smoke-tested làm rollback/demo fallback
+**Target Platform**: Windows 11 cho local development; Chromium hiện đại có camera; production tại
+AWS region `ap-southeast-1` qua CloudFront HTTPS và một EC2 host chạy hai container `web`/`inference-api`;
+bản local smoke-tested được giữ làm rollback/demo fallback
 
 **Project Type**: Web application gồm frontend, inference API và pipeline AI ngoại tuyến
 
@@ -91,8 +92,18 @@ tra clip, preflight, pilot training và history. Công cụ này không thuộc 
 thay đổi OpenAPI `/api/v1`, và không có quyền tự nâng pilot thành model phát hành.
 
 **Cloud/CI**: GitHub Actions chạy lint, typecheck, unit, contract, integration và frontend build. Chỉ
-commit/tag đã vượt gate mới được deploy lên hai Cloud Run services (`web`, `inference-api`). Model
-artifact được nạp từ Google Cloud Storage; secret nằm trong Secret Manager; production tắt admin API.
+commit/tag đã vượt gate mới được đóng gói thành hai image ECR (`web`, `inference-api`) và deploy lên
+một EC2 host bằng AWS Systems Manager. CloudFront cung cấp một URL HTTPS chung; `/api/*` được reverse
+proxy đến API để giữ same-origin. Model artifact có version/hash nằm trong private S3 và được tải về
+volume chỉ đọc bằng EC2 instance role. GitHub Actions dùng OIDC để assume IAM role, không tạo access
+key dài hạn. Secret/config nhạy cảm nằm trong SSM Parameter Store `SecureString`; production tắt admin
+API. CloudWatch thu log/metric an toàn và AWS Budgets cảnh báo mức sử dụng credit.
+
+**AWS cost boundary**: Tài khoản giữ Free Plan, không nâng cấp Paid Plan nếu chưa có phê duyệt riêng.
+Hạ tầng dùng một EC2 instance, `max` một inference worker và chỉ bật trong cửa sổ tích hợp/demo; không
+thêm ALB, NAT Gateway, RDS, ECS/EKS hoặc multi-region. T094 phải ghi giá ước tính và ngưỡng cảnh báo;
+T095 chỉ triển khai sau khi kiểm tra dịch vụ cần dùng được Free Plan/credit bao phủ. Artifact và evidence
+quan trọng phải có bản sao ngoài AWS trước khi credit hoặc thời hạn Free Plan kết thúc.
 
 **Git Collaboration**: Cả nhóm làm trên `main` theo hàng đợi tuần tự, không branch theo người. Trước
 mỗi commit: pull/rebase, chạy gate, cập nhật `members/<owner>/README.md`; trước push: pull/rebase lần
@@ -297,12 +308,14 @@ admin/
 .github/
 └── workflows/
     ├── quality.yml
-    └── deploy-gcp.yml
+    └── deploy-aws.yml
 
 infra/
-└── gcp/
+└── aws/
     ├── README.md
-    └── cloudrun/
+    ├── cloudformation/
+    ├── compose.production.yml
+    └── nginx/
 
 members/
 ├── p1-huy/
@@ -345,8 +358,8 @@ Các quyết định và phương án bị loại được ghi trong [research.m
   input-quality hints và stable error contract. Endpoint landmark JSON vẫn thuộc M2 và không nằm trong MVP.
 - [contracts/admin-tools.md](contracts/admin-tools.md) chốt ranh giới công cụ nội bộ, auth opt-in,
   cleanup, single-active-job và trạng thái run; đây không phải public API.
-- [contracts/deployment.md](contracts/deployment.md) chốt production topology, health/smoke, secret,
-  resource, cost evidence và rollback contract trên Google Cloud.
+- [contracts/deployment.md](contracts/deployment.md) chốt production topology, health/smoke, IAM/SSM,
+  resource, cost evidence và rollback contract trên AWS.
 - [quickstart.md](quickstart.md) định nghĩa các kịch bản kiểm chứng từ dữ liệu đến demo camera.
 
 ### Post-design Constitution Check
@@ -360,6 +373,6 @@ tiêu chí nghiệm thu bắt buộc, kèm secret, cost, smoke và rollback gate
 
 | Bổ sung | Lý do bắt buộc | Giới hạn đơn giản hóa |
 |---|---|---|
-| Hai Cloud Run services + GCS | Tiêu chí cloud production 10 điểm và cần tách web/API | Không thêm Kubernetes, database hoặc multi-region |
+| CloudFront + một EC2 host + ECR/S3 | Tiêu chí AWS production 10 điểm, HTTPS và container web/API | Không thêm ALB, NAT Gateway, ECS/EKS, database hoặc multi-region |
 | GitHub Actions quality/deploy | Tiêu chí CI/CD và checkpoint có thể kiểm chứng | Chỉ hai workflow, deploy sau quality gate |
 | Rubric/evidence artifacts | Chứng minh đủ 100 điểm và truy đóng góp | Markdown/JSON trong repo, không xây dashboard mới |

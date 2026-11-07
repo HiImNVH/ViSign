@@ -43,7 +43,7 @@ Quy tắc:
 | Thành viên | Scope được dùng | Checkpoint/commit dự kiến | Smoke tối thiểu | Reviewer chính |
 |---|---|---|---|---|
 | P1 Huy | `spec`, `docs`, `ci`, `verify`, `release` | CP0 Spec Kit; CP3/4 E2E; CP7 CI; CP8 nghiệm thu | Spec Kit validation; E2E/rehearsal; link Actions | Owner module liên quan; cả nhóm ở CP8 |
-| P2 Tín | `setup` (chỉ T001–T007), `api`, `backend`, `security`, `cloud` | CP1 monorepo/toolchain T001–T007; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | install/lint/empty smoke/build; unit/contract; live health/predict; negative/security; Cloud Run health/rollback | Huy; Cường cho AI setup/predictor; Hiển cho web setup/API contract |
+| P2 Tín | `setup` (chỉ T001–T007), `api`, `backend`, `security`, `cloud` | CP1 monorepo/toolchain T001–T007; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | install/lint/empty smoke/build; unit/contract; live health/predict; negative/security; AWS CloudFront/EC2 health/rollback | Huy; Cường cho AI setup/predictor; Hiển cho web setup/API contract |
 | P3 Cường | `ai`, `extractor`, `train`, `eval`, `model` | CP1 review T003; CP2 preprocessing/schema; CP3 fixture/predictor; CP5 pilot rồi full; CP7 cost | tensor/mask parity; deterministic train; model load/predict; metrics/cost | Huy; Tín cho serving; Quang cho manifest |
 | P4 Quang | `data`, `dataset` | CP1 data skeleton; CP2 convention/schema; CP5 pilot/full manifest | schema/filename validator; provenance/license audit; split/coverage audit | Huy và Cường |
 | P5 Hiển | `web`, `ui`, `ux`, `e2e` | CP1 review T004/T006; CP2 API client/types; CP3 happy path; CP4 placeholders/accessibility; CP6 admin UI; CP8 UX evidence | lint/build/unit; fake-camera E2E; status/accessibility/responsive checks | Huy và Tín |
@@ -153,7 +153,7 @@ có lý do; gate bắt buộc bị `FAIL`, `BLOCKED` hoặc `NOT_RUN` thì khôn
 
 - Mỗi micro-commit chạy test liên quan trực tiếp; commit đóng CP chạy full smoke của checkpoint.
 - Link chính phải bền vững: commit SHA trên GitHub, file/report trong repo, GitHub Actions run và
-  Cloud Run revision/URL công khai. Không dùng signed URL hết hạn, token hoặc đường dẫn chỉ tồn tại
+  AWS image digest/S3 version/SSM result/CloudFront URL công khai. Không dùng signed URL hết hạn, token hoặc đường dẫn chỉ tồn tại
   trên máy cá nhân làm bằng chứng duy nhất.
 - Với model/data, ghi version, manifest/schema, SHA-256 artifact và report; không đưa binary/raw data
   vào Git.

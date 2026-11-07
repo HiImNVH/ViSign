@@ -207,12 +207,12 @@ Expected:
   `docs/team/checkpoint-evidence-template.md`, recording commands, exit codes, environment and
   pass/fail/blocked/not-run reasons.
 - After push, the evidence contains the full commit SHA/link and, when applicable, durable GitHub
-  Actions, report, model/data checksum or Cloud Run revision/URL links.
+  Actions, report, model/data checksum hoặc AWS image digest/S3 version/CloudFront URL links.
 - Another member reproduces the important gate and records `VERIFIED`; an expiring signed URL or a
   local-only path is not accepted as the only evidence.
 - Only one member pushes during the assigned integration window; no force-push is used.
 
-## Scenario 8: Verify Google Cloud production
+## Scenario 8: Verify AWS production
 
 Use the deployed URLs recorded in `docs/deployment-report.md`.
 
@@ -220,10 +220,11 @@ Expected:
 
 - Public web and API use HTTPS; `/api/v1/health` reports the expected artifact/readiness.
 - Camera prediction, low-confidence rejection, invalid clip and unknown route work through production.
-- Admin routes are disabled; CORS origins and service accounts are restricted to the published design.
+- Admin routes are disabled; CloudFront origin access and IAM roles are restricted to the published design.
 - Logs contain request ID/status/latency/error code but no clip bytes, landmark, token or secret.
-- CPU/RAM/concurrency/max-instance settings and the demo cost estimate match `docs/cost-report.md`.
-- Rolling back to the last smoke-tested image/artifact restores health and prediction successfully.
+- EC2/container CPU/RAM, one-worker concurrency, timeout/body limit and demo cost match `docs/cost-report.md`.
+- GitHub Actions uses OIDC/SSM without static AWS keys or SSH; model access is limited to its S3 prefix.
+- Rolling back to the last smoke-tested ECR image digest and S3 object version restores health and prediction.
 
 ## Scenario 9: Verify judging evidence
 

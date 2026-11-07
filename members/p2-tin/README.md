@@ -7,7 +7,7 @@
 | Worker ID | `P2` |
 | Current member | Tín |
 | Role | Backend/API, cloud và security; CP1 setup coordinator |
-| Canonical ownership | `services/inference-api/`, `infra/gcp/`, `tests/security/`; T001–T007 setup paths |
+| Canonical ownership | `services/inference-api/`, `infra/aws/`, `tests/security/`; T001–T007 setup paths |
 | Allowed commit scopes | `setup` (chỉ T001–T007), `api`, `backend`, `security`, `cloud` |
 | Current checkpoint | `CP1` |
 | Integration window | `CLOSED` sau push; P1 đang review |
@@ -29,7 +29,7 @@
 | `T024-T025 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Đã push `e3c5d8a`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42357998638); chờ Huy verify | P1/Huy |
 | `T099 / CP2` | `REVIEW` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Đã push `5add400`; chờ P1 verify (lead) và P5 xác nhận consumer | P5/Hiển và P1/Huy |
 | `T037 / CP3` | `PAUSED` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi đã push; dừng CP3 theo chỉ đạo P1 (chốt CP1 → đóng CP2 → mở CP3) | P3/Cường, P1/Huy |
-| `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
+| `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
 

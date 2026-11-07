@@ -1,6 +1,6 @@
 # .github/workflows/quality.yml
 # Quality gate T091: lint, typecheck, unit/contract tests va web build cho API, AI va web.
-# Deploy (deploy-gcp.yml) thuoc CP7 va chi chay sau khi workflow nay xanh.
+# Deploy (deploy-aws.yml) thuoc CP7 va chi chay sau khi workflow nay xanh.
 
 name: quality
 

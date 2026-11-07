@@ -94,7 +94,7 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 
 **Purpose**: Tạo cấu trúc monorepo và toolchain tối thiểu.
 
-- [ ] T001 Tạo các thư mục nguồn theo `plan.md` gồm `apps/web/`, `services/inference-api/`, `ai/`, `data/`, `tests/`, `docs/`, `members/`, `.github/workflows/` và `infra/gcp/`
+- [ ] T001 Tạo các thư mục nguồn theo `plan.md` gồm `apps/web/`, `services/inference-api/`, `ai/`, `data/`, `tests/`, `docs/`, `members/`, `.github/workflows/` và `infra/aws/`
 - [ ] T002 [P] Khởi tạo Python 3.12 project và dependency groups cho API trong `services/inference-api/pyproject.toml`
 - [ ] T003 [P] Khởi tạo Python 3.12 project và dependency groups cho AI trong `ai/pyproject.toml`
 - [ ] T004 [P] Khởi tạo React TypeScript Vite app và test scripts trong `apps/web/package.json`
@@ -303,7 +303,7 @@ T077/full release gate.
 
 ## Phase 10: User Story 5 - Nghiệm thu theo tiêu chí hội đồng (Priority: P1)
 
-**Goal**: Tạo bằng chứng kiểm chứng được cho toàn bộ bảng điểm 100 điểm, CI/CD và Google Cloud
+**Goal**: Tạo bằng chứng kiểm chứng được cho toàn bộ bảng điểm 100 điểm, CI/CD và AWS
 production, đồng thời giữ lịch sử đóng góp/checkpoint rõ ràng của 5 thành viên.
 
 **Independent Test**: Một reviewer ngoài nhóm dùng ma trận rubric để mở từng artifact, chạy quality
@@ -315,12 +315,12 @@ workflow và production smoke/rollback mà không cần hỏi người viết co
 - [ ] T088 [P] [US5] Audit FE/UI/UX theo responsive, accessibility, camera usability, module/component boundaries và visual consistency; lưu screenshot/test evidence tại `docs/frontend-quality-report.md`
 - [ ] T089 [P] [US5] Viết tests/report cho OOD, signer/lighting/angle edge cases, false accept, class imbalance/bias, stability và giải thích decision rule tại `ai/tests/evaluation/test_safety_robustness.py` và `docs/ai-safety-report.md`
 - [ ] T090 [P] [US5] Review cấu trúc module, dependency direction, coding conventions, duplication và khả năng mở rộng FE/BE/AI; ghi action/evidence tại `docs/architecture-quality-report.md`
-- [ ] T091 [US5] Cài GitHub Actions quality/deploy gates cho lint, typecheck, unit, contract, integration, web build và deploy-after-pass tại `.github/workflows/quality.yml` và `.github/workflows/deploy-gcp.yml`
+- [ ] T091 [US5] Cài GitHub Actions quality/deploy gates cho lint, typecheck, unit, contract, integration, web build và AWS deploy-after-pass bằng OIDC tại `.github/workflows/quality.yml` và `.github/workflows/deploy-aws.yml`
 - [ ] T092 [P] [US5] Chạy security/reliability audit gồm dependency/secret scan, upload abuse, CORS, headers, rate/resource boundaries, timeout, log privacy và recovery tại `tests/security/` và `docs/security-report.md`
 - [ ] T093 [P] [US5] Viết báo cáo tác động cộng đồng, nhóm hưởng lợi, accessibility/usability result, rủi ro gây hiểu nhầm và roadmap mở rộng có điều kiện tại `docs/community-impact.md`
 - [ ] T094 [P] [US5] Đo CPU/RAM/storage/network/cloud cost, so sánh ít nhất một phương án tối ưu và chốt budget/quality/latency trade-off tại `docs/cost-report.md`
-- [ ] T095 [US5] Đóng gói và deploy web/API/model artifact lên Google Cloud Run/Storage bằng cấu hình tái lập tại `infra/gcp/` và ghi public revisions/URLs tại `docs/deployment-report.md`
-- [ ] T096 [US5] Cấu hình production HTTPS, Secret Manager, least-privilege service accounts, explicit CORS, admin-disabled, logging/monitoring, budget alert và rollback rehearsal tại `infra/gcp/` và `docs/deployment-report.md`
+- [ ] T095 [US5] Đóng gói web/API thành image ECR theo commit SHA, deploy hai container lên một EC2 host, nạp model version/hash từ private S3 và công bố CloudFront HTTPS URL bằng CloudFormation/Compose tái lập tại `infra/aws/`; ghi image digest, S3 version, SSM result và URL tại `docs/deployment-report.md`
+- [ ] T096 [US5] Cấu hình GitHub OIDC + least-privilege IAM/EC2 role, no-SSH security group chỉ nhận CloudFront origin-facing traffic, SSM `SecureString`, admin-disabled, CloudWatch log/metric không chứa video/landmark/secret, AWS Budget/Free-Plan alerts, start-stop runbook, external backup và rollback ECR digest + S3 version tại `infra/aws/` và `docs/deployment-report.md`
 - [ ] T097 [US5] Tổng hợp contribution evidence của 5 thành viên, checkpoint commits, slide/demo flow và bộ Q&A về giá trị, dữ liệu, model, chi phí, giới hạn, cloud và mở rộng tại `docs/team-contributions.md` và `docs/presentation-qa.md`
 **Checkpoint**: CP7 chỉ đóng khi CI/security/cost/cloud pass; CP8 chỉ đóng khi rubric matrix không còn
 tiêu chí thiếu owner/artifact và demo production + local rollback rehearsal đều đạt. CP2 không được
@@ -430,7 +430,7 @@ Quang:    T013 pilot subset -> T018, tiếp tục hoàn thiện full manifest
 - **P1 / Huy — Project/Task Manager**: quản lý scope, backlog, dependency, fallback trigger, checkpoint,
   integration queue, CI coordination, nghiệm thu, E2E và demo; không sở hữu implementation FE/BE/model.
 - **P2 / Tín — Backend/API**: sở hữu domain/API, predictor integration, artifact configuration, cleanup,
-  contract/integration tests, privacy, security, Google Cloud và rollback vận hành.
+  contract/integration tests, privacy, security, AWS và rollback vận hành.
 - **P3 / Cường — Training Models**: sở hữu MediaPipe extraction/preprocessing, GRU pilot/full training,
   evaluation, release metadata, model card và performance benchmark.
 - **P4 / Quang — Data Crawler/Data Analyst**: sở hữu nguồn/quyền sử dụng, lọc nhãn, pilot/full manifest,
