@@ -130,8 +130,8 @@ track MAY bắt đầu khi T019–T028 ổn định và không được trình b
 - [ ] T021 [P] Cài error catalog ổn định gồm `CLIP_DECODE_FAILED` và `SERVICE_BUSY` đúng `contracts/openapi.yaml` tại `services/inference-api/src/visign_api/domain/errors.py`
 - [ ] T022 Cài cấu hình model path, MIME allowlist, byte/duration limit, inference wait timeout và CORS tại `services/inference-api/src/visign_api/config.py`
 - [ ] T023 Cài structured logging không persist payload gồm request ID, model version, total/per-stage duration, accepted và error code tại `services/inference-api/src/visign_api/observability.py`
-- [ ] T024 Cài temporary-clip boundary luôn xóa file trong success/failure tại `services/inference-api/src/visign_api/inference/temporary_clip.py`
-- [ ] T025 [P] Viết unit tests chứng minh temporary clip bị xóa ở mọi đường đi tại `services/inference-api/tests/unit/test_temporary_clip.py`
+- [X] T024 Cài temporary-clip boundary luôn xóa file trong success/failure tại `services/inference-api/src/visign_api/inference/temporary_clip.py`
+- [X] T025 [P] Viết unit tests chứng minh temporary clip bị xóa ở mọi đường đi tại `services/inference-api/tests/unit/test_temporary_clip.py`
 - [ ] T026 Cài FastAPI app release `0.0.1`, public router `/api/v1`, `X-Request-ID` receive/generate/echo middleware, bounded single-inference coordinator và exception mapping tại `services/inference-api/src/visign_api/main.py` và `services/inference-api/src/visign_api/api/router.py`
 - [ ] T027 [P] Định nghĩa TypeScript API types tối thiểu bám `contracts/openapi.yaml`, giữ `X-Request-ID`, optional prediction diagnostics, `artifactKind`, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable fixture metrics tại `apps/web/src/types/inference-api.ts`; tự động sinh type bằng `openapi-typescript` thuộc M1
 - [ ] T028 [P] Tạo Vietnamese UI copy, disclaimer và accessible labels tại `apps/web/src/content/vi.ts`

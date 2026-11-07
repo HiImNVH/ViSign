@@ -67,3 +67,9 @@ Ghi chú không chặn: clip nhận toàn bộ dưới dạng `bytes` trong RAM 
 phải được kiểm **trước** khi đọc hết body (T049), nếu không client có thể gửi body lớn hơn nhiều.
 
 **Reviewer result**: `P1_VERIFIED`
+
+## Hoàn thành task
+
+- `2026-11-07`: đủ điều kiện `DONE` theo `docs/team/git-checkpoints.md` — commit
+  `e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30` trên `origin/main`, CI success, reviewer duy nhất P1/Huy
+  `P1_VERIFIED` tại `6cc3900`, evidence có full SHA. Owner đánh `[X]` cho T024 và T025 trong `tasks.md`.
