@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | US2 T074–T075 và US6 T100–T104 được chia thành hai commit độc lập; web gates PASS, chờ P1/P2 review |
+| Current checkpoint | CP7 T088 frontend quality audit: test/report/screenshot evidence, chờ P1/P2 review; US2 T074–T075 và US6 T100–T104 vẫn là các commit độc lập |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-08` |
 
@@ -31,6 +31,7 @@
 | `T052 / CP4` | `P1_VERIFIED` | `RecognitionError.tsx`, `content/vi.ts`, `CameraRecorder.tsx`, component/browser tests | `05d906f23ff67d554b59a46a07413cce065dffd4`; 122 unit, 42 Edge browser PASS; P1 review ghi trong `docs/evidence/checkpoints/CP4/T052-p5-hien-error-presentation-smoke.md` | P1/Huy (đã review) |
 | `T053 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | `useRecognition.ts`, `inferenceApi.ts`, unit/browser lifecycle tests | Timeout 15s, cancel/reset, late response và retry thủ công; 129 unit, 48 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T053-p5-hien-timeout-cancel-reset-smoke.md` | P2/Tín và P1/Huy |
 | `T063 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | Accessibility tests, camera/help/history UI, verification report | 21 accessibility cases PASS trên desktop/mobile/landscape; full gate 165 unit + 75 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T063-p5-hien-smoke.md`; chờ review | P1/Huy, P2/Tín |
+| `T088 / CP7` | `TEST_PASS / READY_FOR_REVIEW` | `docs/frontend-quality-report.md`, `apps/web/tests/browser/frontend-quality.spec.ts`, T088 screenshots, 2 UI fixes | Responsive 5 sizes, 12 screenshots, axe/keyboard/camera checks 9/9 PASS; full gate 165 unit/84 Edge passed (4/12 skipped); đã giữ audit 7 phát hiện của P1 và thêm phụ lục P5; cần P1/P2 review | P1/Huy, P2/Tín |
 
 ## Checkpoint T046 đã push
 
@@ -63,7 +64,8 @@
 | `CP4/T051` | Rejected-result panel, explicit fresh recording và focus | `CP4 T051(web): show rejected result with explicit retry` | `a7272b722c2f5b20eb29134db9f95434d696e693` | [commit](https://github.com/HiImNVH/ViSign/commit/a7272b722c2f5b20eb29134db9f95434d696e693) | 90 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
 | `CP4/T052` | Cố định thông báo camera/API an toàn và retry thủ công | `CP4 T052(web): present stable Vietnamese camera and API errors` | `05d906f23ff67d554b59a46a07413cce065dffd4` | [commit](https://github.com/HiImNVH/ViSign/commit/05d906f23ff67d554b59a46a07413cce065dffd4) | 122 unit + 42 browser Edge PASS; lint/typecheck/build PASS | P1/Huy (đã review) | `P1_VERIFIED` |
 | `CP4/T053` | Timeout, abort/cancel và chặn kết quả đến muộn | `CP4 T053(web): harden timeout cancel and state reset` | Xem `git log --grep='CP4 T053'` | Commit link sau push | 129 unit + 48 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `TEST_PASS / READY_FOR_REVIEW` |
-| `CP4/T063` | Accessibility audit: keyboard, focus, status, camera labels | `CP4 T063(e2e): audit camera keyboard focus and labels` | PENDING | Commit link sau push | 165 unit + 75 Edge browser PASS (4 / 3 skipped); 21 T063 cases; axe 0 violations in audited snapshots | P1/Huy, P2/Tín | `TEST_PASS / READY_FOR_REVIEW` |
+| `CP4/T063` | Accessibility audit: keyboard, focus, status, camera labels | `CP4 T063(e2e): audit camera keyboard focus and labels` | `b5ca29506750601d0503c419d0f2ae839888a1f6` | [commit](https://github.com/HiImNVH/ViSign/commit/b5ca29506750601d0503c419d0f2ae839888a1f6) | 165 unit + 75 Edge browser PASS (4 / 3 skipped); 21 T063 cases; axe 0 violations in audited snapshots | P1/Huy, P2/Tín | `PUSHED / READY_FOR_REVIEW` |
+| `CP7/T088` | Responsive, axe, camera usability, component boundaries, visual consistency | `CP7 T088(ux): audit frontend quality and fix responsive a11y defects` | PENDING | Commit link after publish | T088 9/9 Playwright; 12 JPEGs; 5 sizes; 165 unit and 84 Edge passed (4/12 skipped); static/build PASS | P1/Huy, P2/Tín | `TEST_PASS / READY_FOR_REVIEW` |
 
 ## Handoff
 

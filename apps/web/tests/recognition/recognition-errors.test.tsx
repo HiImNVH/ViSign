@@ -196,8 +196,8 @@ test('cancel during upload aborts it and ignores its late accepted response', as
   render(<RecognitionHarness />);
   await capture();
   fireEvent.click(screen.getByRole('button', { name: 'Gửi nhận diện' }));
-  expect(screen.getByRole('button', { name: 'Gửi nhận diện' })).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Gửi nhận diện' })).toHaveTextContent('Đang nhận diện…');
+  expect(screen.getByRole('button', { name: 'Đang nhận diện…' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Đang nhận diện…' })).toHaveTextContent('Đang nhận diện…');
   const signal = vi.mocked(api.predict).mock.calls[0]?.[1]?.signal;
   expect(signal?.aborted).toBe(false);
   fireEvent.click(screen.getByRole('button', { name: 'Hủy đoạn quay' }));

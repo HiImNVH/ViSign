@@ -33,7 +33,7 @@ function CameraControls({ controller, view, rejectedVisible }: { controller: Rec
     {view.phase === 'permission' && <button className="quiet-button" onClick={cancel}>Hủy yêu cầu</button>}
     {(view.phase === 'preview' || (view.phase === 'captured' && !rejectedVisible)) && <button className="primary-button" onClick={startRecording}><span className="record-dot" aria-hidden="true" />{view.phase === 'captured' ? 'Quay lại' : 'Quay ký hiệu'}</button>}
     {view.phase === 'captured' && !finished && <button className="primary-button submit-button" onClick={() => void submit()}
-      disabled={model.status !== 'ready' || pending} aria-label={vi.recognition.send}>
+      disabled={model.status !== 'ready' || pending} aria-label={pending ? vi.recognition.sending : vi.recognition.send}>
       {pending ? vi.recognition.sending : <><span className="long-label">{vi.recognition.send}</span><span className="compact-label" aria-hidden="true">Gửi</span></>}
     </button>}
     {view.phase === 'recording' && <button className="primary-button stop-button" onClick={stopRecording}><span className="stop-mark" aria-hidden="true" />Kết thúc</button>}

@@ -43,3 +43,14 @@ state tập trung ở `useRecognition.ts` (216 dòng); câu chữ tập trung �
 ## Chưa kiểm
 
 Webcam và điện thoại thật, ánh sáng/khoảng cách thật, người dùng thuộc nhóm mục tiêu (T071).
+
+## Cập nhật T088 của P5/Hiển (sau audit P1)
+
+P5 đã đối chiếu báo cáo P1 với kiểm thử độc lập và sửa hai lỗi ở frontend:
+
+- FE-088-01: khi gửi nhận diện, accessible name của nút nay là `Đang nhận diện…`, khớp chữ đang hiển thị; kiểm tra axe ở trạng thái pending.
+- FE-088-02: dưới 480px, transcript chuyển xuống `top: 48px` để không che badge trạng thái camera; bounding-box check ở 320×640 xác nhận không chồng lấn.
+
+Bộ Playwright của P5 có 3 scenario × desktop/mobile/landscape = **9 test**; khảo sát thêm khi đổi viewport ở 768×1024 và 320×180. Bổ sung **12 ảnh** cho accepted, permission denied, history và API error tại [thư mục T088-screenshots](evidence/checkpoints/CP7/T088-screenshots/). Xem [báo cáo chi tiết của P5](evidence/checkpoints/CP7/T088-p5-frontend-quality-report.md) và [smoke evidence](evidence/checkpoints/CP7/T088-p5-hien-smoke.md).
+
+Trong 7 phát hiện P1, vị trí transcript/badge (#1) đã có sửa kèm regression test. Các mục #2–#7 vẫn là điểm cần theo dõi hoặc xác minh riêng; đặc biệt MediaRecorder chập chờn (#7) thuộc follow-up review T063. Việc sửa accessibility label là một phát hiện bổ sung của P5. Không xem các ảnh từ camera giả là kiểm nghiệm webcam thật.

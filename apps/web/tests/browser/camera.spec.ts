@@ -259,13 +259,16 @@ test('T053 prediction timeout restores an explicit retry without automatic reupl
   await page.goto('/');
   await captureClip(page);
   await page.clock.install();
-  const submit = page.getByRole('button', { name: 'Gửi nhận diện' });
+  const submit = page.locator('.submit-button');
+  await expect(submit).toHaveAccessibleName('Gửi nhận diện');
   await submit.click();
   await expect.poll(() => uploads).toBe(1);
   await expect(submit).toBeDisabled();
+  await expect(submit).toHaveAccessibleName('Đang nhận diện…');
   await page.clock.fastForward(15001);
   await expect(page.getByRole('alert')).toContainText('Dịch vụ phản hồi quá lâu.');
   await expect(submit).toBeEnabled();
+  await expect(submit).toHaveAccessibleName('Gửi nhận diện');
   expect(uploads).toBe(1);
   releaseFirst();
   await submit.click();
