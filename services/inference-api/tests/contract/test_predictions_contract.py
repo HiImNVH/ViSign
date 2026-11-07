@@ -9,6 +9,7 @@ from typing import Any
 import httpx2
 import pytest
 from fastapi.testclient import TestClient
+from starlette.formparsers import MultiPartParser
 from visign_api.config import Settings
 from visign_api.domain.errors import ClipDecodeFailedException
 from visign_api.domain.model_version import ArtifactKind, ModelMetadata
@@ -25,7 +26,11 @@ from visign_api.main import create_app
 FIXTURE_ARTIFACTS = Path(__file__).resolve().parents[1] / "fixtures" / "model-artifacts"
 PREDICTIONS_PATH = "/api/v1/predictions"
 REQUEST_ID_HEADER = "X-Request-ID"
-SAMPLE_CLIP = b"\x1aE\xdf\xa3 fixture camera clip"
+# Header EBML + DocType "webm" nhu clip MediaRecorder; phan con lai la du lieu gia
+SAMPLE_CLIP = b"\x1aE\xdf\xa3\x9f\x42\x86\x81\x01\x42\x82\x84webm fixture camera clip"
+MP4_BYTES = b"\x00\x00\x00\x18ftypmp42" + bytes(64)
+TEN_GIB = str(10 * 1024**3)
+MULTIPART_BOUNDARY = "visign-test-boundary"
 WEBM_MEDIA_TYPE = "video/webm;codecs=vp8"
 INTERNAL_SECRET = "C:\\noi-bo\\visign_clip_bi-mat.webm"
 REQUIRED_RESPONSE_FIELDS = {
@@ -311,3 +316,124 @@ def test_concurrent_request_gets_service_busy_with_retry_after() -> None:
     assert busy_response.json()["code"] == "SERVICE_BUSY"
     assert busy_response.headers["Retry-After"] == "3"
     assert first_responses[0].status_code == 200
+
+
+def call_recorder(inference_calls: list[Path]) -> ScriptedBehavior:
+    def record_call(clip_path: Path) -> RawPrediction:
+        inference_calls.append(clip_path)
+        return SCRIPTED_ACCEPTED
+
+    return record_call
+
+
+def multipart_clip_body(clip_bytes: bytes) -> bytes:
+    part_header = (
+        f"--{MULTIPART_BOUNDARY}\r\n"
+        'Content-Disposition: form-data; name="clip"; filename="capture.webm"\r\n'
+        f"Content-Type: {WEBM_MEDIA_TYPE}\r\n\r\n"
+    )
+    closing = f"\r\n--{MULTIPART_BOUNDARY}--\r\n"
+    return part_header.encode() + clip_bytes + closing.encode()
+
+
+@pytest.mark.parametrize(
+    "media_type",
+    ["video/mp4", "application/octet-stream", "video/x-matroska;codecs=avc1"],
+)
+def test_unsupported_media_type_is_rejected_before_inference(media_type: str) -> None:
+    inference_calls: list[Path] = []
+
+    with build_client(
+        settings_for(FIXTURE_ARTIFACTS / "fixture"),
+        factories_with(call_recorder(inference_calls)),
+    ) as recording_client:
+        unsupported_response = recording_client.post(
+            PREDICTIONS_PATH,
+            files={"clip": ("capture.webm", SAMPLE_CLIP, media_type)},
+        )
+
+    assert unsupported_response.status_code == 415
+    assert unsupported_response.json()["code"] == "UNSUPPORTED_MEDIA_TYPE"
+    assert inference_calls == []
+
+
+def test_webm_label_on_foreign_bytes_is_unsupported() -> None:
+    inference_calls: list[Path] = []
+
+    with build_client(
+        settings_for(FIXTURE_ARTIFACTS / "fixture"),
+        factories_with(call_recorder(inference_calls)),
+    ) as recording_client:
+        foreign_response = recording_client.post(
+            PREDICTIONS_PATH,
+            files={"clip": ("capture.webm", MP4_BYTES, WEBM_MEDIA_TYPE)},
+        )
+
+    assert foreign_response.status_code == 415
+    assert foreign_response.json()["code"] == "UNSUPPORTED_MEDIA_TYPE"
+    assert inference_calls == []
+
+
+def test_declared_oversized_body_is_rejected_before_multipart_parsing(
+    fixture_client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    parsed_bodies: list[MultiPartParser] = []
+    original_parse = MultiPartParser.parse
+
+    async def recording_parse(parser: MultiPartParser) -> Any:
+        parsed_bodies.append(parser)
+        return await original_parse(parser)
+
+    monkeypatch.setattr(MultiPartParser, "parse", recording_parse)
+
+    assert post_clip(fixture_client).status_code == 200
+    oversized_response = post_clip(fixture_client, {"Content-Length": TEN_GIB})
+
+    assert oversized_response.status_code == 413
+    assert oversized_response.json()["code"] == "CLIP_TOO_LARGE"
+    # Chi request hop le dau tien duoc parse; request khai 10 GiB bi chan tu header
+    assert len(parsed_bodies) == 1
+
+
+def test_chunked_body_over_limit_is_rejected_while_streaming(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parse_outcomes: list[str] = []
+    original_parse = MultiPartParser.parse
+
+    async def recording_parse(parser: MultiPartParser) -> Any:
+        try:
+            parsed_form = await original_parse(parser)
+        except BaseException:
+            parse_outcomes.append("aborted")
+            raise
+        parse_outcomes.append("completed")
+        return parsed_form
+
+    monkeypatch.setattr(MultiPartParser, "parse", recording_parse)
+    inference_calls: list[Path] = []
+    oversized_body = multipart_clip_body(SAMPLE_CLIP + bytes(100_000))
+
+    def body_chunks() -> Iterator[bytes]:
+        yield oversized_body
+
+    small_limit_settings = settings_for(
+        FIXTURE_ARTIFACTS / "fixture", max_clip_bytes=1024
+    )
+    with build_client(
+        small_limit_settings, factories_with(call_recorder(inference_calls))
+    ) as limited_client:
+        chunked_response = limited_client.post(
+            PREDICTIONS_PATH,
+            content=body_chunks(),
+            headers={
+                "Content-Type": f"multipart/form-data; boundary={MULTIPART_BOUNDARY}"
+            },
+        )
+
+    assert "content-length" not in chunked_response.request.headers
+    assert chunked_response.status_code == 413
+    assert chunked_response.json()["code"] == "CLIP_TOO_LARGE"
+    # Bo dem byte cat stream giua chung: multipart khong duoc parse het roi moi bi tu choi
+    assert parse_outcomes == ["aborted"]
+    assert inference_calls == []

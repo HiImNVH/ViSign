@@ -34,6 +34,7 @@ from visign_api.inference.artifact_loader import (
     ArtifactRejectedError,
     load_artifact,
 )
+from visign_api.inference.clip_validator import DurationWindow
 from visign_api.inference.feature_extraction import ExtractedFeatures
 from visign_api.inference.gru_bundle import (
     FEATURE_SCHEMA_FILE,
@@ -256,6 +257,7 @@ def test_predictor_maps_trained_output_to_class_label(t036_artifact: Path) -> No
         qualityHints=PredictionQualityHints(handsDetectedRatio=1.0, frameCount=32),
         decodeMs=10,
         extractMs=900,
+        ptsSpanMs=1000.0,
     )
 
     class FixedExtractor:
@@ -264,7 +266,11 @@ def test_predictor_maps_trained_output_to_class_label(t036_artifact: Path) -> No
 
     gru_predictor = GruPredictor(
         load_artifact(t036_artifact, None),
-        GruComponents(featureExtractor=FixedExtractor(), classifier=served_classifier),
+        GruComponents(
+            featureExtractor=FixedExtractor(),
+            classifier=served_classifier,
+            durationWindow=DurationWindow(minMs=300, maxMs=6000),
+        ),
     )
     raw_prediction = gru_predictor.predict(Path("clip.webm"))
 

@@ -63,6 +63,7 @@ def build_pipeline_result(**overrides: Any) -> dict[str, Any]:
             "frameCount": SAMPLED_FRAME_COUNT,
             "decodedFrameCount": 46,
             "inputStatus": "HAS_USABLE_FRAMES",
+            "ptsSpanMs": 1466.0,
             "finiteTensor": True,
             "timingsMs": {"decode": 24.4, "total": 2580.6},
         },
@@ -130,6 +131,7 @@ def test_features_keep_tensor_mask_and_quality_hints_only(tmp_path: Path) -> Non
     assert extracted.qualityHints.handsDetectedRatio == pytest.approx(0.75)
     assert extracted.qualityHints.frameCount == 46
     assert (extracted.decodeMs, extracted.extractMs) == (24, 2556)
+    assert extracted.ptsSpanMs == pytest.approx(1466.0)
 
 
 def test_raw_landmarks_never_leave_the_adapter(tmp_path: Path) -> None:
@@ -146,6 +148,7 @@ def test_raw_landmarks_never_leave_the_adapter(tmp_path: Path) -> None:
         "qualityHints",
         "decodeMs",
         "extractMs",
+        "ptsSpanMs",
     }
 
 

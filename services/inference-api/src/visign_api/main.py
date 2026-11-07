@@ -83,9 +83,7 @@ def create_app(
     # Mac dinh: fixture + adapter GRU pilot/full; predictor_factories chi de test tiem predictor gia
     active_settings = runtime_settings or get_settings()
     active_factories = (
-        build_predictor_factories(
-            GruRuntime(modelDirectory=active_settings.visign_model_dir)
-        )
+        build_predictor_factories(GruRuntime.from_settings(active_settings))
         if predictor_factories is None
         else predictor_factories
     )

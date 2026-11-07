@@ -1,5 +1,6 @@
 # services/inference-api/src/visign_api/api/predictions.py
-# POST /api/v1/predictions: doc clip co gioi han, giu slot suy luan, chay predictor tren clip tam va ap luat quyet dinh (T038).
+# POST /api/v1/predictions: kiem MIME/kich thuoc/chu ky WebM (T049), giu slot suy luan, chay predictor tren clip tam
+# va ap luat quyet dinh (T038).
 import logging
 import time
 from dataclasses import dataclass
@@ -7,10 +8,15 @@ from dataclasses import dataclass
 from fastapi import APIRouter, Request, UploadFile
 from starlette.concurrency import run_in_threadpool
 
+from visign_api.api.clip_upload_route import ClipUploadRoute
 from visign_api.config import Settings
 from visign_api.domain.errors import ClipTooLargeException, InvalidRequestException
 from visign_api.domain.model_version import ModelMetadata
 from visign_api.domain.prediction import PredictionResponse
+from visign_api.inference.clip_validator import (
+    ensure_supported_media_type,
+    ensure_webm_signature,
+)
 from visign_api.inference.coordinator import InferenceCoordinator
 from visign_api.inference.prediction_decision import decide_prediction
 from visign_api.inference.predictor import RawPrediction
@@ -20,7 +26,8 @@ from visign_api.observability import LOGGER_NAME
 
 MILLISECONDS_PER_SECOND = 1000
 
-predictions_router = APIRouter()
+# Route class chan body qua lon truoc khi FastAPI parse multipart
+predictions_router = APIRouter(route_class=ClipUploadRoute)
 service_logger = logging.getLogger(LOGGER_NAME)
 
 
@@ -40,7 +47,10 @@ class ResponseContext:
 async def create_prediction(request: Request, clip: UploadFile) -> PredictionResponse:
     started_at = time.perf_counter()
     runtime_settings: Settings = request.app.state.settings
+    # Kiem re truoc khi giu slot va ghi clip tam: MIME do client khai, roi byte dau cua clip
+    ensure_supported_media_type(clip.content_type, runtime_settings.allowed_mime_types)
     clip_bytes = await read_bounded_clip(clip, runtime_settings.max_clip_bytes)
+    ensure_webm_signature(clip_bytes)
     inference_outcome = await run_inference(request, clip_bytes)
     response_context = ResponseContext(
         requestId=request.state.request_id,

@@ -5,17 +5,23 @@ import importlib.util
 import pickle
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, Self
 
 import numpy as np
 from numpy.typing import NDArray
 
+from visign_api.config import (
+    DEFAULT_MAX_DURATION_MS,
+    DEFAULT_MIN_DURATION_MS,
+    Settings,
+)
 from visign_api.domain.errors import PredictionFailedException
 from visign_api.domain.model_version import ModelMetadata
 from visign_api.domain.prediction import PredictionTimings
 from visign_api.inference.artifact_loader import ArtifactRejectedError, LoadedArtifact
+from visign_api.inference.clip_validator import DurationWindow, validate_extracted_clip
 from visign_api.inference.feature_extraction import (
     ExtractedFeatures,
     FeatureExtractor,
@@ -57,16 +63,32 @@ class SequenceClassifier(Protocol):
     ) -> NDArray[np.float32]: ...
 
 
+def contract_duration_window() -> DurationWindow:
+    return DurationWindow(minMs=DEFAULT_MIN_DURATION_MS, maxMs=DEFAULT_MAX_DURATION_MS)
+
+
 @dataclass(frozen=True)
 class GruRuntime:
     # Thu muc detector MediaPipe tren may phuc vu (VISIGN_MODEL_DIR); None de visign_ai dung mac dinh
     modelDirectory: Path | None
+    durationWindow: DurationWindow = field(default_factory=contract_duration_window)
+
+    @classmethod
+    def from_settings(cls, runtime_settings: Settings) -> Self:
+        return cls(
+            modelDirectory=runtime_settings.visign_model_dir,
+            durationWindow=DurationWindow(
+                minMs=runtime_settings.min_duration_ms,
+                maxMs=runtime_settings.max_duration_ms,
+            ),
+        )
 
 
 @dataclass(frozen=True)
 class GruComponents:
     featureExtractor: ClipFeatureExtractor
     classifier: SequenceClassifier
+    durationWindow: DurationWindow
 
 
 class GruPredictor:
@@ -82,6 +104,8 @@ class GruPredictor:
 
     def predict(self, clip_path: Path) -> RawPrediction:
         extracted_features = self._gru_components.featureExtractor.extract(clip_path)
+        # T049: clip qua ngan/dai, khong nguoi hoac thieu landmark bi chan truoc khi GRU doan bua
+        validate_extracted_clip(extracted_features, self._gru_components.durationWindow)
         inference_started = time.perf_counter()
         class_probabilities = self._gru_components.classifier.class_probabilities(
             extracted_features.tensor
@@ -162,6 +186,7 @@ def load_gru_predictor(
     gru_components = GruComponents(
         featureExtractor=FeatureExtractor(build_visign_ai_binding(), feature_source),
         classifier=TorchSequenceClassifier(build_network(gru_bundle.checkpoint)),
+        durationWindow=gru_runtime.durationWindow,
     )
     return GruPredictor(loaded_artifact, gru_components)
 

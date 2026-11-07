@@ -1,15 +1,22 @@
 # services/inference-api/tests/unit/test_gru_predictor.py
 # Kiem adapter GRU T037 bang extractor/classifier gia: top-1 theo thu tu classLabels, timings va fail closed.
+import dataclasses
 import json
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 from numpy.typing import NDArray
+from visign_api.config import Settings
 from visign_api.domain.errors import (
     ClipDecodeFailedException,
+    ClipTooShortException,
+    InsufficientLandmarksException,
+    NoPersonDetectedException,
     PredictionFailedException,
+    ViSignApiException,
 )
 from visign_api.domain.model_version import ArtifactKind, ModelMetadata
 from visign_api.domain.prediction import PredictionQualityHints
@@ -19,6 +26,7 @@ from visign_api.inference.artifact_loader import (
     ArtifactRejectedError,
     LoadedArtifact,
 )
+from visign_api.inference.clip_validator import DurationWindow
 from visign_api.inference.feature_extraction import ExtractedFeatures
 from visign_api.inference.gru_predictor import (
     GruComponents,
@@ -39,6 +47,7 @@ LANDMARK_COUNT = 78
 PILOT_CLASS_LABELS = ["SOT_HCM_1", "CAM_ON_HN_1", "NHAN_HCM_1"]
 PILOT_MEANING_MAP = {"SOT_HCM_1": "SOT", "CAM_ON_HN_1": "CAM_ON", "NHAN_HCM_1": "NHAN"}
 PILOT_DISPLAY_TEXTS = {"SOT": "Sốt", "CAM_ON": "Cảm ơn", "NHAN": "Nhận"}
+CONTRACT_WINDOW = DurationWindow(minMs=300, maxMs=6000)
 
 ExtractionBehavior = Callable[[Path], ExtractedFeatures]
 
@@ -75,6 +84,7 @@ def extracted_features() -> ExtractedFeatures:
         qualityHints=PredictionQualityHints(handsDetectedRatio=0.75, frameCount=46),
         decodeMs=21,
         extractMs=1480,
+        ptsSpanMs=1500.0,
     )
 
 
@@ -104,6 +114,7 @@ def predictor_with(
     gru_components = GruComponents(
         featureExtractor=StubExtractor(extraction_behavior),
         classifier=stub_classifier,
+        durationWindow=CONTRACT_WINDOW,
     )
     return GruPredictor(pilot_artifact(), gru_components)
 
@@ -179,6 +190,35 @@ def test_extraction_failure_skips_classification() -> None:
     assert stub_classifier.seen_tensors == []
 
 
+NO_DETECTION = {
+    "inputStatus": "INSUFFICIENT_LANDMARKS",
+    "groupMask": np.zeros((TARGET_FRAME_COUNT, 4), dtype=bool),
+    "tensorMask": np.zeros((TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
+}
+
+
+@pytest.mark.parametrize(
+    ("feature_overrides", "expected_error"),
+    [
+        ({"inputStatus": "INSUFFICIENT_LANDMARKS"}, InsufficientLandmarksException),
+        (NO_DETECTION, NoPersonDetectedException),
+        ({"ptsSpanMs": 120.0}, ClipTooShortException),
+    ],
+)
+def test_unusable_clip_is_rejected_before_classification(
+    feature_overrides: dict[str, Any], expected_error: type[ViSignApiException]
+) -> None:
+    # T049: clip khong nguoi tung duoc GRU tra "Cam on" accepted; phai chan truoc khi phan lop
+    unusable_features = dataclasses.replace(extracted_features(), **feature_overrides)
+    stub_classifier = StubClassifier(np.array([0.05, 0.9, 0.05], dtype=np.float32))
+
+    with pytest.raises(expected_error):
+        predictor_with(stub_classifier, lambda clip_path: unusable_features).predict(
+            CLIP_PATH
+        )
+    assert stub_classifier.seen_tensors == []
+
+
 def test_missing_serving_extra_rejects_artifact(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -225,3 +265,19 @@ def test_pilot_without_weights_is_rejected_and_fixture_keeps_serving(
 
     assert isinstance(predictor_registry.active_predictor, FixturePredictor)
     assert predictor_registry.active_artifact_directory == FIXTURE_ARTIFACTS / "fixture"
+
+
+def test_runtime_takes_detector_directory_and_duration_window_from_settings(
+    tmp_path: Path,
+) -> None:
+    configured_settings = Settings(  # type: ignore[call-arg]
+        _env_file=None,
+        visign_model_dir=tmp_path / "detectors",
+        min_duration_ms=500,
+        max_duration_ms=5000,
+    )
+
+    gru_runtime = GruRuntime.from_settings(configured_settings)
+
+    assert gru_runtime.modelDirectory == tmp_path / "detectors"
+    assert gru_runtime.durationWindow == DurationWindow(minMs=500, maxMs=5000)
