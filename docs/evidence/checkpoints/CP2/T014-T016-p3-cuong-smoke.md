@@ -3,11 +3,11 @@
 | Mục | Kết quả |
 |---|---|
 | Baseline `main` | `18a07aef641b424ddf4772249623b1bc04a4b926` |
-| Candidate commit và link GitHub | `PENDING`, bổ sung sau push |
+| Commit đã push | [865547ebe637da010ac7c953bcce38389ecca831](https://github.com/HiImNVH/ViSign/commit/865547ebe637da010ac7c953bcce38389ecca831) |
 | Review | P2/Tín review đường serving, P1/Huy review clip và quyết định chốt schema |
 | Gate cục bộ | `PASS` |
 | Parity offline ↔ API và review schema | `NOT_RUN` |
-| Cửa tích hợp | `WAITING` |
+| Trạng thái push | `PUSHED` · đã có trên `origin/main` |
 
 ## Phạm vi
 
