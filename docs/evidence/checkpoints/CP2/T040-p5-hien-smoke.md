@@ -49,3 +49,12 @@ Sau khi T038/T060 có router và fixture predictor, P5 kiểm tra lại **fronte
 | Web gate | `cd apps/web; $env:VISIGN_LIVE_API_URL='http://127.0.0.1:8000'; $env:VISIGN_LIVE_API_REJECT_URL='http://127.0.0.1:8001'; $env:VISIGN_LIVE_API_DEGRADED_URL='http://127.0.0.1:8002'; $env:VITE_API_BASE_URL='http://127.0.0.1:8000'; $env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check` — exit code `0`: lint/typecheck/Vitest/build/Playwright **PASS**, 156 Vitest + 51 browser tests, gồm trường hợp datetime thiếu timezone. |
 
 Giới hạn: đây là **fixture integration**; chưa xác nhận webcam vật lý, giải mã WebM/landmark, chất lượng mô hình thật hoặc latency production. API OpenAPI tự sinh và YAML frozen có drift ở phần mô tả route/errors/diagnostics; cần P2 xử lý riêng trong ownership backend, không nằm trong thay đổi T040 của P5.
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T23:47:41+07:00` trên `24a9e21` (theo uỷ quyền của Huy). Web lint, typecheck, Vitest 152 passed / 4 skipped;
+`liveInferenceApi.integration.test.ts` dùng `describe.skipIf` theo `VISIGN_LIVE_API_*` nên không làm đỏ CI
+khi không có backend. Client gọi FastAPI thật đã được P1 smoke độc lập trước đó qua proxy Vite (health,
+model-info, predictions 200/415, `X-Request-ID`). P2 đã verify phần contract.
+
+**Reviewer result**: `P1_VERIFIED` → T040 `[X]`.

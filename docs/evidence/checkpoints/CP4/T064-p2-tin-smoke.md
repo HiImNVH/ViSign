@@ -48,3 +48,19 @@ không chứng minh nhận diện VSL.
 audit T066 chạy trên CI.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T23:47:41+07:00` trên `24a9e21` (theo uỷ quyền của Huy).
+
+| Gate | Kết quả |
+|---|---|
+| Như CI | API + contract + integration 374 passed, 4 skipped |
+| Extra `serving` (P1 tự cài vào venv local) | `tests/integration` + `services/inference-api/tests/integration`: **19 passed**, 4 skipped |
+| Skip còn lại | Cần detector MediaPipe tải về và `VISIGN_CP2_REFERENCE_WEBM` (clip có người của owner — P1 không dùng video người khác) |
+
+Đạt: artifact hỏng → `degraded`/503 `MODEL_NOT_READY`, **không lùi về fixture**; khởi động lại với artifact
+hợp lệ phục hồi. Chuỗi đổi artifact và parity trên clip thật dựa vào kết quả owner, nhất quán với xác nhận độc
+lập của P3 (parity 6/6 `1b14f1e`, 32/32 clip thật trong evidence T037).
+
+**Reviewer result**: `P1_VERIFIED` → T064 `[X]`.

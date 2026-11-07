@@ -167,7 +167,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 - [X] T037 [US1] Cài predictor interface với deterministic fixture và pilot/full adapter qua `MODEL_ARTIFACT_PATH`; nạp nguyên gói weights/schema/model metadata/evaluation, giữ class order, dùng artifact confidence threshold, kiểm extractor/schema và fail closed để rollback tại `services/inference-api/src/visign_api/inference/predictor.py`
 - [X] T038 [US1] Cài `POST /api/v1/predictions` cho accepted result với total/per-stage timings và quality hints không chứa frame/landmark tại `services/inference-api/src/visign_api/api/predictions.py`
 - [X] T039 [P] [US1] Cài camera permission, preview và start/stop/cancel recording tại `apps/web/src/features/recognition/CameraRecorder.tsx`
-- [ ] T040 [P] [US1] Cài typed API client gửi camera blob, truyền/đọc `X-Request-ID`, đọc model-info và bỏ qua an toàn optional diagnostics khi không có tại `apps/web/src/services/inferenceApi.ts`
+- [X] T040 [P] [US1] Cài typed API client gửi camera blob, truyền/đọc `X-Request-ID`, đọc model-info và bỏ qua an toàn optional diagnostics khi không có tại `apps/web/src/services/inferenceApi.ts`
 - [X] T041 [US1] Cài recognition state machine cho idle/permission/recording/submitting/result và loaded artifact kind tại `apps/web/src/features/recognition/useRecognition.ts`
 - [X] T042 [US1] Cài accepted result view gồm tiếng Việt, confidence, disclaimer và cảnh báo integration/pilot khi `demoReady=false` tại `apps/web/src/features/recognition/RecognitionResult.tsx`
 - [X] T043 [US1] Ghép luồng camera, model-info và prediction vào trang chính mà không rẽ nhánh endpoint theo artifact tại `apps/web/src/App.tsx`
@@ -234,7 +234,7 @@ provenance và `demoReady` đúng gate.
 
 **Purpose**: Kiểm chứng toàn hệ thống và chuẩn bị demo.
 
-- [ ] T064 [P] Thêm integration test cùng representative clip tạo tensor/mask khớp offline↔API, rồi nạp artifact, prediction, temporary-video cleanup và artifact swap cho fixture/pilot/full tại `tests/integration/test_prediction_pipeline.py`
+- [X] T064 [P] Thêm integration test cùng representative clip tạo tensor/mask khớp offline↔API, rồi nạp artifact, prediction, temporary-video cleanup và artifact swap cho fixture/pilot/full tại `tests/integration/test_prediction_pipeline.py`
 - [ ] T065 Chạy performance benchmark và ghi p50/p95 per-stage/total, throughput, CPU/RAM peak trên local và production tại `ai/src/visign_ai/evaluation/benchmark_inference.py` và `docs/performance-report.md`
 - [X] T066 Audit privacy để chứng minh không có video/frame/PII trong log hoặc artifact tại `tests/integration/test_prediction_privacy.py`
 - [ ] T063 [P] Chạy accessibility audit cho keyboard, focus, status announcements và camera labels tại `apps/web/tests/accessibility/recognition-accessibility.spec.ts`, lưu kết quả trong `docs/verification-report.md`

@@ -33,7 +33,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T017 batch extraction CLI | P3 → P2, P1 | `VERIFIED`, `[X]` — P2 verify test batch; P3 verify fix `--help` của P1 (`d258baf`) |
 | T009–T013 dataset entities/schema/validator/registry | P4 → P3, P1 | Snapshot P4 review `CHANGES_REQUESTED` (P3): Ruff/mypy lỗi, T010 chưa nối `sampleId/rawPath` sang T017; inventory 27 clip, decode 24/27; **chưa push** |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
-| T040 typed API client | P5 → P2 | P2_VERIFIED phần contract; endpoint thật đã có (T038/T060) — P5 tích hợp và kiểm lại |
+| T040 typed API client | P5 → P2, P1 | `VERIFIED`, `[X]` — contract (P2) + tích hợp FastAPI thật (P5, P1) |
 
 ### Đã lên `main` theo micro-commit, checkpoint sau (chưa đóng)
 
@@ -46,6 +46,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T065 | P3 | Benchmark latency/tài nguyên | P1_VERIFIED local; chờ production; **SC-002 trượt** (web p95 6,4 s, extract p50 4,6 s) |
 | T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
 | T066, T072, T073 | P2 | Audit privacy + dọn clip tạm; 404/405/307 theo contract | `VERIFIED`, `[X]` (P1) |
+| T064 | P2 | Pipeline clip đại diện + đổi artifact fixture/pilot/full | `VERIFIED`, `[X]` (P1) |
 | T053 | P5 | Timeout/cancel/reset | `VERIFIED`, `[X]` (P1) |
 | Follow-up P5 | P5 | Câu tiếng Việt riêng cho `ROUTE_NOT_FOUND`/`METHOD_NOT_ALLOWED` (hiện dùng fallback) | Mở |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
