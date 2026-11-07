@@ -1,11 +1,12 @@
 # services/inference-api/tests/integration/test_gru_artifact_loading.py
-# T036 -> T037: artifact do CLI train that tao ra phai nap qua registry, giu thu tu lop, tinh xac suat
-# giong luc train va fail closed khi goi bi sua hoac model.pt chua pickle doc. Can extra serving.
+# T036 -> T037: artifact pilot/full do CLI train that tao ra phai nap qua registry, giu thu tu lop, tinh xac
+# suat giong luc train, du doan qua HTTP va fail closed khi goi bi sua hoac model.pt chua pickle doc. Can extra serving.
 import json
 import os
 import shutil
 import sys
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -19,8 +20,10 @@ SERVING_EXTRA_REASON = (
 pytest.importorskip("torch", reason=SERVING_EXTRA_REASON)
 pytest.importorskip("visign_ai.training.train", reason=SERVING_EXTRA_REASON)
 
+import httpx2
 import torch
 from fastapi.testclient import TestClient
+from visign_ai.landmarks.errors import PipelineError
 from visign_ai.landmarks.extract_manifest import write_sequence
 from visign_ai.landmarks.holistic_extractor import resolve_model_dir
 from visign_ai.landmarks.sequence_transform import load_schema
@@ -29,13 +32,17 @@ from visign_ai.training.gru_classifier import GRUClassifier
 from visign_ai.training.sequence_dataset import collate_sequences
 from visign_api.config import Settings
 from visign_api.domain.model_version import ArtifactKind
-from visign_api.domain.prediction import PredictionQualityHints
+from visign_api.domain.prediction import (
+    REJECTED_PREDICTION_TEXT,
+    PredictionQualityHints,
+)
+from visign_api.inference import gru_predictor as gru_predictor_module
 from visign_api.inference.artifact_loader import (
     ArtifactRejectedError,
     load_artifact,
 )
 from visign_api.inference.clip_validator import DurationWindow
-from visign_api.inference.feature_extraction import ExtractedFeatures
+from visign_api.inference.feature_extraction import ExtractedFeatures, PipelineBinding
 from visign_api.inference.gru_bundle import (
     FEATURE_SCHEMA_FILE,
     MODEL_WEIGHTS_FILE,
@@ -62,10 +69,41 @@ if not all(
         "Chay ai/setup_models.py de tai detector MediaPipe", allow_module_level=True
     )
 
+
+@dataclass(frozen=True)
+class TrainingSpec:
+    classMap: dict[str, dict[str, str]]
+    config: dict[str, Any]
+    datasetVersion: str
+    modelVersion: str
+
+
+@dataclass(frozen=True)
+class ManifestSource:
+    featureSchema: dict[str, Any]
+    classMap: dict[str, dict[str, str]]
+
+
 # Thu tu class map co chu y khac bang chu cai: artifact phai giu dung thu tu nay
 CLASS_MAP = {
     "SOT_HCM_1": {"meaningId": "SOT", "displayText": "Sốt"},
     "CAM_ON_HN_1": {"meaningId": "CAM_ON", "displayText": "Cảm ơn"},
+}
+P0_MEANINGS = [
+    "GIAY_TO",
+    "DAU_BUNG",
+    "SOT",
+    "NHAN",
+    "BAN",
+    "CAM_ON",
+    "GIUP_DO",
+    "XIN_LOI",
+    "DAU_DAU",
+    "KHONG",
+]
+FULL_CLASS_MAP = {
+    f"{meaning}_HCM_1": {"meaningId": meaning, "displayText": meaning.title()}
+    for meaning in P0_MEANINGS
 }
 THRESHOLD_CANDIDATES = [0.5, 0.7]
 TRAINING_CONFIG: dict[str, Any] = {
@@ -83,6 +121,18 @@ TRAINING_CONFIG: dict[str, Any] = {
     "threshold_candidates": THRESHOLD_CANDIDATES,
 }
 MODEL_VERSION = "pilot-gru-test-v1"
+PILOT_SPEC = TrainingSpec(CLASS_MAP, TRAINING_CONFIG, "pilot-v1", MODEL_VERSION)
+FULL_SPEC = TrainingSpec(
+    FULL_CLASS_MAP,
+    {
+        **TRAINING_CONFIG,
+        "artifact_kind": "full",
+        "min_meanings": 10,
+        "max_meanings": 10,
+    },
+    "p0-v1",
+    "full-gru-test-v1",
+)
 SPLITS = ("train", "validation", "test")
 MANIFEST_COLUMNS = (
     "sampleId",
@@ -121,13 +171,17 @@ def synthetic_sequence(
     }
 
 
-def write_manifest(workspace: Path, feature_schema: dict[str, Any]) -> None:
+def write_manifest(workspace: Path, manifest_source: ManifestSource) -> None:
     manifest_lines = [",".join(MANIFEST_COLUMNS)]
     for split in SPLITS:
-        for class_index, (class_label, class_info) in enumerate(CLASS_MAP.items()):
+        for class_index, (class_label, class_info) in enumerate(
+            manifest_source.classMap.items()
+        ):
             sample_id = f"{split}-{class_index}"
             if split != "test":
-                sequence = synthetic_sequence(feature_schema, class_index)
+                sequence = synthetic_sequence(
+                    manifest_source.featureSchema, class_index
+                )
                 write_sequence(workspace / f"{sample_id}.npz", sample_id, sequence)
             manifest_lines.append(
                 f"{sample_id},{class_label},{class_info['meaningId']},{sample_id}.npz,"
@@ -136,13 +190,26 @@ def write_manifest(workspace: Path, feature_schema: dict[str, Any]) -> None:
     (workspace / "pilot.csv").write_text("\n".join(manifest_lines), encoding="utf-8")
 
 
-def training_arguments(workspace: Path) -> list[str]:
-    write_manifest(workspace, approved_schema(workspace))
+def p0_catalog_arguments(workspace: Path, training_spec: TrainingSpec) -> list[str]:
+    # Full chi train khi class map trung dung danh muc 10 nghia P0 (registry T013)
+    if training_spec.config["artifact_kind"] != "full":
+        return []
+    meaning_ids = [entry["meaningId"] for entry in training_spec.classMap.values()]
+    catalog_path = workspace / "p0-meanings.csv"
+    catalog_path.write_text(
+        "meaningId\n" + "\n".join(meaning_ids) + "\n", encoding="utf-8"
+    )
+    return ["--p0-meanings", str(catalog_path)]
+
+
+def training_arguments(workspace: Path, training_spec: TrainingSpec) -> list[str]:
+    feature_schema = approved_schema(workspace)
+    write_manifest(workspace, ManifestSource(feature_schema, training_spec.classMap))
     (workspace / "class-map.json").write_text(
-        json.dumps(CLASS_MAP, ensure_ascii=False), encoding="utf-8"
+        json.dumps(training_spec.classMap, ensure_ascii=False), encoding="utf-8"
     )
     (workspace / "config.json").write_text(
-        json.dumps(TRAINING_CONFIG), encoding="utf-8"
+        json.dumps(training_spec.config), encoding="utf-8"
     )
     named_inputs = {
         "manifest": "pilot.csv",
@@ -151,18 +218,17 @@ def training_arguments(workspace: Path) -> list[str]:
         "schema": "schema.json",
         "config": "config.json",
     }
-    cli_arguments = ["train", "--dataset-version", "pilot-v1"]
+    cli_arguments = ["train", "--dataset-version", training_spec.datasetVersion]
     for option, relative_path in named_inputs.items():
         cli_arguments += [f"--{option}", str(workspace / relative_path)]
-    return [*cli_arguments, "--model-version", MODEL_VERSION]
+    cli_arguments += p0_catalog_arguments(workspace, training_spec)
+    return [*cli_arguments, "--model-version", training_spec.modelVersion]
 
 
-@pytest.fixture(scope="module")
-def t036_artifact(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    workspace = tmp_path_factory.mktemp("t036")
-    artifact_directory = workspace / MODEL_VERSION
+def train_artifact(workspace: Path, training_spec: TrainingSpec) -> Path:
+    artifact_directory = workspace / training_spec.modelVersion
     cli_arguments = [
-        *training_arguments(workspace),
+        *training_arguments(workspace, training_spec),
         "--output",
         str(artifact_directory),
     ]
@@ -173,6 +239,16 @@ def t036_artifact(tmp_path_factory: pytest.TempPathFactory) -> Path:
         assert training_cli.main() == 0
     torch.use_deterministic_algorithms(deterministic_before)
     return artifact_directory
+
+
+@pytest.fixture(scope="module")
+def t036_artifact(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    return train_artifact(tmp_path_factory.mktemp("t036"), PILOT_SPEC)
+
+
+@pytest.fixture(scope="module")
+def full_t036_artifact(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    return train_artifact(tmp_path_factory.mktemp("t036-full"), FULL_SPEC)
 
 
 def gru_registry_with(artifact_directory: Path) -> PredictorRegistry:
@@ -361,3 +437,180 @@ def test_untrusted_pickle_in_weights_is_never_executed(
     # Doi chung: neu nap khong co weights_only, payload chay that, nen kiem tra tren co y nghia
     torch.load(candidate / MODEL_WEIGHTS_FILE, weights_only=False)
     assert marker_path.is_dir()
+
+
+def test_full_artifact_serves_ten_meanings(full_t036_artifact: Path) -> None:
+    gru_registry = gru_registry_with(full_t036_artifact)
+    trained_checkpoint = read_checkpoint(full_t036_artifact / MODEL_WEIGHTS_FILE)
+    class_probabilities = TorchSequenceClassifier(
+        build_network(trained_checkpoint)
+    ).class_probabilities(served_tensor())
+
+    served_metadata = gru_registry.active_predictor.metadata
+    assert served_metadata.artifactKind is ArtifactKind.FULL
+    assert served_metadata.classLabels == list(FULL_CLASS_MAP)
+    # Metric danh gia con null nen full moi train chua qua gate demo (T059)
+    assert served_metadata.demoReady is False
+    assert class_probabilities.shape == (len(P0_MEANINGS),)
+    assert float(class_probabilities.sum()) == pytest.approx(1.0, abs=1e-5)
+
+
+@dataclass(frozen=True)
+class ExtractionOutcome:
+    inputStatus: str
+    anyValidPoint: bool
+
+
+@dataclass(frozen=True)
+class ExpectedPrediction:
+    confidence: float
+    accepted: bool
+    classLabel: str | None
+    text: str
+
+
+USABLE_EXTRACTION = ExtractionOutcome("HAS_USABLE_FRAMES", anyValidPoint=True)
+SAMPLE_CLIP = b"\x1aE\xdf\xa3\x9f\x42\x86\x81\x01\x42\x82\x84webm integration clip"
+SOURCE_FRAME_COUNT = 8
+FAKE_DECODE_MS = 20.0
+FAKE_TOTAL_MS = 900.0
+
+
+def served_tensor() -> NDArray[np.float32]:
+    features: NDArray[np.float32] = np.full((32, 234), 0.5, dtype=np.float32)
+    features[:, VALIDITY_OFFSET:] = 1
+    return features
+
+
+def fake_pipeline_result(
+    feature_schema: dict[str, Any], extraction_outcome: ExtractionOutcome
+) -> dict[str, Any]:
+    usable = extraction_outcome.inputStatus == "HAS_USABLE_FRAMES"
+    tensor = served_tensor() if usable else np.zeros((32, 234), dtype=np.float32)
+    return {
+        "schema": feature_schema,
+        "tensor": tensor,
+        "tensor_mask": tensor[:, VALIDITY_OFFSET:] == 1,
+        "masks": np.full((SOURCE_FRAME_COUNT, 4), usable),
+        "point_valid": np.full(
+            (SOURCE_FRAME_COUNT, 78), extraction_outcome.anyValidPoint
+        ),
+        "report": {
+            "inputStatus": extraction_outcome.inputStatus,
+            "decodedFrameCount": 46,
+            "ptsSpanMs": 1500.0,
+            "timingsMs": {"decode": FAKE_DECODE_MS, "total": FAKE_TOTAL_MS},
+        },
+    }
+
+
+def install_fake_pipeline(
+    monkeypatch: pytest.MonkeyPatch, extraction_outcome: ExtractionOutcome
+) -> list[dict[str, Any]]:
+    # Chi thay MediaPipe bang ket qua trich dac trung xac dinh; HTTP, kiem clip, slot, clip tam,
+    # GRU da train va luat quyet dinh van chay that
+    pipeline_calls: list[dict[str, Any]] = []
+
+    def fake_process_video(clip_path: Path, **pipeline_options: Any) -> dict[str, Any]:
+        pipeline_calls.append({"path": Path(clip_path), **pipeline_options})
+        feature_schema = load_schema(pipeline_options["schema_path"])
+        return fake_pipeline_result(feature_schema, extraction_outcome)
+
+    fake_binding = PipelineBinding(run=fake_process_video, errorType=PipelineError)
+    monkeypatch.setattr(
+        gru_predictor_module, "build_visign_ai_binding", lambda: fake_binding
+    )
+    return pipeline_calls
+
+
+def post_clip_to(artifact_directory: Path) -> httpx2.Response:
+    artifact_settings = Settings(_env_file=None, model_artifact_path=artifact_directory)  # type: ignore[call-arg]
+    with TestClient(create_app(artifact_settings)) as artifact_client:
+        return artifact_client.post(
+            "/api/v1/predictions",
+            files={"clip": ("capture.webm", SAMPLE_CLIP, "video/webm;codecs=vp8")},
+        )
+
+
+def expected_prediction(artifact_directory: Path) -> ExpectedPrediction:
+    # Tinh doc lap tu trong so va metadata cua artifact de doi chieu response HTTP
+    loaded_artifact = load_artifact(artifact_directory, None)
+    trained_checkpoint = read_checkpoint(artifact_directory / MODEL_WEIGHTS_FILE)
+    class_probabilities = TorchSequenceClassifier(
+        build_network(trained_checkpoint)
+    ).class_probabilities(served_tensor())
+    best_index = int(np.argmax(class_probabilities))
+    confidence = float(class_probabilities[best_index])
+    best_label = loaded_artifact.metadata.classLabels[best_index]
+    best_text = loaded_artifact.displayTextMap[
+        loaded_artifact.metadata.meaningMap[best_label]
+    ]
+    accepted = confidence >= loaded_artifact.metadata.acceptanceThreshold
+    return ExpectedPrediction(
+        confidence=confidence,
+        accepted=accepted,
+        classLabel=best_label if accepted else None,
+        text=best_text if accepted else REJECTED_PREDICTION_TEXT,
+    )
+
+
+@pytest.mark.parametrize("artifact_fixture", ["t036_artifact", "full_t036_artifact"])
+def test_http_prediction_runs_the_trained_gru(
+    artifact_fixture: str,
+    request: pytest.FixtureRequest,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    artifact_directory: Path = request.getfixturevalue(artifact_fixture)
+    pipeline_calls = install_fake_pipeline(monkeypatch, USABLE_EXTRACTION)
+
+    prediction_response = post_clip_to(artifact_directory)
+
+    prediction = prediction_response.json()
+    expected = expected_prediction(artifact_directory)
+    assert prediction_response.status_code == 200
+    assert (
+        prediction["modelVersion"]
+        == load_artifact(artifact_directory, None).metadata.modelVersion
+    )
+    assert prediction["confidence"] == pytest.approx(
+        expected.confidence, abs=PROBABILITY_TOLERANCE
+    )
+    assert (prediction["accepted"], prediction["classLabel"], prediction["text"]) == (
+        expected.accepted,
+        expected.classLabel,
+        expected.text,
+    )
+    assert prediction["timingsMs"]["decode"] == round(FAKE_DECODE_MS)
+    assert prediction["timingsMs"]["extract"] == round(FAKE_TOTAL_MS - FAKE_DECODE_MS)
+    # Adapter trich dac trung bang schema di kem artifact; clip tam bi xoa sau khi phuc vu
+    assert pipeline_calls[0]["schema_path"] == artifact_directory / FEATURE_SCHEMA_FILE
+    assert not pipeline_calls[0]["path"].exists()
+
+
+@pytest.mark.parametrize(
+    ("extraction_outcome", "expected_code"),
+    [
+        (
+            ExtractionOutcome("INSUFFICIENT_LANDMARKS", anyValidPoint=False),
+            "NO_PERSON_DETECTED",
+        ),
+        (
+            ExtractionOutcome("INSUFFICIENT_LANDMARKS", anyValidPoint=True),
+            "INSUFFICIENT_LANDMARKS",
+        ),
+    ],
+)
+def test_http_applies_p3_person_rule_before_gru(
+    t036_artifact: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    extraction_outcome: ExtractionOutcome,
+    expected_code: str,
+) -> None:
+    # Quy tac P3 (T037 handoff) qua duong HTTP that: khong diem nao hop le → khong co nguoi;
+    # co diem nhung khong co buoc tensor du vai va tay → thieu landmark
+    install_fake_pipeline(monkeypatch, extraction_outcome)
+
+    rejected_response = post_clip_to(t036_artifact)
+
+    assert rejected_response.status_code == 422
+    assert rejected_response.json()["code"] == expected_code

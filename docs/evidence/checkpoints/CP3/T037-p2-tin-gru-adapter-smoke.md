@@ -72,4 +72,20 @@ clip người thật (T064).
   `quality.yml`): thêm bước `uv sync --locked --project services/inference-api --extra serving` + pytest tích hợp.
 - Hiển: không đổi contract API; pilot/full trả cùng schema response với fixture.
 
+## Bổ sung sau review P3 — dự đoán GRU qua HTTP
+
+Review P3 (`1b14f1e`) ghi "chưa kiểm thử dự đoán GRU qua HTTP" và "Tín cần áp dụng, test quy tắc T049 ở API".
+Commit `CP3 T037(api): test GRU predictions over HTTP for pilot and full` chỉ thêm test, không đổi code phục vụ.
+
+| Gate | Kết quả |
+|---|---|
+| Commit | `PENDING` |
+| Artifact full | CLI T036 train 10 nghĩa P0 (`--p0-meanings`), nạp qua registry mặc định; GRU ra 10 xác suất (tổng 1); `demoReady=false` vì metric còn null |
+| `POST /api/v1/predictions` qua GRU đã train | Chỉ thay MediaPipe bằng đặc trưng xác định; HTTP, kiểm clip, slot, clip tạm, GRU và luật quyết định chạy thật. Pilot: 200 "Cảm ơn" `accepted` (0,562 ≥ 0,5). Full: 200 "Không nhận diện được" (0,169 < 0,5). Khớp phép tính độc lập từ trọng số và metadata; adapter dùng schema đi kèm artifact; clip tạm bị xóa |
+| Quy tắc P3 qua HTTP | Không có điểm hợp lệ → 422 `NO_PERSON_DETECTED`; có điểm nhưng không có bước tensor đủ vai + tay → 422 `INSUFFICIENT_LANDMARKS` |
+| Bắt hồi quy | 5/5 mutation bị bắt: `argmin`, dùng schema mặc định thay schema artifact, quy tắc mask cũ, bỏ cổng người/landmark, bỏ đăng ký full |
+| Toàn bộ API + contract | Extra `serving`: 350 passed, 1 skipped. Môi trường như CI: 332 passed, 2 skipped (module tích hợp GRU tự skip). Ruff, format, mypy 54 files |
+
+Còn thiếu: parity và dự đoán qua HTTP trên clip có người thật, cần một clip review từ P3.
+
 **Reviewer result**: `PENDING`
