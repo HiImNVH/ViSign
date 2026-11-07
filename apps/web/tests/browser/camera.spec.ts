@@ -1,9 +1,5 @@
 // apps/web/tests/browser/camera.spec.ts - Kiem tra camera gia va luong nhan dien chu dong.
 import { expect, test, type Page } from '@playwright/test';
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { RecognitionOverlay } from '../../src/features/recognition/RecognitionOverlay';
-import { RecognitionResult } from '../../src/features/recognition/RecognitionResult';
 
 async function expectInCameraLayout(page: Page) {
   const camera = await page.locator('.camera-viewport').boundingBox();
@@ -329,14 +325,13 @@ test('an open help dialog keeps focus when the camera disconnects', async ({ pag
 
 test('accepted presentation and controls fit a zoom-sized viewport', async ({ page }) => {
   await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
+  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
+    requestId: crypto.randomUUID(), text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
+    confidence: .92, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 12,
+  } }));
   await page.goto('/');
-  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
-  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc', exact: true }).click();
-  await page.getByRole('button', { name: 'Quay lại', exact: true }).waitFor();
-  const markup = renderToStaticMarkup(createElement(RecognitionOverlay, { result: { clip: new Blob(['fixture']), accepted: true, text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1', confidence: .92 } }));
-  await page.evaluate(markup => document.querySelector('.camera-dock')!.insertAdjacentHTML('afterbegin', markup), markup);
+  await captureClip(page);
+  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
   for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
     await page.setViewportSize(viewport);
     await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Độ tin cậy 92%');
@@ -351,14 +346,14 @@ test('accepted presentation and controls fit a zoom-sized viewport', async ({ pa
 });
 
 test('T042 pilot warning, meanings and disclaimer fit inside camera with controls', async ({ page }) => {
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: { ...metadata, meanings: ['Giấy tờ', 'Xin chào'] } }));
+  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
+    requestId: crypto.randomUUID(), text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
+    confidence: .92, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 12,
+  } }));
   await page.goto('/');
-  const markup = renderToStaticMarkup(createElement(RecognitionResult, {
-    result: { requestId: 'test', text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
-      confidence: .92, accepted: true, modelVersion: 'pilot-v1', processingTimeMs: 12 },
-    model: { modelVersion: 'pilot-v1', artifactKind: 'pilot', demoReady: false,
-      meanings: ['Giấy tờ', 'Xin chào'] },
-  }));
-  await page.evaluate(markup => document.querySelector('.camera-dock')!.insertAdjacentHTML('afterbegin', markup), markup);
+  await captureClip(page);
+  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
   for (const viewport of [page.viewportSize()!, { width: 375, height: 667 }, { width: 320, height: 180 }]) {
     await page.setViewportSize(viewport);
     const result = page.getByRole('region', { name: 'Văn bản dịch' });

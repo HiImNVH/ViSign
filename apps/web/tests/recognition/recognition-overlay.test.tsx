@@ -1,34 +1,11 @@
-// apps/web/tests/recognition/recognition-overlay.test.tsx - Chi hien chu khi ket qua duoc chap nhan cho dung clip.
+// Regression for the production camera component (no obsolete overlay).
 import { render, screen } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { RecognitionOverlay, type CapturedRecognitionResult } from '../../src/features/recognition/RecognitionOverlay';
 import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
 import type { CameraView } from '../../src/features/recognition/cameraSession';
 
 const clip = new Blob(['test-only'], { type: 'video/webm' });
-const accepted: CapturedRecognitionResult = { clip, accepted: true, text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: .92 };
 afterEach(() => vi.restoreAllMocks());
-
-test('accepted translation shows text, confidence and experimental notice', () => {
-  render(<RecognitionOverlay result={accepted} />);
-  expect(screen.getByRole('region', { name: 'Văn bản dịch' })).toHaveTextContent('Xin chào');
-  expect(screen.getByText('Độ tin cậy 92%')).toBeVisible();
-  expect(screen.getByText(/có thể không chính xác/)).toBeVisible();
-});
-
-test.each([
-  null,
-  { ...accepted, accepted: false },
-  { ...accepted, text: '  ' },
-  { ...accepted, classLabel: null },
-  { ...accepted, classLabel: '' },
-  { ...accepted, confidence: NaN },
-  { ...accepted, confidence: 1.1 },
-  { ...accepted, confidence: -.1 },
-])('absent or invalid recognition does not render a translation panel: %j', result => {
-  const { container } = render(<RecognitionOverlay result={result} />);
-  expect(container).toBeEmptyDOMElement();
-});
 
 test('camera displays accepted API results only in a captured prediction state', () => {
   const apiResult = { requestId: 'prediction-id', text: 'Xin chào', classLabel: 'XIN_CHAO',
