@@ -76,8 +76,8 @@ button:disabled { cursor: not-allowed; opacity: .58; }
 .error-feedback h3 { color: #913c22; }
 .privacy-note { font-size: 13px; color: var(--color-muted); margin: 12px 0 0; }
 .disclaimer { margin: 20px 0 0; color: var(--color-muted); font-size: 13px; }
-.help-dialog { color: #173f35; background: white; width: min(560px, calc(100% - 32px)); max-height: calc(100svh - 40px); padding: 28px; border: 1px solid var(--color-border); border-radius: 20px; }
-.help-dialog::backdrop { background: #10271e80; }
+.app-dialog { color: #173f35; background: white; width: min(560px, calc(100% - 32px)); max-height: calc(100svh - 40px); padding: 28px; border: 1px solid var(--color-border); border-radius: 20px; }
+.app-dialog::backdrop { background: #10271e80; }
 .history-dialog { width: min(560px, calc(100% - 16px)); max-height: calc(100dvh - 24px); overflow-y: auto; }
 .history-disclosure { color: var(--color-muted); font-size: 13px; line-height: 1.45; margin: 10px 0; }
 .history-entries { padding-left: 25px; margin: 14px 0; }
@@ -114,7 +114,7 @@ button:disabled { cursor: not-allowed; opacity: .58; }
   .trial-label { display: none; }
   .camera-dock { left: 8px; right: 8px; bottom: 8px; }
   .capture-controls .primary-button, .capture-controls .quiet-button { padding: 10px 12px; font-size: 14px; }
-  .help-dialog { padding: 20px; }
+  .app-dialog { padding: 20px; }
   .history-trigger { min-height: 44px; padding: 8px 10px; }
   .transcript-panel { top: 48px; padding: 5px 8px; }
   .transcript-text { font-size: 13px; }

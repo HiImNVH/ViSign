@@ -111,7 +111,7 @@ App (composition)
 **Thứ tự xử lý**: FE-T090-01 (mất khả năng đọc/xóa lịch sử khi cleanup lỗi) →
 FE-T090-02 (quy định nhất quán multi-tab) → FE-T090-03/04 (component boundaries và test fidelity)
 → đo FE-T090-05 → sửa FE-T090-06. Mỗi fix là micro-commit FE riêng kèm test/evidence;
-T090 chỉ ghi review và hành động, chưa thực hiện các fix này.
+T090 ban đầu chỉ ghi review và hành động. Kết quả triển khai tiếp theo ghi tại §7.3.
 
 **Giới hạn của kết luận**: chưa đo hiệu năng session dài, chưa tái hiện đồng thời hai tab và chưa
 kiểm trên camera/screen reader thật. Các mục được đánh dấu "rủi ro suy ra" không phải lỗi runtime đã
@@ -123,3 +123,19 @@ thiết bị thật. Bàn giao P1/P2 review độc lập trước khi đánh T09
 không đổi FE" chỉ áp dụng trong contract MVP tối đa **10 nghĩa** hiện được chặn tại
 `apps/web/src/services/inferenceApi.ts:54`; tăng qua 10 cần thống nhất lại contract và runtime guard.
 Chi tiết gate của P5: `docs/evidence/checkpoints/CP7/T090-p5-hien-smoke.md`.
+
+### 7.3. Follow-up FE-T090-01..06 (P5, 2026-11-08)
+
+| ID | Thay đổi đã triển khai | Regression / phạm vi xác nhận |
+|---|---|---|
+| FE-T090-01 | Tách lỗi đọc localStorage khỏi lỗi cleanup; giữ entry hợp lệ khi dọn dẹp thất bại; lịch sử vẫn cho phép thao tác xoá khi storage không khả dụng, kể cả danh sách hiển thị rỗng. | Vitest quota, remove, dữ liệu không đọc được và thử xoá lại sau khi storage hồi phục. |
+| FE-T090-02 | Nghe `storage` event để cập nhật lịch sử đang mở trên các tab; khi tab khác xoá, huỷ request chờ và reset transcript trước khi response muộn có thể ghi lại. | Unit test append/clear khi submit đang chạy; browser 2 tab trên desktop, mobile, landscape. **Giới hạn:** hai append đồng thời vẫn có thể mất cập nhật do ghi đè read–modify–write; localStorage không bảo đảm giao dịch đa tab. |
+| FE-T090-03 | Tách `CameraController` / `HistoryController` / `RecognitionController` khỏi hook, component nhận view và actions; `camera.session` nằm trong hook. | Unit regression huỷ, reset, capture identity, response đến muộn; accessibility focus trên 3 viewport. |
+| FE-T090-04 | Loại `RecognitionOverlay` không dùng; browser test dựng camera thật qua capture và API fixture, hiển thị `RecognitionResult` production. | Browser kiểm soát trình bày accepted/pilot và viewport 320×180. |
+| FE-T090-05 | History hiển thị từng 50 entry và nạp thêm theo yêu cầu; transcript hiển thị 30 mục cuối, `aria-live` chỉ phát mục mới, giữ nguyên toàn bộ metadata trong TTL 24h. | Vitest transcript 100/1.200 phần tử; Playwright seed 1.200 entry, 50→100 DOM row, không mất dữ liệu, payload fixture < 500 KB. Đây là số liệu fixture, chưa phải benchmark thiết bị thật. |
+| FE-T090-06 | Focus chuyển qua ref của button còn khả dụng; dialog dùng class trung tính `app-dialog`; copy hướng dẫn dùng `captureLimits.maximumCaptureMs` từ camera session. | Accessibility keyboard, dialog, reconnect và layout trong Playwright. |
+
+Tất cả thay đổi được kiểm qua lint, typecheck, unit, build và browser gate ở
+`docs/evidence/checkpoints/CP7/T090-p5-fixes.md`. Không tuyên bố đạt mức an toàn đồng bộ append
+tranh chấp hoặc đã kiểm thử camera/screen reader thật. Checkpoint review kiến trúc T090 trước đó
+vẫn là tài liệu lịch sử độc lập.

@@ -30,7 +30,7 @@ export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
   };
   return <>
     <button ref={trigger} className="quiet-button history-trigger" onClick={open}>{vi.history.open}</button>
-    <dialog ref={dialog} className="help-dialog history-dialog" aria-labelledby="history-title"
+    <dialog ref={dialog} className="app-dialog history-dialog" aria-labelledby="history-title"
       onClose={() => { focusAfterChange.current = null; setConfirming(false); trigger.current?.focus(); }}>
       <div className="dialog-heading"><h2 id="history-title">{vi.history.title}</h2>
         <button ref={closeButton} className="quiet-button" onClick={() => dialog.current?.close()} aria-label={vi.history.close}>Đóng</button></div>
