@@ -10,7 +10,7 @@
 | Canonical ownership | `data/`, `ai/dataset/`, `docs/dataset-card.md` |
 | Allowed commit scopes | `data`, `dataset` |
 | Current checkpoint | Chuẩn bị `CP2` |
-| Integration window | `WAITING` |
+| Integration window | Người dùng yêu cầu trực tiếp commit/push T008 trong phiên; không ghi nhận xác nhận thay Huy |
 | Last updated | `2026-11-07` |
 
 ## Current assignments
@@ -18,7 +18,7 @@
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
 | `T098 / CP2` | `TODO` | data convention, manifest schema/tests | Lead đã gửi `docs/team/data-convention.md` (cập nhật mục 8: ánh xạ tên file của Quang, không cần signer/license từng video); xác nhận D1–D4 và 2 điểm mục 8 (vùng `O`, variant), tạo `p0-meanings.csv` theo danh sách chốt 2026-11-07 rồi đóng băng | P3/Cường và P1/Huy |
-| `T008 / CP1` | `REVIEW` | `data/README.md` raw-material/rights guidance do P1 chuẩn bị | Review tính khả dụng cho data workflow | P4/Quang |
+| `T008 / CP1` | `REVIEW` | `data/README.md`, evidence T008 | Hướng dẫn đã kiểm tra cục bộ; người dùng yêu cầu commit/push, chờ review độc lập của Huy/Cường | P1/Huy, P3/Cường |
 | `T009-T013 / CP2` | `PLANNED` | dataset entities/schema/validator/coverage | Chuẩn bị phần không phụ thuộc T098 | P3/Cường |
 | `T076-T077 / CP5` | `PLANNED` | pilot/full manifest và dataset card | Chờ raw material audit | P3/Cường và P1/Huy |
 
@@ -26,15 +26,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T098 / CP2` — chưa active |
-| Proposed commit | `CP2 T098(data): freeze dataset naming convention` |
-| Exact staged paths | `docs/contracts/data-conventions.md`, validator/tests và member/evidence files |
-| Pre-commit sync | `PENDING` |
-| Gate commands | filename/manifest validator, valid/invalid fixture tests, `git diff --cached --check` |
-| Smoke evidence | `docs/evidence/checkpoints/CP2/T098-p4-quang-smoke.md` |
+| Task/checkpoint | `T008 / CP1` — được người dùng yêu cầu commit/push |
+| Proposed commit | `CP1 T008(data): clarify raw material intake and rights audit` |
+| Exact staged paths | `data/README.md`, `members/p4-quang/README.md`, `docs/evidence/checkpoints/CP1/T008-p4-quang-smoke.md` |
+| Pre-commit sync | Fetch origin/main; candidate dựng trên `3815e45`; gate chạy lại trên worktree riêng |
+| Gate commands | link trong Git tree, ignore probes, `git diff --cached --check` |
+| Smoke evidence | `docs/evidence/checkpoints/CP1/T008-p4-quang-smoke.md` |
 | Local commit | `PENDING` |
 | Pre-push sync | `PENDING` |
-| Push status | `BLOCKED` — chờ lead input và CP2 window |
+| Push status | Người dùng đã yêu cầu; chỉ push thường sau đồng bộ cuối và gate |
 
 ## Commit ledger
 
