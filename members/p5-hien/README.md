@@ -22,6 +22,7 @@
 | `T040 / CP2` | `REVIEW` | typed API client và model-info | Client đã có transport test; chờ review P2 và tích hợp endpoint | P2/Tín |
 | `T100-T104 / US6` | `TODO` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt ≥24 giờ; làm sau T040/T043 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
+| `T041 / CP3` | `IMPLEMENTED_LOCAL` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | 11 hook tests, 58 unit và 21 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
 
 ## Commit đang chuẩn bị
