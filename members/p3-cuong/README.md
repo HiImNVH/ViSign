@@ -31,7 +31,7 @@
 | `T065 / CP5` | `P1_VERIFIED local` | [Benchmark](../../docs/performance-report.md) | Đã push `cc9a214`. Candidate giữ parity, web local p95 5,87 s. Cần tối ưu tiếp và đo production | P1/Huy, P2/Tín |
 | `T083 / CP5` | `BLOCKED` | Pilot Sốt–Cảm ơn và `docs/pilot-report.md` | Chờ manifest đã audit, schema APPROVED và gate US4 | P1/Huy, P4/Quang |
 | `T089 / CP5` | `LOCAL-DRAFT` | [Scorer và báo cáo robustness](../../docs/ai-safety-report.md) | Đã kiểm scorer và hai clip trống. Chờ probe audit và artifact VSL thật | P1/Huy |
-| `T094 / CP5` | `OPEN` | Tài nguyên và chi phí | Có đối chứng CPU/latency local trong T065. Chờ đo trên host đích và chốt chi phí | P1/Huy, P2/Tín |
+| `T094 / CP5` | `LOCAL-DRAFT` | [Tài nguyên và chi phí](../../docs/cost-report.md) | Đã đo local và lập dự toán Sydney. Chờ Linux/EC2 và Huy/Tín chốt budget | P1/Huy, P2/Tín |
 
 ## Commit gần nhất
 
