@@ -28,6 +28,7 @@ let video: HTMLVideoElement;
 
 beforeEach(() => {
   vi.useFakeTimers();
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   FakeRecorder.instances = [];
   FakeRecorder.isTypeSupported.mockReturnValue(true);
   track.readyState = 'live'; track.stop.mockClear();
@@ -210,6 +211,54 @@ test('recorder error and stop failure both release the stream', async () => {
   recorder = await start(); recorder.stop.mockImplementation(() => { throw new DOMException('stop failed'); });
   session.cancel(); expect(session.view).toMatchObject({ phase: 'error', error: 'recordingFailed' });
   expect(video.srcObject).toBeNull();
+});
+
+test('synchronous recorder start failure never announces recording and logs no private error message', async () => {
+  const phases: string[] = [];
+  session = new CameraSession(view => phases.push(view.phase));
+  class StartFailureRecorder extends FakeRecorder {
+    constructor() {
+      super();
+      this.start.mockImplementation(() => { throw new DOMException('private device detail', 'NotReadableError'); });
+    }
+  }
+  vi.stubGlobal('MediaRecorder', StartFailureRecorder);
+  await session.enable(video);
+  session.record();
+  expect(phases).not.toContain('recording');
+  expect(session.view).toMatchObject({ phase: 'error', error: 'recordingFailed' });
+  expect(track.stop).toHaveBeenCalled();
+  const warning = vi.mocked(console.warn).mock.calls.at(-1);
+  expect(warning).toEqual(['MediaRecorder capture failed', expect.objectContaining({
+    stage: 'start', errorName: 'NotReadableError', recorderState: 'inactive',
+    chunkCount: 0, byteCount: 0, videoTrackStates: ['live'],
+  })]);
+  expect(JSON.stringify(warning)).not.toContain('private device detail');
+});
+
+test('asynchronous named recorder error is diagnosed and late events are ignored', async () => {
+  const recorder = await start();
+  const error = new Event('error');
+  Object.defineProperty(error, 'error', { value: new DOMException('private message', 'NotSupportedError') });
+  recorder.dispatchEvent(error);
+  expect(session.view).toMatchObject({ phase: 'error', error: 'recordingFailed' });
+  expect(vi.mocked(console.warn)).toHaveBeenCalledWith('MediaRecorder capture failed',
+    expect.objectContaining({ stage: 'event', errorName: 'NotSupportedError' }));
+  expect(JSON.stringify(vi.mocked(console.warn).mock.calls)).not.toContain('private message');
+  const warningCount = vi.mocked(console.warn).mock.calls.length;
+  recorder.chunk(); recorder.finish(); recorder.dispatchEvent(error);
+  expect(vi.mocked(console.warn)).toHaveBeenCalledTimes(warningCount);
+  expect(session.view.phase).toBe('error');
+});
+
+test('recorder changing to inactive before stop fails instead of trapping the UI in recording', async () => {
+  const recorder = await start();
+  recorder.state = 'inactive';
+  session.stop();
+  expect(session.view).toMatchObject({ phase: 'error', error: 'recordingFailed' });
+  expect(vi.mocked(console.warn)).toHaveBeenCalledWith('MediaRecorder capture failed',
+    expect.objectContaining({ stage: 'unexpected-state', recorderState: 'inactive' }));
+  expect(vi.getTimerCount()).toBe(0);
 });
 
 test('missing MediaRecorder does not prevent preview', async () => {

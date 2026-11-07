@@ -29,6 +29,13 @@ function permissionError(cause: unknown): CameraError {
   return 'unknown';
 }
 
+// Record only technical metadata. Browser error messages and device labels may contain private details.
+function recorderErrorName(cause: unknown): string {
+  const name = cause instanceof Error || cause instanceof DOMException ? cause.name : '';
+  return ['AbortError', 'InvalidStateError', 'NotReadableError', 'NotSupportedError',
+    'SecurityError', 'UnknownError'].includes(name) ? name : 'UnknownError';
+}
+
 export class CameraSession {
   view: CameraView = { phase: 'idle' };
   private generation = 0;
@@ -87,17 +94,40 @@ export class CameraSession {
       const capture: ActiveCapture = { recorder, chunks: [], bytes: 0, startedAt: performance.now(), stoppedAt: null, dispose: () => {} };
       this.capture = capture;
       this.listen(capture);
-      this.publish({ phase: 'recording' });
       recorder.start(captureLimits.chunkIntervalMs);
-      if (this.capture === capture) this.captureTimer = setTimeout(() => this.stop(), captureLimits.maximumCaptureMs);
-    } catch { this.fail('recordingFailed'); }
+      if (this.capture === capture) {
+        this.publish({ phase: 'recording' });
+        this.captureTimer = setTimeout(() => this.stop(), captureLimits.maximumCaptureMs);
+      }
+    } catch (cause) {
+      if (this.capture) this.logRecorderIssue(this.capture, 'start', cause);
+      this.fail('recordingFailed');
+    }
+  }
+
+  private logRecorderIssue(capture: ActiveCapture, stage: string, cause?: unknown) {
+    console.warn('MediaRecorder capture failed', {
+      stage,
+      errorName: recorderErrorName(cause),
+      recorderState: capture.recorder.state,
+      mimeType: capture.recorder.mimeType,
+      recordedMs: Math.round(performance.now() - capture.startedAt),
+      chunkCount: capture.chunks.length,
+      byteCount: capture.bytes,
+      videoTrackStates: this.stream?.getVideoTracks().map(track => track.readyState) ?? [],
+    });
   }
 
   private listen(capture: ActiveCapture) {
     const { recorder } = capture;
     const onData = (event: BlobEvent) => this.appendChunk(capture, event.data);
     const onStop = () => this.finish(capture);
-    const onError = () => { if (this.capture === capture) this.fail('recordingFailed'); };
+    const onError = (event: Event) => {
+      if (this.capture !== capture) return;
+      const cause = 'error' in event ? event.error : undefined;
+      this.logRecorderIssue(capture, 'event', cause);
+      this.fail('recordingFailed');
+    };
     recorder.addEventListener('dataavailable', onData);
     recorder.addEventListener('stop', onStop);
     recorder.addEventListener('error', onError);
@@ -118,23 +148,38 @@ export class CameraSession {
 
   stop() {
     const capture = this.capture;
-    if (!capture || capture.stoppedAt !== null || capture.recorder.state !== 'recording') return;
+    if (!capture || capture.stoppedAt !== null) return;
+    if (capture.recorder.state !== 'recording') {
+      this.logRecorderIssue(capture, 'unexpected-state');
+      this.fail('recordingFailed');
+      return;
+    }
     clearTimeout(this.captureTimer);
     capture.stoppedAt = performance.now();
     if (capture.stoppedAt - capture.startedAt > captureLimits.maximumDurationMs) { this.fail('tooLong'); return; }
     this.publish({ phase: 'stopping' });
     this.finalizeTimer = setTimeout(() => {
-      if (this.capture === capture) this.fail('recordingFailed');
+      if (this.capture === capture) {
+        this.logRecorderIssue(capture, 'finalize-timeout');
+        this.fail('recordingFailed');
+      }
     }, captureLimits.finalizeTimeoutMs);
-    try { capture.recorder.stop(); } catch { this.fail('recordingFailed'); }
+    try { capture.recorder.stop(); }
+    catch (cause) { this.logRecorderIssue(capture, 'stop', cause); this.fail('recordingFailed'); }
   }
 
   private finish(capture: ActiveCapture) {
     if (this.capture !== capture) return;
-    if (capture.stoppedAt === null) { this.fail('recordingFailed'); return; }
+    if (capture.stoppedAt === null) {
+      this.logRecorderIssue(capture, 'unexpected-stop');
+      this.fail('recordingFailed'); return;
+    }
     const durationMs = capture.stoppedAt - capture.startedAt;
     if (durationMs < captureLimits.minimumDurationMs) { this.fail('tooShort'); return; }
-    if (!capture.bytes) { this.fail('recordingFailed'); return; }
+    if (!capture.bytes) {
+      this.logRecorderIssue(capture, 'empty-clip');
+      this.fail('recordingFailed'); return;
+    }
     const clip = new Blob(capture.chunks, { type: capture.recorder.mimeType });
     if (!clip.type.startsWith('video/webm')) { this.fail('recordingUnsupported'); return; }
     this.discardCapture();

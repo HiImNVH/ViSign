@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const model = {
   modelVersion: 'pilot-v1', artifactKind: 'pilot', datasetVersion: 'sample',
@@ -8,7 +8,41 @@ const model = {
   macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false,
 };
 
+// Observe the real MediaRecorder rather than replacing it with a fake encoder.
+// Tests stop only after it has produced data and the minimum clip duration has elapsed.
+async function observeRecorder(page: Page) {
+  await page.addInitScript(() => {
+    type Probe = { startedAt: number; bytes: number; state: string; errorName: string | null };
+    const scope = window as typeof window & { __visignRecorderProbe?: Probe };
+    const nativeStart = MediaRecorder.prototype.start;
+    MediaRecorder.prototype.start = function (timeslice?: number) {
+      const probe: Probe = { startedAt: performance.now(), bytes: 0, state: 'starting', errorName: null };
+      scope.__visignRecorderProbe = probe;
+      this.addEventListener('start', () => { probe.state = this.state; }, { once: true });
+      this.addEventListener('dataavailable', event => { probe.bytes += event.data.size; });
+      this.addEventListener('error', event => {
+        probe.errorName = 'error' in event && event.error instanceof Error ? event.error.name : 'UnknownError';
+      }, { once: true });
+      return nativeStart.call(this, timeslice);
+    };
+  });
+}
+
+async function waitForEncodedClip(page: Page) {
+  await expect.poll(() => page.evaluate(() => {
+    const scope = window as typeof window & { __visignRecorderProbe?: {
+      startedAt: number; bytes: number; state: string; errorName: string | null;
+    } };
+    const probe = scope.__visignRecorderProbe;
+    if (!probe) return 'recorder-not-started';
+    if (probe.errorName) return `recorder-error:${probe.errorName}`;
+    if (probe.bytes > 0 && probe.state === 'recording' && performance.now() - probe.startedAt >= 400) return 'ready';
+    return `waiting:${probe.state}:${probe.bytes}bytes`;
+  }), { message: 'Native MediaRecorder must encode a nonempty chunk before stopping', timeout: 4000 }).toBe('ready');
+}
+
 test('T063 keyboard can control capture and gets submission status without an automatic upload', async ({ page }) => {
+  await observeRecorder(page);
   let uploads = 0;
   let finishRequest!: () => void;
   await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: model }));
@@ -39,7 +73,7 @@ test('T063 keyboard can control capture and gets submission status without an au
   await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
   const stop = page.getByRole('button', { name: 'Kết thúc' });
   await expect(stop).toBeFocused();
-  await page.waitForTimeout(500);
+  await waitForEncodedClip(page);
   await page.keyboard.press('Space');
   await expect(page.getByRole('status')).toHaveText('Đã quay xong');
   const focusedControl = page.locator('.capture-controls button:focus');
@@ -59,6 +93,7 @@ test('T063 keyboard can control capture and gets submission status without an au
 });
 
 test('T063 metadata reconnect restores keyboard focus when retry disappears', async ({ page }) => {
+  await observeRecorder(page);
   let metadataCalls = 0;
   await page.route('**/api/v1/model-info', route => {
     metadataCalls++;
@@ -69,7 +104,7 @@ test('T063 metadata reconnect restores keyboard focus when retry disappears', as
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera' }).click();
   await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(500);
+  await waitForEncodedClip(page);
   await page.getByRole('button', { name: 'Kết thúc' }).click();
   await expect(page.getByRole('button', { name: 'Thử kết nối lại' })).toBeVisible();
   await page.getByRole('button', { name: 'Thử kết nối lại' }).click();
@@ -138,6 +173,7 @@ test('T063 exposes camera guidance and passes WCAG axe checks in idle, help and 
 
 for (const accepted of [true, false]) {
   test(`T063 ${accepted ? 'accepted' : 'rejected'} results remain accessible and announced`, async ({ page }) => {
+    await observeRecorder(page);
     await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: model }));
     await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
       requestId: '123e4567-e89b-42d3-a456-426614174000', text: accepted ? 'Xin chào' : 'Không nhận diện được',
@@ -147,7 +183,7 @@ for (const accepted of [true, false]) {
     await page.goto('/');
     await page.getByRole('button', { name: 'Bật camera' }).click();
     await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-    await page.waitForTimeout(500);
+    await waitForEncodedClip(page);
     await page.getByRole('button', { name: 'Kết thúc' }).click();
     await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
     const result = page.getByRole('region', { name: accepted ? 'Văn bản dịch' : 'Kết quả nhận diện' });

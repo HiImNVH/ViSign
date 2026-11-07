@@ -40,3 +40,18 @@ The audit found and fixed focus loss after transient camera, metadata and histor
 - **PENDING:** independent P1/P2 review; do not mark T063 VERIFIED in `tasks.md` yet.
 
 Smoke evidence: `docs/evidence/checkpoints/CP4/T063-p5-hien-smoke.md`.
+
+## T063 follow-up after P1 changes requested (2026-11-08)
+
+P1 reproduced intermittent `MediaRecorder` failure on their Edge fake-camera run (4, 3, 1 failures across three 21-test runs). P5 could not reproduce it locally: **63/63 passed before the fix**. The follow-up changes capture startup to report `recording` only after `MediaRecorder.start()` succeeds, fails closed when its state unexpectedly becomes inactive, and logs only error name, lifecycle stage, MIME, bytes/chunk counts, timing, and video-track states. No video, browser exception message, device label, or device ID is logged. A test-only observer waits for a nonempty chunk from the **native** MediaRecorder and a minimum duration instead of assuming that a fixed 500 ms delay guarantees an encoded clip; there are no automatic retries.
+
+Verification on Windows / Edge `msedge`, simulated camera and mocked API:
+
+| Command / check | Observed result |
+|---|---|
+| `npm.cmd run lint` and `npm.cmd run typecheck` | PASS |
+| `npx.cmd vitest run tests/recognition/cameraSession.test.ts` | 30/30 PASS, including start failure, named async error, and unexpected inactive recorder |
+| `npx.cmd playwright test tests/accessibility/recognition-accessibility.spec.ts --repeat-each=3 --retries=0 --workers=1` | **63/63 PASS** (desktop, mobile, landscape; each scenario repeated 3 times) |
+| `$env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check` | Exit 0; 168 unit PASS / 4 skipped, 84 browser PASS / 12 skipped, lint/typecheck/build PASS |
+
+The 12 browser skips comprise nine optional T088 screenshot capture cases plus three T040 tests requiring a live backend. P1's historical finding remains valid for the machine/run where it occurred. These new results do not establish that native codec/device failures cannot recur on P1's machine; independent re-review and manual screen-reader tests remain pending. T063 stays unchecked.
