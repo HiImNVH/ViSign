@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
 import { HistoryPanel } from '../../src/features/recognition/HistoryPanel';
+import { TranscriptPanel, TRANSCRIPT_WINDOW_SIZE } from '../../src/features/recognition/TranscriptPanel';
 import { useRecognition } from '../../src/features/recognition/useRecognition';
 import { HISTORY_STORAGE_KEY } from '../../src/features/recognition/translationHistory';
 import type { ModelInfo, PredictionResponse } from '../../src/types/inference-api';
@@ -101,15 +102,19 @@ test('accepted results build chronological aria-live transcript; rejection leave
   act(() => Recorder.instances.at(-1)!.finish());
   fireEvent.click(screen.getByRole('button', { name: 'Gửi nhận diện' }));
   await waitFor(() => expect(screen.getByRole('region', { name: 'Bản dịch trực tiếp' })
-    .querySelector('[aria-live]')).toHaveTextContent('Xin chào Cảm ơn'));
+    .querySelector('.transcript-text')).toHaveTextContent('Xin chào Cảm ơn'));
+  expect(screen.getByRole('region', { name: 'Bản dịch trực tiếp' }).querySelector('[aria-live]'))
+    .toHaveTextContent('Cảm ơn');
   fireEvent.click(screen.getByRole('button', { name: 'Quay lại' }));
   clock += 500;
   fireEvent.click(screen.getByRole('button', { name: 'Kết thúc' }));
   act(() => Recorder.instances.at(-1)!.finish());
   fireEvent.click(screen.getByRole('button', { name: 'Gửi nhận diện' }));
   await waitFor(() => expect(screen.getByRole('region', { name: 'Kết quả nhận diện' })).toBeInTheDocument());
-  expect(screen.getByRole('region', { name: 'Bản dịch trực tiếp' }).querySelector('[aria-live]'))
+  expect(screen.getByRole('region', { name: 'Bản dịch trực tiếp' }).querySelector('.transcript-text'))
     .toHaveTextContent('Xin chào Cảm ơn');
+  expect(screen.getByRole('region', { name: 'Bản dịch trực tiếp' }).querySelector('[aria-live]'))
+    .toHaveTextContent('Cảm ơn');
   expect(JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)!).entries).toHaveLength(2);
   fireEvent.click(screen.getByRole('button', { name: 'Lịch sử' }));
   const dialog = within(screen.getByRole('dialog', { name: 'Lịch sử bản dịch' }));
@@ -148,4 +153,22 @@ test('FE-T090-01 a failed expired-history cleanup still exposes clear and can re
   fireEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
   expect(localStorage.getItem(HISTORY_STORAGE_KEY)).toBeNull();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
+test.each([100, 1200])('FE-T090-05 transcript renders only the last 30 of %i messages', count => {
+  const entries = Array.from({ length: count }, (_, n) => ({
+    requestId: uuid(n % 10), text: `Nghĩa_${n}`, confidence: .9,
+    modelVersion: 'v1', createdAt: new Date().toISOString(),
+  }));
+  const start = performance.now();
+  const { container } = render(<TranscriptPanel entries={entries} />);
+  const durationMs = performance.now() - start;
+  const rendered = container.querySelector('.transcript-text')!;
+  expect(rendered.textContent?.split(' ')).toHaveLength(TRANSCRIPT_WINDOW_SIZE);
+  expect(rendered).toHaveTextContent(`Nghĩa_${count - 1}`);
+  expect(rendered).not.toHaveTextContent('Nghĩa_0 ');
+  expect(container.querySelectorAll('[aria-live]')).toHaveLength(1);
+  expect(container.querySelector('[aria-live]')).toHaveTextContent(`Nghĩa_${count - 1}`);
+  expect(container.querySelector('[aria-live]')).not.toHaveTextContent(`Nghĩa_${count - 2}`);
+  console.info(`FE-T090-05 transcript ${count}: render ${durationMs.toFixed(2)}ms, ${rendered.textContent?.length} chars`);
 });

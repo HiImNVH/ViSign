@@ -56,6 +56,7 @@ export const vi = {
     confirm: 'Xoá tất cả lịch sử và bản dịch trực tiếp của phiên này?',
     confirmYes: 'Xác nhận xoá', cancel: 'Giữ lại',
     clearFailed: 'Không xoá được lịch sử trên thiết bị. Vui lòng kiểm tra quyền lưu trữ rồi thử lại.',
+    showOlder: 'Xem thêm bản dịch cũ',
     confidence: 'Độ tin cậy', model: 'Model',
   },
   recognition: {

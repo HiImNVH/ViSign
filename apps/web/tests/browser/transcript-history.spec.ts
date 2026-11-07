@@ -58,10 +58,12 @@ test('T104 two accepted clips form a transcript; rejected clip is excluded; hist
   const transcript = page.getByRole('region', { name: 'Bản dịch trực tiếp' });
   await expect(transcript).toContainText('Xin chào');
   await recordAndSubmit(page);
-  await expect(transcript.locator('[aria-live]')).toHaveText('Xin chào Cảm ơn');
+  await expect(transcript.locator('.transcript-text')).toHaveText('Xin chào Cảm ơn');
+  await expect(transcript.locator('[aria-live]')).toHaveText('Cảm ơn');
   await recordAndSubmit(page);
   await expect(page.getByRole('region', { name: 'Kết quả nhận diện' })).toContainText('Chưa nhận diện được');
-  await expect(transcript.locator('[aria-live]')).toHaveText('Xin chào Cảm ơn');
+  await expect(transcript.locator('.transcript-text')).toHaveText('Xin chào Cảm ơn');
+  await expect(transcript.locator('[aria-live]')).toHaveText('Cảm ơn');
   expect(mock.uploads).toBe(3);
 
   const stored = await page.evaluate(key => localStorage.getItem(key), historyKey);
@@ -135,4 +137,30 @@ test('FE-T090-02 another tab refreshes open history on append and on clear', asy
   await expect(history).toContainText('Chưa có bản dịch được lưu.');
   await expect(history.locator('li')).toHaveCount(0);
   await other.close();
+});
+
+test('FE-T090-05 1200 valid entries stay stored while history renders 50 at a time', async ({ page }) => {
+  await page.addInitScript(key => {
+    const entries = Array.from({ length: 1200 }, (_, n) => ({
+      requestId: `123e4567-e89b-42d3-a456-${(n + 1).toString(16).padStart(12, '0')}`,
+      text: `Ký hiệu ${n}`, confidence: .93, modelVersion: 'pilot-v1', createdAt: new Date().toISOString(),
+    }));
+    localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, entries }));
+  }, historyKey);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Lịch sử' }).click();
+  const history = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
+  await expect(history.locator('li')).toHaveCount(50);
+  await expect(history).toContainText('Ký hiệu 1199');
+  await expect(history).not.toContainText('Ký hiệu 0 ');
+  await history.getByRole('button', { name: 'Xem thêm bản dịch cũ' }).click();
+  await expect(history.locator('li')).toHaveCount(100);
+  const evidence = await page.evaluate(key => {
+    const raw = localStorage.getItem(key)!;
+    return { entries: JSON.parse(raw).entries.length, bytes: new Blob([raw]).size,
+      rendered: document.querySelectorAll('.history-entries li').length };
+  }, historyKey);
+  expect(evidence.entries).toBe(1200);
+  expect(evidence.rendered).toBe(100);
+  expect(evidence.bytes).toBeLessThan(500_000);
 });

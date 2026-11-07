@@ -3,6 +3,7 @@ import { vi } from '../../content/vi';
 import type { HistoryController } from './recognitionController';
 
 type Props = HistoryController;
+const HISTORY_PAGE_SIZE = 50;
 
 export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -13,6 +14,8 @@ export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
   const focusAfterChange = useRef<'confirm' | 'clear' | 'close' | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [clearError, setClearError] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(HISTORY_PAGE_SIZE);
+  const visibleEntries = history.entries.slice(-visibleCount);
   useLayoutEffect(() => {
     if (!dialog.current?.open) return;
     const next = focusAfterChange.current;
@@ -20,7 +23,7 @@ export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
     (next === 'confirm' ? confirmButton : next === 'clear' ? clearButton : closeButton).current?.focus();
     focusAfterChange.current = null;
   }, [confirming, history.entries.length]);
-  const open = () => { focusAfterChange.current = null; refreshHistory(); setConfirming(false); setClearError(false); dialog.current?.showModal(); };
+  const open = () => { focusAfterChange.current = null; setVisibleCount(HISTORY_PAGE_SIZE); refreshHistory(); setConfirming(false); setClearError(false); dialog.current?.showModal(); };
   const clear = () => {
     if (clearHistory()) { focusAfterChange.current = 'close'; setConfirming(false); setClearError(false); }
     else setClearError(true);
@@ -34,13 +37,17 @@ export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
       <p className="history-disclosure">{vi.history.disclosure}</p>
       <p className="history-disclosure">{vi.transcript.description}</p>
       {!history.available && <p role="alert" className="history-warning">{vi.history.unavailable}</p>}
-      {history.entries.length ? <ol className="history-entries">
-        {history.entries.map(entry => <li key={entry.requestId}>
+      {history.entries.length ? <>
+        {visibleCount < history.entries.length && <button className="quiet-button" onClick={() => setVisibleCount(count => count + HISTORY_PAGE_SIZE)}>
+          {vi.history.showOlder}
+        </button>}
+        <ol className="history-entries">
+        {visibleEntries.map(entry => <li key={entry.requestId}>
           <strong>{entry.text}</strong>
           <span>{new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'medium' }).format(new Date(entry.createdAt))}</span>
           <span>{vi.history.confidence}: {(entry.confidence * 100).toFixed(0)}% · {vi.history.model}: {entry.modelVersion}</span>
         </li>)}
-      </ol> : <p className="history-empty">{vi.history.empty}</p>}
+      </ol></> : <p className="history-empty">{vi.history.empty}</p>}
       {clearError && <p role="alert" className="history-warning">{vi.history.clearFailed}</p>}
       {(history.entries.length > 0 || !history.available) && <div className="history-actions">
         {confirming ? <>
