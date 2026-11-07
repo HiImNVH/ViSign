@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T03:55:00+07:00` trên `origin/main` `3b29d4a`.
+Cập nhật `2026-11-08T04:20:00+07:00` trên `origin/main` `c0d598f`.
 
 ### Checkpoint
 
@@ -64,6 +64,7 @@ Cập nhật `2026-11-08T03:55:00+07:00` trên `origin/main` `3b29d4a`.
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
 | T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; đã ghi metric pilot nội bộ, chờ review cập nhật và đánh giá full |
+| T081, T082 | P5 | Giao diện admin `/admin/train-model` (`a498da5`, `c0d598f`) | T081 `VERIFIED`, `[X]`; T082 P1_VERIFIED phần FE, giữ `[ ]` chờ backend T078–T080 (P2) và chốt body 202 + tên trường multipart trong contract |
 | T083 | P3 | Pilot nội bộ | P3 đã chạy lại pilot Giấy tờ / Nhận, 15 clip, accuracy 25%, macro-F1 0,3333, demoReady=false. **Huy đã chốt phạm vi Giấy tờ / Nhận (2026-11-08).** P1 nạp artifact `t083-pilot-v2-approved` vào Docker API: `modelReady`, 4 clip test → 200 (2 chấp nhận đúng nghĩa, 2 từ chối), 1,4–2,3 s/clip, RAM 890 MiB. Còn chờ T076 (sửa `sourceUri`) và T078–T082. [Báo cáo](../pilot-report.md) |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần

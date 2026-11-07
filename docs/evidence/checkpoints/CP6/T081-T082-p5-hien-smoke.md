@@ -60,3 +60,20 @@ Các browser skips là screenshot capture opt-in và backend live camera tests c
 **Reviewer result:** `PENDING`
 
 **Reviewer note:** Chờ P1/Huy và P2/Tín.
+
+## Independent review — P1/Huy (2026-11-08, `a498da5` + `c0d598f`)
+
+| Kiểm | Kết quả |
+|---|---|
+| Gate web | ESLint + `tsc` sạch; Vitest **177 passed / 4 skipped**; `admin-route.spec.ts` lặp 2 lần × 3 viewport **6/6**; CI `c0d598f` xanh |
+| Contract | FE gọi đúng 5 endpoint của `contracts/admin-tools.md`, ánh xạ 401/404/409/503/504 thành câu tiếng Việt ổn định, không hiển thị chuỗi lỗi backend |
+| Token | Chỉ nằm trong state React; gửi `Authorization: Bearer`, `credentials: 'omit'`, `no-store`; 401 xoá token; không có `localStorage`/`sessionStorage`/`dangerouslySetInnerHTML`/`console` trong mã admin |
+| W&B URL | Chỉ nhận `https` tới `wandb.ai`/`forge.coreweave.com` đúng dạng run, không có user/password |
+| Production (EC2 `52.65.207.133`) | `/admin/train-model` → 200 `text/html` (nginx fallback SPA); `/api/admin/pilot` → 404 vì admin tắt mặc định — đúng ranh giới bảo mật |
+
+Điểm cần chốt với P2 khi làm T079–T080: contract chỉ ghi `prepare`/`train` trả **202** mà chưa định nghĩa body,
+trong khi FE đọc `TrainingRun` từ body; tên trường multipart (`video`) cũng chưa có trong contract. Bổ sung hai
+điểm này vào `admin-tools.md` để FE/BE khớp.
+
+**Reviewer result**: T081 `P1_VERIFIED`, tick `[X]`. T082 `P1_VERIFIED` phần FE; giữ `[ ]` đến khi smoke với backend
+T078–T080 thật.
