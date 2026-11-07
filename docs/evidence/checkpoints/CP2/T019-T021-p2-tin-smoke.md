@@ -147,3 +147,13 @@ Kiểm chứng P1 `2026-11-07T19:16:21+07:00` trên `f00eefe` (fix `6ee9e61`, `5
 `CORS_ALLOW_CREDENTIALS=true` đều bị từ chối, `cors_origins=["*"]` vẫn bị từ chối; API + contract 179 passed.
 
 - **T020**: `VERIFIED`, `[X]` — đóng mục `CHANGES_REQUESTED` của P5.
+
+## Independent review — P3/Cường · T019
+
+Review time `2026-11-07T21:02:49+07:00` trên `f1eb7ea9a693de00d7400545f7d39d0dedd13b59`.
+
+- PASS: bộ test metadata T019 cùng registry và train T036 có 31 test đạt. Hai pilot và một full tổng hợp xuất từ T036 đều đọc được bằng API artifact loader. Class order khớp checkpoint, metrics đánh giá còn null, demoReady=false.
+- Xác nhận T059 chịu trách nhiệm ghi demoReady=true chỉ khi artifact full phủ đúng 10 nghĩa P0, đánh giá test tách theo video nguồn FR-015, Macro-F1 ≥ 0,80 và recall từng nghĩa ≥ 0,65. Fixture, pilot và gói mới train giữ false. API chỉ giữ true đã khai nếu qua kiểm tra metadata; T059 phải kiểm provenance và evidence vì API không suy ra được split từ metric.
+- T059 là đầu việc tiếp theo, chưa được xác nhận đã triển khai.
+
+**Reviewer result** · `VERIFIED` cho metadata T019.
