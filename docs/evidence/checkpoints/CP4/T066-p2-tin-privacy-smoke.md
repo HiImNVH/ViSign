@@ -48,3 +48,13 @@ chưa chạy thư mục này: đề xuất P1 thêm `tests/integration` vào l�
 | Live uvicorn (fixture) | Clip giả 20 phút trong thư mục tạm hệ thống bị xóa khi khởi động, clip 5 giây được giữ; log "Da don 1 clip tam con sot tu tien trinh truoc" không có đường dẫn; 200/415/404; log thật không chứa chuỗi đánh dấu, tên file, số điện thoại, token, `visign_clip_` hay chữ dịch; 0 file `visign_clip_*` còn lại |
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T23:12:53+07:00` trên `28de816` (theo uỷ quyền của Huy). Gate: API + contract + integration 372 passed, 2 skipped; web lint, typecheck, Vitest 129/129; CI `quality.yml` xanh.
+
+`test_prediction_privacy.py` (10 kịch bản) nằm trong bộ 372 test đạt. `sweep_stale_clips` chạy một lần khi
+khởi động, chỉ khớp `visign_clip_*.webm` và chỉ xoá file cũ hơn 15 phút → không đụng clip của request
+đang chạy; lỗi stat khi file vừa bị xoá được bỏ qua.
+
+**Reviewer result**: `P1_VERIFIED` → T066 `[X]`.

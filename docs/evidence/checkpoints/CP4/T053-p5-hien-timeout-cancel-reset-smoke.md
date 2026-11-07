@@ -53,3 +53,13 @@ Các log proxy `ECONNREFUSED 127.0.0.1:8000` trong kịch bản không mock meta
 | Reviewer | `PENDING` — chưa đánh dấu task `[X]` |
 
 Nếu phải rollback: `git revert <sha-commit-T053>`. Huy/Tín kiểm thử độc lập trên backend/API thật khi integration window cho phép.
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T23:12:53+07:00` trên `28de816` (theo uỷ quyền của Huy). Gate: API + contract + integration 372 passed, 2 skipped; web lint, typecheck, Vitest 129/129; CI `quality.yml` xanh.
+
+Deadline transport đúng quy ước D2: 5 s cho `health`/`model-info`, 15 s cho `predictions`; không auto-retry.
+Browser tests (Playwright) theo owner; P1 không chạy lại browser (CI chưa có job Playwright). Latency hiện tại
+(web p95 6,4 s, T065) vẫn dưới deadline 15 s.
+
+**Reviewer result**: `P1_VERIFIED` → T053 `[X]`.

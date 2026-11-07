@@ -45,6 +45,9 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T041–T043, T046, T052 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi, thông báo lỗi tiếng Việt | `VERIFIED`, `[X]` (P1) |
 | T065 | P3 | Benchmark latency/tài nguyên | P1_VERIFIED local; chờ production; **SC-002 trượt** (web p95 6,4 s, extract p50 4,6 s) |
 | T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
+| T066, T072, T073 | P2 | Audit privacy + dọn clip tạm; 404/405/307 theo contract | `VERIFIED`, `[X]` (P1) |
+| T053 | P5 | Timeout/cancel/reset | `VERIFIED`, `[X]` (P1) |
+| Follow-up P5 | P5 | Câu tiếng Việt riêng cho `ROUTE_NOT_FOUND`/`METHOD_NOT_ALLOWED` (hiện dùng fallback) | Mở |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |

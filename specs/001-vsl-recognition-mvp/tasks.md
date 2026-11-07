@@ -197,7 +197,7 @@ hiển thị đúng rejected/error state, không hiển thị một từ như k�
 - [X] T050 [US2] Hoàn thiện error mapping và cleanup cho prediction endpoint tại `services/inference-api/src/visign_api/api/predictions.py`
 - [ ] T051 [US2] Cài rejected result và retry action tại `apps/web/src/features/recognition/RecognitionResult.tsx`
 - [X] T052 [US2] Cài camera/API error presentation với thông báo tiếng Việt ổn định tại `apps/web/src/features/recognition/RecognitionError.tsx`
-- [ ] T053 [US2] Cài timeout, cancel request và reset state tại `apps/web/src/features/recognition/useRecognition.ts`
+- [X] T053 [US2] Cài timeout, cancel request và reset state tại `apps/web/src/features/recognition/useRecognition.ts`
 
 **Checkpoint**: US1 và US2 đều chạy; mọi low-confidence/invalid input fail closed.
 
@@ -236,7 +236,7 @@ provenance và `demoReady` đúng gate.
 
 - [ ] T064 [P] Thêm integration test cùng representative clip tạo tensor/mask khớp offline↔API, rồi nạp artifact, prediction, temporary-video cleanup và artifact swap cho fixture/pilot/full tại `tests/integration/test_prediction_pipeline.py`
 - [ ] T065 Chạy performance benchmark và ghi p50/p95 per-stage/total, throughput, CPU/RAM peak trên local và production tại `ai/src/visign_ai/evaluation/benchmark_inference.py` và `docs/performance-report.md`
-- [ ] T066 Audit privacy để chứng minh không có video/frame/PII trong log hoặc artifact tại `tests/integration/test_prediction_privacy.py`
+- [X] T066 Audit privacy để chứng minh không có video/frame/PII trong log hoặc artifact tại `tests/integration/test_prediction_privacy.py`
 - [ ] T063 [P] Chạy accessibility audit cho keyboard, focus, status announcements và camera labels tại `apps/web/tests/accessibility/recognition-accessibility.spec.ts`, lưu kết quả trong `docs/verification-report.md`
 - [ ] T067 Chạy toàn bộ quickstart gồm local, CI, cloud smoke, fallback/swap/rollback và lưu commit/revision/results vào `docs/verification-report.md`
 - [ ] T068 [P] Viết demo script theo rubric, gồm bài toán thực tế, điểm khác biệt, full/pilot disclosure, dữ liệu, model, cloud, chi phí, giới hạn và Q&A tại `docs/demo-script.md`
@@ -255,8 +255,8 @@ framework message hoặc gửi lại video ngoài ý muốn.
 disabled; xác nhận status/error envelope/header đúng, sau đó mô phỏng các response đó ở frontend và
 kiểm tra stable Vietnamese copy, không auto-resubmit và không lộ raw server text.
 
-- [ ] T072 [P] [US2] Viết backend contract tests cho `404 ROUTE_NOT_FOUND`, `405 METHOD_NOT_ALLOWED`, `307` giữ method/body/`Location`, `X-Request-ID`, cùng hành vi chưa bật `403`/`304` tại `services/inference-api/tests/contract/test_http_routing_contract.py`
-- [ ] T073 [US2] Cài stable error catalog và exception handlers cho 404/405, giữ `Allow`/`Location`/`X-Request-ID`, document 404/405/307 và giữ health `Cache-Control: no-store` tại `services/inference-api/src/visign_api/domain/errors.py`, `services/inference-api/src/visign_api/main.py` và `contracts/openapi.yaml`
+- [X] T072 [P] [US2] Viết backend contract tests cho `404 ROUTE_NOT_FOUND`, `405 METHOD_NOT_ALLOWED`, `307` giữ method/body/`Location`, `X-Request-ID`, cùng hành vi chưa bật `403`/`304` tại `services/inference-api/tests/contract/test_http_routing_contract.py`
+- [X] T073 [US2] Cài stable error catalog và exception handlers cho 404/405, giữ `Allow`/`Location`/`X-Request-ID`, document 404/405/307 và giữ health `Cache-Control: no-store` tại `services/inference-api/src/visign_api/domain/errors.py`, `services/inference-api/src/visign_api/main.py` và `contracts/openapi.yaml`
 - [ ] T074 [P] [US2] Viết frontend transport/component tests cho 404/405, canonical URL, không auto-resubmit và không render raw server text tại `apps/web/tests/services/inferenceApi.test.ts` và `apps/web/tests/recognition/recognition-errors.test.tsx`
 - [ ] T075 [US2] Thêm typed API compatibility errors và stable Vietnamese placeholders; reserve 403/304 nhưng không trình bày là trạng thái MVP đang hoạt động tại `apps/web/src/services/inferenceApi.ts`, `apps/web/src/content/vi.ts` và `apps/web/src/features/recognition/RecognitionError.tsx`
 

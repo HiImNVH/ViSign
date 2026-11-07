@@ -55,3 +55,22 @@ FastAPI vẫn mở `/docs`, `/redoc`, `/openapi.json` (200). Không thuộc T073
 khi chạy production.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T23:12:53+07:00` trên `28de816` (theo uỷ quyền của Huy). Gate: API + contract + integration 372 passed, 2 skipped; web lint, typecheck, Vitest 129/129; CI `quality.yml` xanh.
+
+Probe P1 trên app thật (`TestClient`, không theo redirect):
+
+| Request | Kết quả |
+|---|---|
+| `GET /api/v1/../v1/x%3Cscript%3E` | 404 `ROUTE_NOT_FOUND`, không lặp URL, echo `X-Request-ID` |
+| `POST /health`, `PATCH /predictions` | 405 `METHOD_NOT_ALLOWED`, `Allow: GET` / `Allow: POST` |
+| `GET /health/`, `POST /predictions/` | 307, `Location` đường dẫn chuẩn, có `X-Request-ID` |
+| `GET /health` + `If-None-Match: *` | 200, `Cache-Control: no-store` (không bật 304) |
+
+Ghi chú mang sang P5: `ERROR_CODES` (TS) tăng lên 13 nhưng `apps/web/src/content/vi.ts` mới có câu riêng cho 11
+mã; `ROUTE_NOT_FOUND`/`METHOD_NOT_ALLOWED` đang dùng câu dự phòng (đạt D3) — bổ sung câu `apiRouteNotFound`,
+`apiMethodNotAllowed` theo `docs/team/frontend-http-status-placeholders.md`.
+
+**Reviewer result**: `P1_VERIFIED` → T072, T073 `[X]`.
