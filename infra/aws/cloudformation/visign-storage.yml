@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# infra/aws/cloudformation/visign-storage.yml (T095)
+# Kho image (ECR) va kho artifact/cau hinh (S3 private) cho ViSign. Tach khoi stack app de day image va artifact
+# truoc khi EC2 khoi dong. Stack name de xuat: visign-storage, region ap-southeast-2.
+Description: ViSign storage - ECR repositories and private S3 bucket for model artifacts and deploy files
+
+Resources:
+  InferenceApiRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: visign/inference-api
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration: { ScanOnPush: true }
+      EncryptionConfiguration: { EncryptionType: AES256 }
+      LifecyclePolicy:
+        LifecyclePolicyText: >-
+          {"rules":[{"rulePriority":1,"description":"Giu 5 image gan nhat","selection":
+          {"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  WebRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: visign/web
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration: { ScanOnPush: true }
+      EncryptionConfiguration: { EncryptionType: AES256 }
+      LifecyclePolicy:
+        LifecyclePolicyText: >-
+          {"rules":[{"rulePriority":1,"description":"Giu 5 image gan nhat","selection":
+          {"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub visign-artifacts-${AWS::AccountId}-${AWS::Region}
+      VersioningConfiguration: { Status: Enabled }
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules: [{ ObjectOwnership: BucketOwnerEnforced }]
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-versions
+            Status: Enabled
+            NoncurrentVersionExpiration: { NoncurrentDays: 30 }
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  ArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt ArtifactBucket.Arn
+              - !Sub "${ArtifactBucket.Arn}/*"
+            Condition: { Bool: { "aws:SecureTransport": "false" } }
+
+Outputs:
+  InferenceApiRepositoryUri:
+    Value: !GetAtt InferenceApiRepository.RepositoryUri
+    Export: { Name: visign-inference-api-repository-uri }
+  WebRepositoryUri:
+    Value: !GetAtt WebRepository.RepositoryUri
+    Export: { Name: visign-web-repository-uri }
+  ArtifactBucketName:
+    Value: !Ref ArtifactBucket
+    Export: { Name: visign-artifact-bucket }
+  ArtifactBucketArn:
+    Value: !GetAtt ArtifactBucket.Arn
+    Export: { Name: visign-artifact-bucket-arn }
