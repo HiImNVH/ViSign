@@ -38,6 +38,8 @@
 | `Round review CP3–CP5` | `DONE` | 12 evidence P2/P3/P5 | Huy review: đạt; 14 task `[X]` | P2, P3, P5 |
 | `T069, T085, T087, T093 / US5` | `PUSHED` | `README.md`, `docs/team/judging-criteria-mapping.md`, `docs/innovation-feasibility.md`, `docs/community-impact.md` | Bản đầu do trợ lý soạn theo uỷ quyền; chờ P2/P5 review (không tự tick); T071/T063 còn PENDING | P2/Tín, P5/Hiển |
 | `T032, T047 / E2E` | `PUSHED` | `apps/web/tests/e2e/`, `playwright.e2e.config.ts` | 6/6 E2E với FastAPI thật; chờ P5/P2 review | P5/Hiển, P2/Tín |
+| `T068, T090 / US5` | `PUSHED` | `docs/demo-script.md`, `docs/architecture-quality-report.md` | Bản đầu; T090 chờ P5 bổ sung phần FE; chờ review | P5/Hiển, P2/Tín |
+| `Schema v0.3 review` | `TODO` | 6 clip đại diện (thư mục dùng chung "6 vid kiểm thử", SHA-256 trong evidence T014–T016) | **Huy xem bằng mắt**: giữ động tác sau lấy mẫu, quy ước tay trái/phải, nguồn đã lật → đổi `APPROVED` hoặc yêu cầu v0.4 | P3/Cường |
 | `T087 / US5 (cũ)` | `SUPERSEDED` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 

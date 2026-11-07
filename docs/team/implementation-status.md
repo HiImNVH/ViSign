@@ -29,7 +29,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T021 error catalog, T023 logging | P2 → P1, P5 | `VERIFIED`, `[X]` |
 | T019 model metadata | P2 → P1, P3 | `VERIFIED`, `[X]` — P3 xác nhận (`989533e`); T059 ghi `demoReady` theo gate full là việc tiếp theo |
 | T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng; P5 kiểm lại độc lập trên `bb40476` (179 passed, 1 skipped) và ghi `P5_VERIFIED` trong evidence CP2 |
-| T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
+| T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; parity 6/6 clip đại diện (`9916831`); **chờ Huy duyệt schema bằng mắt** trên 6 clip đã bàn giao |
 | T017 batch extraction CLI | P3 → P2, P1 | `VERIFIED`, `[X]` — P2 verify test batch; P3 verify fix `--help` của P1 (`d258baf`) |
 | T009–T013 dataset entities/schema/validator/registry | P4 → P3, P1 | Snapshot P4 review `CHANGES_REQUESTED` (P3): Ruff/mypy lỗi, T010 chưa nối `sampleId/rawPath` sang T017; inventory 27 clip, decode 24/27; **chưa push** |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
@@ -51,6 +51,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T074, T075 | P5 | Lỗi tương thích 404/405 + câu tiếng Việt riêng | `VERIFIED`, `[X]` (P1) |
 | T100–T104 (US6) | P5 | Bản dịch trực tiếp + lịch sử trình duyệt 24 giờ | `VERIFIED`, `[X]` (P1) |
 | T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
+| T068, T090 | P1 | Demo script; báo cáo kiến trúc (6 hành động đề xuất) | Bản đầu; T090 chờ P5 phần FE; chờ review |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
