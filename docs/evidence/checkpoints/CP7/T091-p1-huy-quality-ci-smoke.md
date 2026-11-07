@@ -87,7 +87,7 @@ Ghi chú không chặn:
 
 | # | Ghi chú P2 | Xử lý trong `quality.yml` |
 |---|---|---|
-| 1 | Action v4 chạy Node 20 (deprecated) | `actions/checkout@v7`, `actions/setup-node@v7`, `astral-sh/setup-uv@v10` (đều `node24`); input `fetch-depth`, `node-version`, `cache`, `cache-dependency-path`, `version`, `enable-cache`, `cache-dependency-glob` còn nguyên |
+| 1 | Action v4 chạy Node 20 (deprecated) | `actions/checkout@v7`, `actions/setup-node@v7`, `astral-sh/setup-uv@v10.3.3` (đều `node24`; setup-uv không phát hành tag major nên pin bản đầy đủ); input `fetch-depth`, `node-version`, `cache`, `cache-dependency-path`, `version`, `enable-cache`, `cache-dependency-glob` còn nguyên |
 | 2 | `cancel-in-progress` làm commit trung gian trên `main` mất run | Group theo `github.sha` cho push; chỉ hủy run cũ của cùng PR |
 | 3 | Hygiene chỉ kiểm commit cuối | `fetch-depth: 0`; push kiểm `github.event.before..HEAD`, PR kiểm `merge-base..HEAD`; nhánh mới/before không tồn tại thì lùi về `HEAD~1` |
 | 4 | Thiếu `.safetensors`/`.tflite` | Thêm vào danh sách đuôi bị chặn, khớp `.gitignore` |
@@ -95,4 +95,5 @@ Ghi chú không chặn:
 Không xử lý ở đây: `ruff format --check` — để T092 quyết định như ghi chú trước.
 
 Local: YAML parse OK; không file bị cấm được track; `git diff --check` trên dải `7b3c073..HEAD` PASS.
-Actions run sau push: `PENDING`.
+Run đầu [42356363410](https://github.com/HiImNVH/ViSign/actions/runs/42356363410) fail ở job API/AI: `Unable to resolve action astral-sh/setup-uv@v10` vì repo không có tag `v10`; sửa thành `v10.3.3`.
+Actions run sau sửa: `PENDING`.
