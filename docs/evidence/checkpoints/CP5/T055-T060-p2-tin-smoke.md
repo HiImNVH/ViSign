@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` (consumer T040); `P3 Cường` (metadata pilot/full) |
 | Candidate commit | `CP5 T055,T060(api): add health and model-info endpoints` |
-| Commit | `PENDING` |
+| Commit | `fb94e467d3cb408b2eac3d003bf4d3e4f977f007` — [fb94e46](https://github.com/HiImNVH/ViSign/commit/fb94e467d3cb408b2eac3d003bf4d3e4f977f007); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42375491322) |
 | Ngày/giờ | `2026-11-07T20:01+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## Phạm vi
 

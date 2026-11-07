@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy` (E2E T032); `P5 Hiển` (client T040); `P3 Cường` (đường predictor) |
 | Candidate commit | `CP3 T030,T038(api): add prediction endpoint with fixture contract tests` |
-| Commit | `PENDING` |
+| Commit | `bfeee4d1213300f4cf20edc8af63b248e5dbcc45` — [bfeee4d](https://github.com/HiImNVH/ViSign/commit/bfeee4d1213300f4cf20edc8af63b248e5dbcc45); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42375491322) |
 | Ngày/giờ | `2026-11-07T20:06+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## Phạm vi
 

@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` (cách chọn `acceptanceThreshold`) |
 | Candidate commit | `CP4 T044,T048(api): add pure confidence decision rule` |
-| Commit | `PENDING` |
+| Commit | `9a64b41343c2de7787c96ccd18b864b100fd4104` — [9a64b41](https://github.com/HiImNVH/ViSign/commit/9a64b41343c2de7787c96ccd18b864b100fd4104); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42375491322) |
 | Ngày/giờ | `2026-11-07T19:58+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## Phạm vi
 
