@@ -55,5 +55,18 @@ Candidate song song giảm latency trong hai phép đối chứng local với í
 đổi RAM và giữ parity. Giữ nguyên số frame/schema để tránh đổi đầu vào model.
 Chạy lại tải trên Linux đích, gồm CPU credit, RAM, kích thước image, egress,
 p95 end-to-end và chất lượng model thật. Chỉ chốt budget sau khi Tín/Huy
-xác nhận host, kết quả và phạm vi chi phí. AWS production còn bị chặn ở
-[T096](evidence/checkpoints/CP7/T096-aws-access-bootstrap.md).
+xác nhận host, kết quả và phạm vi chi phí.
+
+## Đối chiếu cấu hình EC2 đã triển khai
+
+Theo [báo cáo triển khai T095](deployment-report.md) tại `2182f85`, origin đang dùng t3.small Sydney, EBS 30 GB và Elastic IP. Dự toán của nhóm triển khai là khoảng **0,9 USD/ngày (~27 USD/tháng nếu chạy liên tục)** trước credit. Đây là dự toán cho cấu hình triển khai, chưa có hóa đơn đối chiếu.
+
+| Phép đo đã ghi nhận | Kết quả | Phạm vi |
+|---|---|---|
+| Image API / web trên ECR | Khoảng 665 MB / 26 MB nén | Image tag `3b29d4a2cec1` |
+| RAM trên EC2 khi nghỉ | API 58 MiB, web 4,8 MiB | Artifact fixture |
+| Upload và round-trip từ Việt Nam | 1,65–2,07 s, fixture xử lý khoảng 1 ms | Origin HTTP, chưa qua CloudFront |
+| A/B detector tạo sẵn của Tín | Processing p95 3,295 → 3,259 s; RAM đỉnh 572 → 729 MiB | Windows local, cùng workload; request có khoảng nghỉ giảm trung vị 194 ms |
+| Pilot Giấy tờ / Nhận trong Docker | 1,4–2,3 s/clip trên 4 clip, RAM 890 MiB | Smoke local của Huy |
+
+t3.small đang chạy origin với fixture. Số đo pilot local cho thấy cần giữ dư địa RAM cho detector tạo sẵn. Phần cần đo tiếp là CPU credit, RAM đỉnh và p95 web khi EC2 phục vụ artifact thật qua HTTPS. [Đối chứng T065 của Tín](evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md) · [Trạng thái pilot](team/implementation-status.md)

@@ -51,3 +51,14 @@ T089 chờ artifact VSL thật, probe đã audit và bằng chứng qua UI cho c
 điều kiện. Cần báo cáo false accept theo loại OOD, số clip và người ký theo
 nhóm, tỷ lệ đúng theo nghĩa, lỗi kỹ thuật và độ ổn định qua lặp. Các test scorer
 dùng dữ liệu mô phỏng để kiểm công thức và quy tắc xử lý lỗi.
+
+
+## Smoke trên pilot VSL Giấy tờ / Nhận
+
+P3 chạy trên `2182f85`, API FastAPI cục bộ bằng TestClient, artifact `t083-pilot-v2-approved`, detector MediaPipe thật. Cùng sáu WebM review T014–T016 và hai WebM trống đen/trắng được gửi qua `POST /api/v1/predictions` với `detector_prewarm_enabled` tắt rồi bật.
+
+- Sáu clip có người trả HTTP 200 ở cả hai nhánh. Bốn được chấp nhận theo threshold và hai bị từ chối. Các clip này dùng để đối chiếu hành vi phục vụ.
+- Hai clip trống đều trả HTTP 422 `NO_PERSON_DETECTED` ở cả hai nhánh. False accept trên hai probe trống là 0/2 mỗi nhánh.
+- 8/8 cặp khớp HTTP status, mã lỗi hoặc nhãn, nội dung, `accepted`, confidence và model version. Sáu lượt HTTP 200 đo 1,715–3,034 s khi tắt và 1,811–2,370 s khi bật. Đây là phép chạy tuần tự trên máy local, chưa phải đối chứng p95 production.
+
+T089 còn mở để đánh giá OOD có người ký, góc máy, ánh sáng và độ ổn định theo người ký trên bộ probe đã audit. [Kết quả đánh giá pilot](pilot-report.md)
