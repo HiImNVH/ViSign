@@ -133,8 +133,8 @@ track MAY bắt đầu khi T019–T028 ổn định và không được trình b
 - [X] T024 Cài temporary-clip boundary luôn xóa file trong success/failure tại `services/inference-api/src/visign_api/inference/temporary_clip.py`
 - [X] T025 [P] Viết unit tests chứng minh temporary clip bị xóa ở mọi đường đi tại `services/inference-api/tests/unit/test_temporary_clip.py`
 - [X] T026 Cài FastAPI app release `0.0.1`, public router `/api/v1`, `X-Request-ID` receive/generate/echo middleware, bounded single-inference coordinator và exception mapping tại `services/inference-api/src/visign_api/main.py` và `services/inference-api/src/visign_api/api/router.py`
-- [ ] T027 [P] Định nghĩa TypeScript API types tối thiểu bám `contracts/openapi.yaml`, giữ `X-Request-ID`, optional prediction diagnostics, `artifactKind`, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable fixture metrics tại `apps/web/src/types/inference-api.ts`; tự động sinh type bằng `openapi-typescript` thuộc M1
-- [ ] T028 [P] Tạo Vietnamese UI copy, disclaimer và accessible labels tại `apps/web/src/content/vi.ts`
+- [X] T027 [P] Định nghĩa TypeScript API types tối thiểu bám `contracts/openapi.yaml`, giữ `X-Request-ID`, optional prediction diagnostics, `artifactKind`, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable fixture metrics tại `apps/web/src/types/inference-api.ts`; tự động sinh type bằng `openapi-typescript` thuộc M1
+- [X] T028 [P] Tạo Vietnamese UI copy, disclaimer và accessible labels tại `apps/web/src/content/vi.ts`
 - [ ] T098 Sau khi lead bàn giao quy ước, đóng băng naming/normalization/version cho file dữ liệu, cập nhật validator và ví dụ hợp lệ/không hợp lệ tại `docs/contracts/data-conventions.md`, `ai/src/visign_ai/dataset/manifest_schema.py` và `ai/tests/dataset/test_manifest_validation.py`
 - [X] T099 Sau khi lead bàn giao quy ước, đóng băng API v1 naming/status/error/versioning cho FE-BE và cập nhật contract/types/drift tests tại `docs/contracts/api-conventions.md`, `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`, `apps/web/src/types/inference-api.ts` và `tests/contract/`
 
@@ -155,7 +155,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 
 - [X] T029 [P] [US1] Viết model shape, packed-sequence, deterministic forward và class-subset tests dùng chung cho pilot/full tại `ai/tests/training/test_gru_classifier.py`
 - [X] T030 [P] [US1] Tạo deterministic fixture artifact và viết contract tests cho release `0.0.1`/API `v1`, chứng minh fixture/pilot/full dùng cùng accepted response schema, echo/generated `X-Request-ID`, non-negative optional timings và bounded quality hints tại `services/inference-api/tests/fixtures/model-artifacts/fixture/` và `services/inference-api/tests/contract/test_predictions_contract.py`
-- [ ] T031 [P] [US1] Viết component tests cho permission, recording và accepted result tại `apps/web/tests/recognition/recognition-flow.test.tsx`
+- [X] T031 [P] [US1] Viết component tests cho permission, recording và accepted result tại `apps/web/tests/recognition/recognition-flow.test.tsx`
 - [ ] T032 [P] [US1] Viết E2E happy path bằng Chromium fake-camera Y4M và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `apps/web/tests/e2e/recognition-happy-path.spec.ts`
 
 ### Implementation for User Story 1
@@ -195,7 +195,7 @@ hiển thị đúng rejected/error state, không hiển thị một từ như k�
 - [X] T048 [US2] Cài pure confidence decision trả accepted hoặc “Không nhận diện được” tại `services/inference-api/src/visign_api/inference/prediction_decision.py`
 - [X] T049 [US2] Cài clip validation cho MIME, byte limit, WebM magic bytes, decoder probe, PTS duration, person và landmark sufficiency tại `services/inference-api/src/visign_api/inference/clip_validator.py`
 - [X] T050 [US2] Hoàn thiện error mapping và cleanup cho prediction endpoint tại `services/inference-api/src/visign_api/api/predictions.py`
-- [ ] T051 [US2] Cài rejected result và retry action tại `apps/web/src/features/recognition/RecognitionResult.tsx`
+- [X] T051 [US2] Cài rejected result và retry action tại `apps/web/src/features/recognition/RecognitionResult.tsx`
 - [X] T052 [US2] Cài camera/API error presentation với thông báo tiếng Việt ổn định tại `apps/web/src/features/recognition/RecognitionError.tsx`
 - [X] T053 [US2] Cài timeout, cancel request và reset state tại `apps/web/src/features/recognition/useRecognition.ts`
 

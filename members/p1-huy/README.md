@@ -40,6 +40,7 @@
 | `T032, T047 / E2E` | `PUSHED` | `apps/web/tests/e2e/`, `playwright.e2e.config.ts` | 6/6 E2E với FastAPI thật; chờ P5/P2 review | P5/Hiển, P2/Tín |
 | `T068, T090 / US5` | `PUSHED` | `docs/demo-script.md`, `docs/architecture-quality-report.md` | Bản đầu; T090 chờ P5 bổ sung phần FE; chờ review | P5/Hiển, P2/Tín |
 | `Schema v0.3 review` | `TODO` | 6 clip đại diện (thư mục dùng chung "6 vid kiểm thử", SHA-256 trong evidence T014–T016) | **Huy xem bằng mắt**: giữ động tác sau lấy mẫu, quy ước tay trái/phải, nguồn đã lật → đổi `APPROVED` hoặc yêu cầu v0.4 | P3/Cường |
+| `T088 (hỗ trợ P5)` | `PUSHED` | `apps/web/tests/accessibility/frontend-quality-screenshots.spec.ts`, `docs/frontend-quality-report.md` | Làm thay theo yêu cầu Huy; T063 do Hiển tự làm (`b5ca295`), bản T063 của trợ lý bỏ để giữ bản owner; chờ P5 review | P5/Hiển |
 | `T087 / US5 (cũ)` | `SUPERSEDED` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 

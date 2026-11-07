@@ -48,3 +48,18 @@ Automated checks cannot validate actual screen reader timing or hardware. Roll b
 - [ ] Independent reviewer repeated gate.
 
 **Reviewer result:** PENDING. **Reviewer note:** Awaiting independent assessment.
+
+## Independent review — P1/Huy
+
+Review `2026-11-08T01:39:48+07:00` trên `b5ca295` (theo uỷ quyền của Huy), Edge `msedge`, máy P1.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Nội dung audit | axe WCAG 2/2.1 A+AA 0 vi phạm ở các trạng thái được audit; bàn phím, khôi phục focus, `role=status`/`aria-live`, nhãn camera — đạt khi quay được clip |
+| Ổn định bộ test | **Chập chờn**: 3 lượt chạy `recognition-accessibility.spec.ts` → 4, 3, 1 test hỏng / 21 |
+| Nguyên nhân quan sát | Camera chuyển **"Camera gặp lỗi"** ngay khi đang quay (fake device + MediaRecorder), các bước sau không có clip; cùng hiện tượng xuất hiện trong lượt chụp ảnh T088 |
+
+**Reviewer result**: `CHANGES_REQUESTED` (trung bình) — nội dung accessibility đạt, nhưng (1) điều tra lỗi camera
+khi quay (khu vực T039: bắt `MediaRecorder` `error` và ghi tên lỗi, kiểm tra có phải race giữa start/stop hay
+tài nguyên device), vì người dùng thật có thể gặp; (2) làm bộ test ổn định (chờ trạng thái thay vì
+`waitForTimeout`, hoặc retry chỉ khi lỗi thiết bị giả được nhận diện). T063 giữ `[ ]`.

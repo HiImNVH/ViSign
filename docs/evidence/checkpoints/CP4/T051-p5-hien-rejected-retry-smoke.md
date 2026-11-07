@@ -59,3 +59,11 @@ Browser tests mock API `v1` và camera; thông báo `ECONNREFUSED 127.0.0.1:8000
 - [ ] Reviewer tái chạy gate và xác nhận.
 
 **Reviewer result**: `PENDING`.
+
+## Independent review — P1/Huy
+
+Review `2026-11-08T01:25:54+07:00` trên `73ff85b` (theo uỷ quyền của Huy). Web Vitest 165 passed; `RecognitionResult.test.tsx` phủ kết
+quả bị từ chối chỉ hiện hướng dẫn an toàn và bắt đầu quay mới. Ảnh audit T088 (landscape/mobile) xác nhận thẻ
+từ chối hiển thị gọn với nút "Quay lại"; axe 0 vi phạm ở trạng thái rejected (T063).
+
+**Reviewer result**: `P1_VERIFIED` → T051 `[X]`.

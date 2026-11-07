@@ -52,6 +52,9 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T100–T104 (US6) | P5 | Bản dịch trực tiếp + lịch sử trình duyệt 24 giờ | `VERIFIED`, `[X]` (P1) |
 | T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
 | T068, T090 | P1 | Demo script; báo cáo kiến trúc (6 hành động đề xuất) | Bản đầu; T090 chờ P5 phần FE; chờ review |
+| T027, T028, T031, T051 | P5 | Types, câu chữ, component test, kết quả bị từ chối | `VERIFIED`, `[X]` (P1) |
+| T063 | P5 | Audit accessibility (Hiển, `b5ca295`) | P1 `CHANGES_REQUESTED`: nội dung đạt, bộ test chập chờn 1–4/21 do lỗi camera khi quay |
+| T088 | P5 (trợ lý làm theo uỷ quyền P1) | Audit UX: 18 ảnh, 7 phát hiện, 1 lỗi bố cục mobile 320 px | Chờ P5 review |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
