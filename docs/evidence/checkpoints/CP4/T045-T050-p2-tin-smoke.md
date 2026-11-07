@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` (FE đọc `ErrorEnvelope`, `X-Request-ID`, `Retry-After` qua CORS) |
 | Candidate commit | `CP4 T045,T050(api): extend error contract tests and harden cleanup` |
-| Commit | `PENDING` |
+| Commit | `5056c284a49a7dc78750ec2e6b413a7fe3546a14` — [5056c28](https://github.com/HiImNVH/ViSign/commit/5056c284a49a7dc78750ec2e6b413a7fe3546a14); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) |
 | Ngày/giờ | `2026-11-07T21:20+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI |
 
 ## Phát hiện và sửa (T050)
 
@@ -40,6 +40,8 @@ Không thuộc phạm vi: 404/405 vẫn là `{"detail"}` mặc định (T072/T07
   stash → `pull --rebase` (T037 `e91bc2b` → `23ed5b1`, T049 `99d3c64` → `4c9fdb9`) → apply, hash 7 path khớp rồi mới
   drop stash; gate chạy lại đạt.
 - `origin/main...HEAD` = `0 2` tại `1b14f1e`.
+- Trước push: remote có T042/T043 của P5 và review endpoint của P1 (`7315314`), không trùng file; rebase
+  (`1818916` → `5056c28`, T037 → `64ecf72`, T049 → `b456206`), gate chạy lại; pre-push `0 4` trên `7315314`.
 
 ## Smoke
 

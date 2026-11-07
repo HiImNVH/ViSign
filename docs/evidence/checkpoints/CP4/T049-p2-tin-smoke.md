@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P3 Cường` (quy tắc người/landmark, thời lượng PTS); `P1 Huy`; `P5 Hiển` (mã lỗi phía FE) |
 | Candidate commit | `CP4 T049(api): validate clip type, signature, size and landmarks` |
-| Commit | `PENDING` |
+| Commit | `b4562065a30d3b7deb773f23ef5fb19c49e125e6` — [b456206](https://github.com/HiImNVH/ViSign/commit/b4562065a30d3b7deb773f23ef5fb19c49e125e6); quy tắc P3 `3b47521aa64c47f0bd9068078639626b3b4996c2` — [3b47521](https://github.com/HiImNVH/ViSign/commit/3b47521aa64c47f0bd9068078639626b3b4996c2); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) |
 | Ngày/giờ | `2026-11-07T21:01+07:00` |
-| Status | `PASS` local; đi cùng commit T037 adapter GRU (đóng lỗ hổng clip không người) |
+| Status | `PASS` local và CI; push cùng T037 adapter GRU (đóng lỗ hổng clip không người) |
 
 ## Phạm vi
 
@@ -35,6 +35,7 @@ multipart hỏng đang trả `{"detail": ...}` thay vì `ErrorEnvelope` (T050, c
 ## Pre-commit synchronization
 
 - `origin/main...HEAD` = `0 1` tại `f1eb7ea` (chỉ commit T037 `e91bc2b` chưa push).
+- Rebase trước push (review P3/P1 trên remote, không trùng file): SHA cuối `b456206`; pre-push `0 4` trên `7315314`.
 
 ## Smoke
 

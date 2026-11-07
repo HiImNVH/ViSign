@@ -6,10 +6,10 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P3 Cường` (định dạng artifact, `labelBinding`, schema đi kèm); `P1 Huy` |
 | Candidate commit | `CP3 T037(api): add GRU adapter for pilot and full artifacts` |
-| Commit | `PENDING` |
+| Commit | `64ecf72f5d5049bf40e46b89c49c88c01d463359` — [64ecf72](https://github.com/HiImNVH/ViSign/commit/64ecf72f5d5049bf40e46b89c49c88c01d463359); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) |
 | Ngày/giờ | `2026-11-07T20:40+07:00` |
 | Môi trường | Windows 11, uv 0.13.7, CPython 3.12.15; môi trường API mặc định (như CI) và extra `serving` (torch 2.11.0+cpu, MediaPipe 1.1.1) |
-| Status | `PASS` local; phải push cùng commit T049 (xem mục Phát hiện) |
+| Status | `PASS` local và CI; đã push cùng T049/T045/T050 trong `7315314..3b47521` |
 
 ## Phạm vi
 
@@ -42,6 +42,8 @@ clip người thật (T064).
   (`9430655`) và review T009–T012 (`f1eb7ea`), không chạm file API; stash → `pull --rebase` → apply, hash nội dung
   9 path khớp rồi mới drop stash; gate chạy lại đạt.
 - `origin/main...HEAD` = `0 0` tại `f1eb7ea`.
+- Trước push: rebase thêm hai lần khi remote có review T019/T037 của P3 (`989533e`, `1b14f1e`) và review endpoint
+  của P1 (`7315314`), không trùng file; SHA cuối `64ecf72`; pre-push `0 4` trên `7315314`.
 
 ## Smoke
 
