@@ -17,7 +17,7 @@
 
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
-| `T003 / CP1` | `VERIFIED` | `ai/pyproject.toml` do Tín tạo | Đã kiểm tra toolchain AI trên Python 3.12.15. Ruff, mypy, smoke test và import các thư viện đều đạt | P3/Cường |
+| `T003 / CP1` | `VERIFIED` | `ai/pyproject.toml` do Tín tạo | Ruff, mypy và 8 import đạt. Pytest 15 passed, 5 skipped. [Review độc lập](../../docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md#independent-review--p3cường) | P3/Cường |
 | `T014-T016 / CP2` | `REVIEW` | decoder, extractor, transform, schema và tests | Đã push, gate cục bộ đạt. Chờ review clip đại diện và parity qua adapter T037 | P2/Tín và P1/Huy |
 | `T017 / CP2` | `PLANNED` | CLI trích landmark theo manifest | Bước kế tiếp sau pipeline chung | P2/Tín và P1/Huy |
 | `CP5` | `PLANNED` | training/evaluation/artifact reports | Chờ manifest Quang bàn giao | P4/Quang và P1/Huy |

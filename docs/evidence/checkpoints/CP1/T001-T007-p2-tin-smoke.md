@@ -114,3 +114,21 @@ Ghi chú không chặn:
 
 **Reviewer note**: Implementation/gate không cần sửa trước specialized review; hai rủi ro đã được
 ghi rõ để T092 và owner liên quan xử lý.
+
+## Independent review — P3/Cường
+
+Review time `2026-11-07T15:00:39+07:00` (+07:00) trên commit `a8516df33d655b8d491fa8f2a3d48522dc8b80bc`.
+Phạm vi T003 gồm `ai/pyproject.toml` và `ai/uv.lock` từ commit toolchain `84958a3`.
+Hai tệp này giữ nguyên tại commit được kiểm thử.
+
+| Gate | Kết quả |
+|---|---|
+| `uv sync --locked --project ai` | PASS, 68 package được resolve và 49 package được kiểm tra trong môi trường |
+| `uv run --locked --project ai python -c "import av, mediapipe, numpy, cv2, torch, sklearn, matplotlib, yaml"` | PASS, đủ 8 import. Windows, Python 3.12.15, Torch 2.11.0+cpu |
+| `uv run --locked --project ai ruff check ai` | PASS |
+| `uv run --locked --project ai python -m mypy ai/src ai/tests` | PASS, 10 tệp |
+| `uv run --locked --project ai pytest ai/tests -q` | PASS, 15 passed và 5 skipped. Dùng thư mục tạm riêng cho pytest |
+
+Ghi chú — Package AI yêu cầu Python 3.12, khóa phiên bản thư viện chính và tách dependency dev. Môi trường CPU đáp ứng smoke test T003. Bốn test browser và một test MediaPipe với clip tham chiếu được skip vì lượt review này không cấu hình fixture tùy chọn. Cảnh báo về root `pyproject.toml` không chặn gate của project `ai`.
+
+**Reviewer result**: `VERIFIED` cho T003.
