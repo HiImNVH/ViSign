@@ -7,6 +7,7 @@
 
 | Task | Planned files | Gate/result | Commit | Handoff |
 |---|---|---|---|---|
+| CP0 review | `docs/evidence/checkpoints/CP0/T085-T086-p1-huy-smoke.md` | VERIFIED: 5/5 gate PASS trên `22226b2`; 2 MEDIUM, 2 LOW, 1 INFO không chặn | Chưa commit | Huy cập nhật implementation-status, xử lý ghi chú |
 | CP1 | API skeleton/toolchain | Chưa chạy | Chưa commit | Huy review |
 | CP2 | API v1 contract, validation và T099 | Chưa chạy | Chưa commit | Hiển/Huy review |
 | CP3/CP4 | Predictor, status/error, cleanup và security | Chưa chạy | Chưa commit | Cường/Hiển review |
