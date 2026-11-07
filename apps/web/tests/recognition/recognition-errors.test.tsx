@@ -163,7 +163,8 @@ test.each(['SERVICE_BUSY', 'MODEL_NOT_READY'] as const)(
     render(<RecognitionHarness />);
     await capture();
     fireEvent.click(screen.getByRole('button', { name: 'Gửi nhận diện' }));
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Không thể nhận diện đoạn quay này'));
+    const guidance = code === 'SERVICE_BUSY' ? 'Dịch vụ đang bận.' : 'Dịch vụ nhận diện chưa sẵn sàng.';
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(guidance));
     expect(screen.getByRole('alert')).not.toHaveTextContent(code);
     expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
     expect(api.predict).toHaveBeenCalledTimes(1);

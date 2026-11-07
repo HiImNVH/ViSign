@@ -1,7 +1,8 @@
 // apps/web/src/features/recognition/CameraRecorder.tsx - Giao dien xem truoc va dieu khien mot doan quay.
 import { useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
-import { cameraErrors, vi } from '../../content/vi';
+import { vi } from '../../content/vi';
 import { type CameraView } from './cameraSession';
+import { RecognitionError } from './RecognitionError';
 import { RecognitionResult } from './RecognitionResult';
 import { type useRecognition } from './useRecognition';
 
@@ -37,14 +38,6 @@ function CameraControls({ controller, view, rejectedVisible }: { controller: Rec
   </div>;
 }
 
-function CaptureFeedback({ view }: { view: CameraView }) {
-  if (view.phase === 'error') {
-    const [title, guidance] = cameraErrors[view.error];
-    return <div className="capture-feedback error-feedback" role="alert"><h3>{title}</h3><p>{guidance}</p></div>;
-  }
-  return null;
-}
-
 export function CameraRecorder({ controller }: { controller: RecognitionController }) {
   const { view, videoRef } = controller.camera;
   const { state, model, reloadModelInfo, startRecording } = controller;
@@ -67,14 +60,15 @@ export function CameraRecorder({ controller }: { controller: RecognitionControll
   }, [view.phase, state.phase]);
   return <section ref={panel} className="camera-workspace" aria-label="Nhận diện ký hiệu bằng camera" aria-describedby="camera-privacy">
     <CameraViewport videoRef={videoRef} view={view}>
-      <CaptureFeedback view={view} />
+      {view.phase === 'error' && <RecognitionError type="camera" error={view.error} />}
       <div className="camera-dock">
         <RecognitionResult result={currentResult} model={model.status === 'ready' ? model.info : null} onRetry={startRecording} />
-        {view.phase === 'captured' && <div className="recognition-feedback" aria-live="polite">
-          {model.status === 'loading' && <p>{vi.recognition.modelLoading}</p>}
-          {model.status === 'unavailable' && <><p>{vi.recognition.modelUnavailable}</p>
+        {view.phase === 'captured' && <div className="recognition-feedback">
+          {model.status === 'loading' && <p role="status">{vi.recognition.modelLoading}</p>}
+          {model.status === 'unavailable' && <><RecognitionError type="api" stage="model" error={model.error} />
             <button className="quiet-button model-retry" onClick={reloadModelInfo}>{vi.recognition.reloadModel}</button></>}
-          {state.phase === 'error' && 'source' in state && state.source === 'api' && <p role="alert">{vi.recognition.submitError}</p>}
+          {model.status === 'ready' && state.phase === 'error' && 'source' in state && state.source === 'api'
+            && <RecognitionError type="api" stage="prediction" error={state.error} />}
         </div>}
         <CameraControls controller={controller} view={view} rejectedVisible={rejectedVisible} />
       </div>

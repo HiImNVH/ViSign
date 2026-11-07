@@ -176,10 +176,48 @@ test('T043 model mismatch discards prediction and refreshes metadata without ano
   await page.goto('/');
   await captureClip(page);
   await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect(page.getByRole('alert')).toContainText('Không thể nhận diện đoạn quay này');
+  await expect(page.getByRole('alert')).toContainText('Chưa nhận được kết quả nhận diện hợp lệ.');
   await expect.poll(() => metadataCalls).toBe(2);
   await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
   expect(uploads).toBe(1);
+});
+
+test('T052 service-busy error stays safe and usable at compact viewport, then retries explicitly', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
+  await page.route('**/api/v1/predictions', route => {
+    uploads++;
+    return uploads === 1
+      ? route.fulfill({ status: 503, headers: { 'Retry-After': '3' },
+        json: { code: 'SERVICE_BUSY', message: 'SECRET traceback /internal/server.py', requestId: 'secret-id' } })
+      : route.fulfill({ status: 200, json: { requestId: 'ok', text: 'Xin chào', classLabel: 'XIN_CHAO',
+        confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 15 } });
+  });
+  await page.goto('/');
+  await captureClip(page);
+  const submit = page.getByRole('button', { name: 'Gửi nhận diện' });
+  await submit.click();
+  const alert = page.getByRole('alert');
+  await expect(alert).toContainText('Dịch vụ đang bận.');
+  await expect(alert).not.toContainText('SECRET');
+  await expect(alert).not.toContainText('secret-id');
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
+  expect(uploads).toBe(1);
+  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
+    await page.setViewportSize(viewport);
+    const camera = (await page.locator('.camera-viewport').boundingBox())!;
+    const controls = (await page.locator('.capture-controls').boundingBox())!;
+    const message = (await alert.boundingBox())!;
+    expect(message.y).toBeGreaterThanOrEqual(camera.y);
+    expect(message.y + message.height).toBeLessThanOrEqual(controls.y);
+    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  }
+  await submit.focus();
+  await submit.press('Enter');
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
+  await expect(alert).toHaveCount(0);
+  expect(uploads).toBe(2);
 });
 
 test('an open help dialog keeps focus when the camera disconnects', async ({ page }) => {

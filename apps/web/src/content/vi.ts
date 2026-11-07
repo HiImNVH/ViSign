@@ -15,6 +15,26 @@ export const cameraErrors = {
 
 export type CameraError = keyof typeof cameraErrors;
 
+// Client-owned, stable guidance. Never render an API error's raw message or code.
+export const predictionErrors = {
+  network: 'Chưa kết nối được dịch vụ nhận diện. Kiểm tra kết nối rồi thử gửi lại.',
+  timeout: 'Dịch vụ phản hồi quá lâu. Thử gửi lại hoặc quay một ký hiệu mới.',
+  invalidResponse: 'Chưa nhận được kết quả nhận diện hợp lệ. Vui lòng thử lại.',
+  codes: {
+    INVALID_REQUEST: 'Yêu cầu nhận diện chưa hợp lệ. Hãy quay ký hiệu mới rồi gửi lại.',
+    UNSUPPORTED_MEDIA_TYPE: 'Định dạng đoạn quay chưa được hỗ trợ. Hãy quay lại bằng Chrome hoặc Edge.',
+    CLIP_TOO_LARGE: 'Đoạn quay vượt giới hạn dung lượng. Quay lại một ký hiệu ngắn hơn.',
+    CLIP_TOO_SHORT: 'Đoạn quay quá ngắn. Hãy quay trọn một ký hiệu rồi gửi lại.',
+    CLIP_TOO_LONG: 'Đoạn quay quá dài. Hãy quay lại một ký hiệu ngắn hơn.',
+    NO_PERSON_DETECTED: 'Chưa phát hiện người trong khung hình. Đưa khuôn mặt và hai tay vào khung hình rồi quay lại.',
+    INSUFFICIENT_LANDMARKS: 'Chưa thấy rõ tay và cơ thể. Điều chỉnh ánh sáng, giữ hai tay trong khung hình rồi quay lại.',
+    CLIP_DECODE_FAILED: 'Không đọc được đoạn quay. Hãy quay một ký hiệu mới rồi gửi lại.',
+    SERVICE_BUSY: 'Dịch vụ đang bận. Vui lòng chờ một lát rồi thử gửi lại.',
+    MODEL_NOT_READY: 'Dịch vụ nhận diện chưa sẵn sàng. Vui lòng thử lại sau.',
+    PREDICTION_FAILED: 'Dịch vụ chưa xử lý được đoạn quay. Thử gửi lại hoặc quay ký hiệu mới.',
+  },
+} as const;
+
 export const vi = {
   title: 'Ngôn ngữ ký hiệu Việt Nam',
   preview: 'Hình ảnh xem trước từ camera',
