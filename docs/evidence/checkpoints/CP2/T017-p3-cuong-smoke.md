@@ -119,7 +119,7 @@ và thêm test gọi `main(["--help"])` với stdout `cp1252`. Hành vi trích x
 - GREEN: `pytest ai/tests -q` 39 passed, 5 skipped; Ruff, `ruff format --check`, mypy (15 files) PASS;
   `--help` trên console Windows thật exit 0.
 
-**Reviewer result**: chờ P3/Cường (owner) review bản sửa; P1 không tự đóng T017 vì là người sửa.
+**Reviewer result**: P3 `VERIFIED` bản sửa (`d258baf`) → **T017 `VERIFIED`, `[X]`**.
 
 ## Independent review — P3/Cường
 
