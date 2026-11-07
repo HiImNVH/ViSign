@@ -55,6 +55,11 @@ ai/models/
 ai/artifacts/
 ai/processed/
 
+# File nen (dataset, video, model dong goi); khop danh sach chan cua CI hygiene
+*.zip
+*.7z
+*.rar
+
 # File tam
 *.tmp
 *.temp

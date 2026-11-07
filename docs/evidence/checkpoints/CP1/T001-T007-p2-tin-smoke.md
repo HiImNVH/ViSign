@@ -152,3 +152,10 @@ commit (đã ghi trong review P5); toolchain và lockfile không đổi nên kh�
 `.gitignore` chưa chặn `*.zip` (đề xuất P2); CI hygiene đã chặn file nén.
 
 **CP1 result**: `VERIFIED` — T001–T008 và T086 được đánh `[X]` trong `tasks.md`.
+
+## Follow-up sau CP1 closure — `.gitignore` chặn file nén (`2026-11-07T19:14+07:00`)
+
+- Theo ghi chú closure của P1: thêm `*.zip`, `*.7z`, `*.rar` vào `.gitignore`, khớp danh sách đuôi nén mà bước
+  hygiene của `quality.yml` đang chặn (`0954dd1`).
+- `git check-ignore`: `a.zip`, `b/c.7z`, `d.rar` bị ignore; `keep.csv`, `data/manifests/p0-meanings.csv` vẫn được track.
+- `git ls-files`: không có file nén nào đang được track. Không đổi checkbox T007 (đã `[X]` khi đóng CP1).
