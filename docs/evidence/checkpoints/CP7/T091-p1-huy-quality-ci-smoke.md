@@ -61,4 +61,24 @@ Pin: uv `0.13.7` và Node 24, khớp môi trường CP1; Python 3.12 do uv quả
 
 ## Reviewer
 
-**Result**: `PENDING`
+### Independent review — P2/Tín
+
+Review time: `2026-11-07T14:55+07:00` trên `origin/main` `5b6a441`.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Lệnh job `api` | Trùng gate local của P2 (`uv sync --locked`, Ruff, `python -m mypy`, pytest); từ `5add400` chạy thêm `tests/contract` (drift test T099) |
+| Quyền và concurrency | `permissions: contents: read`; `concurrency` hủy run cũ trên cùng ref |
+| Kết quả thực tế | Run [42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; run [42352747056](https://github.com/HiImNVH/ViSign/actions/runs/42352747056) đỏ do test flaky của T039, không phải workflow |
+
+Ghi chú không chặn:
+
+1. `actions/checkout@v4` và `actions/setup-node@v4` bị GitHub cảnh báo "Node.js 20 is deprecated"; nâng
+   lên bản major dùng Node 24 khi có.
+2. `cancel-in-progress` trên `main` làm commit trung gian không có run riêng (ví dụ `fb56354` chỉ có kết
+   quả qua run của `b248ec7`); evidence cần ghi run của commit chứa nó.
+3. Bước hygiene chỉ `git diff --check HEAD~1 HEAD`; push nhiều commit một lần chỉ kiểm commit cuối. Danh sách
+   đuôi cấm thiếu `.safetensors`/`.tflite` so với `.gitignore`.
+4. Chưa có `ruff format --check` (P1 đã ghi để T092 quyết định).
+
+**Result**: `P2_VERIFIED`
