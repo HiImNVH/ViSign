@@ -1,5 +1,6 @@
 # services/inference-api/src/visign_api/domain/errors.py
 # Error catalog on dinh, ErrorEnvelope va exception domain theo contracts/openapi.yaml (T021).
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -148,3 +149,22 @@ class ModelNotReadyException(ViSignApiException):
 class PredictionFailedException(ViSignApiException):
     def __init__(self) -> None:
         super().__init__(ErrorCode.PREDICTION_FAILED)
+
+
+EXCEPTION_FACTORY_BY_CODE: dict[ErrorCode, Callable[[], ViSignApiException]] = {
+    ErrorCode.INVALID_REQUEST: InvalidRequestException,
+    ErrorCode.UNSUPPORTED_MEDIA_TYPE: UnsupportedMediaTypeException,
+    ErrorCode.CLIP_TOO_LARGE: ClipTooLargeException,
+    ErrorCode.CLIP_TOO_SHORT: ClipTooShortException,
+    ErrorCode.CLIP_TOO_LONG: ClipTooLongException,
+    ErrorCode.NO_PERSON_DETECTED: NoPersonDetectedException,
+    ErrorCode.INSUFFICIENT_LANDMARKS: InsufficientLandmarksException,
+    ErrorCode.CLIP_DECODE_FAILED: ClipDecodeFailedException,
+    ErrorCode.SERVICE_BUSY: ServiceBusyException,
+    ErrorCode.MODEL_NOT_READY: ModelNotReadyException,
+    ErrorCode.PREDICTION_FAILED: PredictionFailedException,
+}
+
+
+def build_api_exception(error_code: ErrorCode) -> ViSignApiException:
+    return EXCEPTION_FACTORY_BY_CODE[error_code]()

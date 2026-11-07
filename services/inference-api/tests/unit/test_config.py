@@ -23,8 +23,34 @@ def isolated_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
         "MIN_DURATION_MS",
         "MAX_DURATION_MS",
         "INFERENCE_WAIT_TIMEOUT_SECONDS",
+        "FEATURE_SCHEMA_VERSION",
+        "FEATURE_SCHEMA_PATH",
+        "VISIGN_MODEL_DIR",
     ):
         monkeypatch.delenv(variable_name, raising=False)
+
+
+def test_feature_source_settings_default_to_pipeline_defaults() -> None:
+    # None de pipeline dung schema/detector mac dinh cua visign_ai; artifact pilot/full truyen schema rieng
+    default_settings = Settings()
+
+    assert default_settings.feature_schema_version is None
+    assert default_settings.feature_schema_path is None
+    assert default_settings.visign_model_dir is None
+
+
+def test_feature_source_settings_are_read_from_environment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("FEATURE_SCHEMA_VERSION", "visign-xy-32-v0.3-draft")
+    monkeypatch.setenv("FEATURE_SCHEMA_PATH", str(tmp_path / "feature_schema.json"))
+    monkeypatch.setenv("VISIGN_MODEL_DIR", str(tmp_path / "models"))
+
+    configured_settings = Settings()
+
+    assert configured_settings.feature_schema_version == "visign-xy-32-v0.3-draft"
+    assert configured_settings.feature_schema_path == tmp_path / "feature_schema.json"
+    assert configured_settings.visign_model_dir == tmp_path / "models"
 
 
 def test_defaults_match_published_clip_contract() -> None:

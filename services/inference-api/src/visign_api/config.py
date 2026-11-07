@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     )
     # MVP khong co cookie/dang nhap nen khong bao gio gui credential qua CORS
     cors_allow_credentials: bool = False
+    # Nguon dac trung khi chua co artifact (parity, smoke); None de visign_ai dung mac dinh cua no.
+    # Artifact pilot/full mang schema rieng va duoc kiem o predictor (T037)
+    feature_schema_version: str | None = None
+    feature_schema_path: Path | None = None
+    visign_model_dir: Path | None = None
 
     @field_validator("cors_origins")
     @classmethod

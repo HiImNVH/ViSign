@@ -17,6 +17,7 @@ from visign_api.domain.errors import (
     PredictionFailedException,
     ServiceBusyException,
     ViSignApiException,
+    build_api_exception,
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
@@ -119,3 +120,13 @@ def test_error_envelope_serializes_contract_fields() -> None:
 def test_error_envelope_rejects_invalid_fields(invalid_fields: dict[str, str]) -> None:
     with pytest.raises(ValidationError):
         ErrorEnvelope(**invalid_fields)
+
+
+def test_every_error_code_builds_its_specific_exception_type() -> None:
+    # Ma loi tu pipeline/adapter phai thanh lop con cu the de tang API sau (T050) bat dung kieu
+    for error_code in ErrorCode:
+        built_exception = build_api_exception(error_code)
+
+        assert built_exception.code is error_code
+        assert type(built_exception) is not ViSignApiException
+        assert isinstance(built_exception, ViSignApiException)
