@@ -1,5 +1,5 @@
 {
-  "baseCommit": "bed64a9dec3c819eb2d4ea84e1a17fa7f680e0ff",
+  "baseCommit": "6d9a9586ba2988c61a2026b44152924507c561d7",
   "branch": "quang/t076-t083",
   "allowlistedPaths": [
     "ai/src/visign_ai/dataset/__init__.py",
@@ -21,6 +21,7 @@
     "ai/tests/dataset/test_pilot_review.py",
     "ai/tests/dataset/test_split_audit.py",
     "ai/tests/dataset/test_validate_manifest.py",
+    "data/manifests/.gitattributes",
     "data/manifests/p0-meanings.csv",
     "data/manifests/p0-source-v5.DRAFT.csv",
     "data/manifests/pilot-classes-v1.csv",
@@ -30,10 +31,14 @@
     "data/manifests/pilot-v2.csv",
     "data/manifests/pilot.csv",
     "data/manifests/sign-classes-review.DRAFT.csv",
+    "docs/contracts/data-conventions.md",
+    "docs/dataset-card.md",
     "docs/evidence/dataset/source-v5-changes.json",
     "docs/evidence/dataset/t076-t083-handoff/all-ai-tests.junit.xml",
     "docs/evidence/dataset/t076-t083-handoff/dataset-tests.junit.xml",
     "docs/evidence/dataset/t076-t083-handoff/evaluation-report.json",
+    "docs/evidence/dataset/t076-t083-handoff/full-coverage.json",
+    "docs/evidence/dataset/t076-t083-handoff/integration-boundary.json",
     "docs/evidence/dataset/t076-t083-handoff/model_info.json",
     "docs/evidence/dataset/t076-t083-handoff/pilot-data-gate.json",
     "docs/evidence/dataset/t076-t083-handoff/pilot-source-confirmation.json",
@@ -41,9 +46,6 @@
     "docs/evidence/dataset/t076-t083-handoff/source-uri-validation.json",
     "docs/evidence/dataset/t076-t083-handoff/tests.json",
     "docs/evidence/dataset/t076-t083-handoff/training-report.json",
-    "data/manifests/.gitattributes",
-    "docs/contracts/data-conventions.md",
-    "docs/dataset-card.md",
     "docs/reviews/t076-t083-data-handoff.md"
   ],
   "protectedSourceSha256": {
@@ -67,5 +69,7 @@
   "schemaDiff": false,
   "binaryFilesIncluded": false,
   "humanApprovalFabricated": false,
-  "demoReady": false
+  "demoReady": false,
+  "textFilesInBranch": 45,
+  "latestMainRebased": true
 }
