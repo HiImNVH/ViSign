@@ -2,7 +2,7 @@
 
 Owner: P2 Tín
 Consumers: P5 Hiển and integration tests
-Status: Proposed follow-up, not implemented by this note
+Status: Implemented in T072/T073 on 2026-11-07; `403` and `304` remain reserved
 
 ## Decision
 
@@ -110,13 +110,13 @@ invalidation after an artifact switch. A `304` response has no JSON body.
 
 ## Backend implementation checklist
 
-- [ ] Add `ROUTE_NOT_FOUND` and `METHOD_NOT_ALLOWED` to the stable error catalog.
-- [ ] Add framework exception handlers for `404` and `405` in `main.py`.
-- [ ] Preserve `Allow` on `405`, `Location` on `307`, and `X-Request-ID` on all responses.
-- [ ] Document `404`, `405` and `307` in `contracts/openapi.yaml` where OpenAPI permits.
-- [ ] Add contract tests with redirect following disabled.
-- [ ] Confirm unknown paths never return the default `{"detail": ...}` shape.
-- [ ] Confirm health and model-info canonical paths remain `200` in fixture mode.
+- [x] Add `ROUTE_NOT_FOUND` and `METHOD_NOT_ALLOWED` to the stable error catalog.
+- [x] Add framework exception handlers for `404` and `405` (registered from `main.py` via `register_error_handlers`).
+- [x] Preserve `Allow` on `405`, `Location` on `307`, and `X-Request-ID` on all responses.
+- [x] Document `404`, `405` and `307` in `contracts/openapi.yaml` where OpenAPI permits.
+- [x] Add contract tests with redirect following disabled.
+- [x] Confirm unknown paths never return the default `{"detail": ...}` shape.
+- [x] Confirm health and model-info canonical paths remain `200` in fixture mode.
 
 ## Required contract tests
 

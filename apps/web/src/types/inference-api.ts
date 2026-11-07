@@ -15,6 +15,8 @@ export const ERROR_CODES = [
   'SERVICE_BUSY',
   'MODEL_NOT_READY',
   'PREDICTION_FAILED',
+  'ROUTE_NOT_FOUND',
+  'METHOD_NOT_ALLOWED',
 ] as const;
 
 export const ARTIFACT_KINDS = ['fixture', 'pilot', 'full'] as const;

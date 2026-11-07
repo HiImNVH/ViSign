@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 |---|---|
-| Phiên bản quy ước | `api-conventions-v1.0.1` (làm rõ câu chữ, không đổi API; xem mục 5) |
+| Phiên bản quy ước | `api-conventions-v1.0.2` (thêm hai mã lỗi định tuyến theo kế hoạch; xem mục 5) |
 | Trạng thái | `FROZEN` phía owner P2/Tín ngày 2026-11-07; P5/Hiển (consumer) xác nhận `PENDING` |
 | Đầu vào | Lead handoff [fe-be-api-convention.md](../team/fe-be-api-convention.md) (P1/Huy, `377ac98`) |
 | Nguồn chân lý | [`openapi.yaml`](../../specs/001-vsl-recognition-mvp/contracts/openapi.yaml), `info.version = 0.0.1`, namespace `/api/v1` |
@@ -42,7 +42,7 @@ thay đổi sau đây phải đi qua quy trình ở mục 4.
 | # | Điểm lệch | Xử lý đóng băng | Owner |
 |---|---|---|---|
 | 1 | Lead handoff mục 4 ghi `HealthResponse.modelVersion` là required + nullable; OpenAPI chỉ nullable, không required | Theo OpenAPI (nguồn chân lý): TS `modelVersion?: string \| null`, FE xử lý cả vắng lẫn `null`. Chuyển sang required là thay đổi cần lead duyệt | P1/Huy quyết định |
-| 2 | `ROUTE_NOT_FOUND`, `METHOD_NOT_ALLOWED` có trong lead handoff mục 5 nhưng chưa có trong enum OpenAPI | Thêm ở T073 cùng lúc với TS `ERROR_CODES` (D3) | P2/Tín |
+| 2 | `ROUTE_NOT_FOUND`, `METHOD_NOT_ALLOWED` có trong lead handoff mục 5 nhưng chưa có trong enum OpenAPI | **Đã thêm ở T073** vào enum OpenAPI, `ErrorCode` Python và TS `ERROR_CODES` cùng commit (D3); FE dùng nhánh fallback chung cho tới khi P5 thêm câu chữ riêng | P2/Tín |
 | 3 | So khớp MIME hiện là chuỗi chính xác (review T022 của P1) | T049 chuẩn hóa base type `video/webm` không phân biệt hoa thường, bỏ khoảng trắng/ngoặc kép tham số | P2/Tín |
 
 ## 4. Quy trình thay đổi sau đóng băng
@@ -59,3 +59,4 @@ thay đổi sau đây phải đi qua quy trình ở mục 4.
 |---|---|---|---|
 | `v1.0.0` | 2026-11-07 | Đóng băng D1–D4 | T099 |
 | `v1.0.1` | 2026-11-07 | Ghi rõ ngoại lệ preflight CORS; nêu hậu quả của `CORS_ALLOW_CREDENTIALS=true` | Review P5 T020–T026: câu "mọi response có `X-Request-ID`/lỗi dùng envelope" chưa nói tới preflight; P1 đã chấp nhận hành vi này ở review T026 |
+| `v1.0.2` | 2026-11-07 | Thêm `ROUTE_NOT_FOUND` (404), `METHOD_NOT_ALLOWED` (405, giữ `Allow`) vào enum; mô tả 404/405/307 và `Cache-Control: no-store` của health trong OpenAPI | T072/T073 theo điểm lệch #2 và [backend-http-status-contract.md](../team/backend-http-status-contract.md); thay đổi tương thích, không đổi `info.version` |

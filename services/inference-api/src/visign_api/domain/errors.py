@@ -1,5 +1,5 @@
 # services/inference-api/src/visign_api/domain/errors.py
-# Error catalog on dinh, ErrorEnvelope va exception domain theo contracts/openapi.yaml (T021).
+# Error catalog on dinh, ErrorEnvelope va exception domain theo contracts/openapi.yaml (T021, T073).
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
@@ -25,6 +25,9 @@ class ErrorCode(StrEnum):
     SERVICE_BUSY = "SERVICE_BUSY"
     MODEL_NOT_READY = "MODEL_NOT_READY"
     PREDICTION_FAILED = "PREDICTION_FAILED"
+    # Loi dinh tuyen T073: route la va sai method dung chung ErrorEnvelope thay vi {"detail": ...}
+    ROUTE_NOT_FOUND = "ROUTE_NOT_FOUND"
+    METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
 
 
 @dataclass(frozen=True)
@@ -69,6 +72,11 @@ ERROR_CATALOG: dict[ErrorCode, ErrorDefinition] = {
     ),
     ErrorCode.PREDICTION_FAILED: ErrorDefinition(
         500, "Xử lý nhận diện thất bại do lỗi không xác định."
+    ),
+    # Cau chu theo docs/team/backend-http-status-contract.md; khong lap lai URL cua client
+    ErrorCode.ROUTE_NOT_FOUND: ErrorDefinition(404, "Không tìm thấy tài nguyên API."),
+    ErrorCode.METHOD_NOT_ALLOWED: ErrorDefinition(
+        405, "Phương thức HTTP không được hỗ trợ cho tài nguyên này."
     ),
 }
 
@@ -151,6 +159,16 @@ class PredictionFailedException(ViSignApiException):
         super().__init__(ErrorCode.PREDICTION_FAILED)
 
 
+class RouteNotFoundException(ViSignApiException):
+    def __init__(self) -> None:
+        super().__init__(ErrorCode.ROUTE_NOT_FOUND)
+
+
+class MethodNotAllowedException(ViSignApiException):
+    def __init__(self) -> None:
+        super().__init__(ErrorCode.METHOD_NOT_ALLOWED)
+
+
 EXCEPTION_FACTORY_BY_CODE: dict[ErrorCode, Callable[[], ViSignApiException]] = {
     ErrorCode.INVALID_REQUEST: InvalidRequestException,
     ErrorCode.UNSUPPORTED_MEDIA_TYPE: UnsupportedMediaTypeException,
@@ -163,6 +181,8 @@ EXCEPTION_FACTORY_BY_CODE: dict[ErrorCode, Callable[[], ViSignApiException]] = {
     ErrorCode.SERVICE_BUSY: ServiceBusyException,
     ErrorCode.MODEL_NOT_READY: ModelNotReadyException,
     ErrorCode.PREDICTION_FAILED: PredictionFailedException,
+    ErrorCode.ROUTE_NOT_FOUND: RouteNotFoundException,
+    ErrorCode.METHOD_NOT_ALLOWED: MethodNotAllowedException,
 }
 
 

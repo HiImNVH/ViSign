@@ -38,6 +38,8 @@ EXPECTED_STATUS_BY_CODE = {
     ErrorCode.SERVICE_BUSY: 503,
     ErrorCode.MODEL_NOT_READY: 503,
     ErrorCode.PREDICTION_FAILED: 500,
+    ErrorCode.ROUTE_NOT_FOUND: 404,
+    ErrorCode.METHOD_NOT_ALLOWED: 405,
 }
 
 
