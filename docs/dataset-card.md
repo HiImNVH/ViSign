@@ -50,3 +50,25 @@ T083 run `kbj3bpvu` đã được P3 đánh giá lại trên main: accuracy 25%,
 0,3333 trên 4 test, `demoReady=false`. Mẫu ít và thiếu signer giới hạn khả năng
 đánh giá tổng quát hóa; model chỉ chứng minh pipeline pilot chạy được.
 Đây là bản bàn giao dữ liệu để review, không tự đóng T076/T083 hoặc dependency admin.
+
+## Coverage full hiện tại
+
+Số lượng metadata, không phải số mẫu đã được duyệt. Mỗi nghĩa cần 12/5/3.
+
+| Meaning | Có | Train | Validation | Test | Cần thêm theo quota |
+|---|---:|---:|---:|---:|---:|
+| BAN | 13 | 7 | 4 | 2 | 7 |
+| CAM_ON | 7 | 4 | 2 | 1 | 13 |
+| DAU_BUNG | 10 | 5 | 3 | 2 | 10 |
+| DAU_DAU | 9 | 5 | 2 | 2 | 11 |
+| GIAY_TO | 10 | 5 | 3 | 2 | 10 |
+| GIUP_DO | 9 | 4 | 3 | 2 | 11 |
+| KHONG | 13 | 6 | 4 | 3 | 7 |
+| NHAN | 9 | 4 | 3 | 2 | 11 |
+| SOT | 12 | 6 | 4 | 2 | 8 |
+| XIN_LOI | 9 | 5 | 2 | 2 | 11 |
+
+Tổng 51/30/20; còn thiếu **69 train + 20 validation + 10 test = 99** theo metadata hiện có.
+Cả 101 mẫu vẫn unverified; 98 mẫu chưa có signer (không tự chặn video-held-out gate).
+Số cần bổ sung có thể đổi nếu review nhãn/lớp/nguồn loại mẫu.
+[Coverage JSON](evidence/dataset/t076-t083-handoff/full-coverage.json) có số theo từng meaning/split.

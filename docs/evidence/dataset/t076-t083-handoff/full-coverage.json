@@ -1,0 +1,160 @@
+{
+  "manifest": "data/manifests/p0-source-v5.DRAFT.csv",
+  "total": 101,
+  "target": 200,
+  "current": {
+    "validation": 30,
+    "train": 51,
+    "test": 20
+  },
+  "missingBySplit": {
+    "train": 69,
+    "validation": 20,
+    "test": 10
+  },
+  "byMeaning": [
+    {
+      "meaningId": "BAN",
+      "samples": 13,
+      "current": {
+        "train": 7,
+        "validation": 4,
+        "test": 2
+      },
+      "missing": {
+        "train": 5,
+        "validation": 1,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "CAM_ON",
+      "samples": 7,
+      "current": {
+        "train": 4,
+        "validation": 2,
+        "test": 1
+      },
+      "missing": {
+        "train": 8,
+        "validation": 3,
+        "test": 2
+      }
+    },
+    {
+      "meaningId": "DAU_BUNG",
+      "samples": 10,
+      "current": {
+        "train": 5,
+        "validation": 3,
+        "test": 2
+      },
+      "missing": {
+        "train": 7,
+        "validation": 2,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "DAU_DAU",
+      "samples": 9,
+      "current": {
+        "train": 5,
+        "validation": 2,
+        "test": 2
+      },
+      "missing": {
+        "train": 7,
+        "validation": 3,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "GIAY_TO",
+      "samples": 10,
+      "current": {
+        "train": 5,
+        "validation": 3,
+        "test": 2
+      },
+      "missing": {
+        "train": 7,
+        "validation": 2,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "GIUP_DO",
+      "samples": 9,
+      "current": {
+        "train": 4,
+        "validation": 3,
+        "test": 2
+      },
+      "missing": {
+        "train": 8,
+        "validation": 2,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "KHONG",
+      "samples": 13,
+      "current": {
+        "train": 6,
+        "validation": 4,
+        "test": 3
+      },
+      "missing": {
+        "train": 6,
+        "validation": 1,
+        "test": 0
+      }
+    },
+    {
+      "meaningId": "NHAN",
+      "samples": 9,
+      "current": {
+        "train": 4,
+        "validation": 3,
+        "test": 2
+      },
+      "missing": {
+        "train": 8,
+        "validation": 2,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "SOT",
+      "samples": 12,
+      "current": {
+        "train": 6,
+        "validation": 4,
+        "test": 2
+      },
+      "missing": {
+        "train": 6,
+        "validation": 1,
+        "test": 1
+      }
+    },
+    {
+      "meaningId": "XIN_LOI",
+      "samples": 9,
+      "current": {
+        "train": 5,
+        "validation": 2,
+        "test": 2
+      },
+      "missing": {
+        "train": 7,
+        "validation": 3,
+        "test": 1
+      }
+    }
+  ],
+  "unknownSignerCount": 98,
+  "verifiedSampleCount": 0,
+  "demoReady": false
+}
