@@ -30,6 +30,9 @@
 | `T099 / CP2` | `DONE` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | P1 lead + P5 consumer; `[X]` (P1 đóng `4f0a32a`); quy ước `v1.0.1` ghi ngoại lệ preflight | P5/Hiển và P1/Huy |
 | `T017 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T017-p3-cuong-smoke.md` | Re-review `VERIFIED`: 13 test mới (28 passed AI); ghi chú merge commit `fc7d606` | P2/Tín là reviewer |
 | `T040 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T040-p5-hien-smoke.md` | `P2_VERIFIED` API contract; 1 MEDIUM (guard `meanings` rỗng), 3 LOW | P2/Tín là reviewer |
+| `T038 / CP3` | `DOING` | `services/inference-api/src/visign_api/api/predictions.py`, contract tests | Endpoint dự đoán + T030 contract test; gate + live smoke PASS; chờ owner cho push | P1/Huy, P5/Hiển, P3/Cường |
+| `T055-T060 / CP5` | `DOING` | `services/inference-api/src/visign_api/{api/system.py,domain/health.py,main.py}` | Health/model-info + registry trong lifespan; gate + live smoke PASS; chờ owner cho push | P1/Huy, P5/Hiển |
+| `T044-T048 / CP4` | `DOING` | `services/inference-api/src/visign_api/inference/prediction_decision.py` | Luật quyết định ngưỡng bao gồm; chờ owner cho push | P1/Huy, P3/Cường |
 | `T037 / CP3` | `REVIEW` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter + parity `7d5c16a`; loader/fixture/registry `7adc7e5` (CI success); GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
@@ -38,15 +41,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T030/T037 / CP3` (loader, fixture predictor, registry) |
-| Proposed commit | `CP3 T030,T037(api): add artifact loader, fixture predictor and registry` |
-| Exact staged paths | `services/inference-api/src/visign_api/inference/{artifact_loader,predictor,predictor_registry}.py`, `services/inference-api/tests/unit/{test_artifact_loader,test_predictor_registry}.py`, `services/inference-api/tests/fixtures/model-artifacts/{fixture,fixture-low-confidence}/model_info.json`, `members/p2-tin/README.md`, `docs/evidence/checkpoints/CP3/T037-p2-tin-artifact-registry-smoke.md` |
-| Pre-commit sync | `PASS` — stash/pull/apply qua `bc642c1` (T017 của P3); gate chạy lại; `origin/main...HEAD` = `0 0` |
-| Gate commands | RED→GREEN 28 passed, 3 mutation fail, API+contract 173 passed + 1 skipped ×3 `-W error`, Ruff/format/mypy |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-artifact-registry-smoke.md` |
-| Local commit | `7adc7e5503ef4bf7cd86497247791aea2046db96` |
-| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`) |
-| Push status | `PUSHED` lúc 2026-11-07T17:38:34+07:00 theo xác nhận của owner — [commit](https://github.com/HiImNVH/ViSign/commit/7adc7e5503ef4bf7cd86497247791aea2046db96); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42364814495) |
+| Task/checkpoint | `T044/T048` → `T055/T060` → `T030/T038` (3 micro-commit, mở endpoint cho E2E theo P1) |
+| Proposed commit | `CP4 T044,T048(api): add pure confidence decision rule`; `CP5 T055,T060(api): add health and model-info endpoints`; `CP3 T030,T038(api): add prediction endpoint with fixture contract tests` |
+| Exact staged paths | Xem evidence `CP4/T044-T048`, `CP5/T055-T060`, `CP3/T030-T038` |
+| Pre-commit sync | `PASS` sau rebase lên `15384cc` (commit T055/T060 ban đầu tạo khi `1 1`, đã rebase trước push và chạy lại gate) |
+| Gate commands | RED→GREEN từng bước, 7 mutation fail, API+contract 211 passed + 1 skipped ×3 `-W error`, Ruff/format/mypy, live uvicorn |
+| Smoke evidence | `docs/evidence/checkpoints/CP4/T044-T048-p2-tin-smoke.md`, `CP5/T055-T060-p2-tin-smoke.md`, `CP3/T030-T038-p2-tin-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `NOT_PUSHED` — chờ owner xác nhận push |
 
 ## Commit ledger
 
