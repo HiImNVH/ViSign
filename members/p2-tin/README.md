@@ -20,7 +20,7 @@
 | `T001-T007 / CP1` | `DONE` | monorepo dirs, root/API/AI pyproject + `uv.lock`, web Vite/lint/test config, `.gitignore` | CP1 `VERIFIED` (P1 đóng `4b21e71`), đã `[X]`; follow-up `.gitignore` chặn file nén theo ghi chú P1 | P1/Huy, P3/Cường, P5/Hiển |
 | `T086 / CP1 review` | `DONE` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | `VERIFIED`; ghi chú P3 lệch khung sau `a8ea4c6` | P2/Tín là reviewer |
 | `T091 / CP7 review` | `DONE` | `docs/evidence/checkpoints/CP7/T091-p1-huy-quality-ci-smoke.md` | `P2_VERIFIED`; 4 ghi chú không chặn | P2/Tín là reviewer |
-| `T039 / CP3 review` | `DONE` | `docs/evidence/checkpoints/CP3/T039-p5-hien-smoke.md` | `CHANGES_REQUESTED`: test focus flaky làm đỏ CI; đề xuất `useLayoutEffect` (30/30 pass) | P2/Tín là reviewer |
+| `T039 / CP3 review` | `DONE` | `docs/evidence/checkpoints/CP3/T039-p5-hien-focus-fix.md` | Re-review `VERIFIED`: `useLayoutEffect`, 30/30 pass, 47 unit + 21 Edge PASS trên Node 24 | P2/Tín là reviewer |
 | `T004 / CP1 fix` | `P1_VERIFIED` | `apps/web/package.json`, lockfile | Huy verify `d3afdff`; `plan.md`/`quickstart.md` đã cập nhật; chờ Hiển (kèm `apps/web/README.md`) | P5/Hiển, P1/Huy |
 | `T019-T021 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/domain/`, unit tests | P1_VERIFIED; P5: T021 `P5_VERIFIED`, T020 đã sửa chữ bị từ chối theo yêu cầu P5 (chờ P5 kiểm lại); T019 chờ Cường | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | P1_VERIFIED; CORS credential đã khóa `Literal[False]` theo yêu cầu P5 (chờ P5 kiểm lại) | P1/Huy, P5/Hiển (CORS) |
@@ -28,7 +28,8 @@
 | `T026 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | P1_VERIFIED; CORS credential đã khóa ở `Settings` (T022); ngoại lệ preflight ghi vào quy ước T099; chờ P5 kiểm lại | P1/Huy, P5/Hiển (CORS) |
 | `T024-T025 / CP2` | `DONE` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Huy verify `6cc3900`; đã đánh `[X]` trong `tasks.md`; ghi chú: kiểm 10 MiB trước khi đọc hết body (T049) | P1/Huy |
 | `T099 / CP2` | `REVIEW` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | P1 lead verify; P5 xác nhận consumer D1–D4; quy ước lên `v1.0.1` ghi ngoại lệ preflight theo review P5 | P5/Hiển và P1/Huy |
-| `T017 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T017-p3-cuong-smoke.md` | `CHANGES_REQUESTED`: CLI chưa có test tự động; smoke 4 mã từ chối đúng; đề nghị P3 xác nhận quy tắc `INSUFFICIENT_LANDMARKS`/`NO_PERSON_DETECTED` | P2/Tín là reviewer |
+| `T017 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T017-p3-cuong-smoke.md` | Re-review `VERIFIED`: 13 test mới (28 passed AI); ghi chú merge commit `fc7d606` | P2/Tín là reviewer |
+| `T040 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T040-p5-hien-smoke.md` | `P2_VERIFIED` API contract; 1 MEDIUM (guard `meanings` rỗng), 3 LOW | P2/Tín là reviewer |
 | `T037 / CP3` | `REVIEW` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter + parity `7d5c16a`; loader/fixture/registry `7adc7e5` (CI success); GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
