@@ -42,7 +42,8 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T029, T033 | P3 | GRU classifier + test | `VERIFIED`, `[X]` (P1) |
 | T034–T036 | P3 | Loader, preset pilot/full, CLI train + xuất artifact | `VERIFIED`, `[X]` (P1; P2 xác nhận artifact) |
 | T030, T037, T038 | P2 | Registry, adapter đặc trưng (parity 6/6), adapter GRU pilot/full, `POST /predictions` | `VERIFIED`, `[X]` |
-| T041–T043, T046 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi | `VERIFIED`, `[X]` (P1) |
+| T041–T043, T046, T052 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi, thông báo lỗi tiếng Việt | `VERIFIED`, `[X]` (P1) |
+| T065 | P3 | Benchmark latency/tài nguyên | P1_VERIFIED local; chờ production; **SC-002 trượt** (web p95 6,4 s, extract p50 4,6 s) |
 | T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
@@ -77,8 +78,9 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
   train/validation/test; raw material hiện chỉ vài video mỗi nghĩa → cần tự quay bổ sung (planning floor
   20–30 mẫu/lớp, nhiều người ký) trước khi pilot có ý nghĩa.
 
-- Latency: benchmark T095 đo 2,4–3,4 s/clip trên Windows **chưa gồm GRU**, sát/vượt SC-002 p95 ≤ 3 s.
-  P3 xem lại decode toàn bộ frame trước khi lấy mẫu (review T014–T016 mục 3).
+- **Latency (rủi ro nghiêm trọng)**: T065 đo web p95 6,4 s, extract MediaPipe p50 4,6 s, GRU < 5 ms → SC-002
+  (p95 ≤ 3 s) trượt gấp đôi. Nguyên nhân chính: tạo lại 3 detector mỗi clip và decode toàn bộ frame (review
+  T014–T016 mục 3–4). P3 tối ưu, giữ parity offline ↔ API.
 - RAM: đỉnh 480–600 MB/clip; host 1 GB quá sát — chọn instance sau khi đo trên Linux.
 - Hiến pháp III còn yêu cầu báo cáo kết quả với người chưa xuất hiện; chờ lead quyết định sửa hiến pháp
   hay ghi giới hạn trong model card.

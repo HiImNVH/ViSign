@@ -14,3 +14,19 @@ P3/Cường đo local trên baseline cedd013. Review P1/Huy và P2/Tín. [Báo c
 Local chưa đạt SC-002. Kết quả API p95 5,71 s ở client HTTP, phần trích landmark p95 5,26 s. Artifact pilot dùng trọng số tổng hợp. Evidence này phục vụ tối ưu hiệu năng và chưa đóng T065.
 
 **Reviewer result** PENDING
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T22:43:49+07:00` trên `cc9a214` (theo uỷ quyền của Huy). Ruff, mypy (27 file) PASS; `benchmark_inference --help` chạy.
+
+Số đo local nhất quán với evidence P2 (p95 API 4,73 s) và cho thấy nút thắt rõ: **extract MediaPipe p50
+4.644 ms / p95 5.265 ms**, GRU p95 4 ms; web p95 6.425 ms → **SC-002 (≤ 3 s) trượt gấp đôi**.
+
+Nguyên nhân có bằng chứng trong code: `ai/src/visign_ai/landmarks/holistic_extractor.py` dòng ~93 vẫn đọc
+model và `create_from_options` 3 detector **cho mỗi clip** (đã ghi ở review T014–T016 mục 4), cộng với decode
+toàn bộ frame trước khi lấy mẫu (mục 3). Đề xuất P3 đo tách chi phí khởi tạo, thử giữ detector giữa các
+request (reset bằng timestamp mới/instance pool) và lấy mẫu trước khi chuyển RGB; mọi thay đổi phải giữ
+parity offline ↔ API.
+
+**Reviewer result**: `P1_VERIFIED` phần local. T065 giữ `[ ]` vì task yêu cầu cả **production** (chưa có
+URL/host đo) và SC-002 chưa đạt.

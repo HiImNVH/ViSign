@@ -60,3 +60,18 @@ Browser tests sử dụng API `v1` và camera mock; các log `ECONNREFUSED 127.0
 - [ ] Reviewer chạy lại gate và xác nhận.
 
 **Reviewer result**: `PENDING`.
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T22:43:49+07:00` trên `cc9a214` (theo uỷ quyền của Huy).
+
+| Gate | Kết quả |
+|---|---|
+| Web lint, typecheck, Vitest | PASS; 122/122 test, 9 file |
+| Phủ mã lỗi (D3) | Copy `predictionErrors.codes` = 11/11 mã trong `ERROR_CODES`, không thiếu/thừa |
+| Code | Câu chữ do client giữ, không render `message`/`code` của server; tra mã bằng `Object.hasOwn` (chặn khoá prototype); mã lạ → fallback; huỷ request im lặng; lỗi metadata giữ nút kết nối lại |
+| CI | `quality.yml` xanh trên `05d906f` |
+
+Playwright 42/42 theo owner; P1 không chạy lại browser (CI chưa có job Playwright).
+
+**Reviewer result**: `P1_VERIFIED` → T052 `[X]`.
