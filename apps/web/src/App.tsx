@@ -10,7 +10,6 @@ export function App() {
       <header className="app-header"><div className="brand"><h1>ViSign</h1><span>{vi.title}</span></div>
         <div className="header-actions"><span className="trial-label">Bản thử nghiệm</span><CameraHelp /></div></header>
       <CameraRecorder />
-      <p className="disclaimer">{vi.disclaimer}</p>
     </main>
   );
 }

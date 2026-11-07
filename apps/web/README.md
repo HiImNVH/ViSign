@@ -29,7 +29,7 @@ npm.cmd run test:browser
 
 `npm.cmd run check` chạy lint, toàn bộ unit/component tests, typecheck/build và browser tests.
 `test:browser` và `test:smoke` yêu cầu chạy build trước. Playwright khởi động
-preview server riêng tại `127.0.0.1:4173`, kiểm tra desktop và viewport 320px;
+preview server riêng tại `127.0.0.1:4173`, kiểm tra desktop, viewport 320px và landscape 640×360;
 không tái sử dụng server có sẵn. Cổng bận sẽ làm kiểm tra thất bại rõ ràng.
 Vitest chỉ thu thập `*.test.ts`/`*.test.tsx`, tách khỏi Playwright `*.spec.ts`.
 
@@ -61,13 +61,19 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 
 ## Phạm vi và thiết kế
 
-- Camera chiếm toàn bộ chiều ngang; các nút điều khiển và vùng **Văn bản dịch** nằm
-  bên dưới trên cả desktop và điện thoại. Khi chưa tích hợp API, vùng dịch ghi
-  “Chưa có bản dịch.”, không dùng trạng thái quay làm kết quả nhận diện.
+- Bố cục đã được người dùng duyệt: một màn hình không cuộn, camera chiếm phần lớn viewport,
+  bỏ tiêu đề lớn. Nút điều khiển nằm trong khung camera, sát cạnh dưới, trên nền trong mờ.
+- Vùng chữ chỉ xuất hiện khi có kết quả `accepted=true`, chữ/class label không rỗng,
+  confidence hợp lệ và đúng Blob của lần quay hiện tại. Không hiển thị ô rỗng,
+  “Chưa có bản dịch” hoặc chữ mẫu trong ứng dụng.
+- `CameraRecorder.recognitionResult` là ranh giới trình bày cho lần tích hợp sau;
+  ứng dụng hiện chưa truyền kết quả vì chưa nối API. Ghi xong clip không tự trở thành bản dịch.
+- Vùng chữ nằm trên hàng nút trong camera; nền có alpha và blur nhẹ, không giảm opacity của chữ/nút.
+- Riêng tư và disclaimer đầy đủ nằm trong Hướng dẫn; kết quả được chấp nhận có confidence/cảnh báo thử nghiệm.
 - T004: package, lockfile, entrypoint React và trang khởi đầu.
 - T006: ESLint, strict TypeScript, Vitest và Playwright.
 - T039: camera và capture local; T031/T028 chỉ triển khai phần test/copy phục vụ camera.
-- API client/types, kết quả và Admin thuộc các phần sau.
+- API client/types, kết quả tích hợp và Admin thuộc các phần sau; T042 mới chuẩn bị phần overlay, chưa hoàn tất.
 - Nền sáng `#f4f5f6`, chữ chính `#173f35`, chữ phụ `#52666b`;
   font hệ thống hỗ trợ tiếng Việt; nội dung căn trái, chiều dài dòng tối đa 65ch.
 - Giữ zoom trình duyệt, safe area và viewport nhỏ; hover chỉ cho thiết bị hỗ trợ,

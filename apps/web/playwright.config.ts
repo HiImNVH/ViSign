@@ -18,6 +18,7 @@ export default defineConfig({
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
     { name: 'mobile', use: { viewport: { width: 320, height: 640 }, isMobile: true, hasTouch: true } },
+    { name: 'landscape', use: { viewport: { width: 640, height: 360 }, isMobile: true, hasTouch: true } },
   ],
   webServer: {
     command: 'npm run preview -- --port 4173 --strictPort',

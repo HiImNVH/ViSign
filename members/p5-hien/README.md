@@ -27,11 +27,11 @@
 | Field | Value |
 |---|---|
 | Task/checkpoint | `T039 / CP3` — chuẩn bị local theo yêu cầu; không đóng checkpoint |
-| Proposed commit | `CP3 T039(ui): restore large camera and text below` |
-| Exact staged paths | `apps/web/src/features/recognition/CameraRecorder.tsx`, `apps/web/src/styles.css`, `apps/web/tests/browser/camera.spec.ts`, `apps/web/README.md`, member README và `docs/evidence/checkpoints/CP3/T039-p5-hien-layout-smoke.md` |
-| Pre-commit sync | Fetch `origin/main` tại `18a07aef641b424ddf4772249623b1bc04a4b926`; remote-only count 0, local camera commit `edd328d` đã có; chạy lại toàn bộ gate |
+| Proposed commit | `CP3 T039(ui): apply approved camera overlay layout` |
+| Exact staged paths | `apps/web/src/App.tsx`, `src/features/recognition/{CameraRecorder.tsx,RecognitionOverlay.tsx}`, `src/styles.css`, `tests/browser/camera.spec.ts`, `tests/recognition/recognition-overlay.test.tsx`, `playwright.config.ts`, `apps/web/README.md`, member README và `docs/evidence/checkpoints/CP3/T039-p5-hien-overlay-smoke.md` |
+| Pre-commit sync | Fetch/rebase `origin/main` tại `38cc95519510954b3c45a61315620a20804a7a94`; giữ dòng T040 theo handoff mới của lead, khôi phục candidate. Gate frontend sau rebase 377ac98 PASS; các cập nhật c902ea3/38cc955 chỉ có CI/docs, không đổi source frontend |
 | Gate commands | `npm.cmd run typecheck`; `VISIGN_BROWSER_CHANNEL=msedge npm.cmd run check` (PowerShell đặt env riêng) |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-layout-smoke.md` |
+| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-overlay-smoke.md` |
 | Local commit | `PENDING` |
 | Pre-push sync | `PENDING` |
 | Push status | `NOT_PUSHED` — chờ foundation của Tín, Huy mở window và review độc lập |
@@ -43,12 +43,13 @@
 | `CP2/T040` | Versioned inference API client | `CP2 T040(web): add versioned inference API client` | `PENDING` | `PENDING` | `NOT_RUN` | P2/Tín, P1/Huy | `BLOCKED` |
 | `CP3/T039` | Explicit local camera capture và resource cleanup | `CP3 T039(web): add explicit camera capture and cleanup` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; lint/typecheck/build PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
 | `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
+| `CP3/T039 overlay` | Áp dụng demo đã duyệt: nút/chữ trong camera, chữ chỉ khi accepted | `CP3 T039(ui): apply approved camera overlay layout` | `PENDING` trước push | `PENDING` | 42 unit/component + 15 browser Edge; lint/typecheck/build, no-scroll và result guard PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
 
 ## Handoff
 
-- Current risks: T039 local chưa có upload/recognition; chưa kiểm tra webcam/điện thoại thật. Camera E2E trên Headless Shell 158 chưa đạt; đã chạy Edge 157.
+- Current risks: T039 local chưa có upload/recognition; overlay không tự tạo chữ từ capture. Chưa kiểm tra webcam/điện thoại thật; browser gate dùng Edge 157.
 - Required input: Tín/lead chốt FE–BE API convention và OpenAPI v1.
-- Next owner/action: review toolchain của Tín; Tín/Huy review camera local, chờ window trước push. T099 vẫn chặn việc chốt API client.
+- Next owner/action: Tín/Huy review camera local, chờ window trước push; xác nhận handoff `docs/team/fe-be-api-convention.md` và đóng băng T099 trước khi chốt API client.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history

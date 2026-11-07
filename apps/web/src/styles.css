@@ -15,40 +15,32 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
+html, body, #root { height: 100%; }
 button { font: inherit; cursor: pointer; touch-action: manipulation; border: 0; }
 button:focus-visible { outline: 3px solid #986819; outline-offset: 4px; }
-.app-shell { max-width: 1800px; min-height: 100svh; margin: auto; padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+.app-shell { width: 100%; height: 100vh; height: 100dvh; min-height: 0; display: grid; grid-template-rows: 48px minmax(0, 1fr); gap: 8px; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
 h1, h2, h3 { margin: 0; }
 p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
-.app-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 12px 0 28px; }
+.app-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; padding: 0 4px; }
 .brand { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
-.brand h1 { font-size: 28px; letter-spacing: -1px; }
+.brand h1 { font-size: 24px; line-height: 1.2; letter-spacing: -1px; }
 .brand > span { color: var(--color-muted); font-size: 14px; }
 .header-actions { display: flex; align-items: center; gap: 16px; }
 .trial-label { font-size: 13px; white-space: nowrap; color: var(--color-muted); }
-.camera-workspace { padding: 32px; border: 1px solid var(--color-border); border-radius: 24px; background: white; }
-.workspace-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-.workspace-heading h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 600; letter-spacing: -.7px; }
-.status-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-muted); }
+.camera-workspace { min-width: 0; min-height: 0; }
+.status-badge { position: absolute; right: 12px; top: 12px; display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 20px; font-size: 13px; color: #244637; background: rgb(255 255 255 / 76%); backdrop-filter: blur(6px); }
 .status-badge > span { width: 8px; height: 8px; border-radius: 50%; background: #73847b; }
 .status-recording > span { background: #ad3935; }
 .status-preview > span, .status-captured > span { background: var(--color-primary); }
-.capture-layout { display: flex; flex-direction: column; min-width: 0; }
-.camera-viewport { position: relative; display: grid; place-items: center; width: 100%; height: clamp(240px, calc(100svh - 390px), 760px); overflow: hidden; border-radius: 16px; background: #f0f3f4; }
+.camera-viewport { position: relative; display: grid; place-items: center; width: 100%; height: 100%; min-height: 0; overflow: hidden; border-radius: 16px; background: #e6eaea; }
 .camera-viewport video { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: contain; transform: scaleX(-1); opacity: 0; }
 .camera-active video { opacity: 1; }
 .camera-placeholder { text-align: center; color: var(--color-muted); }
 .camera-placeholder p { font-size: 14px; }
 .camera-glyph { display: block; position: relative; margin: auto; width: 36px; height: 26px; border: 2px solid #70867e; border-radius: 6px; }
 .camera-glyph::after { content: ''; position: absolute; inset: 5px 10px; border: 2px solid #70867e; border-radius: 50%; }
-.framing-guide { position: absolute; inset: 14%; pointer-events: none; color: #8ba89c; }
-.framing-guide i { position: absolute; width: 28px; height: 28px; border: 2px solid currentColor; }
-.framing-guide i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 12px; }
-.framing-guide i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 12px; }
-.framing-guide i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 12px; }
-.framing-guide i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 12px; }
-.camera-active .framing-guide { color: white; filter: drop-shadow(0 1px 2px #173f35); }
-.capture-controls { min-height: 76px; padding: 14px 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.camera-dock { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.capture-controls { max-width: 100%; min-height: 0; padding: 6px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; background: rgb(255 255 255 / 72%); backdrop-filter: blur(6px); border-radius: 16px; pointer-events: auto; }
 .primary-button, .quiet-button { display: inline-flex; justify-content: center; align-items: center; gap: 10px; min-height: 48px; padding: 12px 18px; border-radius: 12px; user-select: none; -webkit-tap-highlight-color: transparent; }
 .primary-button { background: var(--color-primary); color: white; font-weight: 600; }
 .quiet-button { background: #edf3ef; color: #245441; }
@@ -56,12 +48,14 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
 .stop-mark { width: 10px; height: 10px; border-radius: 2px; background: currentColor; }
 .stop-button { background: #a83f3a; }
 .finishing-label { font-size: 14px; color: var(--color-muted); }
-.translation-panel { width: 100%; padding: 16px 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
-.translation-panel h3 { font-size: 14px; font-weight: 500; color: var(--color-muted); }
-.translation-empty { font-size: 22px; margin: 8px 0 0; color: var(--color-muted); }
-.capture-feedback { margin-top: 16px; }
+.translation-panel { max-width: min(680px, 100%); padding: 8px 18px; border-radius: 14px; background: rgb(255 255 255 / 76%); backdrop-filter: blur(6px); text-align: center; pointer-events: auto; }
+.translation-text { margin: 0; font-size: clamp(20px, 3vw, 32px); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.translation-confidence { margin: 4px 0 0; font-size: 13px; }
+.translation-notice { margin: 2px 0 0; font-size: 12px; }
+.capture-feedback { position: absolute; left: 16px; right: 16px; top: 52px; bottom: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
 .capture-feedback h3 { font-size: 20px; line-height: 1.4; font-weight: 600; }
 .capture-feedback p { color: var(--color-muted); margin: 8px 0 0; font-size: 14px; }
+.error-feedback h3, .error-feedback p { padding: 6px 12px; border-radius: 10px; background: rgb(255 255 255 / 88%); }
 .error-feedback h3 { color: #913c22; }
 .privacy-note { font-size: 13px; color: var(--color-muted); margin: 12px 0 0; }
 .disclaimer { margin: 20px 0 0; color: var(--color-muted); font-size: 13px; }
@@ -72,6 +66,7 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
 .help-steps { padding-left: 22px; }
 .help-steps li { margin: 20px 0; padding-left: 4px; }
 .help-steps p { margin: 6px 0 0; color: var(--color-muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (hover: hover) and (pointer: fine) {
   .primary-button:hover { background: #106747; }
   .stop-button:hover { background: #8e342f; }
@@ -85,12 +80,12 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
   .brand > span { display: none; }
 }
 @media (max-width: 480px) {
-  .app-shell { padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
-  .app-header { gap: 12px; padding: 0 4px 20px; }
+  .app-shell { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+  .app-header { gap: 12px; }
   .header-actions { gap: 8px; }
   .trial-label { display: none; }
-  .camera-workspace { padding: 20px 16px; border-radius: 20px; }
-  .workspace-heading { margin-bottom: 20px; }
-  .framing-guide { inset: 9%; }
+  .camera-dock { left: 8px; right: 8px; bottom: 8px; }
+  .capture-controls .primary-button, .capture-controls .quiet-button { padding: 10px 12px; font-size: 14px; }
   .help-dialog { padding: 20px; }
 }
+@media (max-height: 420px) { .capture-feedback { top: 44px; bottom: 76px; } .capture-feedback h3 { font-size: 16px; } .capture-feedback p { margin-top: 4px; } }
