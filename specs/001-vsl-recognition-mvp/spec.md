@@ -24,6 +24,18 @@
 
 - Q: Quang đã chọn những ý nghĩa nào cho phạm vi P0? → A: Giấy tờ (giấy), Đau bụng, Thuốc, Sốt, Nhận, Bạn (Ngôi thứ 2), Xin chào, Cảm ơn, Chờ (đợi), Sao chép.
 
+### Session 2026-11-07
+
+- Q: Raw material P0 không có danh tính người ký và nguồn là video giáo dục trực tuyến công khai; quality
+  gate chia tập thế nào? → A: Chia theo video gốc. Mỗi video gốc là một `recordingSessionId`; mọi clip
+  cắt từ cùng video nằm cùng một tập. Báo cáo gắn nhãn `video-held-out` và không tuyên bố unseen-signer.
+  Nếu sau này xác định được `signerId`, split theo signer được ưu tiên.
+- Q: Nguồn và quyền sử dụng ghi ở mức nào? → A: Ghi một lần ở mức bộ dữ liệu: video giáo dục trực tuyến
+  công khai, lead duyệt dùng cho học tập/nghiên cứu; dataset card ghi tên website nguồn. Không bắt buộc
+  ghi nguồn, giấy phép và người ký cho từng video.
+- Q: Số ý nghĩa của MVP có thay đổi theo raw material mới không? → A: Không; giữ đúng 10 ý nghĩa P0.
+  Các ý nghĩa khác trong raw material (Giúp đỡ, Xin lỗi, Tạm biệt, Tôi) thuộc giai đoạn mở rộng.
+
 ### Session 2026-10-24
 
 - Q: Bảng `user` trong database cần đại diện cho đối tượng nào? → A: Chỉ thành viên nội bộ; MVP không có tài khoản người dùng cuối, lịch sử nhận diện hoặc database runtime. Sau khi đánh giá, phạm vi database được bỏ và chỉ cập nhật API contract.
@@ -189,18 +201,20 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.
 - **FR-011**: Hệ thống MUST NOT lưu video nhận diện của người dùng sau khi trả kết quả nếu chưa có sự
   đồng ý rõ ràng.
-- **FR-012**: Mỗi mẫu huấn luyện được chấp nhận MUST có ý nghĩa, nhãn lớp, vùng miền, nguồn, điều kiện
-  sử dụng và trạng thái xác minh.
+- **FR-012**: Mỗi mẫu huấn luyện được chấp nhận MUST có ý nghĩa, nhãn lớp, vùng miền, video gốc
+  (`recordingSessionId`) và trạng thái xác minh. Nguồn và điều kiện sử dụng MAY được khai một lần ở mức
+  bộ dữ liệu khi toàn bộ nguồn cùng loại (xem Clarifications 2026-11-07).
 - **FR-013**: Hệ thống MUST loại khỏi dữ liệu được phê duyệt các mẫu sai nhãn, không phải VSL hoặc
   không rõ quyền sử dụng.
 - **FR-014**: Mỗi bản mô hình được chấp nhận MUST gắn với phiên bản dữ liệu, extractor/feature schema,
   danh sách lớp, cách chia tập, ngày đánh giá và báo cáo gồm accuracy, precision, recall, Macro-F1,
-  confusion matrix, latency cùng kết quả signer-held-out.
-- **FR-015**: Quality gate chính thức MUST dùng tập kiểm thử tách theo `signerId` ẩn danh và gồm người
-  không xuất hiện trong train/validation. Split theo `recordingSessionId` chỉ được dùng cho pilot hoặc
-  phát triển khi không xác định được signer và MUST NOT được trình bày là bằng chứng unseen-signer.
+  confusion matrix, latency cùng loại split đã dùng (`video-held-out` hoặc signer-held-out).
+- **FR-015**: Quality gate chính thức MUST dùng tập kiểm thử tách theo video gốc (`recordingSessionId`):
+  mọi clip cắt từ cùng một video MUST nằm cùng một tập train, validation hoặc test. Khi có `signerId`,
+  split theo signer được ưu tiên. Kết quả `video-held-out` MUST được gắn nhãn đúng loại split và MUST NOT
+  được trình bày là bằng chứng unseen-signer.
 - **FR-016**: Bản MVP MUST đạt Macro-F1 tối thiểu 80% và recall của từng ý nghĩa tối thiểu 65% trên
-  tập kiểm thử tách theo người thực hiện để được chấp nhận cho demo.
+  tập kiểm thử tách theo FR-015 để được chấp nhận cho demo.
 - **FR-017**: Đăng nhập, lịch sử nhận diện, chuyển văn bản thành giọng nói, chuyển văn bản thành ký
   hiệu và nhận diện chuỗi câu MUST nằm ngoài phạm vi MVP này.
 - **FR-018**: Hệ thống MUST cho phép thay thế `fixture`, `pilot` và `full` model artifact qua cùng
@@ -271,9 +285,9 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
 - **SC-003**: 100% lần thử không đạt decision rule đã công bố hiển thị “Không nhận diện được” thay vì
   một từ được khẳng định chắc chắn; báo cáo MUST nêu rõ rule, threshold và tập đánh giá đã dùng.
 - **SC-004**: Bản mô hình demo đạt ngưỡng chất lượng được chốt trong FR-016 trên tập kiểm thử tách theo
-  người thực hiện và có báo cáo theo từng lớp.
-- **SC-005**: 100% mẫu dữ liệu được dùng cho bản mô hình demo có nguồn và trạng thái quyền sử dụng;
-  mọi mẫu chưa được chuyên gia xác minh được đánh dấu rõ.
+  FR-015 và có báo cáo theo từng lớp.
+- **SC-005**: Bộ dữ liệu dùng cho bản mô hình demo công bố nguồn và căn cứ quyền sử dụng (ở mức bộ dữ
+  liệu hoặc từng mẫu); mọi mẫu chưa được chuyên gia xác minh được đánh dấu rõ.
 - **SC-006**: Không có video nhận diện của người dùng được lưu sau khi trả kết quả trong luồng mặc định.
 - **SC-007**: Luồng demo bắt buộc chạy thành công với ít nhất ba ý nghĩa thuộc các nhóm giao tiếp, y tế
   và hành chính, đồng thời có một lần thử không hợp lệ được từ chối đúng.
@@ -308,8 +322,9 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   phải mang trạng thái chưa xác minh cho đến khi được người có chuyên môn đối chiếu.
 - Danh sách 10 ý nghĩa P0 đã được Quang chốt ngày 2026-10-22; việc chốt danh mục không đồng nghĩa các
   video mẫu đã được duyệt. Từng mẫu vẫn phải qua lọc nhãn, kiểm tra quyền sử dụng và phân tích độ phủ.
-- Mức 20–30 mẫu mỗi lớp và 3–5 signer chỉ là planning floor để chạy pilot, không phải bằng chứng dữ
-  liệu đã đủ; quyết định full training dựa trên coverage theo meaning × signer và split audit.
+- Mức 20–30 mẫu mỗi lớp chỉ là planning floor để chạy pilot, không phải bằng chứng dữ liệu đã đủ;
+  quyết định full training dựa trên coverage theo meaning × video gốc và split audit. Raw material hiện
+  là video giáo dục trực tuyến công khai, không có danh tính người ký.
 - Bản cloud là yêu cầu chấm điểm; bản chạy cục bộ và artifact đã smoke-test được giữ làm phương án
   rollback cho buổi trình diễn.
 - Nhóm dùng một repository `HiImNVH/ViSign`, không dùng nhánh vai trò dài hạn; mỗi người có clone cục

@@ -25,6 +25,9 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
   representative-clip review cho schema `visign-xy-32-v0.3-draft`.
 - Lead đã bàn giao quy ước: [fe-be-api-convention.md](fe-be-api-convention.md) cho T099 và
   [data-convention.md](data-convention.md) cho T098. Owner xác nhận các quyết định bổ sung rồi đóng băng.
+- 2026-11-07 lead quyết định dữ liệu: giữ 10 ý nghĩa P0; full gate chia theo video gốc (`video-held-out`,
+  FR-015 mới), không tuyên bố unseen-signer; nguồn/giấy phép khai một lần ở mức bộ dữ liệu (video giáo dục
+  công khai). Ánh xạ tên file của Quang ở `data-convention.md` mục 8, chờ Quang xác nhận 4 điểm.
 - T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
 - CP2 T022–T023 (config/logging) của P2 tại `fb56354`: P1_VERIFIED; P5 review CORS còn pending.
   T014–T016: P1_REVIEWED và P2_VERIFIED (serving); representative-clip review schema còn pending.

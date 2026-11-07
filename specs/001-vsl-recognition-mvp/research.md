@@ -171,11 +171,14 @@ mask và extractor version. Golden clip→tensor test chạy trong cả AI và i
 
 ## 12. Signer split và session fallback
 
-**Decision**: Full demo gate chỉ chấp nhận test split theo `signerId` ẩn danh. Session-only split được
-phép cho pilot/dev nhưng report phải gắn nhãn `session-only` và không được tuyên bố unseen-signer.
+**Decision** (cập nhật 2026-11-07): Raw material là video giáo dục công khai không có danh tính người
+ký, nên full demo gate dùng video-held-out split theo `recordingSessionId` (mỗi video gốc một session).
+Report gắn nhãn `video-held-out` và không được tuyên bố unseen-signer. Có `signerId` thì ưu tiên split
+theo signer.
 
-**Rationale**: Hai session khác nhau vẫn có thể thuộc cùng người; fallback session không chứng minh
-khả năng tổng quát hóa sang signer mới.
+**Rationale**: Chia theo video chặn rò rỉ giữa các clip cắt từ cùng video. Hai video vẫn có thể cùng
+một người ký, nên kết quả không chứng minh khả năng tổng quát hóa sang signer mới; giới hạn này phải
+ghi trong model card và dataset card.
 
 ## 13. Rejection strategy
 

@@ -30,4 +30,4 @@ This contract applies only to the opt-in local `/api/admin/*` tool. It is not pa
 - Inspection timeout: 504.
 
 Pilot metrics are integration evidence only. No admin endpoint may set a pilot artifact to
-`demoReady=true` or bypass the full 10-meaning signer-held-out release gate.
+`demoReady=true` or bypass the full 10-meaning release gate on the FR-015 split.

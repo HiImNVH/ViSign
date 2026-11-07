@@ -72,8 +72,8 @@ người dùng; Macro-F1 ≥80%; recall mỗi ý nghĩa ≥65%; cloud budget h�
 production; không commit secret/raw video/model binary
 
 **Scale/Scope**: Một nhóm 5 thành viên, một máy demo, 10 ý nghĩa P0, khoảng 10–20 lớp nếu có biến thể.
-Mức 20–30 mẫu được duyệt mỗi lớp và 3–5 signer là planning floor cho pilot, không phải quality gate;
-full track chỉ mở khi coverage theo meaning × signer và signer-held-out split đủ để đánh giá trung thực.
+Mức 20–30 mẫu được duyệt mỗi lớp là planning floor cho pilot, không phải quality gate; full track chỉ
+mở khi coverage theo meaning × video gốc và video-held-out split (FR-015) đủ để đánh giá trung thực.
 
 **Frozen P0 Vocabulary**: `GIAY_TO` — Giấy tờ (giấy); `DAU_BUNG` — Đau bụng; `THUOC` — Thuốc;
 `SOT` — Sốt; `NHAN` — Nhận; `BAN` — Bạn (Ngôi thứ 2); `XIN_CHAO` — Xin chào; `CAM_ON` — Cảm ơn;
@@ -127,7 +127,7 @@ chỉ trở thành cam kết khi đã được ánh xạ vào task `T*` hoặc �
    Chrome/Edge trên laptop demo đạt tiêu chí decode, timestamp và duration.
 2. Chốt MediaPipe/extractor version, hash model bundle và feature schema trước bulk extraction.
 3. Dùng duy nhất package `visign_ai.landmarks` cho train/API; golden clip→tensor test cưỡng chế parity.
-4. Full quality gate bắt buộc signer-held-out split; session-only split chỉ có giá trị pilot/dev.
+4. Full quality gate bắt buộc video-held-out split theo `recordingSessionId` (FR-015); không tuyên bố unseen-signer.
 5. Kiểm tra MIME, byte limit, WebM magic bytes và decoder probe; phân biệt `CLIP_DECODE_FAILED`.
 6. Một inference slot có timeout; request đến khi bận nhận `SERVICE_BUSY` và retry guidance.
 7. E2E camera dùng Y4M fixture và permission control thay vì chỉ mock HTTP.
@@ -141,7 +141,7 @@ chỉ trở thành cam kết khi đã được ánh xạ vào task `T*` hoặc �
 | Threshold + top1/top2 margin + temperature scaling | Baseline còn false accept hoặc confidence lệch | So sánh cùng validation/OOD split; không giảm recall P0 quá mức đã duyệt |
 | Lớp `NONE` | Threshold/margin chưa đủ tốt và Quang có negative set đa dạng | A/B với baseline 10 lớp; `NONE` không tính vào Macro-F1 10 meaning |
 | Artifact SHA-256, config hash, warm-up | Trước khi cho phép swap/rollback full artifact | Artifact sai hash/schema fail closed; request đầu không chịu cold-start bất thường |
-| Bootstrap/uncertainty report | Test set đủ signer để ước lượng có ý nghĩa | Báo sample/signer count và interval, không dùng interval thay gate hiện có |
+| Bootstrap/uncertainty report | Test set đủ video gốc để ước lượng có ý nghĩa | Báo sample/video count và interval, không dùng interval thay gate hiện có |
 | OpenAPI TypeScript code generation | Contract đổi thường xuyên, có client thứ hai hoặc xuất hiện type drift | Generated types khớp schema và drift check fail khi contract/client lệch |
 | Accessibility audit chuyên sâu | Camera flow đã ổn định hoặc có yêu cầu nghiệm thu riêng | Keyboard, focus, status announcement và camera labels đạt audit; basic accessibility vẫn ở M0 |
 
@@ -214,7 +214,7 @@ model-info, prediction smoke test. Video người dùng vẫn phải bị xóa �
 | Gate | Evidence | Status |
 |------|----------|--------|
 | An toàn và trung thực | API có `accepted`; UI có “Không nhận diện được” và disclaimer | PASS |
-| Nguồn gốc dữ liệu | Manifest bắt buộc source, license, region, verified, signer/session | PASS |
+| Nguồn gốc dữ liệu | Manifest bắt buộc region, verified, session (video gốc); source/license khai ở mức bộ dữ liệu | PASS |
 | Chất lượng đo được | Split theo người, macro-F1, per-class recall, confusion matrix, latency | PASS |
 | Quyền riêng tư | Request video chỉ tồn tại tạm thời và bị xóa sau xử lý; admin inspect cũng cleanup sau response/lỗi | PASS |
 | MVP chạy xuyên suốt | Chỉ 10 từ, camera → API → model → chữ; candidate M1/M2 không tự vào sprint | PASS |

@@ -37,10 +37,10 @@ Metadata cho một raw video hoặc một artifact landmark đã xử lý.
 |------|------|----------|------------|
 | `sampleId` | string | yes | Duy nhất, không chứa tên người thật |
 | `classLabel` | string | yes | Phải tham chiếu SignClass tồn tại |
-| `signerId` | string | conditional | Mã ẩn danh; bắt buộc với mọi mẫu dùng cho full quality gate |
-| `recordingSessionId` | string | yes | Chống trùng phiên; không thay thế signerId cho full gate |
-| `sourceUri` | string | yes | URL nguồn hoặc mã bộ dữ liệu; không nhúng credential |
-| `licenseStatus` | enum | yes | `approved`, `restricted`, `unknown` |
+| `signerId` | string | no | Mã ẩn danh khi xác định được người ký; không bắt buộc (FR-015) |
+| `recordingSessionId` | string | yes | Một video gốc; đơn vị split của full gate (FR-015) |
+| `sourceUri` | string | no | URL nguồn hoặc mã bộ dữ liệu; không nhúng credential |
+| `licenseStatus` | enum | yes | `approved`, `restricted`, `unknown`; mặc định `approved` khi dataset card đã khai quyền ở mức bộ dữ liệu |
 | `verificationStatus` | enum | yes | `verified`, `unverified`, `rejected` |
 | `rejectionReason` | enum/null | conditional | Bắt buộc khi `rejected` |
 | `rawPath` | string | yes | Path tương đối trong kho dữ liệu cục bộ, không commit video |
@@ -58,8 +58,8 @@ verified   -> rejected  (khi audit phát hiện sai)
 ```
 
 Mẫu `licenseStatus != approved` hoặc `verificationStatus == rejected` không được vào model release.
-Mẫu thiếu `signerId` MAY dùng cho pilot/dev với session split nhưng MUST NOT nằm trong test set dùng
-để chứng minh unseen-signer quality gate.
+Full gate split theo `recordingSessionId`; mọi mẫu cùng video gốc nằm cùng một tập. Mẫu không có
+`signerId` vẫn dùng được cho full gate nhưng report MUST ghi `video-held-out`, không tuyên bố unseen-signer.
 
 ## FeatureSchema
 

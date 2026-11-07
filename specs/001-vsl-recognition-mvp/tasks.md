@@ -72,7 +72,7 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 |---|---|---|
 | WebM decode + timestamp | T014–T015, T049 | Person P3/Cường; Person P2/Tín review API boundary |
 | Extractor/schema lock + train/serve parity | T014–T017, T037 | Person P3/Cường; Person P2/Tín review serving |
-| Signer-only full quality gate | T018, T056–T058 | Person P4/Quang; Person P3/Cường consumer |
+| Video-held-out full quality gate (FR-015) | T018, T056–T058 | Person P4/Quang; Person P3/Cường consumer |
 | Decode/busy stable errors | T021–T022, T026, T045, T049–T050 | Person P2/Tín |
 | Fake-camera E2E | T032, T047 | Person P1/Huy; Person P5/Hiển review UX |
 | Request correlation + optional diagnostics | T020, T023, T026–T027, T030, T038, T040, T045 | Person P2/Tín; Person P5/Hiển consumer |
@@ -82,7 +82,7 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 1. Quang đã đóng băng danh mục 10 Meaning tại `data/manifests/p0-meanings.csv`.
 2. T013 chỉ quản lý vocabulary registry; không còn gộp sample manifest vào cùng một checkbox.
 3. T076 audit bản phát triển/pilot (hiện được báo cáo 42 clip, pilot Sốt-Chờ 6 clip).
-4. T077 hoàn thiện sample manifest full 10 nghĩa, coverage và signer-held-out split.
+4. T077 hoàn thiện sample manifest full 10 nghĩa, coverage và video-held-out split.
 5. Huy xác nhận checkpoint T077 trước khi Cường chạy full training; T076 chỉ mở pilot fallback.
 
 ## Format: `[ID] [P?] [Story] Description`
@@ -118,13 +118,13 @@ track MAY bắt đầu khi T019–T028 ổn định và không được trình b
 - [ ] T009 [P] Định nghĩa `Meaning`, `SignClass` và enum metadata theo các constraint trong `data-model.md` tại `ai/src/visign_ai/dataset/entities.py`
 - [ ] T010 [P] Định nghĩa schema hàng manifest gồm `sampleId` duy nhất, `recordingSessionId` bắt buộc, `licenseStatus`, `verificationStatus` và split tại `ai/src/visign_ai/dataset/manifest_schema.py`
 - [ ] T011 [P] Viết unit tests cho duplicate ID, license không approved, rejected sample và signer/session leakage tại `ai/tests/dataset/test_manifest_validation.py`
-- [ ] T012 Cài manifest validator và báo cáo coverage theo class/signer tại `ai/src/visign_ai/dataset/validate_manifest.py`
+- [ ] T012 Cài manifest validator và báo cáo coverage theo class/video gốc tại `ai/src/visign_ai/dataset/validate_manifest.py`
 - [ ] T013 Duy trì danh mục đúng 10 Meaning P0, display text/category/priority và invariant không trùng tại `data/manifests/p0-meanings.csv`
 - [ ] T014 [P] Viết decoder/extractor tests cho WebM VP8/VP9 Chrome/Edge, giữ orientation camera, PTS tăng dần, corrupt clip, representative clips, tensor/mask `32×234` và golden offline→API parity tại `ai/tests/landmarks/test_video_pipeline.py`
 - [ ] T015 Cài `VideoDecoder` PyAV cho WebM VP8/VP9 0.3–6 giây tối đa 10 MiB, giữ nguyên orientation, và MediaPipe video adapter với pinned `extractorVersion` tại `ai/src/visign_ai/landmarks/video_decoder.py` và `ai/src/visign_ai/landmarks/holistic_extractor.py`
 - [ ] T016 Cài draft feature schema v0.3 tensor `32×234`, chuẩn hóa tọa độ, resampling và missing-landmark mask dùng chung train/API; chỉ chuyển APPROVED sau representative-clip review tại `ai/src/visign_ai/landmarks/sequence_transform.py` và `ai/configs/feature_schema.json`
 - [ ] T017 Cài CLI trích xuất toàn manifest, ghi extractor/schema version và stable decode/extraction rejection code tại `ai/src/visign_ai/landmarks/extract_manifest.py`
-- [ ] T018 Cài signer-held-out split cho full gate; chỉ cho phép session-only split ở pilot/dev với nhãn audit cấm unseen-signer claim tại `ai/src/visign_ai/dataset/create_splits.py`
+- [ ] T018 Cài video-held-out split theo `recordingSessionId` cho full gate (ưu tiên signer khi có `signerId`), gắn nhãn split và cấm unseen-signer claim tại `ai/src/visign_ai/dataset/create_splits.py`
 - [ ] T019 [P] Định nghĩa model metadata cho `fixture|pilot|full`, extractor/feature schema version, nullable fixture accuracy/precision/recall/Macro-F1 và gate `full && 10 meanings && macroF1 >= 0.80 && mọi perMeaningRecall >= 0.65` tại `services/inference-api/src/visign_api/domain/model_version.py`
 - [ ] T020 [P] Định nghĩa prediction request/accepted/rejected/error states không thể kết hợp sai; success response giữ `processingTimeMs` và optional `timingsMs {decode,extract,infer}` plus `qualityHints {handsDetectedRatio,frameCount}` không chứa landmark tại `services/inference-api/src/visign_api/domain/prediction.py`
 - [ ] T021 [P] Cài error catalog ổn định gồm `CLIP_DECODE_FAILED` và `SERVICE_BUSY` đúng `contracts/openapi.yaml` tại `services/inference-api/src/visign_api/domain/errors.py`
@@ -208,23 +208,23 @@ hiển thị đúng rejected/error state, không hiển thị một từ như k�
 **Goal**: Model release có thể truy về dữ liệu, split và metrics; evaluator xác minh được demo gate.
 
 **Independent Test**: Chạy evaluation trên test split rồi kiểm tra report/model-info chứa dataset version,
-10 meanings, accuracy, precision/recall từng meaning, Macro-F1, confusion matrix, latency, signer-held-out
+10 meanings, accuracy, precision/recall từng meaning, Macro-F1, confusion matrix, latency, split FR-015
 provenance và `demoReady` đúng gate.
 
 ### Tests for User Story 3
 
 - [ ] T054 [P] [US3] Viết evaluation metric tests và chứng minh fixture/pilot không thể qua full demo gate tại `ai/tests/evaluation/test_model_gate.py`
 - [ ] T055 [P] [US3] Viết `GET /health` và `GET /model-info` contract tests cho fixture/pilot/full, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable metrics tại `services/inference-api/tests/contract/test_model_info_contract.py`
-- [ ] T056 [P] [US3] Viết split regression tests chứng minh full test không trùng signer và session-only split không thể mang nhãn unseen-signer tại `ai/tests/dataset/test_split_audit.py`
+- [ ] T056 [P] [US3] Viết split regression tests chứng minh full test không trùng video gốc và split không có `signerId` không thể mang nhãn unseen-signer tại `ai/tests/dataset/test_split_audit.py`
 
 ### Implementation for User Story 3
 
 - [ ] T057 [US3] Cài accuracy, Macro-F1, per-meaning precision/recall, confusion matrix, signer/sample counts và latency evaluation tại `ai/src/visign_ai/evaluation/metrics.py`
-- [ ] T058 [US3] Cài evaluation CLI sinh JSON metrics, confusion-matrix image và signer-held-out split provenance tại `ai/src/visign_ai/evaluation/evaluate.py`
-- [ ] T059 [US3] Cài metadata writer cho mọi artifact và release gate chỉ chấp nhận full 10-meaning signer-held-out model tại `ai/src/visign_ai/evaluation/release_gate.py`
+- [ ] T058 [US3] Cài evaluation CLI sinh JSON metrics, confusion-matrix image và split provenance (`video-held-out`/signer) tại `ai/src/visign_ai/evaluation/evaluate.py`
+- [ ] T059 [US3] Cài metadata writer cho mọi artifact và release gate chỉ chấp nhận full 10-meaning model đạt gate trên split FR-015 tại `ai/src/visign_ai/evaluation/release_gate.py`
 - [ ] T060 [US3] Cài `GET /api/v1/health` và `GET /api/v1/model-info` công bố artifact kind, extractor/feature schema version, actual meanings và readiness tại `services/inference-api/src/visign_api/api/system.py`
 - [ ] T061 [P] [US3] Viết dataset card công bố nguồn, tính hợp pháp, chất lượng, độ đại diện, phương thức thu thập/xử lý, coverage và bias gaps từ manifest audit tại `docs/dataset-card.md`
-- [ ] T062 [P] [US3] Viết model card gồm lý do chọn GRU, protocol tái lập, artifact kind, supported meanings, accuracy, per-meaning precision/recall, Macro-F1, confusion matrix, latency, signer-held-out/OOD result, bias, explainability limits, fallback status và safety disclaimer tại `docs/model-card.md`
+- [ ] T062 [P] [US3] Viết model card gồm lý do chọn GRU, protocol tái lập, artifact kind, supported meanings, accuracy, per-meaning precision/recall, Macro-F1, confusion matrix, latency, split FR-015/OOD result, bias, explainability limits, fallback status và safety disclaimer tại `docs/model-card.md`
 
 **Checkpoint**: Chỉ model đạt đủ gate mới được API tải làm model demo.
 
@@ -271,10 +271,10 @@ kiểm tra stable Vietnamese copy, không auto-resubmit và không lộ raw serv
 Sốt-Chờ như bằng chứng phát hành 10 nghĩa.
 
 **Independent Test**: Chạy manifest validator và split audit; pilot report chỉ công bố phạm vi pilot,
-còn full manifest có đúng 10 nghĩa, nguồn/quyền, signer coverage và không leakage.
+còn full manifest có đúng 10 nghĩa, nguồn/quyền mức bộ dữ liệu, coverage theo video gốc và không leakage.
 
-- [ ] T076 [P] [US3] Audit bản bàn giao phát triển/pilot, ghi hash/source/license/signer/split và accepted/rejected coverage vào `data/manifests/pilot.csv` và `docs/dataset-card.md`
-- [ ] T077 [US3] Hoàn thiện manifest full đúng 10 nghĩa, coverage meaning×signer và signer-held-out split không leakage tại `data/manifests/p0.csv` và `docs/dataset-card.md`
+- [ ] T076 [P] [US3] Audit bản bàn giao phát triển/pilot, ghi hash/session/split và accepted/rejected coverage vào `data/manifests/pilot.csv` và `docs/dataset-card.md`
+- [ ] T077 [US3] Hoàn thiện manifest full đúng 10 nghĩa, coverage meaning×video gốc và video-held-out split không leakage tại `data/manifests/p0.csv` và `docs/dataset-card.md`
 
 **Checkpoint**: T076 chỉ mở pilot; full training/release gate chỉ mở sau T077 và T056.
 
@@ -364,7 +364,7 @@ ONNX, DVC/MLflow và mở rộng vocabulary tiếp tục chỉ là decision back
 - **US2**: Phụ thuộc prediction states/API shell của Phase 2; có thể bắt đầu song song phần lớn với US1.
 - **US3**: Phụ thuộc manifest/split/model metadata của Phase 2; evaluation có thể song song với UI US1.
 - **Phase 6**: Phụ thuộc các story được chọn cho demo; T070 phụ thuộc toàn bộ cổng bắt buộc.
-- **Phase 8**: T076 có thể chạy từ bản bàn giao pilot; T077 phụ thuộc inventory/license/signer audit.
+- **Phase 8**: T076 có thể chạy từ bản bàn giao pilot; T077 phụ thuộc inventory/label audit.
 - **Phase 9 / US4**: Có thể review/hợp nhất song song sau foundation; T083 phụ thuộc T076 và T078–T082.
 - **Phase 10 / US5**: T085–T090/T093 có thể chuẩn bị song song; T091 chặn deploy, T095 chặn T096,
   và CP8/T097 phụ thuộc toàn bộ quality/cloud/evidence gates.
@@ -421,7 +421,7 @@ Quang:    T013 pilot subset -> T018, tiếp tục hoàn thiện full manifest
 3. Dùng fixture cho CP3 camera → API v1 → UI và CP4 fail-closed/error/privacy paths.
 4. Review representative clips, APPROVE schema v0.3, chạy offline↔API tensor/mask parity.
 5. Quang hoàn thành T076; Cường train/evaluate pilot; Tín nạp gói qua `MODEL_ARTIFACT_PATH`.
-6. Quang hoàn thành T077 signer-held-out full manifest; Cường train/evaluate full và release metadata.
+6. Quang hoàn thành T077 video-held-out full manifest; Cường train/evaluate full và release metadata.
 7. Hoàn thành CI/security/cost/community/cloud CP7; chỉ deploy commit đã qua quality gate.
 8. Huy duyệt full `demoReady=true` và CP8 khi rubric, production smoke, rollback và presentation đạt.
 

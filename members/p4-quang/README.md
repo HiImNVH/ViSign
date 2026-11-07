@@ -17,7 +17,7 @@
 
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
-| `T098 / CP2` | `TODO` | data convention, manifest schema/tests | Lead đã gửi `docs/team/data-convention.md`; xác nhận D1–D4 cùng Cường rồi đóng băng | P3/Cường và P1/Huy |
+| `T098 / CP2` | `TODO` | data convention, manifest schema/tests | Lead đã gửi `docs/team/data-convention.md` (cập nhật mục 8: ánh xạ tên file của Quang, không cần signer/license từng video); xác nhận D1–D4 và 4 điểm mục 8 rồi đóng băng | P3/Cường và P1/Huy |
 | `T008 / CP1` | `REVIEW` | `data/README.md` raw-material/rights guidance do P1 chuẩn bị | Review tính khả dụng cho data workflow | P4/Quang |
 | `T009-T013 / CP2` | `PLANNED` | dataset entities/schema/validator/coverage | Chuẩn bị phần không phụ thuộc T098 | P3/Cường |
 | `T076-T077 / CP5` | `PLANNED` | pilot/full manifest và dataset card | Chờ raw material audit | P3/Cường và P1/Huy |

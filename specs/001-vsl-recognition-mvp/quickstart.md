@@ -44,10 +44,10 @@ Expected:
 
 - Exactly 10 active P0 meanings.
 - No duplicate `sampleId` or `classLabel + region + variantName` identity.
-- No approved sample with unknown license.
-- No signer leakage between train, validation and test for full quality-gate data.
-- Session-only samples are labeled pilot/dev and excluded from unseen-signer claims.
-- A coverage report lists sample and signer counts per class.
+- Dataset-level source and usage basis are recorded in the dataset card.
+- No source-video (`recordingSessionId`) leakage between train, validation and test for full quality-gate data.
+- Reports label the split `video-held-out` and make no unseen-signer claims unless `signerId` exists.
+- A coverage report lists sample and source-video counts per class.
 
 ## Scenario 2: Extract landmarks deterministically
 
@@ -77,7 +77,7 @@ Expected demo gate:
 
 - Macro-F1 is at least 0.80.
 - Recall for every P0 meaning is at least 0.65.
-- Accuracy, per-meaning precision/recall, confusion matrix, signer/sample counts and latency report are generated.
+- Accuracy, per-meaning precision/recall, confusion matrix, source-video/sample counts and latency report are generated.
 - Model metadata names the dataset version and test split.
 - `demoReady` remains false if any gate fails.
 

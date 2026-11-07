@@ -15,7 +15,7 @@ raw video
   -> MediaPipe landmark extractor
   -> shared normalization + resampling + mask
   -> versioned tensor
-  -> signer-held-out split
+  -> video-held-out split (theo video gốc)
   -> GRU training/evaluation
 ```
 
@@ -50,8 +50,8 @@ signed URL hoặc tên thật của người thực hiện.
 | `sampleId` | Duy nhất, không chứa tên thật |
 | `classLabel` | Tham chiếu lớp ký hiệu hợp lệ |
 | `meaningId` | Một trong các ý nghĩa đã duyệt |
-| `signerId` | Mã ẩn danh; bắt buộc với full quality gate |
-| `recordingSessionId` | Mã phiên quay, không thay thế `signerId` |
+| `signerId` | Không bắt buộc; mã ẩn danh nếu xác định được người ký |
+| `recordingSessionId` | Một video gốc; đơn vị chia train/validation/test |
 | `sourceUri` | Nguồn hoặc ID dataset, không chứa credential |
 | `licenseStatus` | `approved`, `restricted` hoặc `unknown` |
 | `verificationStatus` | `verified`, `unverified` hoặc `rejected` |
@@ -63,7 +63,12 @@ Mẫu chưa được người có chuyên môn xác minh phải giữ `verificat
 
 ## Quyền sử dụng và quyền riêng tư
 
-Trước khi đưa clip vào manifest approved, phải lưu được:
+**Quyết định lead 2026-11-07**: raw material P0 hiện là video giáo dục trực tuyến công khai. Nguồn và
+căn cứ sử dụng (học tập/nghiên cứu, lead duyệt) được khai **một lần** trong dataset card kèm tên website
+nguồn; không bắt buộc ghi nguồn, giấy phép hay người ký cho từng video. Mẫu thuộc bộ này mặc định
+`licenseStatus=approved`. Khi nhóm tự quay hoặc thêm nguồn khác, áp dụng đầy đủ danh sách dưới đây.
+
+Với nguồn tự quay hoặc nguồn mới, trước khi đưa clip vào manifest approved, phải lưu được:
 
 - nguồn và chủ sở hữu hoặc điều khoản dataset;
 - quyền cho phép tải, xử lý, huấn luyện và trình diễn;
@@ -76,8 +81,9 @@ có dữ liệu nhạy cảm. Repository chỉ lưu mã ẩn danh và báo cáo 
 
 ## Chia dữ liệu
 
-Full quality gate phải chia theo `signerId`: signer trong test không xuất hiện trong train hoặc
-validation. Session-only split chỉ dùng cho pilot/dev và không được tuyên bố là unseen-signer test.
+Full quality gate chia theo video gốc (`recordingSessionId`): mọi clip cắt từ cùng một video nằm cùng
+một tập. Raw material hiện không có danh tính người ký, nên report ghi `video-held-out` và không được
+tuyên bố là unseen-signer test. Có `signerId` thì ưu tiên chia theo signer.
 Không random split theo video vì sẽ gây leakage đặc điểm người và phiên quay.
 
 ## Trình tự bàn giao Data -> AI
@@ -89,7 +95,7 @@ Không random split theo video vì sẽ gây leakage đặc điểm người và
 5. Cường train/evaluate; Tín dùng cùng schema/pipeline để chạy parity và serving smoke.
 
 Pilot có thể dùng tối đa ba ý nghĩa đã audit và luôn `demoReady=false`. Full release phải có đúng 10
-ý nghĩa P0, signer-held-out evaluation và vượt model quality gate trong spec.
+ý nghĩa P0, video-held-out evaluation và vượt model quality gate trong spec.
 
 ## Những gì được phép commit trong `data/`
 
