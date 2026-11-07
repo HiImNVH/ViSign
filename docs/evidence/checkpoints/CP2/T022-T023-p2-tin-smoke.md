@@ -83,6 +83,30 @@
 - [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
-**Reviewer result**: `PENDING`
+## 8. Independent review — P1/Huy
 
-**Reviewer note**: Chờ verify từ `origin/main`.
+Review time: `2026-11-07T14:33:16+07:00` trên `origin/main` `b248ec7` (chứa `fb56354`); worktree sạch.
+
+| Gate | Kết quả độc lập |
+|---|---|
+| Local | `uv sync --locked`; pytest `-W error` 73 passed; Ruff; `ruff format --check` 14 files; mypy 14 files: PASS |
+| GitHub Actions | `quality.yml` trên `b248ec7`: success |
+| Convention | Giới hạn 10 MiB, 300–6000 ms, WebM, CORS không `*`/credential khớp `fe-be-api-convention.md` mục 3 và 6 |
+| Privacy | Log allowlist không có clip/frame/landmark/classLabel; `configure_logging()` idempotent |
+| Ghi chú review trước | `ruff format` cho file T019–T021 đã xử lý |
+
+Ghi chú không chặn — xử lý ở task sau:
+
+1. **MIME so khớp chuỗi chính xác** (xử lý ở T049). Thử với `Settings()` mặc định: `video/webm; codecs=vp9`,
+   `video/webm;codecs="vp8, opus"` và `VIDEO/WEBM` đều bị coi là không hợp lệ, dù hợp lệ theo RFC 9110
+   (type không phân biệt hoa thường, tham số có thể có khoảng trắng hoặc dấu ngoặc kép). T049 nên
+   so sánh base type `video/webm` sau khi chuẩn hoá; kiểm VP8/VP9 đã do decoder T015 làm. Cần test với
+   `Blob.type` thật từ Chrome/Edge/Firefox để không trả 415 nhầm.
+2. `FEATURE_SCHEMA_VERSION` mà preflight trong `ai-backend-contract.md` dùng chưa có trong `Settings`;
+   thêm ở T037 khi nạp schema đi kèm artifact.
+3. `exception` trong log là traceback đầy đủ; được phép trong log server, nhưng T026 phải bảo đảm không
+   trả traceback/path trong `ErrorEnvelope`.
+
+**Reviewer result**: `P1_VERIFIED`; `P5` (CORS mặc định) còn `PENDING`.
+
+**Reviewer note**: Không cần sửa trước khi push; mục 1 phải có test trong T049.

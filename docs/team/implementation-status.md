@@ -26,6 +26,8 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 - Lead đã bàn giao quy ước: [fe-be-api-convention.md](fe-be-api-convention.md) cho T099 và
   [data-convention.md](data-convention.md) cho T098. Owner xác nhận các quyết định bổ sung rồi đóng băng.
 - T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
+- CP2 T022–T023 (config/logging) của P2 tại `fb56354`: P1_VERIFIED; P5 review CORS còn pending.
+  T014–T016: P1_REVIEWED và P2_VERIFIED (serving); representative-clip review schema còn pending.
 
 ## Status rules
 
@@ -38,8 +40,8 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Thu xác nhận quy ước T098/T099; review T014–T016; T091 quality CI |
-| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; CP2 T019–T021 chờ review; tiếp T022–T023 local; T099 mở — xác nhận quy ước API |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Chờ 4 review CP1 (P2/P3/P4/P5); thu xác nhận T098/T099; duyệt schema khi có clip |
+| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; T019–T023 P1_VERIFIED, chờ P3/P5; T099 mở — xác nhận quy ước API |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003; T014–T016 chờ review; xác nhận data-convention D1–D4 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW | Review T008; T098 mở — xác nhận data-convention D1–D4 rồi đóng băng |
 | P5 | Hiển | `apps/web/`, frontend tests/UX evidence | REVIEW | Review T004/T006; xác nhận API convention D1–D4 với Tín |

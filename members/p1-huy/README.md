@@ -25,6 +25,7 @@
 | `T098-T099 handoff / CP2` | `PUSHED` | `docs/team/fe-be-api-convention.md`, `docs/team/data-convention.md` | Chờ owner xác nhận D1–D4 | P2/Tín, P5/Hiển, P4/Quang, P3/Cường |
 | `T091 / CP7 (quality)` | `PUSHED` | `.github/workflows/quality.yml` | Actions xanh ([run](https://github.com/HiImNVH/ViSign/actions/runs/42351034900)); `deploy-gcp.yml` chờ CP7 | P2/Tín, P5/Hiển |
 | `T014-T016 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | P1_REVIEWED; 6 ghi chú cho P2/P3/P4 | P3/Cường |
+| `T022-T023 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T022-T023-p2-tin-smoke.md` | P1_VERIFIED; MIME matching ghi cho T049 | P2/Tín |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
 
