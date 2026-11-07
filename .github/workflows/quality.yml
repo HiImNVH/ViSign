@@ -13,9 +13,10 @@ on:
 permissions:
   contents: read
 
+# Chi huy run cu cua PR; tren main moi commit giu run rieng lam evidence
 concurrency:
-  group: quality-${{ github.ref }}
-  cancel-in-progress: true
+  group: quality-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pr' || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   UV_VERSION: "0.13.7"
@@ -27,8 +28,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -47,10 +48,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: System libraries for OpenCV/MediaPipe
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libglib2.0-0
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v10
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -72,8 +73,8 @@ jobs:
       run:
         working-directory: apps/web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -96,15 +97,27 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Reject tracked raw media, model binaries and secrets
         run: |
-          forbidden=$(git ls-files | grep -E -i '\.(mp4|webm|mov|avi|mkv|npz|npy|pt|pth|ckpt|onnx|task|pem|key|p12)$|(^|/)\.env$|service-account.*\.json$|-credentials\.json$' || true)
+          forbidden=$(git ls-files | grep -E -i '\.(mp4|webm|mov|avi|mkv|npz|npy|pt|pth|ckpt|onnx|safetensors|tflite|task|pem|key|p12)$|(^|/)\.env$|service-account.*\.json$|-credentials\.json$' || true)
           if [ -n "$forbidden" ]; then
             echo "Forbidden tracked files:"; echo "$forbidden"; exit 1
           fi
-      - name: Whitespace errors in last commit
-        if: github.event_name == 'push'
-        run: git diff --check HEAD~1 HEAD
+      - name: Whitespace errors in every pushed or PR commit
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base=$(git merge-base "origin/$BASE_REF" HEAD)
+          elif [ -n "$BEFORE_SHA" ] && ! echo "$BEFORE_SHA" | grep -qE '^0+$' && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            base="$BEFORE_SHA"
+          else
+            base=$(git rev-parse HEAD~1 2>/dev/null || git hash-object -t tree /dev/null)
+          fi
+          echo "Checking whitespace in $base..HEAD"
+          git diff --check "$base" HEAD

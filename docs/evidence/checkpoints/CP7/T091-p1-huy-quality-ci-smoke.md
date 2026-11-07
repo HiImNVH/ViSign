@@ -82,3 +82,17 @@ Ghi chú không chặn:
 4. Chưa có `ruff format --check` (P1 đã ghi để T092 quyết định).
 
 **Result**: `P2_VERIFIED`
+
+## Follow-up sau review P2 — `2026-11-07T15:38:42+07:00`
+
+| # | Ghi chú P2 | Xử lý trong `quality.yml` |
+|---|---|---|
+| 1 | Action v4 chạy Node 20 (deprecated) | `actions/checkout@v7`, `actions/setup-node@v7`, `astral-sh/setup-uv@v10` (đều `node24`); input `fetch-depth`, `node-version`, `cache`, `cache-dependency-path`, `version`, `enable-cache`, `cache-dependency-glob` còn nguyên |
+| 2 | `cancel-in-progress` làm commit trung gian trên `main` mất run | Group theo `github.sha` cho push; chỉ hủy run cũ của cùng PR |
+| 3 | Hygiene chỉ kiểm commit cuối | `fetch-depth: 0`; push kiểm `github.event.before..HEAD`, PR kiểm `merge-base..HEAD`; nhánh mới/before không tồn tại thì lùi về `HEAD~1` |
+| 4 | Thiếu `.safetensors`/`.tflite` | Thêm vào danh sách đuôi bị chặn, khớp `.gitignore` |
+
+Không xử lý ở đây: `ruff format --check` — để T092 quyết định như ghi chú trước.
+
+Local: YAML parse OK; không file bị cấm được track; `git diff --check` trên dải `7b3c073..HEAD` PASS.
+Actions run sau push: `PENDING`.
