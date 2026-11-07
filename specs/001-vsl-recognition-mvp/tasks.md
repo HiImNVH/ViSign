@@ -161,8 +161,8 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 ### Implementation for User Story 1
 
 - [ ] T033 [US1] Cài GRU classifier nhận padded landmark sequence tại `ai/src/visign_ai/training/gru_classifier.py`
-- [ ] T034 [US1] Cài dataset loader và batching giữ label order ổn định tại `ai/src/visign_ai/training/sequence_dataset.py`
-- [ ] T035 [US1] Tạo cấu hình seed tái lập cho pilot tối đa 3 từ và full 10 từ tại `ai/configs/pilot-gru.yaml` và `ai/configs/p0-gru.yaml`
+- [X] T034 [US1] Cài dataset loader và batching giữ label order ổn định tại `ai/src/visign_ai/training/sequence_dataset.py`
+- [X] T035 [US1] Tạo cấu hình seed tái lập cho pilot tối đa 3 từ và full 10 từ tại `ai/configs/pilot-gru.yaml` và `ai/configs/p0-gru.yaml`
 - [ ] T036 [US1] Cài training CLI nhận class subset và lưu artifact metadata bất biến gồm `artifactKind`, dataset/feature schema/class map tại `ai/src/visign_ai/training/train.py`
 - [ ] T037 [US1] Cài predictor interface với deterministic fixture và pilot/full adapter qua `MODEL_ARTIFACT_PATH`; nạp nguyên gói weights/schema/model metadata/evaluation, giữ class order, dùng artifact confidence threshold, kiểm extractor/schema và fail closed để rollback tại `services/inference-api/src/visign_api/inference/predictor.py`
 - [ ] T038 [US1] Cài `POST /api/v1/predictions` cho accepted result với total/per-stage timings và quality hints không chứa frame/landmark tại `services/inference-api/src/visign_api/api/predictions.py`

@@ -14,3 +14,11 @@ Baseline origin/main: d258baf666eeeffebf8d3cbdb0290c9bfca3029c. Candidate LOCAL-
 | Ruff và mypy AI | PASS |
 
 Chưa chạy manifest hoặc train chính thức. Bước tiếp theo là T035 cấu hình pilot/full, rồi T036 nối manifest và training CLI.
+
+## Independent review — P1/Huy
+
+Review P1/Huy `2026-11-07T20:11:55+07:00` trên `edcfa78`: AI 56 passed, 5 skipped (thiếu fixture browser/clip local); `ai/tests/training` 26 passed; Ruff, mypy (21 files) PASS; `train --help` chạy trên console Windows.
+
+Loader giữ thứ tự class map, kiểm sampleId/schema/extractor/SHA-256 và tensor hữu hạn từng mẫu NPZ.
+
+**Reviewer result**: `P1_VERIFIED` → T034 `[X]`.

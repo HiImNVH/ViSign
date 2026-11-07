@@ -23,3 +23,23 @@ Tham khảo train.py và cách ghi artifact bất biến ở 7nghiep367, commit 
 - AI 60 passed, 1 skipped do quyền symlink Windows. API và contract 179 passed, 1 skipped. Ruff và mypy AI PASS.
 - CLI --help chạy với cp1252. API đọc model_info.json từ 2 artifact pilot và 1 artifact full tổng hợp. Kiểm tra này xác nhận metadata, chưa xác nhận dự đoán GRU qua API.
 - Chưa train dữ liệu thật, chạy GPU, ghi W&B hoặc đánh giá test. W&B evidence của pilot thuộc T083.
+
+## Independent review — P1/Huy
+
+Review P1/Huy `2026-11-07T20:11:55+07:00` trên `edcfa78`: AI 56 passed, 5 skipped (thiếu fixture browser/clip local); `ai/tests/training` 26 passed; Ruff, mypy (21 files) PASS; `train --help` chạy trên console Windows.
+
+Đạt theo quyết định lead 2026-11-07:
+
+- Split `video-held-out`: `recordingSessionId` không được xuất hiện ở hai tập; report ghi `mode`.
+- Nguồn/quyền: chỉ nhận `licenseStatus=approved`, loại `rejected`; schema phải `APPROVED`.
+- `demoReady=false`, metric test để `null` (đánh giá thuộc T057–T059); ngưỡng chọn **chỉ từ validation**.
+- `datasetVersion` đúng mẫu `<manifest>-v<N>` (data-convention D4); full đối chiếu đúng 10 P0 từ registry.
+- Publish nguyên tử vào thư mục mới, không ghi đè artifact cũ.
+
+**Rủi ro dữ liệu (không phải lỗi code)**: `audit_rows` yêu cầu **mỗi lớp có mặt ở cả train, validation và
+test**, chia theo video gốc. Raw material hiện tại của P4 chỉ khoảng vài video mỗi nghĩa → mỗi lớp chỉ còn
+~1 video để train, chọn checkpoint và ngưỡng trên ~1 video validation. Muốn pilot có ý nghĩa cần thêm video
+(planning floor 20–30 mẫu/lớp, nhiều người ký); nhóm nên tự quay bổ sung cho 10 từ P0.
+
+**Reviewer result**: `P1_VERIFIED`. Chờ P2 xác nhận artifact (`model_info.json`, `labelBinding`) nạp đúng
+qua registry T037 trước khi đánh `[X]`.

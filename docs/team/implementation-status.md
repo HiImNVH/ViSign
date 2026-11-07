@@ -40,7 +40,8 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | Task | Owner | Nội dung | Review |
 |---|---|---|---|
 | T029, T033 | P3 | GRU classifier đóng gói + test | Chờ P1/P2 |
-| T034–T036 | P3 | Nạp landmark theo thứ tự lớp, preset pilot/full, CLI train + xuất artifact | P1 đang review |
+| T034, T035 | P3 | Loader giữ thứ tự lớp; preset pilot/full | `VERIFIED`, `[X]` (P1) |
+| T036 | P3 | CLI train + xuất artifact | P1_VERIFIED; chờ P2 xác nhận artifact nạp qua registry T037 |
 | T030, T037, T038 | P2 | Loader/registry/fixture predictor, adapter trích đặc trưng, `POST /api/v1/predictions` | Chờ P1/P3 |
 | T044, T048 | P2 | Luật quyết định theo ngưỡng confidence | Chờ P1 |
 | T055, T060 | P2 | `GET /api/v1/health`, `GET /api/v1/model-info` | Chờ P1/P5 |
@@ -60,6 +61,10 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
 - `HealthResponse.modelVersion` optional + nullable theo OpenAPI.
 
 ### Rủi ro đang theo dõi
+
+- **Dữ liệu (rủi ro lớn nhất cho bản tự train)**: split `video-held-out` cần mỗi lớp có video ở cả
+  train/validation/test; raw material hiện chỉ vài video mỗi nghĩa → cần tự quay bổ sung (planning floor
+  20–30 mẫu/lớp, nhiều người ký) trước khi pilot có ý nghĩa.
 
 - Latency: benchmark T095 đo 2,4–3,4 s/clip trên Windows **chưa gồm GRU**, sát/vượt SC-002 p95 ≤ 3 s.
   P3 xem lại decode toàn bộ frame trước khi lấy mẫu (review T014–T016 mục 3).
