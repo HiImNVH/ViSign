@@ -6,7 +6,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P3 Cường` (parity, quy tắc T049); `P1 Huy` |
 | Baseline | `origin/main` `181408e` (đã pull T046 của P5, T058/T059 của P3 và review P1 đánh dấu T037/T045/T049/T050 `[X]`); evidence bổ sung cho T037 đã đóng |
-| Commit | `PENDING` |
+| Commit | `0f3c5578767717d9c4a4e7c94999b1de9005eb00` — [0f3c557](https://github.com/HiImNVH/ViSign/commit/0f3c5578767717d9c4a4e7c94999b1de9005eb00); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42385392156) |
 | Ngày/giờ | `2026-11-07T22:09+07:00` |
 | Môi trường | Windows 11, CPython 3.12.15, extra `serving` (torch 2.11.0+cpu, MediaPipe 1.1.1), uvicorn local |
 | Status | `PASS` cho cơ chế; độ trễ chưa đạt SC-002 trên máy này |
