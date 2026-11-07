@@ -1,0 +1,242 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# infra/aws/cloudformation/visign-app.yml (T095)
+# Mot EC2 chay hai container (compose.production.yml) sau CloudFront HTTPS. Can stack visign-storage truoc
+# (ECR + S3). Cong 80 chi mo cho dai IP origin-facing cua CloudFront; khong mo SSH, quan tri qua SSM.
+# Doi phien ban: cap nhat tham so ImageTag/ArtifactVersion roi chay /opt/visign/deploy.sh qua SSM (xem README).
+Description: ViSign app - EC2 (Docker Compose) + Elastic IP + CloudFront HTTPS
+
+Parameters:
+  ImageTag:
+    Type: String
+    Description: Tag image ECR (commit SHA 12 ky tu)
+    AllowedPattern: "^[0-9a-f]{7,40}$"
+  ArtifactVersion:
+    Type: String
+    Description: Thu muc artifact trong s3://<bucket>/artifacts/
+    AllowedPattern: "^[A-Za-z0-9._-]+$"
+  InstanceType:
+    Type: String
+    Default: t3.small
+    AllowedValues: [t3.small, t8i.small, c7i-flex.large]
+    Description: Loai x86_64 du credit Free Plan; API can ~1 GB RAM
+  CloudFrontOriginPrefixList:
+    Type: String
+    Default: pl-b8a742d1
+    Description: Managed prefix list com.amazonaws.global.cloudfront.origin-facing (ap-southeast-2)
+  EnableCloudFront:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: false khi tai khoan chua duoc AWS Support xac minh cho CloudFront (origin chi mo cho DirectAccessCidr)
+  DirectAccessCidr:
+    Type: String
+    Default: ""
+    Description: Tuy chon - mot dai IPv4 /32 duoc goi thang cong 80 de smoke khi chua co CloudFront
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+Conditions:
+  UseCloudFront: !Equals [!Ref EnableCloudFront, "true"]
+  HasDirectAccess: !Not [!Equals [!Ref DirectAccessCidr, ""]]
+
+Resources:
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ec2.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: visign-pull-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: EcrAuth
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: EcrPullVisign
+                Effect: Allow
+                Action: [ecr:BatchGetImage, ecr:GetDownloadUrlForLayer, ecr:BatchCheckLayerAvailability]
+                Resource:
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/visign/*
+              - Sid: ReadArtifactsAndDeployFiles
+                Effect: Allow
+                Action: s3:GetObject
+                Resource:
+                  - !Sub
+                    - "${BucketArn}/artifacts/*"
+                    - BucketArn: !ImportValue visign-artifact-bucket-arn
+                  - !Sub
+                    - "${BucketArn}/deploy/*"
+                    - BucketArn: !ImportValue visign-artifact-bucket-arn
+              - Sid: ListArtifactPrefixes
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !ImportValue visign-artifact-bucket-arn
+                Condition:
+                  StringLike: { "s3:prefix": ["artifacts/*", "deploy/*"] }
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref InstanceRole]
+
+  OriginSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ViSign origin - HTTP 80 chi tu CloudFront, khong SSH
+      SecurityGroupIngress:
+        - !If
+          - UseCloudFront
+          - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            SourcePrefixListId: !Ref CloudFrontOriginPrefixList
+            Description: CloudFront origin-facing
+          - !Ref AWS::NoValue
+        - !If
+          - HasDirectAccess
+          - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            CidrIp: !Ref DirectAccessCidr
+            Description: Smoke truc tiep tu may van hanh
+          - !Ref AWS::NoValue
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref InstanceProfile
+      SecurityGroupIds: [!GetAtt OriginSecurityGroup.GroupId]
+      MetadataOptions:
+        HttpTokens: required
+        HttpPutResponseHopLimit: 1
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs: { VolumeSize: 30, VolumeType: gp3, Encrypted: true, DeleteOnTermination: true }
+      Tags:
+        - { Key: Name, Value: visign-app }
+        - { Key: Project, Value: ViSign }
+      UserData:
+        Fn::Base64: !Sub
+          - |
+            #!/bin/bash
+            set -euxo pipefail
+            exec > >(tee -a /var/log/visign-bootstrap.log) 2>&1
+            dnf install -y docker
+            systemctl enable --now docker
+            COMPOSE_VERSION=v2.29.7
+            mkdir -p /usr/local/lib/docker/cli-plugins
+            cd /usr/local/lib/docker/cli-plugins
+            curl -fsSLo docker-compose "https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-linux-x86_64"
+            curl -fsSLo compose.sha256 "https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-linux-x86_64.sha256"
+            echo "$(cut -d' ' -f1 compose.sha256)  docker-compose" | sha256sum -c -
+            chmod 0755 docker-compose
+            if [ ! -f /swapfile ]; then
+              dd if=/dev/zero of=/swapfile bs=1M count=2048
+              chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+              echo '/swapfile none swap sw 0 0' >> /etc/fstab
+            fi
+            mkdir -p /opt/visign
+            cat > /opt/visign/release.env <<'ENV'
+            IMAGE_TAG=${ImageTag}
+            ARTIFACT_VERSION=${ArtifactVersion}
+            ENV
+            cat > /opt/visign/deploy.sh <<'SCRIPT'
+            #!/bin/bash
+            # Tai compose + artifact tu S3, keo image theo tag va khoi dong lai (chay lai duoc, qua SSM)
+            set -euo pipefail
+            . /opt/visign/release.env
+            REGION=${AWS::Region}
+            REGISTRY=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com
+            BUCKET=${Bucket}
+            cd /opt/visign
+            aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY"
+            aws s3 cp "s3://$BUCKET/deploy/compose.production.yml" compose.production.yml --region "$REGION"
+            rm -rf artifact.new && mkdir artifact.new
+            aws s3 sync "s3://$BUCKET/artifacts/$ARTIFACT_VERSION/" artifact.new/ --region "$REGION" --exact-timestamps
+            test -s artifact.new/model_info.json
+            chmod -R a+rX artifact.new
+            rm -rf artifact.old && { [ -d artifact ] && mv artifact artifact.old || true; } && mv artifact.new artifact
+            export INFERENCE_API_IMAGE="$REGISTRY/visign/inference-api:$IMAGE_TAG"
+            export WEB_IMAGE="$REGISTRY/visign/web:$IMAGE_TAG"
+            export MODEL_ARTIFACT_DIR=/opt/visign/artifact
+            docker compose -f compose.production.yml pull
+            docker compose -f compose.production.yml up -d --remove-orphans --force-recreate
+            docker image prune -f
+            SCRIPT
+            chmod 0750 /opt/visign/deploy.sh
+            /opt/visign/deploy.sh
+          - Bucket: !ImportValue visign-artifact-bucket
+
+  ElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref Instance
+      Tags: [{ Key: Project, Value: ViSign }]
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: UseCloudFront
+    Properties:
+      DistributionConfig:
+        Comment: ViSign web + API
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        PriceClass: PriceClass_200
+        Origins:
+          - Id: visign-ec2
+            DomainName: !Sub
+              - "ec2-${Dashed}.${AWS::Region}.compute.amazonaws.com"
+              - Dashed: !Join ["-", !Split [".", !Ref ElasticIp]]
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only
+              OriginReadTimeout: 30
+              OriginKeepaliveTimeout: 5
+        DefaultCacheBehavior:
+          TargetOriginId: visign-ec2
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          # Managed-CachingOptimized: ton trong Cache-Control cua nginx (index no-cache, /assets immutable)
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: visign-ec2
+            ViewerProtocolPolicy: https-only
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachedMethods: [GET, HEAD]
+            Compress: false
+            # Managed-CachingDisabled + Managed-AllViewerExceptHostHeader: body/query/header nguyen trang
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+      Tags: [{ Key: Project, Value: ViSign }]
+
+Outputs:
+  InstanceId:
+    Value: !Ref Instance
+  ElasticIp:
+    Value: !Ref ElasticIp
+  CloudFrontUrl:
+    Condition: UseCloudFront
+    Value: !Sub https://${Distribution.DomainName}
+  DistributionId:
+    Condition: UseCloudFront
+    Value: !Ref Distribution
+  OriginUrl:
+    Value: !Sub http://${ElasticIp}

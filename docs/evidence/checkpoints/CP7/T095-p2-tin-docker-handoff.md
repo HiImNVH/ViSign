@@ -81,3 +81,9 @@ trình duyệt thật (Hiển), toàn bộ phần AWS. Việc AWS cần lead quy
 ≥ 2 GB vì API đỉnh ~1 GB + web ~12 MB + hệ điều hành), hạn mức chi phí; quyết định rate limit 429.
 
 **Reviewer result**: `P1_PARTIAL` — Docker local đạt sau bản vá libEGL; T095 giữ `[ ]` chờ Tín review bản vá và deploy AWS.
+
+## Cập nhật AWS — P1/Huy (2026-11-08)
+
+Đã deploy origin EC2 bằng CloudFormation (`visign-storage`, `visign-origin`), image `3b29d4a2cec1` từ ECR và artifact
+fixture từ S3; smoke 14/14 qua `http://52.65.207.133`. CloudFront bị AWS chặn (tài khoản cần xác minh qua Support).
+Chi tiết: [deployment-report.md](../../../deployment-report.md). T095 giữ `[ ]` chờ CloudFront HTTPS và Tín review.
