@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; `T039/T041 / CP3` đã push; `T042` local commit; `T043` đang chốt candidate |
+| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; `T039/T041/T042/T043 / CP3` đã push; `T046 / CP4` đang chốt candidate |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-07` |
 
@@ -23,22 +23,23 @@
 | `T100-T104 / US6` | `TODO` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt ≥24 giờ; làm sau T040/T043 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
 | `T041 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | Commit `943065594421facf6c659ccb0e0f6e36495704d4`; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
-| `T042 / CP3` | `COMMITTED_LOCAL / READY_FOR_REVIEW` | `apps/web/src/features/recognition/RecognitionResult.tsx`, component/browser tests | Commit `67f8a6b6b74a16cb681f6456438851b3387dc74d` sau rebase, chưa push; 80 unit và 24 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T042-p5-hien-accepted-result-smoke.md` | P2/Tín, P1/Huy |
-| `T043 / CP3` | `IMPLEMENTED_LOCAL / READY_FOR_REVIEW` | `apps/web/src/App.tsx`, `features/recognition/CameraRecorder.tsx`, nội dung/UI và test | Một session camera + metadata + POST thủ công; không rẽ endpoint theo artifact; API mock Edge E2E, evidence `docs/evidence/checkpoints/CP3/T043-p5-hien-integration-smoke.md`; chờ Huy mở integration window và review | P2/Tín, P1/Huy |
+| `T042 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/RecognitionResult.tsx`, component/browser tests | SHA `3f3eb369fb18df5a85f399b59de8e18159bffdbb`, 80 unit và 24 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T042-p5-hien-accepted-result-smoke.md` | P2/Tín, P1/Huy |
+| `T043 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/App.tsx`, `features/recognition/CameraRecorder.tsx`, nội dung/UI và test | SHA `44b14059097534f17463c847ce15e8f0ccb99f5b`; một session camera + metadata + POST thủ công; 80 unit / 39 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T043-p5-hien-integration-smoke.md` | P2/Tín, P1/Huy |
+| `T046 / CP4` | `LOCAL / READY_FOR_REVIEW` | `apps/web/tests/recognition/recognition-errors.test.tsx` | 8 negative component tests; full web gate 88 unit / 39 browser PASS; evidence `docs/evidence/checkpoints/CP4/T046-p5-hien-recognition-errors-smoke.md` | P2/Tín, P1/Huy |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
 
 ## Candidate hiện tại
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T043 / CP3` — nối camera, model-info và prediction |
-| Proposed commit | `CP3 T043(web): integrate camera with recognition results` |
-| Exact staged paths | `apps/web/src/App.tsx`, `CameraHelp.tsx`, `content/vi.ts`, `features/recognition/CameraRecorder.tsx`, `styles.css`, `apps/web/tests/{browser/camera.spec.ts,recognition/recognition-flow.test.tsx,recognition/recognition-overlay.test.tsx}`, `apps/web/README.md`, member README và evidence T043 |
-| Pre-commit sync | Fetch `origin/main` trước commit; kết quả trong evidence T043 |
+| Task/checkpoint | `T046 / CP4` — web negative recognition component cases |
+| Proposed commit | `CP4 T046(web): cover negative recognition flows` |
+| Exact staged paths | `apps/web/tests/recognition/recognition-errors.test.tsx`, `members/p5-hien/README.md`, `docs/evidence/checkpoints/CP4/T046-p5-hien-recognition-errors-smoke.md` |
+| Pre-commit sync | Remote cập nhật 7 commit tới `a26aa5d`; stash/rebase/apply thành công, full web gate sau 6 commit đầu 88 unit + 39 browser PASS; commit cuối chỉ có cloud docs |
 | Gate commands | `cd apps/web`; `$env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check` |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T043-p5-hien-integration-smoke.md` |
-| Local commit | Xem git log commit `CP3 T043(web): integrate camera with recognition results` sau khi commit |
-| Push status | `LOCAL`; chờ P1/Huy bàn giao integration window; chưa tự đánh dấu VERIFIED |
+| Smoke evidence | `docs/evidence/checkpoints/CP4/T046-p5-hien-recognition-errors-smoke.md` |
+| Local commit | Xem git log commit `CP4 T046(web): cover negative recognition flows` sau khi commit |
+| Push status | `LOCAL`; chờ integration window P5 (P1 hiện `ACTIVE`); không tự đánh dấu VERIFIED trước P1/P2 review |
 
 ## Commit ledger
 
@@ -52,14 +53,15 @@
 | `CP3/T039 overlay` | Áp dụng demo đã duyệt: nút/chữ trong camera, chữ chỉ khi accepted | `CP3 T039(ui): apply approved camera overlay layout` | `812b46a422dee62970d6165f33bad222fe3a57d0` | [commit](https://github.com/HiImNVH/ViSign/commit/812b46a422dee62970d6165f33bad222fe3a57d0) | 42 unit/component + 15 browser Edge; lint/typecheck/build, no-scroll và result guard PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 review` | Sửa zoom/focus, thêm accepted browser fixture | `CP3 T039(ui): fix zoom controls and preserve keyboard focus` | `e7ae3f797509bc8f6e0216bd8f00453ce7e986c7` | [commit](https://github.com/HiImNVH/ViSign/commit/e7ae3f797509bc8f6e0216bd8f00453ce7e986c7) | 42 unit/component + 21 browser Edge PASS; API 73; AI 15 PASS/5 SKIPPED | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T041` | Recognition state machine và metadata handling | `CP3 T041(web): add recognition state machine` | `943065594421facf6c659ccb0e0f6e36495704d4` | [commit](https://github.com/HiImNVH/ViSign/commit/943065594421facf6c659ccb0e0f6e36495704d4) | 58 unit và 21 browser Edge PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
-| `CP3/T042` | Accepted result view và thông báo demoReady | `CP3 T042(ui): add accepted result and model scope notices` | `67f8a6b6b74a16cb681f6456438851b3387dc74d` | Chờ push | 80 unit và 24 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `COMMITTED_LOCAL / READY_FOR_REVIEW` |
-| `CP3/T043` | Ghép camera, model-info, prediction API v1 vào trang chính | `CP3 T043(web): integrate camera with recognition results` | Xem git log sau commit | Chờ push | Full Edge/browser gate và chi tiết trong evidence T043 | P2/Tín, P1/Huy | `IMPLEMENTED_LOCAL / READY_FOR_REVIEW` |
+| `CP3/T042` | Accepted result view và thông báo demoReady | `CP3 T042(ui): add accepted result and model scope notices` | `3f3eb369fb18df5a85f399b59de8e18159bffdbb` | [commit](https://github.com/HiImNVH/ViSign/commit/3f3eb369fb18df5a85f399b59de8e18159bffdbb) | 80 unit và 24 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
+| `CP3/T043` | Ghép camera, model-info, prediction API v1 vào trang chính | `CP3 T043(web): integrate camera with recognition results` | `44b14059097534f17463c847ce15e8f0ccb99f5b` | [commit](https://github.com/HiImNVH/ViSign/commit/44b14059097534f17463c847ce15e8f0ccb99f5b) | 80 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
+| `CP4/T046` | Negative web recognition error, cancel và retry tests | `CP4 T046(web): cover negative recognition flows` | Chờ commit | Chờ push | 88 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `LOCAL / READY_FOR_REVIEW` |
 
 ## Handoff
 
-- Current risks: T043 đã ghép request, nhưng browser mới xác nhận fake-camera cùng API mock; chưa kiểm tra webcam/điện thoại thật, backend thực tế hoặc chất lượng model.
-- Required input: Tín/Huy review luồng T042/T043 và kiểm thử lại với API v1 đang chạy.
-- Next owner/action: P1/Huy quyết định integration window; trước push cần sync/rebase, chạy lại gate theo `docs/team/git-checkpoints.md`.
+- Current risks: T043 đã ghép request và T046 đã có negative component cases, nhưng browser mới xác nhận fake-camera + API mock; chưa kiểm tra webcam/điện thoại thật, backend thực tế hoặc chất lượng model.
+- Required input: Tín/Huy review T042/T043/T046 và kiểm thử lại với API v1 đang chạy.
+- Next owner/action: P1/Huy điều phối integration window và review; trước push cần sync/rebase theo `docs/team/git-checkpoints.md`.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
