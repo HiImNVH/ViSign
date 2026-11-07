@@ -56,7 +56,7 @@
 - Current risks: feature schema v0.3 chưa được APPROVED; không được bulk-extract trước review.
 - Required input: representative WebM clips và data manifest đã audit.
 - Next owner/action: P3 đã xuất bộ review 6 WebM gồm 6 JSON và 18 ảnh L/R. Cả 6 tạo được tensor hữu hạn, 20–32/32 bước dùng được. Huy chờ nhận bộ clip để duyệt schema và xác nhận clip nghi lật. T017 đã push, CI xanh. P3 đã push test tự động theo review P2 tại 57311bf; đã được Huy/Tín duyệt; nối T010 khi Quang bàn giao. Tín phối hợp kiểm parity qua đường serving.
-- Review T098 (snapshot local của Quang): CHANGES_REQUESTED. Pytest 12 test và 25 subtest đạt, Ruff/mypy còn lỗi. Decoder đọc 24/27 clip. T017 xuất NPZ cho 3/3 clip nhóm S001-R01; nguồn/quyền/nhãn còn chờ xác nhận.
+- Review lại T098 (snapshot Quang/T098): CHANGES_REQUESTED. Pytest 12 test và 25 subtest đạt; Ruff 5 lỗi, mypy 2 lỗi. Hash và mapping khớp 27/27. Decoder đọc 24/27; T017 xuất NPZ cho 3/3 clip S001-R01. Sáu nguồn website chưa đối chiếu độc lập; còn chờ quyền, nhãn và manifest đã audit.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
