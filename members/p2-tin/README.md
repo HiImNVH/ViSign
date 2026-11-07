@@ -33,7 +33,7 @@
 | `T030, T038 / CP3` | `DONE` | `services/inference-api/src/visign_api/api/predictions.py`, contract tests | `P1_VERIFIED`, `[X]` (Huy `7315314`) | P1/Huy, P5/Hiển, P3/Cường |
 | `T055-T060 / CP5` | `DONE` | `services/inference-api/src/visign_api/{api/system.py,domain/health.py,main.py}` | `P1_VERIFIED`, `[X]` (Huy `7315314`) | P1/Huy, P5/Hiển |
 | `T044-T048 / CP4` | `DONE` | `services/inference-api/src/visign_api/inference/prediction_decision.py` | `P1_VERIFIED`, `[X]` (Huy `7315314`) | P1/Huy, P3/Cường |
-| `T037 / CP3` | `REVIEW` | `services/inference-api/src/visign_api/inference/` | Feature adapter + parity 6/6 clip có người `VERIFIED` (P3 `1b14f1e`); adapter GRU pilot/full `64ecf72` đã push, chờ P3/P1; 13 test tích hợp GRU chỉ chạy khi có extra `serving` | P3/Cường, P1/Huy |
+| `T037 / CP3` | `REVIEW` | `services/inference-api/src/visign_api/inference/` | Feature adapter + parity 6/6 clip có người `VERIFIED` (P3 `1b14f1e`); adapter GRU pilot/full `64ecf72` và test dự đoán GRU + quy tắc P3 qua HTTP `396d314` đã push, chờ P3/P1; 18 test tích hợp GRU chỉ chạy khi có extra `serving`; còn parity/HTTP trên clip có người thật | P3/Cường, P1/Huy |
 | `T049 / CP4` | `REVIEW` | `services/inference-api/src/visign_api/{inference/clip_validator.py,api/clip_upload_route.py}` | Đã push `b456206` + quy tắc P3 `3b47521`; chờ Cường xác nhận quy tắc, Huy, Hiển | P3/Cường, P1/Huy, P5/Hiển |
 | `T045, T050 / CP4` | `REVIEW` | `services/inference-api/tests/contract/test_predictions_contract.py`, `inference/worker_thread.py` | Đã push `5056c28`; chờ Huy, Hiển | P1/Huy, P5/Hiển |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
@@ -43,15 +43,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T037` → `T049` → `T045/T050` → `T049` quy tắc P3 (4 micro-commit) |
-| Proposed commit | `CP3 T037(api): add GRU adapter for pilot and full artifacts`; `CP4 T049(api): validate clip type, signature, size and landmarks`; `CP4 T045,T050(api): extend error contract tests and harden cleanup`; `CP4 T049(api): use pre-normalization points for no-person rule` |
-| Exact staged paths | Xem evidence `CP3/T037-p2-tin-gru-adapter`, `CP4/T049`, `CP4/T045-T050` |
-| Pre-commit sync | `PASS`; rebase khi remote có review P3 (T019, T037) và P1 (endpoint), không trùng file, gate chạy lại |
-| Gate commands | RED→GREEN từng bước, 40/40 mutation bị bắt, như CI 332 passed + 2 skipped, extra `serving` 345 passed + 1 skipped, Ruff/format/mypy, live uvicorn |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-gru-adapter-smoke.md`, `CP4/T049-p2-tin-smoke.md`, `CP4/T045-T050-p2-tin-smoke.md` |
-| Local commit | `64ecf72`, `b456206`, `5056c28`, `3b47521` |
-| Pre-push sync | `PASS` — `0 4` trên `7315314` |
-| Push status | `PUSHED` `7315314..3b47521`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) |
+| Task/checkpoint | `T037` bổ sung test dự đoán GRU qua HTTP sau review P3 (`1b14f1e`) |
+| Proposed commit | `CP3 T037(api): test GRU predictions over HTTP for pilot and full` |
+| Exact staged paths | `services/inference-api/tests/integration/test_gru_artifact_loading.py`, `docs/evidence/checkpoints/CP3/T037-p2-tin-gru-adapter-smoke.md` |
+| Pre-commit sync | `PASS` — `0 0` trên `d92436a` (sau khi pull T054/T057 của P3 và T096 của P1, không trùng file) |
+| Gate commands | 5 test mới, 5/5 mutation bị bắt, như CI 332 passed + 2 skipped, extra `serving` 350 passed + 1 skipped, Ruff/format/mypy |
+| Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-gru-adapter-smoke.md` (mục "Bổ sung sau review P3") |
+| Local commit | `396d314` |
+| Pre-push sync | `PASS` — `0 1` trên `d92436a` |
+| Push status | `PUSHED` `d92436a..396d314`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42382956024) |
 
 ## Commit ledger
 
@@ -92,6 +92,7 @@
 | `CP4/T049` | Kiểm clip tại ranh giới API | `CP4 T049(api): validate clip type, signature, size and landmarks` | `b4562065a30d3b7deb773f23ef5fb19c49e125e6` | [commit](https://github.com/HiImNVH/ViSign/commit/b4562065a30d3b7deb773f23ef5fb19c49e125e6) | 19 mutation; live 413/415/422; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) | P3/Cường, P1/Huy, P5/Hiển | `PUSHED` |
 | `CP4/T045,T050` | Contract lỗi và dọn dẹp khi hủy | `CP4 T045,T050(api): extend error contract tests and harden cleanup` | `5056c284a49a7dc78750ec2e6b413a7fe3546a14` | [commit](https://github.com/HiImNVH/ViSign/commit/5056c284a49a7dc78750ec2e6b413a7fe3546a14) | 46 contract, 6 mutation; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) | P1/Huy, P5/Hiển | `PUSHED` |
 | `CP4/T049 P3 rule` | Quy tắc không có người theo P3 | `CP4 T049(api): use pre-normalization points for no-person rule` | `3b47521aa64c47f0bd9068078639626b3b4996c2` | [commit](https://github.com/HiImNVH/ViSign/commit/3b47521aa64c47f0bd9068078639626b3b4996c2) | 4 mutation; 345 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) | P3/Cường | `PUSHED` |
+| `CP3/T037 HTTP test` | Dự đoán GRU và quy tắc P3 qua HTTP; artifact full | `CP3 T037(api): test GRU predictions over HTTP for pilot and full` | `396d3141729941eff454c0e88702f9cfd4936f75` | [commit](https://github.com/HiImNVH/ViSign/commit/396d3141729941eff454c0e88702f9cfd4936f75) | 5 test mới, 5 mutation; 350 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42382956024) | P3/Cường, P1/Huy | `PUSHED` |
 
 ## Handoff
 
@@ -99,7 +100,8 @@
   mọi `*.webm` nên golden clip T014/T064 cần ngoại lệ có review; vị trí E2E T032 (`tests/e2e/`) khác
   Playwright `testDir` (`apps/web/tests/`).
 - Required input: Cường review `ai/pyproject.toml`; Hiển review web toolchain; T099 vẫn chờ lead.
-- Next owner/action: Cường review adapter GRU (T037) và quy tắc T049; Huy review T045/T049/T050 và cân nhắc
+- Next owner/action: Cường review adapter GRU (T037) và quy tắc T049, gửi một clip review có người để chạy
+  parity và dự đoán qua HTTP thật; Huy review T045/T049/T050 và cân nhắc
   bước CI cài extra `serving` để chạy 13 test tích hợp GRU; Tín ghi xác nhận nạp artifact T036 qua registry,
   kiểm T043 của Hiển với API thật; rủi ro clip tạm khi tiến trình bị giết cứng chuyển T066/T095.
 - Work-in-progress limit: tối đa 2 task `DOING`.

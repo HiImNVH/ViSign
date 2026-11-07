@@ -79,7 +79,7 @@ Commit `CP3 T037(api): test GRU predictions over HTTP for pilot and full` chỉ 
 
 | Gate | Kết quả |
 |---|---|
-| Commit | `PENDING` |
+| Commit | `396d3141729941eff454c0e88702f9cfd4936f75` — [396d314](https://github.com/HiImNVH/ViSign/commit/396d3141729941eff454c0e88702f9cfd4936f75); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42382956024) |
 | Artifact full | CLI T036 train 10 nghĩa P0 (`--p0-meanings`), nạp qua registry mặc định; GRU ra 10 xác suất (tổng 1); `demoReady=false` vì metric còn null |
 | `POST /api/v1/predictions` qua GRU đã train | Chỉ thay MediaPipe bằng đặc trưng xác định; HTTP, kiểm clip, slot, clip tạm, GRU và luật quyết định chạy thật. Pilot: 200 "Cảm ơn" `accepted` (0,562 ≥ 0,5). Full: 200 "Không nhận diện được" (0,169 < 0,5). Khớp phép tính độc lập từ trọng số và metadata; adapter dùng schema đi kèm artifact; clip tạm bị xóa |
 | Quy tắc P3 qua HTTP | Không có điểm hợp lệ → 422 `NO_PERSON_DETECTED`; có điểm nhưng không có bước tensor đủ vai + tay → 422 `INSUFFICIENT_LANDMARKS` |
