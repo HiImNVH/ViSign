@@ -34,3 +34,18 @@ Ghi chú không chặn:
    `InferenceApiError` nhận 5 tham số (§6.1).
 
 **Reviewer result**: `P2_VERIFIED` cho phần API contract của T040; tích hợp endpoint thật chờ T038/T060.
+
+## Live integration follow-up — P5/Hiển — 2026-11-07
+
+Sau khi T038/T060 có router và fixture predictor, P5 kiểm tra lại **frontend thực sự gọi FastAPI** trên Windows / Node `v26.7.0`, Playwright Microsoft Edge. Kết quả này bổ sung cho review contract của P2 ở trên; phần tích hợp live mới **chờ review độc lập**, không tự đánh dấu `[X]` cho T040.
+
+| Đầu việc | Cách kiểm chứng / kết quả |
+|---|---|
+| Backend trực tiếp | Uvicorn `127.0.0.1:8000` dùng `services/inference-api/tests/fixtures/model-artifacts/fixture`; `:8001` dùng `fixture-low-confidence`; `:8002` trỏ tới artifact không tồn tại. `GET /api/v1/health` xác nhận lần lượt `ok`, `ok`, `degraded`. |
+| Metadata/API client | `VISIGN_LIVE_API_URL`, `VISIGN_LIVE_API_REJECT_URL`, `VISIGN_LIVE_API_DEGRADED_URL` trỏ tới ba cổng; `tests/liveInferenceApi.integration.test.ts` gọi `fetch` thật qua typed client, không mock. Metadata có `artifactKind=fixture`, `demoReady=false`, meanings hợp lệ. |
+| Prediction | Multipart `clip` có EBML + WebM DocType: accepted `Cảm ơn` / confidence `0.95`, low-confidence rejected `Không nhận diện được` / `0.42`, correlation ID khớp header/payload; MIME không hỗ trợ trả `415`, degraded trả `503 MODEL_NOT_READY`, `Retry-After: 5`. Fixture predictor kiểm chữ ký nhưng không decode video. |
+| Guards | Siết UUID, probability `[0,1]`, meanings `1..10`, integer timings/processing, quality hints, RFC 3339 datetime, accepted/rejected invariants và correlation header/payload; unit cases cho lỗi network, thiếu response correlation header, diagnostics không có, metadata/prediction không hợp lệ. |
+| Browser ↔ backend thật | Build với `VITE_API_BASE_URL=http://127.0.0.1:8000` (cross-origin trực tiếp); Playwright Edge dùng fake camera, ghi WebM và chỉ gửi khi bấm **Gửi nhận diện**; đúng một POST, hiển thị `Cảm ơn` cùng cảnh báo `demoReady=false`; chạy trên desktop, mobile và landscape. Không intercept API trong bài test này. |
+| Web gate | `cd apps/web; $env:VISIGN_LIVE_API_URL='http://127.0.0.1:8000'; $env:VISIGN_LIVE_API_REJECT_URL='http://127.0.0.1:8001'; $env:VISIGN_LIVE_API_DEGRADED_URL='http://127.0.0.1:8002'; $env:VITE_API_BASE_URL='http://127.0.0.1:8000'; $env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check` — exit code `0`: lint/typecheck/Vitest/build/Playwright **PASS**, 156 Vitest + 51 browser tests, gồm trường hợp datetime thiếu timezone. |
+
+Giới hạn: đây là **fixture integration**; chưa xác nhận webcam vật lý, giải mã WebM/landmark, chất lượng mô hình thật hoặc latency production. API OpenAPI tự sinh và YAML frozen có drift ở phần mô tả route/errors/diagnostics; cần P2 xử lý riêng trong ownership backend, không nằm trong thay đổi T040 của P5.

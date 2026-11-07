@@ -1,3 +1,4 @@
+// apps/web/src/services/inferenceApi.ts — typed HTTP client for API v1.
 import type { HealthResponse, ModelInfo, PredictionResponse } from '../types/inference-api';
 
 export class InferenceApiError extends Error {
@@ -16,23 +17,45 @@ type JsonObject = Record<string, unknown>;
 const object = (value: unknown): value is JsonObject => typeof value === 'object' && value !== null && !Array.isArray(value);
 const number = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const nullableString = (value: unknown) => value === null || typeof value === 'string';
+const probability = (value: unknown) => number(value) && value >= 0 && value <= 1;
+const nonNegativeInteger = (value: unknown): value is number => number(value) && Number.isInteger(value) && value >= 0;
+const uuid = (value: unknown) => typeof value === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value);
+const dateTime = (value: unknown) => typeof value === 'string'
+  && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
+  && Number.isFinite(Date.parse(value));
+
+function validTimings(value: unknown): boolean {
+  return object(value) && ['decode', 'extract', 'infer'].every(key => nonNegativeInteger(value[key]));
+}
+
+function validQualityHints(value: unknown): boolean {
+  if (!object(value)) return false;
+  const frameCount = value.frameCount;
+  return probability(value.handsDetectedRatio)
+    && nonNegativeInteger(frameCount) && frameCount >= 1;
+}
 
 function isPrediction(value: unknown): value is PredictionResponse {
   if (!object(value)) return false;
-  return typeof value.requestId === 'string' && typeof value.text === 'string' && nullableString(value.classLabel)
-    && number(value.confidence) && value.confidence >= 0 && value.confidence <= 1 && typeof value.accepted === 'boolean'
-    && typeof value.modelVersion === 'string' && number(value.processingTimeMs) && value.processingTimeMs >= 0
-    && (value.timingsMs === undefined || (object(value.timingsMs) && ['decode', 'extract', 'infer'].every(k => number((value.timingsMs as JsonObject)[k]))))
-    && (value.qualityHints === undefined || (object(value.qualityHints) && number(value.qualityHints.handsDetectedRatio) && number(value.qualityHints.frameCount)));
+  return uuid(value.requestId) && typeof value.text === 'string' && nullableString(value.classLabel)
+    && probability(value.confidence) && typeof value.accepted === 'boolean'
+    && (value.accepted
+      ? Boolean(value.text.trim()) && typeof value.classLabel === 'string' && Boolean(value.classLabel.trim())
+      : value.classLabel === null && value.text === 'Không nhận diện được')
+    && typeof value.modelVersion === 'string' && nonNegativeInteger(value.processingTimeMs)
+    && (value.timingsMs === undefined || validTimings(value.timingsMs))
+    && (value.qualityHints === undefined || validQualityHints(value.qualityHints));
 }
 
 function isModelInfo(value: unknown): value is ModelInfo {
   if (!object(value)) return false;
   return ['modelVersion', 'datasetVersion', 'featureSchemaVersion', 'extractorVersion'].every(k => typeof value[k] === 'string')
-    && ['fixture', 'pilot', 'full'].includes(String(value.artifactKind)) && Array.isArray(value.meanings) && value.meanings.every(v => typeof v === 'string')
-    && number(value.acceptanceThreshold) && (value.macroF1 === null || number(value.macroF1))
-    && (value.perMeaningRecall === null || (object(value.perMeaningRecall) && Object.values(value.perMeaningRecall).every(number)))
-    && nullableString(value.evaluatedAt) && typeof value.demoReady === 'boolean';
+    && ['fixture', 'pilot', 'full'].includes(String(value.artifactKind))
+    && Array.isArray(value.meanings) && value.meanings.length >= 1 && value.meanings.length <= 10
+    && value.meanings.every(v => typeof v === 'string')
+    && probability(value.acceptanceThreshold) && (value.macroF1 === null || probability(value.macroF1))
+    && (value.perMeaningRecall === null || (object(value.perMeaningRecall) && Object.values(value.perMeaningRecall).every(probability)))
+    && (value.evaluatedAt === null || dateTime(value.evaluatedAt)) && typeof value.demoReady === 'boolean';
 }
 
 function isHealth(value: unknown): value is HealthResponse {
@@ -60,13 +83,17 @@ export function createInferenceApi(baseUrl = import.meta.env.VITE_API_BASE_URL ?
       const init: RequestInit = { method: body ? 'POST' : 'GET', headers: { 'X-Request-ID': requestId }, signal: controller.signal, credentials: 'omit' };
       if (body) init.body = body;
       const response = await fetch(`${base}/api/v1/${path}`, init);
-      responseId = response.headers.get('X-Request-ID') || requestId;
+      const correlationHeader = response.headers.get('X-Request-ID');
+      responseId = correlationHeader || requestId;
       let payload: unknown;
       try { payload = await response.json(); } catch { if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError'); }
       // A body reader can finish after cancellation even when fetch itself resolved.
       if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError');
       if (!response.ok) throw new InferenceApiError('http', responseId, response.status, object(payload) && typeof payload.code === 'string' ? payload.code : undefined, response.headers.get('Retry-After') ?? undefined);
       if (!guard(payload)) throw new InferenceApiError('invalid-response', responseId, response.status);
+      if (correlationHeader && object(payload) && 'requestId' in payload && payload.requestId !== correlationHeader) {
+        throw new InferenceApiError('invalid-response', responseId, response.status);
+      }
       return { data: payload, requestId: responseId };
     } catch (error) {
       if (controller.signal.aborted) throw new InferenceApiError(abortReason ?? 'cancelled', responseId);

@@ -2,16 +2,24 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createInferenceApi, InferenceApiError } from '../src/services/inferenceApi';
 
 afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); });
+const validId = '123e4567-e89b-42d3-a456-426614174000';
+const model = {
+  modelVersion: 'v1', artifactKind: 'fixture', datasetVersion: 'd', featureSchemaVersion: 's',
+  extractorVersion: 'e', meanings: ['CAM_ON'], acceptanceThreshold: 0.5,
+  macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false,
+};
+const prediction = { requestId: validId, text: 'Xin chào', classLabel: 'XIN_CHAO',
+  confidence: .9, accepted: true, modelVersion: 'v1', processingTimeMs: 12 };
 
 describe('inference API transport', () => {
   it('sends a camera blob and reads the correlation header without requiring diagnostics', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
-      requestId: 'server-id', text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: 0.9,
+      requestId: validId, text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: 0.9,
       accepted: true, modelVersion: 'v1', processingTimeMs: 12,
-    }), { status: 200, headers: { 'X-Request-ID': 'server-id' } }));
+    }), { status: 200, headers: { 'X-Request-ID': validId } }));
     const clip = new Blob(['video'], { type: 'video/webm' });
     const result = await createInferenceApi('https://example.test/').predict(clip);
-    expect(result.requestId).toBe('server-id');
+    expect(result.requestId).toBe(validId);
     expect(result.data.text).toBe('Xin chào');
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(url).toBe('https://example.test/api/v1/predictions');
@@ -22,8 +30,61 @@ describe('inference API transport', () => {
   });
 
   it('reads model metadata with nullable metrics', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ modelVersion: 'v1', artifactKind: 'fixture', datasetVersion: 'd', featureSchemaVersion: 's', extractorVersion: 'e', meanings: [], acceptanceThreshold: 0.5, macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false })));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(model)));
     expect((await createInferenceApi().modelInfo()).data.modelVersion).toBe('v1');
+  });
+
+  it.each([
+    { meanings: [] }, { meanings: Array.from({ length: 11 }, (_, i) => `MEANING_${i}`) },
+    { acceptanceThreshold: -0.1 }, { acceptanceThreshold: 1.01 },
+    { macroF1: 1.1 }, { perMeaningRecall: { CAM_ON: -0.1 } },
+    { evaluatedAt: 'yesterday' }, { evaluatedAt: '2026-11-07T11:10:00' },
+    { evaluatedAt: '2026-11-07T11:10:00Z', demoReady: 'yes' },
+  ])('rejects out-of-contract model metadata %j', async invalid => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ ...model, ...invalid })));
+    await expect(createInferenceApi().modelInfo()).rejects.toMatchObject({ kind: 'invalid-response' });
+  });
+
+  it.each([
+    { requestId: 'not-a-uuid' }, { confidence: 1.1 }, { processingTimeMs: 2.5 },
+    { text: '', accepted: true }, { classLabel: null, accepted: true },
+    { accepted: false, classLabel: null },
+    { timingsMs: { decode: 0, extract: -1, infer: 3 } },
+    { timingsMs: { decode: 0.5, extract: 1, infer: 3 } },
+    { qualityHints: { handsDetectedRatio: 1.1, frameCount: 20 } },
+    { qualityHints: { handsDetectedRatio: .5, frameCount: 0 } },
+    { qualityHints: null },
+  ])('rejects out-of-contract prediction %j', async invalid => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ ...prediction, ...invalid })));
+    await expect(createInferenceApi().predict(new Blob(['video']))).rejects.toMatchObject({ kind: 'invalid-response' });
+  });
+
+  it('accepts valid optional diagnostics and a canonical rejected outcome', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(JSON.stringify({
+      ...prediction, timingsMs: { decode: 0, extract: 4, infer: 3 },
+      qualityHints: { handsDetectedRatio: 1, frameCount: 1 },
+    }))).mockResolvedValueOnce(new Response(JSON.stringify({
+      ...prediction, text: 'Không nhận diện được', classLabel: null, accepted: false,
+    })));
+    expect((await createInferenceApi().predict(new Blob(['video']))).data.qualityHints?.frameCount).toBe(1);
+    expect((await createInferenceApi().predict(new Blob(['video']))).data.accepted).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('classifies network failure and falls back to the outbound correlation ID when the response header is absent', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValueOnce(new Response(JSON.stringify(model)));
+    await expect(createInferenceApi().modelInfo()).rejects.toMatchObject({ kind: 'network' });
+    const response = await createInferenceApi().modelInfo();
+    const outbound = (fetchMock.mock.calls[1]![1]!.headers as Record<string, string>)['X-Request-ID'];
+    expect(response.requestId).toBe(outbound);
+  });
+
+  it('rejects a successful prediction with a mismatched correlation header', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(prediction), {
+      headers: { 'X-Request-ID': '123e4567-e89b-42d3-a456-426614174001' },
+    }));
+    await expect(createInferenceApi().predict(new Blob(['video']))).rejects.toMatchObject({ kind: 'invalid-response' });
   });
 
   it('preserves unknown error codes and retry metadata without server messages', async () => {

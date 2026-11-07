@@ -73,6 +73,27 @@ async function captureClip(page: Page) {
   await expect(page.getByRole('status')).toHaveText('Đã quay xong');
 }
 
+test('T040 live backend accepts an explicitly submitted camera WebM and reports fixture scope', async ({ page }) => {
+  test.skip(!process.env.VISIGN_LIVE_API_URL, 'Requires real Uvicorn and a preview build with VITE_API_BASE_URL set');
+  const apiUrl = process.env.VISIGN_LIVE_API_URL!;
+  const posts: string[] = [];
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('request', request => {
+    if (request.method() === 'POST' && request.url().startsWith(apiUrl)) posts.push(request.url());
+  });
+  await page.goto('/');
+  await captureClip(page);
+  expect(posts).toHaveLength(0);
+  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  const result = page.getByRole('region', { name: 'Văn bản dịch' });
+  await expect(result).toContainText('Cảm ơn');
+  await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
+  expect(posts).toEqual([`${apiUrl}/api/v1/predictions`]);
+  expect(errors).toEqual([]);
+});
+
 for (const artifactKind of ['fixture', 'pilot', 'full'] as const) {
   test(`T043 uploads the captured WebM explicitly using one endpoint for ${artifactKind}`, async ({ page }) => {
     const info = { ...metadata, artifactKind, modelVersion: `${artifactKind}-v1`, demoReady: artifactKind === 'full' };
@@ -83,7 +104,7 @@ for (const artifactKind of ['fixture', 'pilot', 'full'] as const) {
       expect(route.request().method()).toBe('POST');
       expect(route.request().postDataBuffer()?.length ?? 0).toBeGreaterThan(100);
       expect(route.request().headers()['content-type']).toContain('multipart/form-data');
-      await route.fulfill({ status: 200, json: { requestId: 'test', text: 'Xin chào',
+      await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào',
         classLabel: 'XIN_CHAO', confidence: .93, accepted: true, modelVersion: info.modelVersion,
         processingTimeMs: 10 } });
     });
@@ -124,8 +145,8 @@ test('T043 unavailable metadata blocks upload until explicit retry; rejected res
   });
   await page.route('**/api/v1/predictions', route => {
     uploads += 1;
-    return route.fulfill({ status: 200, json: { requestId: 'rejected', accepted: false,
-      text: 'Không nhận diện', classLabel: null, confidence: .2, modelVersion: metadata.modelVersion,
+    return route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), accepted: false,
+      text: 'Không nhận diện được', classLabel: null, confidence: .2, modelVersion: metadata.modelVersion,
       processingTimeMs: 40 } });
   });
   await page.goto('/');
@@ -169,7 +190,7 @@ test('T043 model mismatch discards prediction and refreshes metadata without ano
   });
   await page.route('**/api/v1/predictions', route => {
     uploads += 1;
-    return route.fulfill({ status: 200, json: { requestId: 'mismatch', accepted: true,
+    return route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), accepted: true,
       text: 'Kết quả cũ', classLabel: 'XIN_CHAO', confidence: .95, modelVersion: 'other-version',
       processingTimeMs: 50 } });
   });
@@ -190,7 +211,7 @@ test('T052 service-busy error stays safe and usable at compact viewport, then re
     return uploads === 1
       ? route.fulfill({ status: 503, headers: { 'Retry-After': '3' },
         json: { code: 'SERVICE_BUSY', message: 'SECRET traceback /internal/server.py', requestId: 'secret-id' } })
-      : route.fulfill({ status: 200, json: { requestId: 'ok', text: 'Xin chào', classLabel: 'XIN_CHAO',
+      : route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào', classLabel: 'XIN_CHAO',
         confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 15 } });
   });
   await page.goto('/');
@@ -228,11 +249,11 @@ test('T053 prediction timeout restores an explicit retry without automatic reupl
     uploads++;
     if (uploads === 1) {
       await new Promise<void>(resolve => { releaseFirst = resolve; });
-      await route.fulfill({ status: 200, json: { requestId: 'obsolete', text: 'Stale', classLabel: 'STALE',
+      await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Stale', classLabel: 'STALE',
         confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
       return;
     }
-    await route.fulfill({ status: 200, json: { requestId: 'new', text: 'Xin chào', classLabel: 'XIN_CHAO',
+    await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào', classLabel: 'XIN_CHAO',
       confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } });
   });
   await page.goto('/');
@@ -259,7 +280,7 @@ test('T053 cancel and reset during upload release the camera and ignore old requ
   await page.route('**/api/v1/predictions', async route => {
     uploads++;
     await new Promise<void>(resolve => { release.push(resolve); });
-    await route.fulfill({ status: 200, json: { requestId: 'old', text: 'Stale', classLabel: 'STALE',
+    await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Stale', classLabel: 'STALE',
       confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
   });
   await page.goto('/');

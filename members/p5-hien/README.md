@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; CP3, T046, T051, T052 đã push; T052 được P1 review độc lập (`P1_VERIFIED`); `T053 / CP4` có gate và evidence, chờ review độc lập |
+| Current checkpoint | `T040 / CP2` đã chạy live frontend↔FastAPI fixture và web gate; chờ review độc lập; T052 được P1 review; T053 đã push và chờ review độc lập |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-07` |
 
@@ -19,7 +19,7 @@
 |---|---|---|---|---|
 | `T004/T006 / CP1` | `P5_VERIFIED` | web Vite/lint/test config do Tín tạo | Evidence `docs/evidence/checkpoints/CP1/T004-T006-p5-hien-review.md` | P1/Huy |
 | `T020/T022/T026 / CP2 review` | `P5_VERIFIED` | API prediction validation, CORS settings và FastAPI middleware của P2 | Fix đã kiểm lại; evidence `docs/evidence/checkpoints/CP2/T020-T021-T022-T026-p5-hien-review.md`; task đã `[X]` | P2/Tín, P1/Huy |
-| `T040 / CP2` | `REVIEW` | typed API client và model-info | Client đã có transport test; chờ review P2 và tích hợp endpoint | P2/Tín |
+| `T040 / CP2` | `LIVE_TEST_PASS / READY_FOR_REVIEW` | `apps/web/src/services/inferenceApi.ts`, unit/live/browser tests | P2 đã review contract; live HTTP accepted/rejected/degraded và camera WebM trực tiếp PASS, cần P2/P1 review integration mới; evidence `docs/evidence/checkpoints/CP2/T040-p5-hien-smoke.md` | P2/Tín, P1/Huy |
 | `T100-T104 / US6` | `TODO` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt ≥24 giờ; làm sau T040/T043 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
 | `T041 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | Commit `943065594421facf6c659ccb0e0f6e36495704d4`; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
@@ -49,7 +49,7 @@
 |---|---|---|---|---|---|---|---|
 | `CP1/T004-T006` | Review web toolchain | `CP1 T004-T006(verify): record P5 web toolchain review` | `01eea59dc35eac388223498bee8836a8263e25db` | [commit](https://github.com/HiImNVH/ViSign/commit/01eea59dc35eac388223498bee8836a8263e25db) | Install/lint/typecheck/build, 42 unit và 21 browser PASS; xem evidence về worktree | P5/Hiển | `P5_VERIFIED` |
 | `CP2/T020,T022,T026` | Kiểm lại fix response và CORS của Tín | `CP2 T020,T022,T026(verify): record P5 retest approval` | Xem git log | Xem git log | API + contract 179 passed, 1 skipped; Ruff/mypy và probe HTTP CORS độc lập PASS | P5/Hiển | `P5_VERIFIED` |
-| `CP2/T040` | Versioned inference API client | `CP2 T040(web): add versioned inference API client` | Xem git log | Xem git log | lint/typecheck/build và 47 unit PASS; transport mock | P2/Tín, P1/Huy | `REVIEW` |
+| `CP2/T040` | Versioned inference API client và live fixture recheck | `CP2 T040(web): verify live API integration and tighten guards` (follow-up) | SHA sau commit | Link sau push | 156 Vitest + 51 browser Edge, lint/typecheck/build PASS với API trực tiếp; datetime guard được kiểm lại | P2/Tín: contract verified; live follow-up chờ review | `LIVE_TEST_PASS / READY_FOR_REVIEW` |
 | `CP3/T039` | Explicit local camera capture và resource cleanup | `CP3 T039(web): add explicit camera capture and cleanup` | `e9badadf94ff6f0a086bac5dabddbc49c5cd1f46` | [commit](https://github.com/HiImNVH/ViSign/commit/e9badadf94ff6f0a086bac5dabddbc49c5cd1f46) | 32 unit/component + 8 browser Edge; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `a074849599176e95abfbb3f606fbbf1df611c0ad` | [commit](https://github.com/HiImNVH/ViSign/commit/a074849599176e95abfbb3f606fbbf1df611c0ad) | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 overlay` | Áp dụng demo đã duyệt: nút/chữ trong camera, chữ chỉ khi accepted | `CP3 T039(ui): apply approved camera overlay layout` | `812b46a422dee62970d6165f33bad222fe3a57d0` | [commit](https://github.com/HiImNVH/ViSign/commit/812b46a422dee62970d6165f33bad222fe3a57d0) | 42 unit/component + 15 browser Edge; lint/typecheck/build, no-scroll và result guard PASS | P2/Tín, P1/Huy | `PUSHED` |
