@@ -96,4 +96,6 @@ Không xử lý ở đây: `ruff format --check` — để T092 quyết định 
 
 Local: YAML parse OK; không file bị cấm được track; `git diff --check` trên dải `7b3c073..HEAD` PASS.
 Run đầu [42356363410](https://github.com/HiImNVH/ViSign/actions/runs/42356363410) fail ở job API/AI: `Unable to resolve action astral-sh/setup-uv@v10` vì repo không có tag `v10`; sửa thành `v10.3.3`.
-Actions run sau sửa: `PENDING`.
+Actions run sau sửa: [42356425710](https://github.com/HiImNVH/ViSign/actions/runs/42356425710) trên `4909fb4` — 4/4 job `success`, không còn annotation cảnh báo Node 20; hygiene kiểm dải `before..HEAD` của push.
+
+**Follow-up result**: 4/4 ghi chú P2 đã xử lý; chờ P2 xác nhận lại nếu cần.
