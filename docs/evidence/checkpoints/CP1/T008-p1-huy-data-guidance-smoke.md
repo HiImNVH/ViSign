@@ -47,6 +47,7 @@
 
 ## Reviewer
 
-**Result**: `PENDING`
+**Result**: `SUPERSEDED` — owner P4/Quang nhận lại T008 và phát hành bản sửa tại `c034e6e`; review P1 nằm ở
+`docs/evidence/checkpoints/CP1/T008-p4-quang-smoke.md`.
 
 **Note**: P4/Quang kiểm tra lại workflow thực tế trước khi T008 được đánh dấu hoàn thành.

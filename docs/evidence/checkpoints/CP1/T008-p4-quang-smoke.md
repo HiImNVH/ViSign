@@ -30,3 +30,28 @@ No dataset rights or specialist verification is asserted by this documentation c
 - git push origin HEAD:main: exit 0, 3815e45..c034e6e.
 - GitHub Actions: not verified in this session; documentation gates above passed locally.
 No force push or amend. Local unrelated draft files remain in the original workspace.
+
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T16:33:39+07:00` trên `origin/main` `d156569` (chứa `c034e6e`, `e2bdf7f`).
+
+| Gate | Kết quả |
+|---|---|
+| Nhất quán spec | Khớp FR-012/FR-015 và quyết định lead 2026-11-07: nguồn/căn cứ sử dụng cấp dataset, `signerId` tùy chọn, `video-held-out` theo `recordingSessionId`, không tuyên bố unseen-signer |
+| Nhất quán quy ước | Dẫn đúng `data-convention.md` mục 8; giữ tên gốc trong `incoming/`, chưa bulk rename trước T098 |
+| Link | 3/3 link tương đối trỏ tới file đang track |
+| Ignore probes | `.mp4`, `.webm`, `.npz`, `.pt`, `.safetensors`, `data/raw/`, `data/processed/`: bị ignore. `data/README.md`, `data/manifests/*.csv`: vẫn track được |
+| CI | `quality.yml` trên `e2bdf7f`: success |
+
+Ghi chú không chặn:
+
+1. Cảnh báo ZIP của Quang là đúng: `incoming/ViSign-videos.zip` và `reports/consent.pdf` **không** bị
+   `.gitignore` chặn, và CI hygiene cũng chưa chặn `.zip`. Repo legacy từng track một ZIP video 21 MB.
+   Đề xuất: P2 thêm `*.zip` vào `.gitignore` (T001–T007 setup), P1 thêm `zip` vào danh sách đuôi cấm của
+   `quality.yml` (T091).
+2. Câu "Không commit/push trước khi người dùng yêu cầu" nên đổi thành "trước khi tới lượt integration
+   window và các gate liên quan đạt" cho đúng quy trình nhóm.
+3. Bản candidate T008 trước đó của P1 (`docs/evidence/checkpoints/CP1/T008-p1-huy-data-guidance-smoke.md`)
+   được thay bằng bản của owner P4; evidence P1 đánh dấu superseded.
+
+**Reviewer result**: `P1_VERIFIED`; `P3` còn `PENDING` (không chặn đóng CP1 vì P1 là reviewer chính của T008).

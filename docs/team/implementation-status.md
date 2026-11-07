@@ -30,6 +30,8 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 - 2026-11-07 lead quyết định dữ liệu: giữ đúng 10 ý nghĩa P0; full gate chia theo video gốc (`video-held-out`,
   FR-015 mới), không tuyên bố unseen-signer; nguồn/giấy phép khai một lần ở mức bộ dữ liệu (video giáo dục
   công khai). Ánh xạ tên file của Quang ở `data-convention.md` mục 8, chờ Quang xác nhận 2 điểm còn lại.
+- CP1: T003, T086 `VERIFIED`; T008 (bản P4 `c034e6e`) và T004 engines fix (`84478b2`) `P1_VERIFIED`.
+  Còn chặn đóng CP1: P5/Hiển review T004/T006.
 - T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
 - CP2 T022–T023 (config/logging) của P2 tại `fb56354`: P1_VERIFIED; P5 review CORS còn pending.
   T014–T016: P1_REVIEWED và P2_VERIFIED (serving); representative-clip review schema còn pending.

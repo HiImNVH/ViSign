@@ -4,7 +4,7 @@
 
 - Windows 11 with a working camera and Chromium-based browser.
 - Python 3.12 provisioned through `uv`.
-- Node.js 22.12+ and npm.
+- Node.js `^22.22.2 || ^24.15.0 || >=26.0.0` (see `apps/web/package.json` engines) and npm.
 - A local raw-material directory not tracked by Git.
 - No raw data is required for fixture-only integration.
 - An approved manifest with at most 3 meanings is sufficient for pilot smoke training.

@@ -44,7 +44,7 @@ trước khi Huy xác nhận integration queue và người thực hiện chạy
 
 ## Technical Context
 
-**Language/Version**: Python 3.12 cho AI/API; TypeScript với Node.js 22.12+ cho web
+**Language/Version**: Python 3.12 cho AI/API; TypeScript với Node.js `^22.22.2 || ^24.15.0 || >=26.0.0` cho web (theo `apps/web/package.json`)
 
 **Primary Dependencies**: MediaPipe Tasks Holistic Landmarker, PyAV decoder behind a `VideoDecoder`
 boundary, PyTorch GRU, FastAPI/Pydantic, React + Vite

@@ -38,4 +38,19 @@ Node 22.12–22.22.1, 23.x, 24.0–24.14 và 25.x thỏa khai báo cũ nhưng kh
 | `npm run lint`, `npm run typecheck` | exit 0 | `PASS` |
 | CI `quality` dùng `node-version: "24"` | Bản 24 mới nhất ≥ 24.15.0 nên vẫn thỏa | `PASS` |
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T16:33:39+07:00` trên `origin/main` `d156569` (chứa `84478b2`); Windows, Node 24.16.0.
+
+| Gate | Kết quả |
+|---|---|
+| Range so với lockfile | Thỏa mọi `engines.node` trong `package-lock.json`, kể cả transitive ngoài bảng trên: `undici >=22.19.0`, `data-urls`/`tr46`/`whatwg-url ^22.14.0`, `@inquirer/* ^22.13.0`, `@exodus/bytes`, `vitest` |
+| `npx semver -r` | Nhận 22.22.2, 24.15.0, 24.16.0, 26.0.0; loại 22.12.0, 22.21.0, 23.11.0, 24.0.0, 24.14.0, 25.0.0 |
+| `npm ci --engine-strict` | 278 packages, exit 0 |
+| `npm run lint`, `npm run typecheck` | PASS |
+| CI | `quality.yml` trên `84478b2` và các commit sau: success |
+| Tài liệu P1 | `plan.md`, `quickstart.md` đã cập nhật range trong commit review này |
+
+Ghi chú không chặn: `apps/web/README.md` (P5) vẫn ghi "Node.js 22.12+"; Hiển cập nhật khi review T004/T006.
+
+**Reviewer result**: `P1_VERIFIED`; `P5` còn `PENDING`.
