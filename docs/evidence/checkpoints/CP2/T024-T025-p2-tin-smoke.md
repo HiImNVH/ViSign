@@ -9,10 +9,10 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy` |
 | Candidate commit | `CP2 T024-T025(api): guarantee temporary clip deletion on every path` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30` — [e3c5d8a](https://github.com/HiImNVH/ViSign/commit/e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42357998638) |
 | Ngày/giờ | `2026-11-07T15:56:35+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15 |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## 2. Phạm vi thay đổi
 
