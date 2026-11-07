@@ -19,7 +19,8 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
   API/AI/Web gates. T003 còn chờ P3 review, T004/T006 còn chờ P5 review.
 - T008 raw-material/rights guidance đã push tại `189d34bcd4875752dab460716756aa8239996f9f`; chờ P4 review.
 - CP2 T019–T021 (API domain models) đã push tại `9b888a182592a2739b665a287ec37a8a4aa9f8f3`
-  (evidence link `5dc97a6`); chờ P1 tái lập gate, P3 review metadata, P5 review response/error shape.
+  (evidence link `5dc97a6`); P1 đã tái lập gate (44 passed, Ruff, mypy); chờ P3 review metadata,
+  P5 review response/error shape.
 
 ## Status rules
 
@@ -32,7 +33,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Review CP2 T019–T021; điều phối P3/P4/P5 review CP1 |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Điều phối P3/P4/P5 review CP1 và CP2 T019–T021 |
 | P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; CP2 T019–T021 chờ review; tiếp T022–T023 local; T099 blocked |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003 dependency/toolchain; sau đó schema v0.3 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW/BLOCKED | Review T008; T098 vẫn chờ data convention |

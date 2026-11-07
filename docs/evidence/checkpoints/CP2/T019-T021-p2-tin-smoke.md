@@ -82,6 +82,31 @@
 - [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
-**Reviewer result**: `PENDING`
+## 8. Independent integration review — P1/Huy
 
-**Reviewer note**: Chờ verify từ `origin/main`.
+Review time: `2026-11-07T14:09:05+07:00` trên `origin/main` `a36c4cd` (chứa `9b888a1` + evidence `5dc97a6`); worktree sạch.
+
+| Gate | Kết quả độc lập |
+|---|---|
+| Env | `uv sync --locked --project services/inference-api`: PASS |
+| Unit | `pytest services/inference-api/tests -q`: 44 passed |
+| Lint | `ruff check services/inference-api`: All checks passed |
+| Type | `python -m mypy src tests`: no issues in 10 source files |
+| Contract | `ErrorCode` khớp thứ tự enum OpenAPI (drift test); status 400/413/415/422/500/503 khớp `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`; danh sách mã khớp `docs/team/ai-backend-contract.md` |
+| Spec T019 | Gate `full && 10 meanings && macroF1 >= 0.80 && mọi perMeaningRecall >= 0.65`; metric nullable; `demoReady` fail closed |
+| Spec T020 | accepted cần text + classLabel; rejected cấm classLabel; diagnostics `extra="forbid"`, bị bỏ khi vắng |
+
+Ghi chú không chặn:
+
+- `ruff format --check` báo 6 file cần reformat (chỉ wrap dòng > 88; root config không bật `E501`).
+  Format chưa phải gate CP1/CP2; Tín nên chạy `ruff format` trong micro-commit kế tiếp, T092 quyết
+  định có đưa format check vào CI hay không.
+- `CLIP_DECODE_FAILED` trả 422 trong khi mô tả 422 của OpenAPI là "clip is readable but…"; P5 xác
+  nhận placeholder frontend xử lý được, nếu cần đổi mô tả thì đưa vào T099.
+- `ModelMetadata` chưa kiểm tra nhất quán `classLabels`/`meaningMap` với `meanings`; nên bổ sung khi
+  model loader (CP3) đọc artifact thật.
+- Rủi ro T059 (`demoReady=true` do metadata writer ghi) vẫn chờ P3 xác nhận.
+
+**Reviewer result**: `P1_VERIFIED`; `P3` (metadata T019) và `P5` (response/error shape) còn `PENDING`.
+
+**Reviewer note**: Không cần sửa trước specialized review.
