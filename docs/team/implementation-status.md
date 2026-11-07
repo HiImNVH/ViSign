@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T02:55:00+07:00` trên `origin/main` `a214a3c`.
+Cập nhật `2026-11-08T03:10:00+07:00` trên `origin/main` `f9232cd`.
 
 ### Checkpoint
 
@@ -51,7 +51,8 @@ Cập nhật `2026-11-08T02:55:00+07:00` trên `origin/main` `a214a3c`.
 | T074, T075 | P5 | Lỗi tương thích 404/405 + câu tiếng Việt riêng | `VERIFIED`, `[X]` (P1) |
 | T100–T104 (US6) | P5 | Bản dịch trực tiếp + lịch sử trình duyệt 24 giờ | `VERIFIED`, `[X]` (P1) |
 | T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
-| T068, T090 | P1 | Demo script; báo cáo kiến trúc (6 hành động đề xuất) | Bản đầu; T090 chờ P5 phần FE; chờ review |
+| T068 | P1 | Demo script | Bản đầu; chờ P2/P5 review |
+| T090 | P1 + P5 | Báo cáo kiến trúc (P1 §1–6, P5 §7 FE `a4eb02c`) | `VERIFIED`, `[X]` (review chéo); P5 làm FE-T090-01..06, ưu tiên lỗi mất lịch sử khi cleanup ghi lỗi |
 | T027, T028, T031, T051 | P5 | Types, câu chữ, component test, kết quả bị từ chối | `VERIFIED`, `[X]` (P1) |
 | T063 | P5 | Audit accessibility (Hiển, `b5ca295`, sửa recorder `a6d8a9d`) | `VERIFIED`, `[X]` (P1): 90/90 lặp 3 lần; trình đọc màn hình thật NOT_RUN |
 | T088 | P5 + P1 | Audit UX (P1) + sửa a11y/bố cục 320 px (P5 `a40c68a`) | `VERIFIED`, `[X]` (review chéo) |

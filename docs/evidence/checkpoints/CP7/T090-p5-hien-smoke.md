@@ -64,3 +64,17 @@ Các skip là screenshot capture opt-in và live backend, không được coi l�
 - [ ] Reviewer tái lập kết quả và ghi đánh giá.
 
 **Reviewer result:** `PENDING`. **Reviewer note:** Chờ P1/P2 đọc §7 và xác nhận gate/action.
+
+## Independent review — P1/Huy (2026-11-08)
+
+- Phần §1–§6 do P1 viết, đã được P5 review chéo; P1 review §7 của P5.
+- Kiểm chứng trong mã: đếm `apps/web/tests` = **20 file** test (P1 sửa §1 từ 17 → 20); `isModelInfo` chặn
+  `meanings.length <= 10` (P1 bổ sung giới hạn này vào §5); FE-T090-01 đúng: trong `translationHistory.ts`
+  `load()`, `setItem`/`removeItem` của bước dọn dẹp nằm chung `try` ngoài nên khi ném lỗi trả `entries: []`,
+  mất cả các entry đã đọc hợp lệ; FE-T090-04 đúng: `RecognitionOverlay` chỉ còn được import trong test
+  (`camera.spec.ts:338`, `recognition-overlay.test.tsx`), app thật dùng `RecognitionResult`.
+- Gate web đã chạy cùng lượt review T063/T088 trên cùng mã nguồn (T090 không đổi code): unit 165 passed/4 skipped,
+  Playwright T063 + T088 lặp 3 lần 90/90; CI `f9232cd` xanh.
+
+**Reviewer result**: `P1_VERIFIED`, tick `[X]` T090 (báo cáo kiến trúc review chéo P1 ↔ P5). Các fix FE-T090-01..06
+là việc tiếp theo của P5, ưu tiên FE-T090-01 kèm regression test.

@@ -7,7 +7,7 @@
 
 | Module | Vai trò | Kích thước lớn nhất | Test |
 |---|---|---|---|
-| `apps/web` | React/TS/Vite: camera, kết quả, lỗi, bản dịch + lịch sử 24 giờ | `useRecognition.ts` 216 dòng | 17 file (Vitest, Playwright, E2E) |
+| `apps/web` | React/TS/Vite: camera, kết quả, lỗi, bản dịch + lịch sử 24 giờ | `useRecognition.ts` 216 dòng | 20 file (Vitest, Playwright, E2E) |
 | `services/inference-api` | FastAPI `/api/v1`, registry fixture/pilot/full, kiểm clip, lỗi, bảo mật | `gru_predictor.py` 254 dòng | 25 file |
 | `ai` | Decode → MediaPipe → tensor 32×234 → GRU; train/eval/gate/benchmark | `train.py` 278 dòng | 9 file |
 | `tests/` | contract, integration, security xuyên module | — | 6 file |
@@ -49,7 +49,7 @@ apps/web ──HTTP (OpenAPI v1)──▶ services/inference-api ──import (e
 
 | Hướng | Mức sẵn sàng |
 |---|---|
-| Thêm nghĩa/biến thể | Qua class map + train lại; API/FE không đổi code (registry đọc `model_info.json`) |
+| Thêm nghĩa/biến thể | Qua class map + train lại; API/FE không đổi code trong giới hạn **≤ 10 nghĩa** của contract MVP (`inferenceApi.ts` chặn `meanings.length <= 10`); vượt 10 phải đổi contract + guard |
 | Đổi artifact fixture/pilot/full | Đổi `MODEL_ARTIFACT_PATH` + khởi động lại; đã test chuỗi đổi và rollback (T064) |
 | Thay mô hình (ngoài GRU) | Registry theo `artifactKind`; cần factory mới cho kiến trúc khác |
 | Nhiều worker/instance | Hiện một inference slot mỗi tiến trình; mở rộng ngang cần thêm instance (ngoài MVP) |

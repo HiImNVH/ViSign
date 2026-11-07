@@ -314,7 +314,7 @@ workflow và production smoke/rollback mà không cần hỏi người viết co
 - [ ] T087 [P] [US5] Viết hồ sơ sáng tạo và tính khả thi gồm đối tượng sử dụng, pain point, điểm khác biệt, comparison, phạm vi áp dụng và bằng chứng user validation tại `docs/innovation-feasibility.md`
 - [X] T088 [P] [US5] Audit FE/UI/UX theo responsive, accessibility, camera usability, module/component boundaries và visual consistency; lưu screenshot/test evidence tại `docs/frontend-quality-report.md`
 - [ ] T089 [P] [US5] Viết tests/report cho OOD, signer/lighting/angle edge cases, false accept, class imbalance/bias, stability và giải thích decision rule tại `ai/tests/evaluation/test_safety_robustness.py` và `docs/ai-safety-report.md`
-- [ ] T090 [P] [US5] Review cấu trúc module, dependency direction, coding conventions, duplication và khả năng mở rộng FE/BE/AI; ghi action/evidence tại `docs/architecture-quality-report.md`
+- [X] T090 [P] [US5] Review cấu trúc module, dependency direction, coding conventions, duplication và khả năng mở rộng FE/BE/AI; ghi action/evidence tại `docs/architecture-quality-report.md`
 - [ ] T091 [US5] Cài GitHub Actions quality/deploy gates cho lint, typecheck, unit, contract, integration, web build và AWS deploy-after-pass bằng OIDC tại `.github/workflows/quality.yml` và `.github/workflows/deploy-aws.yml`
 - [X] T092 [P] [US5] Chạy security/reliability audit gồm dependency/secret scan, upload abuse, CORS, headers, rate/resource boundaries, timeout, log privacy và recovery tại `tests/security/` và `docs/security-report.md`
 - [ ] T093 [P] [US5] Viết báo cáo tác động cộng đồng, nhóm hưởng lợi, accessibility/usability result, rủi ro gây hiểu nhầm và roadmap mở rộng có điều kiện tại `docs/community-impact.md`
