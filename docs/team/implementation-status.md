@@ -47,6 +47,8 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
+| T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; giữ `[ ]` chờ metric thật |
+| T083 | P3 | Pilot "Sốt-Chờ" | **Lỗi thời**: "Chờ" ra khỏi P0 ngày 07/11 — lead chốt lại cặp nghĩa pilot |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip
