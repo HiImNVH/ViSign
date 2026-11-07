@@ -8,7 +8,7 @@
 | Owner | `P1 Huy` |
 | Reviewer | `P2 Tín` |
 | Candidate commit | `CP1 T086(docs): standardize member commit ledgers` |
-| Commit SHA | `PENDING` |
+| Commit SHA | `9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f` |
 | Run time | `2026-11-07T13:39:12+07:00` |
 | Status | `PASS` local; remote verification pending |
 
@@ -39,11 +39,19 @@
 
 ## Evidence links
 
-- Commit: `PENDING` — bổ sung full SHA/link sau push.
+- Commit: `https://github.com/HiImNVH/ViSign/commit/9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f`.
 - GitHub Actions: `NOT_RUN` — docs-only change; workflow chưa thuộc candidate này.
+
+## Pre-push synchronization
+
+- Time: `2026-11-07T13:40:22+07:00`.
+- `git pull --rebase origin main`: current branch up to date.
+- Behind/ahead before push: `0/1`.
+- Post-push local and remote SHA both equal
+  `9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f`.
 
 ## Reviewer
 
 **Result**: `PENDING`
 
-**Note**: P2 kiểm tra lại từ `origin/main` sau push.
+**Note**: Primary commit đã có trên `origin/main`; P2 kiểm tra lại trước khi đổi thành `VERIFIED`.
