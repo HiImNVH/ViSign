@@ -52,6 +52,14 @@
 
 ## Reviewer
 
-**Result**: `PENDING`
+**Result**: `VERIFIED` (P2/Tín, `2026-11-07T14:55+07:00`)
 
-**Note**: Primary commit đã có trên `origin/main`; P2 kiểm tra lại trước khi đổi thành `VERIFIED`.
+**Note**: Tái lập trên `origin/main` `5b6a441`:
+
+- Tại `9cfdf14`, cả 5 member README có đủ `Member profile`, `Current assignments`, `Commit đang chuẩn bị`,
+  `Commit ledger`, `Handoff`; template có cùng heading và bốn trường đồng bộ/commit/push.
+- `docs/team/git-checkpoints.md` có cổng đồng bộ trước commit (`git rev-list --left-right --count`) và
+  trước push.
+- Lệch phát sinh sau T086, không phải lỗi của commit này: `members/p3-cuong/README.md` đổi mục thành
+  `Commit gần nhất` và bỏ trường `Local commit` ở `a8ea4c6`; message `Verified CP1(T003)` không theo
+  format `CPx Txxx(scope): outcome`. P3 khôi phục khung ở commit kế tiếp.
