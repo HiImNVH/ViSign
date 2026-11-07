@@ -25,6 +25,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
   representative-clip review cho schema `visign-xy-32-v0.3-draft`.
 - Lead đã bàn giao quy ước: [fe-be-api-convention.md](fe-be-api-convention.md) cho T099 và
   [data-convention.md](data-convention.md) cho T098. Owner xác nhận các quyết định bổ sung rồi đóng băng.
+- T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
 
 ## Status rules
 

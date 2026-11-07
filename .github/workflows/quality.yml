@@ -1,0 +1,110 @@
+# .github/workflows/quality.yml
+# Quality gate T091: lint, typecheck, unit/contract tests va web build cho API, AI va web.
+# Deploy (deploy-gcp.yml) thuoc CP7 va chi chay sau khi workflow nay xanh.
+
+name: quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.13.7"
+  NODE_VERSION: "24"
+
+jobs:
+  api:
+    name: API (ruff, mypy, pytest)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: services/inference-api/uv.lock
+      - name: Install (locked)
+        run: uv sync --locked --project services/inference-api
+      - name: Lint
+        run: uv run --project services/inference-api ruff check services/inference-api
+      - name: Typecheck
+        run: uv run --project services/inference-api python -m mypy services/inference-api/src services/inference-api/tests
+      - name: Unit and contract tests
+        run: uv run --project services/inference-api pytest services/inference-api/tests -q
+
+  ai:
+    name: AI (ruff, mypy, pytest)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: System libraries for OpenCV/MediaPipe
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libglib2.0-0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: ai/uv.lock
+      - name: Install (locked)
+        run: uv sync --locked --project ai
+      - name: Lint
+        run: uv run --project ai ruff check ai
+      - name: Typecheck
+        run: uv run --project ai python -m mypy ai/src ai/tests
+      - name: Unit tests
+        run: uv run --project ai pytest ai/tests -q -rs
+
+  web:
+    name: Web (lint, typecheck, vitest, build)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install (locked)
+        run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+  hygiene:
+    name: Repository hygiene
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Reject tracked raw media, model binaries and secrets
+        run: |
+          forbidden=$(git ls-files | grep -E -i '\.(mp4|webm|mov|avi|mkv|npz|npy|pt|pth|ckpt|onnx|task|pem|key|p12)$|(^|/)\.env$|service-account.*\.json$|-credentials\.json$' || true)
+          if [ -n "$forbidden" ]; then
+            echo "Forbidden tracked files:"; echo "$forbidden"; exit 1
+          fi
+      - name: Whitespace errors in last commit
+        if: github.event_name == 'push'
+        run: git diff --check HEAD~1 HEAD
