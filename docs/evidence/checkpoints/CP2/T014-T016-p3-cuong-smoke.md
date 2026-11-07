@@ -6,7 +6,7 @@
 | Commit đã push | [865547ebe637da010ac7c953bcce38389ecca831](https://github.com/HiImNVH/ViSign/commit/865547ebe637da010ac7c953bcce38389ecca831) |
 | Review | P2/Tín review đường serving, P1/Huy review clip và quyết định chốt schema |
 | Gate cục bộ | `PASS` |
-| Parity offline ↔ API và review schema | `NOT_RUN` |
+| Parity offline ↔ API và review schema | Parity `PASS` · review schema `PENDING` |
 | Trạng thái push | `PUSHED` · đã có trên `origin/main` |
 
 ## Phạm vi
@@ -124,3 +124,27 @@ Bổ sung cho ghi chú P1 (không lặp lại mục 1–6 của P1):
 
 **Reviewer note**: Không cần sửa trước khi đóng T014–T016; mục 2 cần P3 xác nhận, mục 1/3 do P2 xử lý
 trong T037/T049.
+
+
+## Bàn giao clip đại diện — P3/Cường
+
+Chạy lại test `test_api_path_matches_offline_extraction` trên baseline `b66703e` với sáu WebM trong thư mục dùng chung **6 vid kiểm thử**. Đối chiếu cùng một clip qua `process_video` offline và đường API nhận bytes, lưu tạm rồi gọi `FeatureExtractor`. Xem thêm [kết quả T037 trên 32 clip](../CP3/T037-p2-tin-real-clip-smoke.md).
+
+| Clip theo thứ tự tên tăng dần | SHA-256 |
+|---|---|
+| 1 | 63c2619baca7026fc0019a84d1beab3ee1c160bf092feddac61f512bdb45d384 |
+| 2 | 8448845affc763752ca6ec9744b671a1065872c7b4f5ab750f7dc95d5827ed64 |
+| 3 | 030678d2368f5b9a5e7921c2603d0d57d1fdb579b5fe360e94a42ea8497ac808 |
+| 4 | f1e905960d8bfe5b204b61d14b62619eaff7d6b47fc70ab293efe71300affa5c |
+| 5 | 46030fa683f34045208d30b260d89343bc30318607fe3cd2602712a69930b69d |
+| 6 | 20abfa8106ec34ad2b2a6e0a19e1eaa5e0758c6e041e0ae825ed0d33fe17fa6f |
+
+**Kết quả 6/6 PASS.** Tensor 32×234 khớp với `atol=1e-6`, `rtol=0`. Tensor mask và group mask khớp tuyệt đối, phiên bản schema và `inputStatus` trùng. Không có lượt skip.
+
+Để chạy lại, đặt `VISIGN_MODEL_DIR` trỏ đến bộ detector khớp manifest và đặt `VISIGN_CP2_REFERENCE_WEBM` lần lượt cho từng clip đã kiểm SHA-256. Từ gốc repo:
+
+```powershell
+uv run --project services/inference-api --locked --extra serving pytest services/inference-api/tests/integration/test_serving_feature_parity.py -q
+```
+
+P1/Huy review mức giữ động tác sau lấy mẫu và quy ước tay trái/phải, gồm ảnh hưởng của nguồn đã lật. Kết quả parity kiểm sự nhất quán của hai đường xử lý. Schema giữ `DRAFT_PENDING_LEAD_REVIEW` đến khi có quyết định của P1.
