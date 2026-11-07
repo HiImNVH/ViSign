@@ -66,4 +66,26 @@ của pytest. Ngoài pytest logger chỉ có một handler; test được sửa 
 - Hiển (T040): đọc `X-Request-ID`/`Retry-After` cross-origin được vì đã `expose_headers`.
 - Rollback: `git revert` riêng commit này; domain/config/clip tạm không phụ thuộc app.
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `4a2dad1`). Ngoài test của owner, P1 chạy `create_app()` bằng
+`TestClient` với một route tạm ném `RuntimeError("secret /tmp/visign_clip_x.webm")`:
+
+| Tình huống | Kết quả |
+|---|---|
+| `X-Request-ID: not-a-uuid` | 500 `PREDICTION_FAILED`, header/body cùng UUID mới; body không chứa message hay path của exception |
+| Lỗi 500 với `Origin` hợp lệ | Có `Access-Control-Allow-Origin` (CORS bọc ngoài) |
+| Traceback | Chỉ trong log server JSON, kèm `requestId` và `errorCode` |
+| Preflight origin Vite | 200, cho phép `x-request-id` |
+| Origin lạ | 400 `Disallowed CORS origin`, không gắn nhãn 403 |
+| Route không tồn tại | 404 `{"detail":"Not Found"}` — đúng phạm vi, chuẩn hoá ở T073 |
+| Unit + contract | 129 passed; CI run của `4a2dad1` success |
+
+Ghi chú không chặn:
+
+1. UUID viết hoa trong `X-Request-ID` được trả lại dạng chữ thường. Hợp lệ theo RFC 4122, nhưng FE không
+   nên so chuỗi tuyệt đối; `crypto.randomUUID()` vốn sinh chữ thường nên luồng thật không bị ảnh hưởng.
+2. Preflight không có `X-Request-ID` vì CORS middleware trả trước middleware request; chấp nhận được.
+3. Router `/api/v1` chưa có endpoint; health/model-info thuộc T060, predictions thuộc T038.
+
+**Reviewer result**: `P1_VERIFIED`

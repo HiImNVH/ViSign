@@ -52,4 +52,17 @@
 - CLI T017 của P3 ghi mã gốc; adapter T037 chỉ trả mã đã ánh xạ.
 - Rollback: `git revert` riêng commit này.
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `5b6a441`).
+
+| Gate | Kết quả |
+|---|---|
+| Ánh xạ | `INVALID_TIMESTAMPS` → `CLIP_DECODE_FAILED` (422); `FEATURE_SCHEMA_MISMATCH`, `EXTRACTOR_VERSION_MISMATCH`, `MODEL_ASSET_MISMATCH` → `MODEL_NOT_READY` (503); mã lạ → `PREDICTION_FAILED` (500). Khớp đề xuất trong review T014–T016 của P1 |
+| Test | 129 passed (gồm test quét mã nguồn pipeline để mã mới bắt buộc có ánh xạ) |
+| CI | Job API/AI success; job Web đỏ lần đầu do test flaky của T039, không liên quan |
+
+Ghi chú: T037 thuộc CP3 nhưng chỉ thêm module ánh xạ thuần, không mở endpoint; chấp nhận giữ trên `main`.
+CP3 chỉ đóng sau CP1/CP2.
+
+**Reviewer result**: `P1_VERIFIED`

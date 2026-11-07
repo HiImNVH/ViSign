@@ -53,4 +53,17 @@ Ghi chú quá trình: phiên bản test đầu dùng `caplog` cho kết quả ph
   (privacy audit) và T092 nên kiểm thư mục tạm sau chạy tải.
 - Rollback: `git revert` riêng commit này.
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `e3c5d8a`).
+
+| Gate | Kết quả |
+|---|---|
+| Unit + contract | `pytest services/inference-api/tests tests/contract -q`: 129 passed |
+| CI | Run của `e3c5d8a` success |
+| Code | `mkstemp` với prefix/suffix cố định, không dùng tên file người gửi; ghi bytes trong `try`, `finally` luôn `delete()`; lỗi xoá chỉ log `ERROR`, không che lỗi gốc của request |
+
+Ghi chú không chặn: clip nhận toàn bộ dưới dạng `bytes` trong RAM trước khi ghi đĩa. Giới hạn 10 MiB
+phải được kiểm **trước** khi đọc hết body (T049), nếu không client có thể gửi body lớn hơn nhiều.
+
+**Reviewer result**: `P1_VERIFIED`

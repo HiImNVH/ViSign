@@ -71,6 +71,18 @@
 - [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy (lead)
 
-**Reviewer note**: Chờ P5 xác nhận consumer và P1 verify.
+Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `5add400`).
+
+| Gate | Kết quả |
+|---|---|
+| D1–D4 | Khớp lead handoff; mô tả 422 trong `openapi.yaml` đúng D1 |
+| Drift test | `pytest tests/contract -q`: 15 passed. Mutation: xoá `SERVICE_BUSY` khỏi TS → 1 failed; trả mô tả 422 cũ → 1 failed; đã khôi phục |
+| CI | Job `api` chạy `tests/contract`; các run sau `5add400` success |
+| Điểm lệch 1 (`HealthResponse.modelVersion`) | **Lead quyết định theo OpenAPI**: optional + nullable. Đã sửa `docs/team/fe-be-api-convention.md` mục 4 trong commit review này; không đổi schema/TS |
+| Điểm lệch 2, 3 | Đồng ý chuyển sang T073 và T049 |
+
+**Lead result**: `P1_VERIFIED`; `P5` (consumer) còn `PENDING`.
+
+**Reviewer note**: Chờ P5 xác nhận consumer (D2 timeout, D3 fallback, `inference-api.ts`).

@@ -47,8 +47,10 @@ Frontend dừng ghi mặc định ở 5000 ms (`VITE_MAX_CAPTURE_MS`), không l�
 
 ## 4. Response và nullability
 
-- Field **required + nullable** (`classLabel`, `macroF1`, `perMeaningRecall`, `evaluatedAt`,
-  `HealthResponse.modelVersion`) luôn có mặt; giá trị có thể `null`.
+- Field **required + nullable** (`classLabel`, `macroF1`, `perMeaningRecall`, `evaluatedAt`) luôn có
+  mặt; giá trị có thể `null`.
+- `HealthResponse.modelVersion` là **optional + nullable** theo OpenAPI: có thể vắng hoặc `null`
+  (quyết định lead 2026-11-07, giải quyết điểm lệch 1 khi đóng băng T099).
 - Field **optional** (`timingsMs`, `qualityHints`) bị bỏ khỏi JSON khi vắng, không bao giờ là `null`.
   Object diagnostics cấm field lạ; không bao giờ chứa frame, landmark hay ảnh.
 - Rejected: `200`, `accepted=false`, `classLabel=null`, `text="Không nhận diện được"`.
