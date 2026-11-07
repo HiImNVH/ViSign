@@ -56,9 +56,9 @@
 | Pre-commit sync | `PASS` — `0 0` trên `fe17fad` (sau khi pull deploy EC2 của P1, admin UI của P5, smoke pilot của P3) |
 | Gate commands | Chỉ đổi tài liệu; số đo: 32 clip × 3 cỡ × 5 lần, ảnh chọn ra giống hệt 32/32; ELF `libmediapipe.so` |
 | Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md`, `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `PENDING` |
+| Local commit | `c73c8b3` |
+| Pre-push sync | `PASS` — `0 1` trên `fe17fad` |
+| Push status | `PUSHED` `fe17fad..c73c8b3`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42413030409) |
 
 ## Commit ledger
 
@@ -107,7 +107,8 @@
 | `CP4/T092` | Audit bảo mật, security header, tắt docs, lệnh audit cho BGK | `CP4 T092(security): add security audit, headers and docs lockdown` | `2561c7d4c5bace5c7c7db00e632382b15d752344` | [commit](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344) | 25 test, 14 mutation; audit 5/5; live uvicorn; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) | P1/Huy | `VERIFIED` |
 | `CP5/T065 review` | Review ứng viên khởi tạo detector song song của P3 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | A/B 76 cặp clip thật, probe lỗi worker, 40 integration với clip thật; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P3/Cường | `PUSHED` |
 | `CP7/T095 Docker` | Đóng gói Docker/Compose local, bàn giao P1 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | Image web OK, image API tới unpack; `compose config`; 417 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P1/Huy | `HANDOFF` |
-| `CP5/T065 API` | Pool bộ detector tạo sẵn ở thread nền, đóng ngoài đường găng | `CP5 T065(api): prewarm single-use detector sets off the request path` | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` | [commit](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b) | 16 unit + 3 integration, 14 mutation; 439 passed với clip thật; A/B 76 cặp; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) | P1/Huy, P3/Cường | `PUSHED` |
+| `CP5/T065 API` | Pool bộ detector tạo sẵn ở thread nền, đóng ngoài đường găng | `CP5 T065(api): prewarm single-use detector sets off the request path` | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` | [commit](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b) | 16 unit + 3 integration, 14 mutation; 439 passed với clip thật; A/B 76 cặp; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) | P1/Huy, P3/Cường | `VERIFIED` |
+| `CP5-CP7/T065,T095 verify` | Đo lấy mẫu trước khi chuyển RGB; review bản vá libEGL của P1 | `CP5-CP7 T065,T095(verify): measure RGB-first sampling, review EGL fix` | `c73c8b3174076dd6d08e8aba34865288549b2cab` | [commit](https://github.com/HiImNVH/ViSign/commit/c73c8b3174076dd6d08e8aba34865288549b2cab) | 32 clip × 3 cỡ, 32/32 giống hệt; ELF `libmediapipe.so`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42413030409) | P3/Cường, P1/Huy | `PUSHED` |
 
 ## Handoff
 
