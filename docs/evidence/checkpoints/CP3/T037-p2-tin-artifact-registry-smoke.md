@@ -9,10 +9,10 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P3 Cường` (định dạng `model_info.json`, thứ tự lớp); `P1 Huy` |
 | Candidate commit | `CP3 T030,T037(api): add artifact loader, fixture predictor and registry` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `7adc7e5503ef4bf7cd86497247791aea2046db96` — [7adc7e5](https://github.com/HiImNVH/ViSign/commit/7adc7e5503ef4bf7cd86497247791aea2046db96); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42364814495) |
 | Ngày/giờ | `2026-11-07T17:20+07:00` |
 | Môi trường | Windows 11, uv 0.13.7, CPython 3.12.15 (môi trường API mặc định, không extra) |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## 2. Phạm vi thay đổi
 
