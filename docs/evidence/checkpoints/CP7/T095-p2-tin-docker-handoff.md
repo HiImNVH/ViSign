@@ -6,7 +6,7 @@
 | Owner | `P2 Tín` soạn; bàn giao phần build/smoke Docker và các bước AWS cho `P1 Huy` theo quyết định của P2 |
 | Reviewer | `P1 Huy` |
 | Candidate commit | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` |
-| Commit | `PENDING` |
+| Commit | `02cb36a9a350d01826cea033639b3f47f1317197` — [02cb36a](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) |
 | Ngày/giờ | `2026-11-08T01:48+07:00` |
 | Status | `PARTIAL` — build qua mọi bước; chưa chạy stack và smoke vì ổ C: của máy build hết chỗ |
 

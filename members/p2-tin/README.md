@@ -56,9 +56,9 @@
 | Pre-commit sync | `PASS` — `0 0` trên `a255a7c` (sau khi pull review P1 T092/T065, P3 `592db9c`, P5 web và schema v0.3 `a255a7c`) |
 | Gate commands | API + contract + integration + security 417 passed, 3 skipped (extra `serving`); như CI 355 passed, 2 skipped, Ruff, mypy 58 file; `docker compose config`; image web build OK, image API qua mọi bước tới unpack |
 | Smoke evidence | `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; review trong `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `PENDING` |
+| Local commit | `02cb36a` |
+| Pre-push sync | `PASS` — `0 1` trên `a255a7c` |
+| Push status | `PUSHED` `a255a7c..02cb36a`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) |
 
 ## Commit ledger
 
@@ -104,7 +104,9 @@
 | `CP4/T072,T073` | 404/405/307 theo contract HTTP | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract` | `d72ab3259547022decdebb1b1382f8ea7f0cce33` | [commit](https://github.com/HiImNVH/ViSign/commit/d72ab3259547022decdebb1b1382f8ea7f0cce33) | 28 test, 6 mutation; web 122/122; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P5/Hiển | `VERIFIED` |
 | `CP4/T066` | Audit quyền riêng tư, dọn clip sót | `CP4 T066(security): audit prediction privacy and sweep stale clips` | `961f59d7ef1465ac3146a8c5d481ffe2da496183` | [commit](https://github.com/HiImNVH/ViSign/commit/961f59d7ef1465ac3146a8c5d481ffe2da496183) | 21 test, 6 mutation; live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P3/Cường | `VERIFIED` |
 | `CP4/T064` | Clip đại diện, nạp/đổi artifact, rollback | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` | `5cec97b5fd59b81fae86729f775f4c3cbedb01b7` | [commit](https://github.com/HiImNVH/ViSign/commit/5cec97b5fd59b81fae86729f775f4c3cbedb01b7) | 4 test, 4 mutation; clip thật 4/4; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) | P1/Huy, P3/Cường | `VERIFIED` |
-| `CP4/T092` | Audit bảo mật, security header, tắt docs, lệnh audit cho BGK | `CP4 T092(security): add security audit, headers and docs lockdown` | `2561c7d4c5bace5c7c7db00e632382b15d752344` | [commit](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344) | 25 test, 14 mutation; audit 5/5; live uvicorn; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) | P1/Huy | `PUSHED` |
+| `CP4/T092` | Audit bảo mật, security header, tắt docs, lệnh audit cho BGK | `CP4 T092(security): add security audit, headers and docs lockdown` | `2561c7d4c5bace5c7c7db00e632382b15d752344` | [commit](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344) | 25 test, 14 mutation; audit 5/5; live uvicorn; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) | P1/Huy | `VERIFIED` |
+| `CP5/T065 review` | Review ứng viên khởi tạo detector song song của P3 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | A/B 76 cặp clip thật, probe lỗi worker, 40 integration với clip thật; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P3/Cường | `PUSHED` |
+| `CP7/T095 Docker` | Đóng gói Docker/Compose local, bàn giao P1 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | Image web OK, image API tới unpack; `compose config`; 417 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P1/Huy | `HANDOFF` |
 
 ## Handoff
 
