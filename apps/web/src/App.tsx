@@ -1,9 +1,16 @@
-// apps/web/src/App.tsx
-// Khung ung dung toi thieu cua CP1; luong nhan dien duoc ghep o T043.
+// apps/web/src/App.tsx - Bo cuc trang camera va thong tin thu nghiem.
+import { CameraHelp } from './components/CameraHelp';
+import { vi } from './content/vi';
+import { CameraRecorder } from './features/recognition/CameraRecorder';
+import './styles.css';
+
 export function App() {
   return (
-    <main>
-      <h1>ViSign</h1>
+    <main className="app-shell">
+      <header className="app-header"><div className="brand"><h1>ViSign</h1><span>{vi.title}</span></div>
+        <div className="header-actions"><span className="trial-label">Bản thử nghiệm</span><CameraHelp /></div></header>
+      <CameraRecorder />
+      <p className="disclaimer">{vi.disclaimer}</p>
     </main>
   );
 }
