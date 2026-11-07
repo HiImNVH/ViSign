@@ -1,5 +1,6 @@
 # .github/workflows/quality.yml
 # Quality gate T091: lint, typecheck, unit/contract tests va web build cho API, AI va web.
+# Job docker: build image, nap MediaPipe trong container chi doc va smoke stack Compose qua nginx.
 # Deploy (deploy-aws.yml) thuoc CP7 va chi chay sau khi workflow nay xanh.
 
 name: quality
@@ -91,6 +92,60 @@ jobs:
         run: npm run build
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
+
+  docker:
+    name: Docker images (build, MediaPipe, stack smoke)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      COMPOSE: docker compose -f infra/aws/compose.production.yml -f infra/aws/compose.local.yml
+      MODEL_ARTIFACT_DIR: ${{ github.workspace }}/services/inference-api/tests/fixtures/model-artifacts/fixture
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - name: Build inference-api image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/aws/docker/inference-api.Dockerfile
+          tags: visign/inference-api:local
+          load: true
+          cache-from: type=gha,scope=inference-api
+          cache-to: type=gha,mode=max,scope=inference-api
+      - name: Build web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/aws/docker/web.Dockerfile
+          tags: visign/web:local
+          load: true
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+      # Bat loi thieu thu vien he thong cua MediaPipe (vi du libEGL) ma test ngoai container khong thay
+      - name: MediaPipe detectors load in read-only API container
+        run: docker run --rm -i --read-only --tmpfs /tmp --entrypoint python visign/inference-api:local - < infra/aws/smoke/mediapipe_load.py
+      - name: Synthetic WebM clip (generated, never committed)
+        run: |
+          mkdir -p /tmp/visign-smoke
+          docker run --rm -i --user "$(id -u):$(id -g)" -v /tmp/visign-smoke:/out --entrypoint python \
+            visign/inference-api:local - /out/smoke.webm < infra/aws/smoke/make_clip.py
+      - name: Start stack with fixture artifact
+        run: $COMPOSE up -d --no-build --wait --wait-timeout 180
+      - name: HTTP smoke through nginx
+        run: python3 infra/aws/smoke/stack_smoke.py http://127.0.0.1:8080 /tmp/visign-smoke/smoke.webm --expect-kind fixture
+      - name: Container hardening
+        run: |
+          test "$($COMPOSE exec -T inference-api id -u)" = "10001"
+          for service in inference-api web; do
+            id=$($COMPOSE ps -q "$service")
+            test "$(docker inspect -f '{{.HostConfig.ReadonlyRootfs}}' "$id")" = "true"
+            docker inspect -f '{{.HostConfig.CapDrop}}' "$id" | grep -q ALL
+          done
+      - name: Image sizes
+        run: docker image ls --format '{{.Repository}}:{{.Tag}} {{.Size}}' | grep '^visign/'
+      - name: Container logs on failure
+        if: failure()
+        run: $COMPOSE logs --tail=150
 
   hygiene:
     name: Repository hygiene

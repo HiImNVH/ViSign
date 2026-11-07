@@ -63,6 +63,26 @@ Giới hạn: URL **đổi mỗi khi container/EC2 khởi động lại** (xem b
 không có cam kết uptime; công khai, chưa có rate limit. Tắt: `docker rm -f visign-tunnel`. Thay bằng CloudFront khi AWS
 duyệt.
 
+## Đổi sang artifact pilot Giấy tờ / Nhận (2026-11-08)
+
+Artifact `t083-pilot-v2-approved` (weights `sha256:0c9a991b…c252`, khớp pilot report) tải lên
+`s3://…/artifacts/t083-pilot-v2-approved/`; trên EC2 đổi `ARTIFACT_VERSION` trong `/opt/visign/release.env` rồi chạy
+`/opt/visign/deploy.sh` qua SSM (tham số stack `ArtifactVersion` vẫn ghi fixture vì user data chỉ chạy lần đầu).
+Tunnel giữ nguyên URL.
+
+| Clip test (chuyển WebM 640×480) | Kết quả trên AWS | Round-trip / processing |
+|---|---|---|
+| GIAY_TO_HCM_1 | chấp nhận `GIAY_TO_HN_2` (đúng nghĩa), 0,609 | 6,31 s / 4,73 s |
+| GIAY_TO_HN_2 | từ chối, 0,412 | 5,88 s / 4,05 s |
+| NHAN_HCM_1 | chấp nhận `NHAN_HCM_1`, 0,658 | 5,56 s / 3,99 s |
+| NHAN_HN_2 | từ chối, 0,361 | 5,51 s / 4,07 s |
+| Clip không có người | 422 `NO_PERSON_DETECTED` | 4,14 s |
+
+Nhãn và confidence **trùng khớp** lần chạy Docker local (parity môi trường). Nhưng processing trên t3.small
+**4,0–4,7 s** (local 12 CPU: 1,4–2,3 s) → round-trip 5,5–6,3 s, **trượt SC-002 (≤ 3 s)**. Phần nặng là MediaPipe trên
+2 vCPU burst. Hướng xử lý: thử `c7i-flex.large` (cũng dùng credit Free Plan, CPU mới hơn, 4 GB) chỉ trong ngày demo,
+hoặc giảm độ phân giải/số frame giải mã (P3).
+
 ## Rủi ro và việc tiếp theo
 
 1. **Camera cần HTTPS**: trình duyệt chỉ cho `getUserMedia` trên HTTPS hoặc localhost, nên người dùng chưa thử được
