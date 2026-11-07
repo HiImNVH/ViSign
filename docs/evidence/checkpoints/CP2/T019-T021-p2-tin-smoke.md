@@ -128,3 +128,11 @@ Ghi chú không chặn:
 - **T021**: `VERIFIED` (P1 + P5 tại `docs/evidence/checkpoints/CP2/T020-T021-T022-T026-p5-hien-review.md`), `[X]`.
 - **T019**: mở — chờ P3 xác nhận metadata và việc metadata writer T059 ghi `demoReady`.
 - **T020**: mở — P5 `CHANGES_REQUESTED`: `accepted=false` phải dùng đúng `Không nhận diện được`; `classLabel` không được rỗng/khoảng trắng.
+
+## Follow-up sau closure P1 — T020 `classLabel` khoảng trắng (`2026-11-07T19:30+07:00`)
+
+- Ghi chú closure P1: `classLabel` của kết quả được chấp nhận không được rỗng **hoặc chỉ gồm khoảng trắng**. Bản sửa
+  `6ee9e61` đã chặn chuỗi rỗng và chữ sai khi bị từ chối; nay `ensure_accepted_state()` chặn thêm `"   "`.
+- Test viết trước: thêm `{"classLabel": "   "}` → 1 failed; sau khi sửa 19 passed.
+- Toàn bộ API + contract `-W error`: 179 passed, 1 skipped; Ruff, mypy đạt.
+- T020 chờ P5 kiểm lại cả hai điểm (`6ee9e61` và commit này).

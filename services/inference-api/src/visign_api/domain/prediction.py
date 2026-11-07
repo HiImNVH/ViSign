@@ -69,7 +69,8 @@ class PredictionResponse(BaseModel):
 def ensure_accepted_state(accepted_response: PredictionResponse) -> None:
     if not accepted_response.text.strip():
         raise ValueError("PredictionResponse duoc chap nhan phai co text tieng Viet")
-    if not accepted_response.classLabel:
+    # Nhan chi gom khoang trang khong tro toi lop nao trong artifact
+    if not accepted_response.classLabel or not accepted_response.classLabel.strip():
         raise ValueError("PredictionResponse duoc chap nhan phai co classLabel")
 
 

@@ -80,6 +80,7 @@ def test_present_diagnostics_are_serialized() -> None:
         {"text": "   "},
         {"classLabel": None},
         {"classLabel": ""},
+        {"classLabel": "   "},
         {"accepted": False, "text": REJECTED_TEXT, "classLabel": "XIN_CHAO_HCM_1"},
         {"accepted": False, "text": "unexpected", "classLabel": None},
         {"accepted": False, "text": "Xin chào", "classLabel": None},
