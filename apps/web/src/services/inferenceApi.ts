@@ -45,11 +45,16 @@ export function createInferenceApi(baseUrl = import.meta.env.VITE_API_BASE_URL ?
   async function request<T>(path: string, timeout: number, guard: (value: unknown) => value is T, options: RequestOptions, body?: FormData): Promise<ApiResult<T>> {
     const requestId = crypto.randomUUID();
     const controller = new AbortController();
-    let timedOut = false;
-    const cancel = () => controller.abort();
+    let abortReason: 'timeout' | 'cancelled' | null = null;
+    const abort = (reason: 'timeout' | 'cancelled') => {
+      if (controller.signal.aborted) return;
+      abortReason = reason;
+      controller.abort();
+    };
+    const cancel = () => abort('cancelled');
     if (options.signal?.aborted) cancel();
     else options.signal?.addEventListener('abort', cancel, { once: true });
-    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, timeout);
+    const timer = setTimeout(() => abort('timeout'), timeout);
     let responseId: string = requestId;
     try {
       const init: RequestInit = { method: body ? 'POST' : 'GET', headers: { 'X-Request-ID': requestId }, signal: controller.signal, credentials: 'omit' };
@@ -58,11 +63,13 @@ export function createInferenceApi(baseUrl = import.meta.env.VITE_API_BASE_URL ?
       responseId = response.headers.get('X-Request-ID') || requestId;
       let payload: unknown;
       try { payload = await response.json(); } catch { if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError'); }
+      // A body reader can finish after cancellation even when fetch itself resolved.
+      if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError');
       if (!response.ok) throw new InferenceApiError('http', responseId, response.status, object(payload) && typeof payload.code === 'string' ? payload.code : undefined, response.headers.get('Retry-After') ?? undefined);
       if (!guard(payload)) throw new InferenceApiError('invalid-response', responseId, response.status);
       return { data: payload, requestId: responseId };
     } catch (error) {
-      if (controller.signal.aborted) throw new InferenceApiError(timedOut ? 'timeout' : 'cancelled', responseId);
+      if (controller.signal.aborted) throw new InferenceApiError(abortReason ?? 'cancelled', responseId);
       if (error instanceof InferenceApiError) throw error;
       throw new InferenceApiError('network', responseId);
     } finally {

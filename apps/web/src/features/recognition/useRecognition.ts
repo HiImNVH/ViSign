@@ -138,12 +138,13 @@ export function useRecognition(api?: Api) {
     const controller = new AbortController();
     const request = { clip: view.clip, controller };
     const { info } = model;
+    const isCurrentRequest = () => activeRequest.current === request && !controller.signal.aborted
+      && camera.session.view.phase === 'captured' && camera.session.view.clip === view.clip;
     activeRequest.current = request; // synchronous guard against rapid double clicks
     setPrediction({ captureId, view: { phase: 'submitting', artifactKind: info.artifactKind } });
     try {
       const { data, requestId } = await client.predict(view.clip, { signal: controller.signal });
-      if (activeRequest.current !== request || controller.signal.aborted
-        || camera.session.view.phase !== 'captured' || camera.session.view.clip !== view.clip) return;
+      if (!isCurrentRequest()) return;
       if (data.modelVersion !== info.modelVersion) {
         setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
           error: new InferenceApiError('invalid-response', requestId) } });
@@ -152,7 +153,7 @@ export function useRecognition(api?: Api) {
         setPrediction({ captureId, view: { phase: 'result', artifactKind: info.artifactKind, result: data, requestId } });
       }
     } catch (error) {
-      if (activeRequest.current === request && !controller.signal.aborted) {
+      if (isCurrentRequest()) {
         setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
           error: asApiError(error) } });
       }

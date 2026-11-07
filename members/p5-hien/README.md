@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; CP3 và T046 đã push; `T051-T052 / CP4` đã đạt local gate, chờ push/review; T053 kế tiếp |
+| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; CP3, T046, T051, T052 đã push; T052 được P1 review độc lập (`P1_VERIFIED`); `T053 / CP4` có gate và evidence, chờ review độc lập |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-07` |
 
@@ -26,9 +26,9 @@
 | `T042 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/RecognitionResult.tsx`, component/browser tests | SHA `3f3eb369fb18df5a85f399b59de8e18159bffdbb`, 80 unit và 24 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T042-p5-hien-accepted-result-smoke.md` | P2/Tín, P1/Huy |
 | `T043 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/App.tsx`, `features/recognition/CameraRecorder.tsx`, nội dung/UI và test | SHA `44b14059097534f17463c847ce15e8f0ccb99f5b`; một session camera + metadata + POST thủ công; 80 unit / 39 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T043-p5-hien-integration-smoke.md` | P2/Tín, P1/Huy |
 | `T046 / CP4` | `PUSHED / READY_FOR_REVIEW` | `apps/web/tests/recognition/recognition-errors.test.tsx` | Commit [`18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a`](https://github.com/HiImNVH/ViSign/commit/18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a); 8 negative component tests; full web gate 88 unit / 39 browser PASS; evidence `docs/evidence/checkpoints/CP4/T046-p5-hien-recognition-errors-smoke.md` | P2/Tín, P1/Huy |
-| `T051 / CP4` | `LOCAL_PASS / READY_FOR_REVIEW` | `RecognitionResult.tsx`, `CameraRecorder.tsx`, style và tests | Panel rejected + retry thủ công; 90 unit, 39 browser PASS; evidence `docs/evidence/checkpoints/CP4/T051-p5-hien-rejected-retry-smoke.md` | P2/Tín và P1/Huy |
-| `T052 / CP4` | `LOCAL_PASS / READY_FOR_REVIEW` | `RecognitionError.tsx`, `content/vi.ts`, `CameraRecorder.tsx`, component/browser tests | Thông báo camera/API tiếng Việt ổn định, không rò raw backend error; 122 unit, 42 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T052-p5-hien-error-presentation-smoke.md` | P2/Tín và P1/Huy |
-| `T053 / CP4` | `PLANNED` | `apps/web/src/features/recognition/useRecognition.ts`, lifecycle tests | Timeout, cancel request và reset state sau T052 | P2/Tín và P1/Huy |
+| `T051 / CP4` | `PUSHED / READY_FOR_REVIEW` | `RecognitionResult.tsx`, `CameraRecorder.tsx`, style và tests | `a7272b722c2f5b20eb29134db9f95434d696e693`; 90 unit, 39 browser PASS; evidence `docs/evidence/checkpoints/CP4/T051-p5-hien-rejected-retry-smoke.md` | P2/Tín và P1/Huy |
+| `T052 / CP4` | `P1_VERIFIED` | `RecognitionError.tsx`, `content/vi.ts`, `CameraRecorder.tsx`, component/browser tests | `05d906f23ff67d554b59a46a07413cce065dffd4`; 122 unit, 42 Edge browser PASS; P1 review ghi trong `docs/evidence/checkpoints/CP4/T052-p5-hien-error-presentation-smoke.md` | P1/Huy (đã review) |
+| `T053 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | `useRecognition.ts`, `inferenceApi.ts`, unit/browser lifecycle tests | Timeout 15s, cancel/reset, late response và retry thủ công; 129 unit, 48 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T053-p5-hien-timeout-cancel-reset-smoke.md` | P2/Tín và P1/Huy |
 
 ## Checkpoint T046 đã push
 
@@ -58,15 +58,16 @@
 | `CP3/T042` | Accepted result view và thông báo demoReady | `CP3 T042(ui): add accepted result and model scope notices` | `3f3eb369fb18df5a85f399b59de8e18159bffdbb` | [commit](https://github.com/HiImNVH/ViSign/commit/3f3eb369fb18df5a85f399b59de8e18159bffdbb) | 80 unit và 24 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
 | `CP3/T043` | Ghép camera, model-info, prediction API v1 vào trang chính | `CP3 T043(web): integrate camera with recognition results` | `44b14059097534f17463c847ce15e8f0ccb99f5b` | [commit](https://github.com/HiImNVH/ViSign/commit/44b14059097534f17463c847ce15e8f0ccb99f5b) | 80 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
 | `CP4/T046` | Negative web recognition error, cancel và retry tests | `CP4 T046(web): cover negative recognition flows` | `18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a` | [commit](https://github.com/HiImNVH/ViSign/commit/18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a) | 88 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
-| `CP4/T051` | Rejected-result panel, explicit fresh recording và focus | `CP4 T051(web): show rejected result with explicit retry` | `a7272b722c2f5b20eb29134db9f95434d696e693` | Chờ push | 90 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `LOCAL_PASS / READY_FOR_REVIEW` |
-| `CP4/T052` | Cố định thông báo camera/API an toàn và retry thủ công | `CP4 T052(web): present stable Vietnamese camera and API errors` | Sau commit | Chờ push | 122 unit + 42 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `LOCAL_PASS / READY_FOR_REVIEW` |
+| `CP4/T051` | Rejected-result panel, explicit fresh recording và focus | `CP4 T051(web): show rejected result with explicit retry` | `a7272b722c2f5b20eb29134db9f95434d696e693` | [commit](https://github.com/HiImNVH/ViSign/commit/a7272b722c2f5b20eb29134db9f95434d696e693) | 90 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
+| `CP4/T052` | Cố định thông báo camera/API an toàn và retry thủ công | `CP4 T052(web): present stable Vietnamese camera and API errors` | `05d906f23ff67d554b59a46a07413cce065dffd4` | [commit](https://github.com/HiImNVH/ViSign/commit/05d906f23ff67d554b59a46a07413cce065dffd4) | 122 unit + 42 browser Edge PASS; lint/typecheck/build PASS | P1/Huy (đã review) | `P1_VERIFIED` |
+| `CP4/T053` | Timeout, abort/cancel và chặn kết quả đến muộn | `CP4 T053(web): harden timeout cancel and state reset` | Xem `git log --grep='CP4 T053'` | Commit link sau push | 129 unit + 48 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `TEST_PASS / READY_FOR_REVIEW` |
 
 ## Handoff
 
 - Current risks: T043 đã ghép request và T046 đã có negative component cases, nhưng browser mới xác nhận fake-camera + API mock; chưa kiểm tra webcam/điện thoại thật, backend thực tế hoặc chất lượng model.
 - Required input: Tín/Huy review T042/T043/T046 và kiểm thử lại với API v1 đang chạy.
 - Next owner/action: P1/Huy và P2/Tín review độc lập commit T046; rebase và web gate trước push đã PASS.
-- T051 đã hoàn thiện local: rejected không dịch, một nút retry, không auto-upload clip mới; 90 unit/39 Edge browser PASS. T052 đã hoàn thiện local: thông báo camera/API ổn định, không render raw error và thử lại chủ động; 122 unit/42 Edge browser PASS. Hai task chờ review độc lập trước khi đánh dấu `[X]`; P5 tiếp tục T053.
+- T051 đã push và chờ review độc lập; T052 đã được P1 review và đánh dấu `[X]` trong `tasks.md`. T053 đã có timeout 15s, cancel/reset, chặn phản hồi đến muộn và retry thủ công; 129 unit/48 Edge browser PASS, chờ review độc lập.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history

@@ -51,4 +51,55 @@ describe('inference API transport', () => {
     await vi.advanceTimersByTimeAsync(5000);
     expect(await result).toMatchObject({ kind: 'timeout' });
   });
+
+  it('times out a prediction only after fifteen seconds and aborts its transport', async () => {
+    vi.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    vi.spyOn(globalThis, 'fetch').mockImplementation((_url, init) => new Promise((_resolve, reject) => {
+      signal = init?.signal ?? undefined;
+      signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+    }));
+    const pending = createInferenceApi().predict(new Blob(['video'])).catch((error: unknown) => error);
+    await vi.advanceTimersByTimeAsync(14999);
+    expect(signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ kind: 'timeout' });
+    expect(signal?.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('keeps user cancellation even if the request settles after its deadline', async () => {
+    vi.useFakeTimers();
+    let rejectFetch!: (error: Error) => void;
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => new Promise((_resolve, reject) => {
+      rejectFetch = reject;
+    }));
+    const controller = new AbortController();
+    const pending = createInferenceApi().predict(new Blob(['video']), { signal: controller.signal })
+      .catch((error: unknown) => error);
+    controller.abort();
+    await vi.advanceTimersByTimeAsync(15000);
+    rejectFetch(new DOMException('Aborted', 'AbortError'));
+    expect(await pending).toMatchObject({ kind: 'cancelled' });
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('rejects a late successful response body after cancellation and clears its timer', async () => {
+    vi.useFakeTimers();
+    let finishBody!: (value: unknown) => void;
+    const response = {
+      ok: true, status: 200, headers: new Headers({ 'X-Request-ID': 'server-response' }),
+      json: () => new Promise(resolve => { finishBody = resolve; }),
+    } as Response;
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(response);
+    const controller = new AbortController();
+    const pending = createInferenceApi().predict(new Blob(['video']), { signal: controller.signal })
+      .catch((error: unknown) => error);
+    await vi.advanceTimersByTimeAsync(0); // allow fetch to reach the body reader
+    controller.abort();
+    finishBody({ requestId: 'server-response', text: 'Late success', classLabel: 'LATE',
+      confidence: .9, accepted: true, modelVersion: 'v1', processingTimeMs: 10 });
+    expect(await pending).toMatchObject({ kind: 'cancelled', requestId: 'server-response' });
+    expect(vi.getTimerCount()).toBe(0);
+  });
 });

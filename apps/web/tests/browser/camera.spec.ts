@@ -220,6 +220,73 @@ test('T052 service-busy error stays safe and usable at compact viewport, then re
   expect(uploads).toBe(2);
 });
 
+test('T053 prediction timeout restores an explicit retry without automatic reupload', async ({ page }) => {
+  let uploads = 0;
+  let releaseFirst!: () => void;
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
+  await page.route('**/api/v1/predictions', async route => {
+    uploads++;
+    if (uploads === 1) {
+      await new Promise<void>(resolve => { releaseFirst = resolve; });
+      await route.fulfill({ status: 200, json: { requestId: 'obsolete', text: 'Stale', classLabel: 'STALE',
+        confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
+      return;
+    }
+    await route.fulfill({ status: 200, json: { requestId: 'new', text: 'Xin chào', classLabel: 'XIN_CHAO',
+      confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } });
+  });
+  await page.goto('/');
+  await captureClip(page);
+  await page.clock.install();
+  const submit = page.getByRole('button', { name: 'Gửi nhận diện' });
+  await submit.click();
+  await expect.poll(() => uploads).toBe(1);
+  await expect(submit).toBeDisabled();
+  await page.clock.fastForward(15001);
+  await expect(page.getByRole('alert')).toContainText('Dịch vụ phản hồi quá lâu.');
+  await expect(submit).toBeEnabled();
+  expect(uploads).toBe(1);
+  releaseFirst();
+  await submit.click();
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
+  expect(uploads).toBe(2);
+});
+
+test('T053 cancel and reset during upload release the camera and ignore old requests', async ({ page }) => {
+  let uploads = 0;
+  const release: Array<() => void> = [];
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
+  await page.route('**/api/v1/predictions', async route => {
+    uploads++;
+    await new Promise<void>(resolve => { release.push(resolve); });
+    await route.fulfill({ status: 200, json: { requestId: 'old', text: 'Stale', classLabel: 'STALE',
+      confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
+  });
+  await page.goto('/');
+  await captureClip(page);
+  const video = page.getByLabel('Hình ảnh xem trước từ camera');
+  const track = await video.evaluateHandle(element => ((element as HTMLVideoElement).srcObject as MediaStream).getVideoTracks()[0]!);
+  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await expect.poll(() => uploads).toBe(1);
+  await page.getByRole('button', { name: 'Hủy đoạn quay' }).click();
+  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
+  release[0]!();
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: 'Kết thúc' }).click();
+  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await expect.poll(() => uploads).toBe(2);
+  await page.getByRole('button', { name: 'Tắt camera' }).click();
+  await expect(page.getByRole('status')).toHaveText('Camera chưa bật');
+  release[1]!();
+  expect(await track.evaluate(value => value.readyState)).toBe('ended');
+  expect(await video.evaluate(value => (value as HTMLVideoElement).srcObject)).toBeNull();
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
 test('an open help dialog keeps focus when the camera disconnects', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera', exact: true }).click();

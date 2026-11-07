@@ -120,6 +120,69 @@ test('shows API failure without raw message, and allows a deliberate retry', asy
   expect(api.predict).toHaveBeenCalledTimes(2);
 });
 
+test('returns to an explicit retry after prediction timeout without uploading automatically', async () => {
+  cameraView = { phase: 'captured', clip, durationMs: 650 };
+  vi.mocked(api.predict).mockRejectedValueOnce(new InferenceApiError('timeout', 'timeout-id'));
+  const hook = renderHook(() => useRecognition(api));
+  await waitFor(() => expect(hook.result.current.model.status).toBe('ready'));
+  await act(async () => { await hook.result.current.submit(); });
+  expect(hook.result.current.state).toMatchObject({ phase: 'error', error: { kind: 'timeout' } });
+  expect(api.predict).toHaveBeenCalledTimes(1);
+  await act(async () => { await hook.result.current.submit(); });
+  expect(hook.result.current.state.phase).toBe('result');
+  expect(api.predict).toHaveBeenCalledTimes(2);
+});
+
+test('late completion or rejection of request A cannot overwrite or unlock request B', async () => {
+  cameraView = { phase: 'captured', clip, durationMs: 650 };
+  let rejectFirst!: (reason: Error) => void;
+  let resolveSecond!: (reply: PredictionReply) => void;
+  vi.mocked(api.predict)
+    .mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectFirst = reject; }))
+    .mockImplementationOnce(() => new Promise(resolve => { resolveSecond = resolve; }));
+  const hook = renderHook(() => useRecognition(api));
+  await waitFor(() => expect(hook.result.current.model.status).toBe('ready'));
+  let first!: Promise<void>;
+  act(() => { first = hook.result.current.submit(); });
+  act(() => hook.result.current.cancel());
+  let second!: Promise<void>;
+  act(() => { second = hook.result.current.submit(); });
+  act(() => rejectFirst(new InferenceApiError('network', 'late-error')));
+  await act(async () => { await first; });
+  expect(hook.result.current.state.phase).toBe('submitting');
+  act(() => { void hook.result.current.submit(); });
+  expect(api.predict).toHaveBeenCalledTimes(2);
+  await act(async () => { resolveSecond({ data: accepted, requestId: 'second' }); await second; });
+  expect(hook.result.current.state).toMatchObject({ phase: 'result', requestId: 'second' });
+});
+
+test('ignores a failure after the camera session changed before React rerenders', async () => {
+  cameraView = { phase: 'captured', clip, durationMs: 650 };
+  let reject!: (reason: Error) => void;
+  vi.mocked(api.predict).mockImplementationOnce(() => new Promise((_resolve, fail) => { reject = fail; }));
+  const hook = renderHook(() => useRecognition(api));
+  await waitFor(() => expect(hook.result.current.model.status).toBe('ready'));
+  let pending!: Promise<void>;
+  act(() => { pending = hook.result.current.submit(); });
+  session.view = { phase: 'recording' };
+  await act(async () => { reject(new InferenceApiError('network', 'late-error')); await pending; });
+  expect(hook.result.current.state.phase).toBe('submitting'); // stale camera render, no new error
+  cameraView = { phase: 'recording' };
+  hook.rerender();
+  expect(hook.result.current.state.phase).toBe('recording');
+});
+
+test('late metadata response cannot replace a newer refresh result', async () => {
+  let finishOld!: (reply: Awaited<ReturnType<Api['modelInfo']>>) => void;
+  vi.mocked(api.modelInfo).mockImplementationOnce(() => new Promise(resolve => { finishOld = resolve; }));
+  vi.mocked(api.modelInfo).mockResolvedValueOnce({ data: { ...info, modelVersion: 'current-v2' }, requestId: 'current' });
+  const hook = renderHook(() => useRecognition(api));
+  act(() => hook.result.current.reloadModelInfo());
+  await waitFor(() => expect(hook.result.current.model).toMatchObject({ status: 'ready', info: { modelVersion: 'current-v2' } }));
+  await act(async () => { finishOld({ data: info, requestId: 'stale' }); });
+  expect(hook.result.current.model).toMatchObject({ status: 'ready', info: { modelVersion: 'current-v2' } });
+});
+
 test('discards a result from another model version and reloads metadata without auto retry', async () => {
   cameraView = { phase: 'captured', clip, durationMs: 650 };
   vi.mocked(api.predict).mockResolvedValueOnce({ data: { ...accepted, modelVersion: 'other-version' }, requestId: 'mismatch-id' });
