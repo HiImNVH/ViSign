@@ -13,13 +13,13 @@ type RecognitionController = Pick<ReturnType<typeof useRecognition>,
   'submit' | 'cancel' | 'reset' | 'reloadModelInfo'>
   & Partial<Pick<ReturnType<typeof useRecognition>, 'compatibilityError' | 'transcript'>>;
 
-function CameraViewport({ videoRef, view, children }: { videoRef: RefObject<HTMLVideoElement | null>; view: CameraView; children: ReactNode }) {
+function CameraViewport({ videoRef, view, status, children }: { videoRef: RefObject<HTMLVideoElement | null>; view: CameraView; status?: string | undefined; children: ReactNode }) {
   const active = ['preview', 'recording', 'stopping', 'captured'].includes(view.phase);
   return <div className={`camera-viewport ${active ? 'camera-active' : ''}`} data-phase={view.phase}>
     <video ref={videoRef} autoPlay muted playsInline aria-label={vi.preview} />
     {!active && view.phase !== 'error' && <div className="camera-placeholder"><span className="camera-glyph" aria-hidden="true" />
       <p>Khuôn mặt và hai tay<br />trong khung hình</p></div>}
-    <span className={`status-badge status-${view.phase}`} role="status"><span aria-hidden="true" />{vi.states[view.phase]}</span>
+    <span className={`status-badge status-${view.phase}`} role="status" aria-atomic="true"><span aria-hidden="true" />{status ?? vi.states[view.phase]}</span>
     {children}
   </div>;
 }
@@ -57,14 +57,15 @@ export function CameraRecorder({ controller }: { controller: RecognitionControll
     const focused = document.activeElement;
     if ((previousPhase.current !== view.phase || previousRecognitionPhase.current !== state.phase)
       && !document.querySelector('dialog[open]')
-      && (!focused || focused === document.body || !focused.isConnected)) {
+      && (!focused || focused === document.body || !focused.isConnected
+        || (focused instanceof HTMLButtonElement && focused.disabled))) {
       panel.current?.querySelector<HTMLButtonElement>('.translation-retry, .capture-controls button:not([disabled])')?.focus();
     }
     previousPhase.current = view.phase;
     previousRecognitionPhase.current = state.phase;
   }, [view.phase, state.phase]);
   return <section ref={panel} className="camera-workspace" aria-label="Nhận diện ký hiệu bằng camera" aria-describedby="camera-privacy">
-    <CameraViewport videoRef={videoRef} view={view}>
+    <CameraViewport videoRef={videoRef} view={view} status={state.phase === 'submitting' ? vi.recognition.sending : undefined}>
       <TranscriptPanel entries={transcript} />
       {view.phase === 'error' && <RecognitionError type="camera" error={view.error} />}
       <div className="camera-dock">
@@ -73,7 +74,11 @@ export function CameraRecorder({ controller }: { controller: RecognitionControll
         {view.phase === 'captured' && <div className="recognition-feedback">
           {model.status === 'loading' && <p role="status">{vi.recognition.modelLoading}</p>}
           {model.status === 'unavailable' && <><RecognitionError type="api" stage="model" error={model.error} />
-            <button className="quiet-button model-retry" onClick={reloadModelInfo}>{vi.recognition.reloadModel}</button></>}
+            <button className="quiet-button model-retry" onClick={() => {
+              // The retry button unmounts while metadata reloads; move focus to a stable control first.
+              panel.current?.querySelector<HTMLButtonElement>('.capture-controls button:not([disabled])')?.focus();
+              reloadModelInfo();
+            }}>{vi.recognition.reloadModel}</button></>}
           {model.status === 'ready' && state.phase === 'error' && 'source' in state && state.source === 'api'
             && <RecognitionError type="api" stage="prediction" error={state.error} />}
         </div>}

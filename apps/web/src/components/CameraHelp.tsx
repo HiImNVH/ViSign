@@ -7,7 +7,14 @@ export function CameraHelp() {
   const trigger = useRef<HTMLButtonElement>(null);
   return <>
     <button ref={trigger} className="quiet-button" onClick={() => dialog.current?.showModal()}>Hướng dẫn</button>
-    <dialog ref={dialog} className="help-dialog" aria-labelledby="help-title" onClose={() => trigger.current?.focus()}>
+    <dialog ref={dialog} className="help-dialog" aria-labelledby="help-title" onClose={() => trigger.current?.focus()}
+      onKeyDown={event => {
+        // The dialog has a single interactive control. Keep keyboard Tab focus inside it.
+        if (event.key === 'Tab') {
+          event.preventDefault();
+          dialog.current?.querySelector<HTMLButtonElement>('button')?.focus();
+        }
+      }}>
       <div className="dialog-heading"><h2 id="help-title">Quay một ký hiệu rõ ràng</h2>
         <button className="quiet-button" onClick={() => dialog.current?.close()} aria-label="Đóng hướng dẫn">Đóng</button></div>
       <ol className="help-steps">

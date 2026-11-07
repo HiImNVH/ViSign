@@ -30,6 +30,7 @@
 | `T051 / CP4` | `PUSHED / READY_FOR_REVIEW` | `RecognitionResult.tsx`, `CameraRecorder.tsx`, style và tests | `a7272b722c2f5b20eb29134db9f95434d696e693`; 90 unit, 39 browser PASS; evidence `docs/evidence/checkpoints/CP4/T051-p5-hien-rejected-retry-smoke.md` | P2/Tín và P1/Huy |
 | `T052 / CP4` | `P1_VERIFIED` | `RecognitionError.tsx`, `content/vi.ts`, `CameraRecorder.tsx`, component/browser tests | `05d906f23ff67d554b59a46a07413cce065dffd4`; 122 unit, 42 Edge browser PASS; P1 review ghi trong `docs/evidence/checkpoints/CP4/T052-p5-hien-error-presentation-smoke.md` | P1/Huy (đã review) |
 | `T053 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | `useRecognition.ts`, `inferenceApi.ts`, unit/browser lifecycle tests | Timeout 15s, cancel/reset, late response và retry thủ công; 129 unit, 48 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T053-p5-hien-timeout-cancel-reset-smoke.md` | P2/Tín và P1/Huy |
+| `T063 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | Accessibility tests, camera/help/history UI, verification report | 21 accessibility cases PASS trên desktop/mobile/landscape; full gate 165 unit + 75 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T063-p5-hien-smoke.md`; chờ review | P1/Huy, P2/Tín |
 
 ## Checkpoint T046 đã push
 
@@ -62,6 +63,7 @@
 | `CP4/T051` | Rejected-result panel, explicit fresh recording và focus | `CP4 T051(web): show rejected result with explicit retry` | `a7272b722c2f5b20eb29134db9f95434d696e693` | [commit](https://github.com/HiImNVH/ViSign/commit/a7272b722c2f5b20eb29134db9f95434d696e693) | 90 unit + 39 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
 | `CP4/T052` | Cố định thông báo camera/API an toàn và retry thủ công | `CP4 T052(web): present stable Vietnamese camera and API errors` | `05d906f23ff67d554b59a46a07413cce065dffd4` | [commit](https://github.com/HiImNVH/ViSign/commit/05d906f23ff67d554b59a46a07413cce065dffd4) | 122 unit + 42 browser Edge PASS; lint/typecheck/build PASS | P1/Huy (đã review) | `P1_VERIFIED` |
 | `CP4/T053` | Timeout, abort/cancel và chặn kết quả đến muộn | `CP4 T053(web): harden timeout cancel and state reset` | Xem `git log --grep='CP4 T053'` | Commit link sau push | 129 unit + 48 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `TEST_PASS / READY_FOR_REVIEW` |
+| `CP4/T063` | Accessibility audit: keyboard, focus, status, camera labels | `CP4 T063(e2e): audit camera keyboard focus and labels` | PENDING | Commit link sau push | 165 unit + 75 Edge browser PASS (4 / 3 skipped); 21 T063 cases; axe 0 violations in audited snapshots | P1/Huy, P2/Tín | `TEST_PASS / READY_FOR_REVIEW` |
 
 ## Handoff
 
