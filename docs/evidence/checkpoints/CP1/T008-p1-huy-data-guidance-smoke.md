@@ -8,9 +8,9 @@
 | Implementer | `P1 Huy` — integration docs candidate |
 | Reviewer | `P4 Quang` |
 | Candidate commit | `CP1 T001-T008(docs): review setup and document raw data` |
-| Commit SHA | `PENDING` |
+| Commit SHA | `189d34bcd4875752dab460716756aa8239996f9f` — [189d34b](https://github.com/HiImNVH/ViSign/commit/189d34bcd4875752dab460716756aa8239996f9f) |
 | Run time | `2026-11-07T13:55:07+07:00` |
-| Status | `PASS` local; P4 review pending |
+| Status | `PUSHED`; P4 review pending |
 
 ## Pre-commit synchronization
 
@@ -42,7 +42,7 @@
 
 ## Links
 
-- Commit: `PENDING`.
+- Commit: [189d34b](https://github.com/HiImNVH/ViSign/commit/189d34bcd4875752dab460716756aa8239996f9f) — pushed `5dc97a6..189d34b`.
 - Source document: `data/README.md`.
 
 ## Reviewer
