@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 import { RecognitionOverlay, type CapturedRecognitionResult } from '../../src/features/recognition/RecognitionOverlay';
 import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
-import { CameraSession } from '../../src/features/recognition/cameraSession';
+import type { CameraView } from '../../src/features/recognition/cameraSession';
 
 const clip = new Blob(['test-only'], { type: 'video/webm' });
 const accepted: CapturedRecognitionResult = { clip, accepted: true, text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: .92 };
@@ -31,14 +31,14 @@ test.each([
 });
 
 test('camera displays accepted API results only in a captured prediction state', () => {
-  const session = new CameraSession(vi.fn());
   const apiResult = { requestId: 'prediction-id', text: 'Xin chào', classLabel: 'XIN_CHAO',
     confidence: .92, accepted: true, modelVersion: 'fixture-v1', processingTimeMs: 50 };
   const model = { status: 'ready' as const, info: { modelVersion: 'fixture-v1', artifactKind: 'fixture' as const,
     datasetVersion: 'demo', featureSchemaVersion: 'v1', extractorVersion: 'v1', meanings: ['Xin chào'],
     acceptanceThreshold: .7, macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false } };
-  const makeController = (cameraView: typeof session.view, showResult: boolean) => ({
-    camera: { view: cameraView, session, videoRef: { current: null } }, model,
+  const makeController = (cameraView: CameraView, showResult: boolean) => ({
+    camera: { view: cameraView, videoRef: { current: null } }, model,
+    compatibilityError: null, transcript: [],
     state: showResult ? { phase: 'result' as const, artifactKind: 'fixture' as const, result: apiResult, requestId: 'prediction-id' } : cameraView,
     enableCamera: async () => {}, startRecording: () => {}, stopRecording: () => {}, submit: async () => {},
     cancel: () => {}, reset: () => {}, reloadModelInfo: () => {},

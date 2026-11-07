@@ -8,7 +8,8 @@ import { useCameraCapture } from '../../src/features/recognition/useCameraCaptur
 function CameraRecorderHarness() {
   const camera = useCameraCapture();
   return <CameraRecorder controller={{
-    camera, state: camera.view, model: { status: 'loading' },
+    camera: { view: camera.view, videoRef: camera.videoRef }, state: camera.view,
+    model: { status: 'loading' }, compatibilityError: null, transcript: [],
     enableCamera: () => camera.session.enable(camera.videoRef.current),
     startRecording: () => camera.session.record(), stopRecording: () => camera.session.stop(),
     submit: async () => {}, cancel: () => camera.session.cancel(), reset: () => camera.session.reset(),

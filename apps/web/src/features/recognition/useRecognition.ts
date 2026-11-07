@@ -1,33 +1,20 @@
 // T041: one recognition flow using the existing camera session and API v1.
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { CameraView } from './cameraSession';
 import { useCameraCapture } from './useCameraCapture';
 import { createInferenceApi, InferenceApiError } from '../../services/inferenceApi';
-import type { ArtifactKind, ModelInfo, PredictionResponse } from '../../types/inference-api';
+import type { PredictionState, RecognitionState, ModelStatus, RecognitionController } from './recognitionController';
 import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory,
   type TranslationHistoryEntry } from './translationHistory';
 
 type Api = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
 
-export type ModelStatus =
-  | { status: 'loading' }
-  | { status: 'ready'; info: ModelInfo }
-  | { status: 'unavailable'; error: InferenceApiError };
-
-type PredictionState =
-  | { phase: 'submitting'; artifactKind: ArtifactKind }
-  | { phase: 'result'; artifactKind: ArtifactKind; result: PredictionResponse; requestId: string }
-  | { phase: 'error'; source: 'api'; artifactKind: ArtifactKind; error: InferenceApiError };
-
 type CapturedPrediction = { captureId: number; view: PredictionState };
-
-export type RecognitionState = CameraView | PredictionState;
 
 function asApiError(cause: unknown): InferenceApiError {
   return cause instanceof InferenceApiError ? cause : new InferenceApiError('network', '');
 }
 
-export function useRecognition(api?: Api) {
+export function useRecognition(api?: Api): RecognitionController {
   const [client] = useState<Api>(() => api ?? createInferenceApi());
   const camera = useCameraCapture();
   const [model, setModel] = useState<ModelStatus>({ status: 'loading' });
@@ -109,7 +96,6 @@ export function useRecognition(api?: Api) {
     };
   }, [abortRequest, refreshModelInfo]);
 
-  // Camera actions can also be invoked directly on the session by the existing UI.
   // A changed/discarded clip must invalidate its in-flight prediction.
   useEffect(() => {
     const current = activeRequest.current;
@@ -209,7 +195,7 @@ export function useRecognition(api?: Api) {
     ? prediction.view : camera.view;
 
   return {
-    state, model, camera, enableCamera, startRecording, stopRecording,
+    state, model, camera: { view: camera.view, videoRef: camera.videoRef }, enableCamera, startRecording, stopRecording,
     submit, cancel, reset, reloadModelInfo, compatibilityError,
     transcript, history, refreshHistory, clearHistory,
   };

@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { vi } from '../../content/vi';
-import type { useRecognition } from './useRecognition';
+import type { HistoryController } from './recognitionController';
 
-type Props = Pick<ReturnType<typeof useRecognition>, 'history' | 'refreshHistory' | 'clearHistory'>;
+type Props = HistoryController;
 
 export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);

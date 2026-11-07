@@ -5,13 +5,7 @@ import { type CameraView } from './cameraSession';
 import { RecognitionError } from './RecognitionError';
 import { RecognitionResult } from './RecognitionResult';
 import { TranscriptPanel } from './TranscriptPanel';
-import { type useRecognition } from './useRecognition';
-
-// Keep legacy camera-only fixtures valid; the recognition hook supplies these fields in production.
-type RecognitionController = Pick<ReturnType<typeof useRecognition>,
-  'state' | 'model' | 'camera' | 'enableCamera' | 'startRecording' | 'stopRecording' |
-  'submit' | 'cancel' | 'reset' | 'reloadModelInfo'>
-  & Partial<Pick<ReturnType<typeof useRecognition>, 'compatibilityError' | 'transcript'>>;
+import type { CameraController } from './recognitionController';
 
 function CameraViewport({ videoRef, view, status, children }: { videoRef: RefObject<HTMLVideoElement | null>; view: CameraView; status?: string | undefined; children: ReactNode }) {
   const active = ['preview', 'recording', 'stopping', 'captured'].includes(view.phase);
@@ -24,7 +18,7 @@ function CameraViewport({ videoRef, view, status, children }: { videoRef: RefObj
   </div>;
 }
 
-function CameraControls({ controller, view, rejectedVisible }: { controller: RecognitionController; view: CameraView; rejectedVisible: boolean }) {
+function CameraControls({ controller, view, rejectedVisible }: { controller: CameraController; view: CameraView; rejectedVisible: boolean }) {
   const { state, model, enableCamera, startRecording, stopRecording, submit, cancel, reset } = controller;
   const pending = state.phase === 'submitting';
   const finished = state.phase === 'result';
@@ -43,9 +37,9 @@ function CameraControls({ controller, view, rejectedVisible }: { controller: Rec
   </div>;
 }
 
-export function CameraRecorder({ controller }: { controller: RecognitionController }) {
+export function CameraRecorder({ controller }: { controller: CameraController }) {
   const { view, videoRef } = controller.camera;
-  const { state, model, reloadModelInfo, startRecording, compatibilityError, transcript = [] } = controller;
+  const { state, model, reloadModelInfo, startRecording, compatibilityError, transcript } = controller;
   const panel = useRef<HTMLElement>(null);
   const previousPhase = useRef(view.phase);
   const previousRecognitionPhase = useRef(state.phase);
