@@ -12,6 +12,35 @@ const prediction = { requestId: validId, text: 'Xin chào', classLabel: 'XIN_CHA
   confidence: .9, accepted: true, modelVersion: 'v1', processingTimeMs: 12 };
 
 describe('inference API transport', () => {
+  it.each([404, 405])('classifies HTTP %i as a typed compatibility error with canonical URL and no raw text', async status => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
+      code: status === 404 ? 'ROUTE_NOT_FOUND' : 'METHOD_NOT_ALLOWED', message: 'secret raw server text',
+    }), { status, headers: { 'X-Request-ID': validId } }));
+    const error = await createInferenceApi('https://example.test/').predict(new Blob(['clip'])).catch((e: unknown) => e);
+    expect(error).toMatchObject({
+      kind: status === 404 ? 'route-not-found' : 'method-not-allowed', status,
+      requestId: validId, message: status === 404 ? 'route-not-found' : 'method-not-allowed',
+    });
+    expect(JSON.stringify(error)).not.toContain('secret raw server text');
+    expect(fetchMock.mock.calls[0]![0]).toBe('https://example.test/api/v1/predictions');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses canonical paths on every endpoint without uploading through a redirect', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => new Response(
+      JSON.stringify(String(url).endsWith('model-info') ? model : String(url).endsWith('health')
+        ? { status: 'ok', modelReady: true } : prediction), { status: 200 },
+    ));
+    const api = createInferenceApi('https://example.test/');
+    await api.health();
+    await api.modelInfo();
+    await api.predict(new Blob(['clip']));
+    expect(fetchMock.mock.calls.map(call => call[0])).toEqual([
+      'https://example.test/api/v1/health',
+      'https://example.test/api/v1/model-info',
+      'https://example.test/api/v1/predictions',
+    ]);
+  });
   it('sends a camera blob and reads the correlation header without requiring diagnostics', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
       requestId: validId, text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: 0.9,

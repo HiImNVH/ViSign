@@ -17,6 +17,9 @@ export type CameraError = keyof typeof cameraErrors;
 
 // Client-owned, stable guidance. Never render an API error's raw message or code.
 export const predictionErrors = {
+  apiRouteNotFound: 'Không tìm thấy chức năng API. Vui lòng kiểm tra phiên bản dịch vụ.',
+  apiMethodNotAllowed: 'Ứng dụng và dịch vụ chưa tương thích. Vui lòng tải lại trang.',
+  apiForbidden: 'Bạn không có quyền thực hiện thao tác này.', // Reserved for a future contract.
   network: 'Chưa kết nối được dịch vụ nhận diện. Kiểm tra kết nối rồi thử gửi lại.',
   timeout: 'Dịch vụ phản hồi quá lâu. Thử gửi lại hoặc quay một ký hiệu mới.',
   invalidResponse: 'Chưa nhận được kết quả nhận diện hợp lệ. Vui lòng thử lại.',
@@ -40,6 +43,21 @@ export const vi = {
   preview: 'Hình ảnh xem trước từ camera',
   privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay chỉ được gửi đến dịch vụ nhận diện khi bạn bấm Gửi nhận diện.',
   disclaimer: 'ViSign là công cụ hỗ trợ thử nghiệm. Kết quả có thể không chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.',
+  transcript: {
+    title: 'Bản dịch trực tiếp',
+    description: 'Các ý nghĩa được ghép theo thứ tự nhận diện; chưa phải câu dịch có ngữ pháp.',
+  },
+  history: {
+    open: 'Lịch sử', title: 'Lịch sử bản dịch', close: 'Đóng lịch sử',
+    disclosure: 'Chỉ lưu trên thiết bị này trong 24 giờ. Không gửi lịch sử lên máy chủ.',
+    empty: 'Chưa có bản dịch được lưu.',
+    unavailable: 'Bộ nhớ trình duyệt không khả dụng. Bạn vẫn có thể nhận diện và xem bản dịch trực tiếp.',
+    clear: 'Xoá toàn bộ lịch sử',
+    confirm: 'Xoá tất cả lịch sử và bản dịch trực tiếp của phiên này?',
+    confirmYes: 'Xác nhận xoá', cancel: 'Giữ lại',
+    clearFailed: 'Không xoá được lịch sử trên thiết bị. Vui lòng kiểm tra quyền lưu trữ rồi thử lại.',
+    confidence: 'Độ tin cậy', model: 'Model',
+  },
   recognition: {
     send: 'Gửi nhận diện',
     sending: 'Đang nhận diện…',

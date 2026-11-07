@@ -3,7 +3,7 @@ import type { HealthResponse, ModelInfo, PredictionResponse } from '../types/inf
 
 export class InferenceApiError extends Error {
   constructor(
-    public readonly kind: 'http' | 'network' | 'timeout' | 'cancelled' | 'invalid-response',
+    public readonly kind: 'http' | 'route-not-found' | 'method-not-allowed' | 'network' | 'timeout' | 'cancelled' | 'invalid-response',
     public readonly requestId: string,
     public readonly status?: number,
     public readonly code?: string,
@@ -89,7 +89,11 @@ export function createInferenceApi(baseUrl = import.meta.env.VITE_API_BASE_URL ?
       try { payload = await response.json(); } catch { if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError'); }
       // A body reader can finish after cancellation even when fetch itself resolved.
       if (controller.signal.aborted) throw new DOMException('Aborted', 'AbortError');
-      if (!response.ok) throw new InferenceApiError('http', responseId, response.status, object(payload) && typeof payload.code === 'string' ? payload.code : undefined, response.headers.get('Retry-After') ?? undefined);
+      if (!response.ok) throw new InferenceApiError(
+        response.status === 404 ? 'route-not-found' : response.status === 405 ? 'method-not-allowed' : 'http',
+        responseId, response.status, object(payload) && typeof payload.code === 'string' ? payload.code : undefined,
+        response.headers.get('Retry-After') ?? undefined,
+      );
       if (!guard(payload)) throw new InferenceApiError('invalid-response', responseId, response.status);
       if (correlationHeader && object(payload) && 'requestId' in payload && payload.requestId !== correlationHeader) {
         throw new InferenceApiError('invalid-response', responseId, response.status);

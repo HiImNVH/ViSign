@@ -1,7 +1,8 @@
 # ViSign web
 
 Frontend React/TypeScript/Vite, phiên bản `0.0.1`. Bản local ghép camera T039,
-state machine T041, accepted result T042 và luồng API v1 T043 tại `App.tsx`.
+state machine T041, accepted result T042, API v1 T043, phân loại lỗi HTTP T074–T075
+và dòng bản dịch/lịch sử T100–T104 tại `App.tsx`.
 
 ## Chạy local
 
@@ -60,8 +61,13 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 - Tự dừng sau 5 giây; bỏ đoạn dưới 300 ms, vượt 6 giây hoặc 10 MiB.
 - Các giới hạn phía client là kiểm tra sơ bộ; decoder backend vẫn phải đo duration
   và xác thực nội dung khi tích hợp. Timer trình duyệt không chứng minh duration giải mã.
-- Không ghi âm, lưu file/localStorage hoặc tạo object URL. Hủy bỏ Blob;
-  Tắt camera/pagehide/unmount dừng tracks và xóa preview, timers, listeners.
+- Không ghi âm, không lưu video/Blob/frame/landmark vào file hay `localStorage`,
+  không tạo object URL. Hủy bỏ Blob; tắt camera/pagehide/unmount dừng tracks
+  và xóa preview, timers, listeners.
+- Chỉ lưu metadata của bản dịch đã `accepted=true` tại `localStorage` trong tối đa
+  24 giờ: `requestId`, `text`, `confidence`, `modelVersion`, `createdAt`.
+  Lịch sử chỉ ở trình duyệt, không gửi lên API; người dùng có thể xem/xoá.
+  Khi storage bị từ chối/đầy, bản dịch trực tiếp vẫn hoạt động trong phiên.
 - Có hướng dẫn native dialog hỗ trợ Escape/focus, lỗi quyền/thiết bị và thử lại.
 
 ## Phạm vi và thiết kế
@@ -74,13 +80,20 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 - `App` tạo đúng một `useRecognition()` và truyền controller vào `CameraRecorder`;
   `RecognitionResult` nhận kết quả và metadata hiện tại. Ghi xong clip không tự gửi hoặc dịch.
 - Vùng chữ nằm trên hàng nút trong camera; nền có alpha và blur nhẹ, không giảm opacity của chữ/nút.
+- Dòng bản dịch trực tiếp nối các ý nghĩa đã chấp nhận theo thứ tự trong phiên;
+  từ bị từ chối/lỗi không được ghép. Tải lại trang sẽ bắt đầu dòng mới,
+  còn lịch sử metadata giữ tối đa 24 giờ nếu trình duyệt cho phép.
+- API HTTP `404`/`405` dùng thông báo tiếng Việt ổn định, không render thông điệp
+  thô của server hoặc tự gửi lại clip; đường dẫn API giữ dạng canonical.
 - Riêng tư và disclaimer đầy đủ nằm trong Hướng dẫn; kết quả được chấp nhận có confidence/cảnh báo thử nghiệm.
 - T004: package, lockfile, entrypoint React và trang khởi đầu.
 - T006: ESLint, strict TypeScript, Vitest và Playwright.
 - T039: camera và capture local; T031/T028 chỉ triển khai phần test/copy phục vụ camera.
 - T040 typed API client; T041 quản lý vòng đời camera/API; T042 accepted result,
   phân biệt fixture/pilot/full và cảnh báo `demoReady`; T043 ghép lên trang chính.
-  T051–T053 và US6 T100–T104 là các phần tiếp theo.
+- T051–T053: lỗi nhận diện và lifecycle; T074–T075: HTTP compatibility;
+  US6 T100–T104: transcript, lịch sử local 24 giờ và tests. Các thay đổi mới
+  đang chờ review độc lập và integration window trước khi đóng task.
 - Nền sáng `#f4f5f6`, chữ chính `#173f35`, chữ phụ `#52666b`;
   font hệ thống hỗ trợ tiếng Việt; nội dung căn trái, chiều dài dòng tối đa 65ch.
 - Giữ zoom trình duyệt, safe area và viewport nhỏ; hover chỉ cho thiết bị hỗ trợ,
