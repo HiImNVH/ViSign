@@ -1,6 +1,7 @@
 # services/inference-api/src/visign_api/main.py
-# Diem vao FastAPI: release tu metadata goi, CORS, middleware request, anh xa loi va router /api/v1 (T026).
-from collections.abc import AsyncIterator, Callable
+# Diem vao FastAPI: release tu metadata goi, CORS, middleware request, anh xa loi, registry model va router /api/v1 (T026, T060).
+import logging
+from collections.abc import AsyncIterator, Callable, Mapping
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from importlib.metadata import version
 
@@ -13,8 +14,14 @@ from visign_api.api.request_context import REQUEST_ID_HEADER
 from visign_api.api.request_middleware import attach_request_context
 from visign_api.api.router import api_v1_router
 from visign_api.config import Settings, get_settings
+from visign_api.domain.model_version import ArtifactKind
 from visign_api.inference.coordinator import InferenceCoordinator
-from visign_api.observability import configure_logging
+from visign_api.inference.predictor_registry import (
+    DEFAULT_PREDICTOR_FACTORIES,
+    PredictorFactory,
+    PredictorRegistry,
+)
+from visign_api.observability import LOGGER_NAME, configure_logging
 
 SERVICE_TITLE = "ViSign Inference API"
 PACKAGE_NAME = "visign-api"
@@ -23,9 +30,36 @@ CORS_ALLOWED_HEADERS = [REQUEST_ID_HEADER, "Content-Type"]
 CORS_EXPOSED_HEADERS = [REQUEST_ID_HEADER, RETRY_AFTER_HEADER]
 
 Lifespan = Callable[[FastAPI], AbstractAsyncContextManager[None]]
+PredictorFactories = Mapping[ArtifactKind, PredictorFactory]
+
+service_logger = logging.getLogger(LOGGER_NAME)
 
 
-def build_lifespan(runtime_settings: Settings) -> Lifespan:
+def build_predictor_registry(
+    runtime_settings: Settings, predictor_factories: PredictorFactories
+) -> PredictorRegistry:
+    predictor_registry = PredictorRegistry(predictor_factories)
+    artifact_path = runtime_settings.model_artifact_path
+    if artifact_path is None:
+        service_logger.warning(
+            "Chua cau hinh MODEL_ARTIFACT_PATH; service chay degraded"
+        )
+        return predictor_registry
+    try:
+        predictor_registry.activate(
+            artifact_path, runtime_settings.feature_schema_version
+        )
+    except Exception as load_error:
+        # Contract AI-BE: artifact loi khi khoi dong thi degraded, khong suy luan bang fixture thay the
+        service_logger.error(
+            "Khong nap duoc model artifact; service chay degraded", exc_info=load_error
+        )
+    return predictor_registry
+
+
+def build_lifespan(
+    runtime_settings: Settings, predictor_factories: PredictorFactories
+) -> Lifespan:
     @asynccontextmanager
     async def lifespan(service_app: FastAPI) -> AsyncIterator[None]:
         # Tao coordinator trong event loop dang chay de semaphore khong gan voi loop cu
@@ -33,18 +67,30 @@ def build_lifespan(runtime_settings: Settings) -> Lifespan:
         service_app.state.inference_coordinator = InferenceCoordinator(
             runtime_settings.inference_wait_timeout_seconds
         )
+        service_app.state.predictor_registry = build_predictor_registry(
+            runtime_settings, predictor_factories
+        )
         yield
 
     return lifespan
 
 
-def create_app(runtime_settings: Settings | None = None) -> FastAPI:
+def create_app(
+    runtime_settings: Settings | None = None,
+    predictor_factories: PredictorFactories | None = None,
+) -> FastAPI:
+    # Adapter GRU cho pilot/full se duoc dang ky qua predictor_factories khi P3 ban giao T036
     active_settings = runtime_settings or get_settings()
+    active_factories = (
+        DEFAULT_PREDICTOR_FACTORIES
+        if predictor_factories is None
+        else predictor_factories
+    )
     configure_logging()
     service_app = FastAPI(
         title=SERVICE_TITLE,
         version=version(PACKAGE_NAME),
-        lifespan=build_lifespan(active_settings),
+        lifespan=build_lifespan(active_settings, active_factories),
     )
     # Middleware them sau nam ngoai: CORS bao ngoai de moi response, ke ca 500, deu co header CORS
     service_app.add_middleware(BaseHTTPMiddleware, dispatch=attach_request_context)

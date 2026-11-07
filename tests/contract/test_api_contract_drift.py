@@ -8,8 +8,10 @@ import pytest
 import yaml
 from pydantic import BaseModel
 from visign_api.domain.errors import ErrorCode, ErrorEnvelope
+from visign_api.domain.health import HealthResponse, HealthStatus
 from visign_api.domain.model_version import ArtifactKind, ModelInfoResponse
 from visign_api.domain.prediction import (
+    OPTIONAL_DIAGNOSTIC_FIELDS,
     PredictionQualityHints,
     PredictionResponse,
     PredictionTimings,
@@ -28,15 +30,19 @@ AGREED_422_DESCRIPTION = (
     "Clip cannot be decoded or does not satisfy inference constraints"
 )
 
-# Model Python co doi ung schema; HealthResponse chua co model Python cho den T060
 PYTHON_MODEL_BY_SCHEMA: dict[str, type[BaseModel]] = {
+    "HealthResponse": HealthResponse,
     "ModelInfo": ModelInfoResponse,
     "PredictionResponse": PredictionResponse,
     "PredictionTimings": PredictionTimings,
     "PredictionQualityHints": PredictionQualityHints,
     "ErrorEnvelope": ErrorEnvelope,
 }
-TYPESCRIPT_SCHEMAS = [*PYTHON_MODEL_BY_SCHEMA, "HealthResponse"]
+TYPESCRIPT_SCHEMAS = list(PYTHON_MODEL_BY_SCHEMA)
+# Field optional bi bo khoi JSON khi vang (khong bao gio null); field optional khac co the null
+OMITTED_WHEN_ABSENT_BY_SCHEMA: dict[str, frozenset[str]] = {
+    "PredictionResponse": frozenset(OPTIONAL_DIAGNOSTIC_FIELDS),
+}
 
 INTERFACE_PATTERN = re.compile(r"export interface (\w+) \{\n(.*?)\n\}", re.DOTALL)
 FIELD_PATTERN = re.compile(r"^\s+(\w+)(\??): (.+);$", re.MULTILINE)
@@ -78,15 +84,17 @@ def openapi_shape(schema: dict[str, Any]) -> FieldShape:
     )
 
 
-def python_shape(model: type[BaseModel]) -> FieldShape:
-    # Field co default None bi bo khoi JSON khi vang nen tuong ung optional, khong phai nullable
+def python_shape(
+    model: type[BaseModel], omitted_when_absent: frozenset[str]
+) -> FieldShape:
     required_names = {
         name for name, field in model.model_fields.items() if field.is_required()
     }
+    # Kieu co None la nullable, tru field optional bi bo khoi JSON khi vang (timingsMs, qualityHints)
     nullable_names = {
         name
         for name, field in model.model_fields.items()
-        if field.is_required() and type(None) in get_args(field.annotation)
+        if type(None) in get_args(field.annotation) and name not in omitted_when_absent
     }
     return FieldShape(
         frozenset(required_names),
@@ -156,15 +164,18 @@ def test_health_statuses_match_between_openapi_and_typescript(
         typescript_const_values(typescript_source, "HEALTH_STATUSES")
         == contract_statuses
     )
+    assert list(get_args(HealthStatus)) == contract_statuses
 
 
 @pytest.mark.parametrize("schema_name", list(PYTHON_MODEL_BY_SCHEMA))
 def test_python_models_match_openapi_fields(
     schema_name: str, openapi_schemas: dict[str, Any]
 ) -> None:
-    assert python_shape(PYTHON_MODEL_BY_SCHEMA[schema_name]) == openapi_shape(
-        openapi_schemas[schema_name]
-    )
+    omitted_when_absent = OMITTED_WHEN_ABSENT_BY_SCHEMA.get(schema_name, frozenset())
+
+    assert python_shape(
+        PYTHON_MODEL_BY_SCHEMA[schema_name], omitted_when_absent
+    ) == openapi_shape(openapi_schemas[schema_name])
 
 
 @pytest.mark.parametrize("schema_name", TYPESCRIPT_SCHEMAS)
