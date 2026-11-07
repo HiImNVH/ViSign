@@ -46,7 +46,10 @@ def test_fixture_and_pilot_are_never_demo_ready(artifact_kind: str) -> None:
 @pytest.mark.parametrize(
     "failing_overrides",
     [
-        {"meanings": P0_MEANINGS[:9], "perMeaningRecall": dict.fromkeys(P0_MEANINGS[:9], 0.9)},
+        {
+            "meanings": P0_MEANINGS[:9],
+            "perMeaningRecall": dict.fromkeys(P0_MEANINGS[:9], 0.9),
+        },
         {"macroF1": 0.7999},
         {"macroF1": None},
         {"perMeaningRecall": None},
@@ -54,7 +57,9 @@ def test_fixture_and_pilot_are_never_demo_ready(artifact_kind: str) -> None:
         {"perMeaningRecall": dict.fromkeys(P0_MEANINGS[:9], 0.9)},
     ],
 )
-def test_full_model_failing_any_gate_is_not_demo_ready(failing_overrides: dict[str, Any]) -> None:
+def test_full_model_failing_any_gate_is_not_demo_ready(
+    failing_overrides: dict[str, Any],
+) -> None:
     # Given full model truot mot dieu kien gate; Then demoReady fail closed ve False
     assert build_metadata(**failing_overrides).demoReady is False
 
@@ -66,14 +71,18 @@ def test_full_model_not_declared_demo_ready_stays_false() -> None:
 
 def test_gate_boundaries_are_inclusive() -> None:
     # Given dung bang nguong 0.80 va 0.65; Then van dat gate
-    metadata = build_metadata(macroF1=0.80, perMeaningRecall=dict.fromkeys(P0_MEANINGS, 0.65))
+    metadata = build_metadata(
+        macroF1=0.80, perMeaningRecall=dict.fromkeys(P0_MEANINGS, 0.65)
+    )
 
     assert metadata.demoReady is True
 
 
 def test_fixture_metrics_are_nullable() -> None:
     # Given fixture khong co danh gia; Then cac metric deu null
-    metadata = build_metadata(artifactKind="fixture", macroF1=None, perMeaningRecall=None)
+    metadata = build_metadata(
+        artifactKind="fixture", macroF1=None, perMeaningRecall=None
+    )
 
     assert metadata.accuracy is None
     assert metadata.macroF1 is None
@@ -98,9 +107,13 @@ def test_invalid_metadata_is_rejected(invalid_overrides: dict[str, Any]) -> None
 
 def test_model_info_response_keeps_required_nullable_fields() -> None:
     # Given fixture khong co metric; When serialize model-info; Then key nullable van co mat
-    fixture_metadata = build_metadata(artifactKind="fixture", macroF1=None, perMeaningRecall=None)
+    fixture_metadata = build_metadata(
+        artifactKind="fixture", macroF1=None, perMeaningRecall=None
+    )
 
-    model_info = ModelInfoResponse.from_metadata(fixture_metadata).model_dump(mode="json")
+    model_info = ModelInfoResponse.from_metadata(fixture_metadata).model_dump(
+        mode="json"
+    )
 
     assert model_info["artifactKind"] == "fixture"
     assert model_info["demoReady"] is False

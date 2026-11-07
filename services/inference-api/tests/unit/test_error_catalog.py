@@ -20,7 +20,9 @@ from visign_api.domain.errors import (
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
-OPENAPI_CONTRACT_PATH = REPOSITORY_ROOT / "specs" / "001-vsl-recognition-mvp" / "contracts" / "openapi.yaml"
+OPENAPI_CONTRACT_PATH = (
+    REPOSITORY_ROOT / "specs" / "001-vsl-recognition-mvp" / "contracts" / "openapi.yaml"
+)
 
 # Status HTTP lay tu cac response duoc khai bao trong openapi.yaml
 EXPECTED_STATUS_BY_CODE = {
@@ -39,8 +41,12 @@ EXPECTED_STATUS_BY_CODE = {
 
 
 def load_contract_error_codes() -> list[str]:
-    openapi_contract: dict[str, Any] = yaml.safe_load(OPENAPI_CONTRACT_PATH.read_text(encoding="utf-8"))
-    error_code_schema = openapi_contract["components"]["schemas"]["ErrorEnvelope"]["properties"]["code"]
+    openapi_contract: dict[str, Any] = yaml.safe_load(
+        OPENAPI_CONTRACT_PATH.read_text(encoding="utf-8")
+    )
+    error_code_schema = openapi_contract["components"]["schemas"]["ErrorEnvelope"][
+        "properties"
+    ]["code"]
     return list(error_code_schema["enum"])
 
 
@@ -71,7 +77,9 @@ def test_exception_takes_status_and_message_from_catalog() -> None:
     assert decode_failure.retryAfterSeconds is None
 
 
-@pytest.mark.parametrize("unavailable_exception", [ServiceBusyException, ModelNotReadyException])
+@pytest.mark.parametrize(
+    "unavailable_exception", [ServiceBusyException, ModelNotReadyException]
+)
 def test_unavailable_errors_suggest_positive_retry_after(
     unavailable_exception: Callable[[], ViSignApiException],
 ) -> None:
@@ -90,7 +98,9 @@ def test_prediction_failed_has_no_retry_hint() -> None:
 def test_error_envelope_serializes_contract_fields() -> None:
     request_id = str(uuid.uuid4())
 
-    error_envelope = ErrorEnvelope(code=ErrorCode.SERVICE_BUSY, message="Bận", requestId=request_id)
+    error_envelope = ErrorEnvelope(
+        code=ErrorCode.SERVICE_BUSY, message="Bận", requestId=request_id
+    )
 
     assert error_envelope.model_dump(mode="json") == {
         "code": "SERVICE_BUSY",

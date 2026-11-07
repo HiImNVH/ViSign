@@ -66,7 +66,10 @@ def test_present_diagnostics_are_serialized() -> None:
     serialized_response = diagnosed_response.model_dump(mode="json")
 
     assert serialized_response["timingsMs"] == {"decode": 1, "extract": 2, "infer": 3}
-    assert serialized_response["qualityHints"] == {"handsDetectedRatio": 0.5, "frameCount": 10}
+    assert serialized_response["qualityHints"] == {
+        "handsDetectedRatio": 0.5,
+        "frameCount": 10,
+    }
 
 
 @pytest.mark.parametrize(
@@ -82,9 +85,17 @@ def test_present_diagnostics_are_serialized() -> None:
         {"timingsMs": {"decode": -1, "extract": 0, "infer": 0}},
         {"qualityHints": {"handsDetectedRatio": 1.5, "frameCount": 10}},
         {"qualityHints": {"handsDetectedRatio": 0.5, "frameCount": 0}},
-        {"qualityHints": {"handsDetectedRatio": 0.5, "frameCount": 10, "landmarks": [[0.1, 0.2]]}},
+        {
+            "qualityHints": {
+                "handsDetectedRatio": 0.5,
+                "frameCount": 10,
+                "landmarks": [[0.1, 0.2]],
+            }
+        },
     ],
 )
-def test_invalid_state_combinations_are_rejected(invalid_overrides: dict[str, Any]) -> None:
+def test_invalid_state_combinations_are_rejected(
+    invalid_overrides: dict[str, Any],
+) -> None:
     with pytest.raises(ValidationError):
         build_response(**invalid_overrides)

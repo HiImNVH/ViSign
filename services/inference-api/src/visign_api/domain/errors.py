@@ -34,16 +34,24 @@ class ErrorDefinition:
 
 
 ERROR_CATALOG: dict[ErrorCode, ErrorDefinition] = {
-    ErrorCode.INVALID_REQUEST: ErrorDefinition(400, "Yêu cầu không hợp lệ hoặc thiếu dữ liệu video."),
+    ErrorCode.INVALID_REQUEST: ErrorDefinition(
+        400, "Yêu cầu không hợp lệ hoặc thiếu dữ liệu video."
+    ),
     ErrorCode.UNSUPPORTED_MEDIA_TYPE: ErrorDefinition(
         415, "Định dạng video không được hỗ trợ. Vui lòng gửi video WebM."
     ),
-    ErrorCode.CLIP_TOO_LARGE: ErrorDefinition(413, "Dung lượng video vượt quá giới hạn cho phép."),
-    ErrorCode.CLIP_TOO_SHORT: ErrorDefinition(422, "Đoạn video quá ngắn để nhận diện ký hiệu."),
+    ErrorCode.CLIP_TOO_LARGE: ErrorDefinition(
+        413, "Dung lượng video vượt quá giới hạn cho phép."
+    ),
+    ErrorCode.CLIP_TOO_SHORT: ErrorDefinition(
+        422, "Đoạn video quá ngắn để nhận diện ký hiệu."
+    ),
     ErrorCode.CLIP_TOO_LONG: ErrorDefinition(
         422, "Đoạn video quá dài so với giới hạn của ký hiệu đơn lẻ."
     ),
-    ErrorCode.NO_PERSON_DETECTED: ErrorDefinition(422, "Không phát hiện người trong khung hình camera."),
+    ErrorCode.NO_PERSON_DETECTED: ErrorDefinition(
+        422, "Không phát hiện người trong khung hình camera."
+    ),
     ErrorCode.INSUFFICIENT_LANDMARKS: ErrorDefinition(
         422, "Không phát hiện đủ các điểm khớp bàn tay/cơ thể để nhận diện."
     ),
@@ -58,7 +66,9 @@ ERROR_CATALOG: dict[ErrorCode, ErrorDefinition] = {
     ErrorCode.MODEL_NOT_READY: ErrorDefinition(
         503, "Mô hình nhận diện chưa sẵn sàng.", MODEL_NOT_READY_RETRY_AFTER_SECONDS
     ),
-    ErrorCode.PREDICTION_FAILED: ErrorDefinition(500, "Xử lý nhận diện thất bại do lỗi không xác định."),
+    ErrorCode.PREDICTION_FAILED: ErrorDefinition(
+        500, "Xử lý nhận diện thất bại do lỗi không xác định."
+    ),
 }
 
 

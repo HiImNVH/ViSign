@@ -78,7 +78,9 @@ class ModelInfoResponse(BaseModel):
 
     @classmethod
     def from_metadata(cls, metadata: ModelMetadata) -> "ModelInfoResponse":
-        evaluated_at = metadata.evaluatedAt.isoformat() if metadata.evaluatedAt else None
+        evaluated_at = (
+            metadata.evaluatedAt.isoformat() if metadata.evaluatedAt else None
+        )
         return cls(
             modelVersion=metadata.modelVersion,
             artifactKind=metadata.artifactKind.value,
