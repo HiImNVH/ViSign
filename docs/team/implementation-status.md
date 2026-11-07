@@ -27,11 +27,11 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | VERIFIED | Gán owner T001–T007 rồi mở CP1 |
-| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PLANNED | CP1 toolchain, T099 API convention; AI-backend contract đã xác nhận |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | VERIFIED | Mở CP1 integration window cho Tín |
+| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PLANNED | CP1 T001–T007 monorepo/toolchain, T099 API convention; AI-backend contract đã xác nhận |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | PLANNED | Representative-clip review cho schema v0.3 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | BLOCKED/PARTIAL | Lead gửi T098 data convention |
-| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | PLANNED | CP1 web project, T099 API convention |
+| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | PLANNED | Review T004/T006 web toolchain, T099 API convention |
 
 ## External reference only
 

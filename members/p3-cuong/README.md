@@ -7,7 +7,7 @@
 
 | Task | Planned files | Gate/result | Commit | Handoff |
 |---|---|---|---|---|
-| CP1 | AI skeleton/toolchain | Chưa chạy | Chưa commit | Huy review |
+| CP1 | Review T003 `ai/pyproject.toml` do Tín làm | Chưa chạy | Không cần commit | Tín |
 | CP2 | Decoder, shared preprocessing, schema/parity | Chưa chạy | Chưa commit | Tín/Huy review |
 | CP3 | Fixture predictor/load smoke | Chưa chạy | Chưa commit | Tín review |
 | CP5-pilot | Pilot train/eval, `demoReady=false` | Chưa chạy | Chưa commit | Quang/Huy review |

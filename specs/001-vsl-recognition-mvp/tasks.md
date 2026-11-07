@@ -24,7 +24,7 @@ CP0; application code chỉ được đưa sang từ legacy theo checkpoint nh�
 | Mã người | Thành viên hiện tại | Vai trò chính | Task chịu trách nhiệm chính |
 |---|---|---|---|
 | **P1** | **Huy** | Quản lý dự án, checkpoint, CI, nghiệm thu và trình bày | T032, T047, T067–T071, T084–T087, T090–T091, T093, T097 |
-| **P2** | **Tín** | Backend, API, security, cloud và tích hợp predictor | T019–T026, T030, T037–T038, T044–T045, T048–T050, T055, T060, T064, T066, T072–T073, T078–T080, T092, T095–T096, T099 |
+| **P2** | **Tín** | Backend, API, security, cloud, tích hợp predictor và CP1 toolchain | T001–T007, T019–T026, T030, T037–T038, T044–T045, T048–T050, T055, T060, T064, T066, T072–T073, T078–T080, T092, T095–T096, T099 |
 | **P3** | **Cường** | MediaPipe pipeline, training, evaluation và cost benchmark | T014–T017, T029, T033–T036, T054, T057–T059, T062, T065, T083, T089, T094 |
 | **P4** | **Quang** | Data crawler, data analysis, manifest và split | T008–T013, T018, T056, T061, T076–T077, T098 |
 | **P5** | **Hiển** | UX/UI, frontend và frontend quality evidence | T027–T028, T031, T039–T043, T046, T051–T053, T063, T074–T075, T081–T082, T088, T090 |
@@ -389,7 +389,8 @@ Setup -> Foundation -> US1 -> Integration/Polish
 
 ### Parallel Opportunities
 
-- T002–T004, T005–T006 và T008 có thể chia cho backend/AI/frontend.
+- T001–T007 do Tín chịu trách nhiệm chính; Cường review T003, Hiển review T004/T006. T002–T006 và
+  T008 vẫn sửa file độc lập nên có thể làm song song.
 - T009–T011, T014, T019–T021, T025, T027–T028 sửa các vùng độc lập.
 - Sau integration foundation, Tín làm T030/T037–T038, Hiển làm T031/T039–T043 và Huy làm T032 bằng
   fixture; không chờ Quang hoặc Cường hoàn thành full track.

@@ -1,6 +1,6 @@
 # P1 Huy - Project/Integration
 
-- Current: CP0 đã được P2 `VERIFIED`; cần gán owner T001–T007 trước khi mở CP1.
+- Current: CP0 đã được P2 `VERIFIED`; T001–T007 đã gán cho Tín; mở CP1 window.
 - Tasks: T085–T087 và integration queue.
 - Ownership: Spec Kit, `docs/team/`, CI coordination, verification, demo và presentation.
 - Commit scopes: `spec`, `docs`, `ci`, `verify`, `release`.

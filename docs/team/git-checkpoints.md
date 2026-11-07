@@ -43,10 +43,10 @@ Quy tắc:
 | Thành viên | Scope được dùng | Checkpoint/commit dự kiến | Smoke tối thiểu | Reviewer chính |
 |---|---|---|---|---|
 | P1 Huy | `spec`, `docs`, `ci`, `verify`, `release` | CP0 Spec Kit; CP3/4 E2E; CP7 CI; CP8 nghiệm thu | Spec Kit validation; E2E/rehearsal; link Actions | Owner module liên quan; cả nhóm ở CP8 |
-| P2 Tín | `api`, `backend`, `security`, `cloud` | CP1 API skeleton; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | unit/contract; live health/predict; negative/security; Cloud Run health/rollback | Huy; Cường cho predictor; Hiển cho API contract |
-| P3 Cường | `ai`, `extractor`, `train`, `eval`, `model` | CP1 AI skeleton; CP2 preprocessing/schema; CP3 fixture/predictor; CP5 pilot rồi full; CP7 cost | tensor/mask parity; deterministic train; model load/predict; metrics/cost | Huy; Tín cho serving; Quang cho manifest |
+| P2 Tín | `api`, `backend`, `security`, `cloud` | CP1 monorepo/toolchain T001–T007; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | unit/contract; live health/predict; negative/security; Cloud Run health/rollback | Huy; Cường cho predictor; Hiển cho API contract |
+| P3 Cường | `ai`, `extractor`, `train`, `eval`, `model` | CP1 review T003; CP2 preprocessing/schema; CP3 fixture/predictor; CP5 pilot rồi full; CP7 cost | tensor/mask parity; deterministic train; model load/predict; metrics/cost | Huy; Tín cho serving; Quang cho manifest |
 | P4 Quang | `data`, `dataset` | CP1 data skeleton; CP2 convention/schema; CP5 pilot/full manifest | schema/filename validator; provenance/license audit; split/coverage audit | Huy và Cường |
-| P5 Hiển | `web`, `ui`, `ux`, `e2e` | CP1 web skeleton; CP2 API client/types; CP3 happy path; CP4 placeholders/accessibility; CP6 admin UI; CP8 UX evidence | lint/build/unit; fake-camera E2E; status/accessibility/responsive checks | Huy và Tín |
+| P5 Hiển | `web`, `ui`, `ux`, `e2e` | CP1 review T004/T006; CP2 API client/types; CP3 happy path; CP4 placeholders/accessibility; CP6 admin UI; CP8 UX evidence | lint/build/unit; fake-camera E2E; status/accessibility/responsive checks | Huy và Tín |
 
 Một người có thể có nhiều commit trong một CP, nhưng mỗi commit phải độc lập review/rollback. Không
 chờ đến cuối CP mới dồn toàn bộ thay đổi của người đó vào một commit.
