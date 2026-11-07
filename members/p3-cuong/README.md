@@ -57,6 +57,7 @@
 - Required input: representative WebM clips và data manifest đã audit.
 - Next owner/action: P3 đã xuất bộ review 6 WebM gồm 6 JSON và 18 ảnh L/R. Cả 6 tạo được tensor hữu hạn, 20–32/32 bước dùng được. Huy chờ nhận bộ clip để duyệt schema và xác nhận clip nghi lật. T017 đã push, CI xanh. P3 đã push test tự động theo review P2 tại 57311bf; đã được Huy/Tín duyệt; nối T010 khi Quang bàn giao. Tín phối hợp kiểm parity qua đường serving.
 - Review lại T098 (snapshot Quang/T098): CHANGES_REQUESTED. Pytest 12 test và 25 subtest đạt; Ruff 5 lỗi, mypy 2 lỗi. Hash và mapping khớp 27/27. Decoder đọc 24/27; T017 xuất NPZ cho 3/3 clip S001-R01. Sáu nguồn website chưa đối chiếu độc lập; còn chờ quyền, nhãn và manifest đã audit.
+- Review T009–T012 (snapshot Quang): CHANGES_REQUESTED. Pytest đạt ở cả bốn snapshot; Ruff/mypy còn lỗi. T010 cần chiếu sampleId/rawPath sang T017. T012 audit inventory 27 clip đúng và chặn release, cần phân biệt releaseEligible metadata với đủ split để chạy T036.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
