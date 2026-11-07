@@ -4,7 +4,6 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { RecognitionOverlay, type CapturedRecognitionResult } from '../../src/features/recognition/RecognitionOverlay';
 import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
 import { CameraSession } from '../../src/features/recognition/cameraSession';
-import * as cameraHook from '../../src/features/recognition/useCameraCapture';
 
 const clip = new Blob(['test-only'], { type: 'video/webm' });
 const accepted: CapturedRecognitionResult = { clip, accepted: true, text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: .92 };
@@ -31,19 +30,25 @@ test.each([
   expect(container).toBeEmptyDOMElement();
 });
 
-test('camera only displays results for its current captured clip and clears them on recapture', () => {
+test('camera displays accepted API results only in a captured prediction state', () => {
   const session = new CameraSession(vi.fn());
-  const hook = vi.spyOn(cameraHook, 'useCameraCapture').mockReturnValue({
-    view: { phase: 'captured', clip, durationMs: 500 }, session, videoRef: { current: null },
+  const apiResult = { requestId: 'prediction-id', text: 'Xin chào', classLabel: 'XIN_CHAO',
+    confidence: .92, accepted: true, modelVersion: 'fixture-v1', processingTimeMs: 50 };
+  const model = { status: 'ready' as const, info: { modelVersion: 'fixture-v1', artifactKind: 'fixture' as const,
+    datasetVersion: 'demo', featureSchemaVersion: 'v1', extractorVersion: 'v1', meanings: ['Xin chào'],
+    acceptanceThreshold: .7, macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false } };
+  const makeController = (cameraView: typeof session.view, showResult: boolean) => ({
+    camera: { view: cameraView, session, videoRef: { current: null } }, model,
+    state: showResult ? { phase: 'result' as const, artifactKind: 'fixture' as const, result: apiResult, requestId: 'prediction-id' } : cameraView,
+    enableCamera: async () => {}, startRecording: () => {}, stopRecording: () => {}, submit: async () => {},
+    cancel: () => {}, reset: () => {}, reloadModelInfo: () => {},
   });
-  const rendered = render(<CameraRecorder recognitionResult={accepted} />);
+  const rendered = render(<CameraRecorder controller={makeController({ phase: 'captured', clip, durationMs: 500 }, true)} />);
   expect(screen.getByRole('region', { name: 'Văn bản dịch' })).toBeVisible();
   const video = screen.getByLabelText('Hình ảnh xem trước từ camera');
-  hook.mockReturnValue({ view: { phase: 'recording' }, session, videoRef: { current: null } });
-  rendered.rerender(<CameraRecorder recognitionResult={accepted} />);
+  rendered.rerender(<CameraRecorder controller={makeController({ phase: 'recording' }, false)} />);
   expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
   expect(screen.getByLabelText('Hình ảnh xem trước từ camera')).toBe(video);
-  hook.mockReturnValue({ view: { phase: 'captured', clip: new Blob(['another']), durationMs: 500 }, session, videoRef: { current: null } });
-  rendered.rerender(<CameraRecorder recognitionResult={accepted} />);
+  rendered.rerender(<CameraRecorder controller={makeController({ phase: 'captured', clip: new Blob(['another']), durationMs: 500 }, false)} />);
   expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
 });

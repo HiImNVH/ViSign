@@ -18,9 +18,16 @@ export type CameraError = keyof typeof cameraErrors;
 export const vi = {
   title: 'Ngôn ngữ ký hiệu Việt Nam',
   preview: 'Hình ảnh xem trước từ camera',
-  privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay ở trong bộ nhớ trang, chưa được gửi đi.',
+  privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay chỉ được gửi đến dịch vụ nhận diện khi bạn bấm Gửi nhận diện.',
   disclaimer: 'ViSign là công cụ hỗ trợ thử nghiệm. Kết quả có thể không chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.',
   recognition: {
+    send: 'Gửi nhận diện',
+    sending: 'Đang nhận diện…',
+    modelLoading: 'Đang tải thông tin model để gửi nhận diện…',
+    modelUnavailable: 'Chưa kết nối được dịch vụ nhận diện. Bạn vẫn có thể quay ký hiệu.',
+    reloadModel: 'Thử kết nối lại',
+    submitError: 'Không thể nhận diện đoạn quay này. Thử gửi lại hoặc quay ký hiệu mới.',
+    rejected: 'Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.',
     confidence: 'Độ tin cậy',
     shortDisclaimer: 'Kết quả thử nghiệm, có thể không chính xác.',
     modelNotReady: {

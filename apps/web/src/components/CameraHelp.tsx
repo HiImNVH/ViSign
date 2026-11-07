@@ -14,6 +14,7 @@ export function CameraHelp() {
         <li><strong>Chuẩn bị khung hình</strong><p>Chọn nơi đủ sáng. Để khuôn mặt, phần thân trên và hai tay trong khung.</p></li>
         <li><strong>Bật camera khi sẵn sàng</strong><p>Cho phép camera trong trình duyệt. Bật camera chỉ mở hình xem trước.</p></li>
         <li><strong>Quay một ký hiệu</strong><p>Chọn Quay ký hiệu, thực hiện động tác rồi chọn Kết thúc. Đoạn quay tự dừng sau 5 giây.</p></li>
+        <li><strong>Gửi khi sẵn sàng</strong><p>Chọn Gửi nhận diện để gửi đoạn quay tới dịch vụ. Nếu không muốn gửi, bạn có thể hủy đoạn quay.</p></li>
         <li><strong>Chủ động hủy hoặc tắt</strong><p>Hủy đoạn quay để bỏ clip và tiếp tục xem trước. Tắt camera để giải phóng thiết bị.</p></li>
       </ol>
       <p className="privacy-note">{vi.privacy}</p><p className="disclaimer">{vi.disclaimer}</p>

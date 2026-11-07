@@ -2,14 +2,16 @@
 import { CameraHelp } from './components/CameraHelp';
 import { vi } from './content/vi';
 import { CameraRecorder } from './features/recognition/CameraRecorder';
+import { useRecognition } from './features/recognition/useRecognition';
 import './styles.css';
 
 export function App() {
+  const recognition = useRecognition();
   return (
     <main className="app-shell">
       <header className="app-header"><div className="brand"><h1>ViSign</h1><span>{vi.title}</span></div>
         <div className="header-actions"><span className="trial-label">Bản thử nghiệm</span><CameraHelp /></div></header>
-      <CameraRecorder />
+      <CameraRecorder controller={recognition} />
     </main>
   );
 }

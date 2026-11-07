@@ -44,6 +44,11 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
 .primary-button, .quiet-button { display: inline-flex; justify-content: center; align-items: center; gap: 10px; min-height: 48px; padding: 12px 18px; border-radius: 12px; user-select: none; -webkit-tap-highlight-color: transparent; }
 .primary-button { background: var(--color-primary); color: white; font-weight: 600; }
 .quiet-button { background: #edf3ef; color: #245441; }
+button:disabled { cursor: not-allowed; opacity: .58; }
+.recognition-feedback { max-width: min(540px, 100%); text-align: center; pointer-events: auto; }
+.recognition-feedback:empty { display: none; }
+.recognition-feedback p { margin: 0; padding: 3px 10px; border-radius: 10px; background: rgb(255 255 255 / 88%); color: #68451d; font-size: 12px; line-height: 1.35; }
+.recognition-feedback .model-retry { margin-top: 3px; min-height: 34px; padding: 6px 12px; font-size: 12px; }
 .record-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
 .stop-mark { width: 10px; height: 10px; border-radius: 2px; background: currentColor; }
 .stop-button { background: #a83f3a; }
@@ -100,6 +105,8 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
   .camera-dock { left: 4px; right: 4px; bottom: 4px; gap: 4px; }
   .capture-controls { padding: 1px; gap: 2px; }
   .capture-controls .primary-button, .capture-controls .quiet-button { min-height: 44px; padding: 8px 10px; font-size: 14px; }
+  .recognition-feedback p { padding: 2px 4px; font-size: 10px; line-height: 1.15; }
+  .recognition-feedback .model-retry { min-height: 30px; padding: 3px 8px; }
   .long-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .compact-label { display: inline; }
   .status-badge { top: 4px; right: 4px; font-size: 0; padding: 4px; gap: 0; }

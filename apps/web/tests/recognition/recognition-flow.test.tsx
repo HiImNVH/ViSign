@@ -3,6 +3,18 @@ import { StrictMode } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
+import { useCameraCapture } from '../../src/features/recognition/useCameraCapture';
+
+function CameraRecorderHarness() {
+  const camera = useCameraCapture();
+  return <CameraRecorder controller={{
+    camera, state: camera.view, model: { status: 'loading' },
+    enableCamera: () => camera.session.enable(camera.videoRef.current),
+    startRecording: () => camera.session.record(), stopRecording: () => camera.session.stop(),
+    submit: async () => {}, cancel: () => camera.session.cancel(), reset: () => camera.session.reset(),
+    reloadModelInfo: () => {},
+  }} />;
+}
 
 const track = Object.assign(new EventTarget(), { readyState: 'live', stop: vi.fn() });
 const stream = { getTracks: () => [track], getVideoTracks: () => [track] } as unknown as MediaStream;
@@ -17,7 +29,7 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 async function openPreview() {
-  const rendered = render(<StrictMode><CameraRecorder /></StrictMode>);
+  const rendered = render(<StrictMode><CameraRecorderHarness /></StrictMode>);
   expect(getUserMedia).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'Bật camera' }));
   await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Camera sẵn sàng'));
@@ -50,7 +62,7 @@ test('pagehide resets UI and releases the camera', async () => {
 
 test('camera errors show safe Vietnamese guidance and a focused retry button', async () => {
   getUserMedia.mockRejectedValueOnce(new DOMException('private device detail', 'NotAllowedError'));
-  render(<CameraRecorder />);
+  render(<CameraRecorderHarness />);
   fireEvent.click(screen.getByRole('button', { name: 'Bật camera' }));
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Chưa có quyền sử dụng camera'));
   expect(screen.getByRole('alert')).not.toHaveTextContent('private device detail');

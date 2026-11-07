@@ -1,7 +1,7 @@
 # ViSign web
 
-Frontend React/TypeScript/Vite, phiên bản `0.0.1`. Bản local hiện có phần camera T039:
-xem trước, quay/dừng/hủy một ký hiệu và tắt camera. Chưa tích hợp API nhận diện.
+Frontend React/TypeScript/Vite, phiên bản `0.0.1`. Bản local ghép camera T039,
+state machine T041, accepted result T042 và luồng API v1 T043 tại `App.tsx`.
 
 ## Chạy local
 
@@ -52,6 +52,11 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 
 - Bật camera chỉ xin quyền và mở preview, không quay hoặc tải dữ liệu lên.
 - Quay ký hiệu → Kết thúc tạo một Blob WebM trong bộ nhớ. Có thể hủy/quay lại.
+- Sau khi quay, chỉ nhấn **Gửi nhận diện** mới POST clip qua `/api/v1/predictions`.
+  Ứng dụng GET `/api/v1/model-info` để xác thực metadata trước khi cho phép gửi;
+  nếu API lỗi có thể thử kết nối lại. Fixture/pilot/full cùng dùng một endpoint.
+- Đang gửi có thể hủy clip hoặc tắt camera để abort request. Kết quả từ clip đã hủy,
+  modelVersion khác metadata hoặc `accepted=false` không được hiển thị như bản dịch.
 - Tự dừng sau 5 giây; bỏ đoạn dưới 300 ms, vượt 6 giây hoặc 10 MiB.
 - Các giới hạn phía client là kiểm tra sơ bộ; decoder backend vẫn phải đo duration
   và xác thực nội dung khi tích hợp. Timer trình duyệt không chứng minh duration giải mã.
@@ -64,21 +69,24 @@ bỏ biến channel để thử browser Playwright mặc định khi môi trư�
 - Bố cục đã được người dùng duyệt: một màn hình không cuộn, camera chiếm phần lớn viewport,
   bỏ tiêu đề lớn. Nút điều khiển nằm trong khung camera, sát cạnh dưới, trên nền trong mờ.
 - Vùng chữ chỉ xuất hiện khi có kết quả `accepted=true`, chữ/class label không rỗng,
-  confidence hợp lệ và đúng Blob của lần quay hiện tại. Không hiển thị ô rỗng,
+  confidence hợp lệ, modelVersion khớp metadata và đúng lần quay hiện tại. Không hiển thị ô rỗng,
   “Chưa có bản dịch” hoặc chữ mẫu trong ứng dụng.
-- `CameraRecorder.recognitionResult` là ranh giới trình bày cho lần tích hợp sau;
-  ứng dụng hiện chưa truyền kết quả vì chưa nối API. Ghi xong clip không tự trở thành bản dịch.
+- `App` tạo đúng một `useRecognition()` và truyền controller vào `CameraRecorder`;
+  `RecognitionResult` nhận kết quả và metadata hiện tại. Ghi xong clip không tự gửi hoặc dịch.
 - Vùng chữ nằm trên hàng nút trong camera; nền có alpha và blur nhẹ, không giảm opacity của chữ/nút.
 - Riêng tư và disclaimer đầy đủ nằm trong Hướng dẫn; kết quả được chấp nhận có confidence/cảnh báo thử nghiệm.
 - T004: package, lockfile, entrypoint React và trang khởi đầu.
 - T006: ESLint, strict TypeScript, Vitest và Playwright.
 - T039: camera và capture local; T031/T028 chỉ triển khai phần test/copy phục vụ camera.
-- API client/types, kết quả tích hợp và Admin thuộc các phần sau; T042 mới chuẩn bị phần overlay, chưa hoàn tất.
+- T040 typed API client; T041 quản lý vòng đời camera/API; T042 accepted result,
+  phân biệt fixture/pilot/full và cảnh báo `demoReady`; T043 ghép lên trang chính.
+  T051–T053 và US6 T100–T104 là các phần tiếp theo.
 - Nền sáng `#f4f5f6`, chữ chính `#173f35`, chữ phụ `#52666b`;
   font hệ thống hỗ trợ tiếng Việt; nội dung căn trái, chiều dài dòng tối đa 65ch.
 - Giữ zoom trình duyệt, safe area và viewport nhỏ; hover chỉ cho thiết bị hỗ trợ,
   phản hồi nhấn nhẹ và tắt chuyển động khi bật reduced motion.
-- Browser smoke dùng Chromium với viewport mô phỏng; chưa kiểm tra điện thoại thật.
+- Browser smoke dùng Edge Chromium và fake camera cùng API mock; chưa kiểm tra điện thoại
+  thật, backend đang chạy hoặc model nhận diện thực tế.
 
 Không đánh dấu hoàn thành checkpoint trước khi có push theo integration window
 và review độc lập. Xem `members/p5-hien/README.md` và smoke evidence của CP1.
