@@ -21,6 +21,10 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 - CP2 T019–T021 (API domain models) đã push tại `9b888a182592a2739b665a287ec37a8a4aa9f8f3`
   (evidence link `5dc97a6`); P1 đã tái lập gate (44 passed, Ruff, mypy); chờ P3 review metadata,
   P5 review response/error shape.
+- CP2 T014–T016 (shared WebM feature pipeline) của P3 đã push tại `865547e`; chờ P2/P1 review và
+  representative-clip review cho schema `visign-xy-32-v0.3-draft`.
+- Lead đã bàn giao quy ước: [fe-be-api-convention.md](fe-be-api-convention.md) cho T099 và
+  [data-convention.md](data-convention.md) cho T098. Owner xác nhận các quyết định bổ sung rồi đóng băng.
 
 ## Status rules
 
@@ -33,11 +37,11 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Điều phối P3/P4/P5 review CP1 và CP2 T019–T021 |
-| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; CP2 T019–T021 chờ review; tiếp T022–T023 local; T099 blocked |
-| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003 dependency/toolchain; sau đó schema v0.3 |
-| P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW/BLOCKED | Review T008; T098 vẫn chờ data convention |
-| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | REVIEW | Review T004/T006; T099 API convention vẫn blocked |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Thu xác nhận quy ước T098/T099; review T014–T016; T091 quality CI |
+| P2 | Tín | `services/inference-api/`, `infra/gcp/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; CP2 T019–T021 chờ review; tiếp T022–T023 local; T099 mở — xác nhận quy ước API |
+| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003; T014–T016 chờ review; xác nhận data-convention D1–D4 |
+| P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW | Review T008; T098 mở — xác nhận data-convention D1–D4 rồi đóng băng |
+| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | REVIEW | Review T004/T006; xác nhận API convention D1–D4 với Tín |
 
 ## External reference only
 

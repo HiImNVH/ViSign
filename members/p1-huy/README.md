@@ -22,6 +22,7 @@
 | `T001-T007 / CP1` | `P1_VERIFIED` | Toolchain evidence | Chờ P3 review T003 và P5 review T004/T006 | P3/Cường, P5/Hiển |
 | `T008 / CP1` | `PUSHED` | `data/README.md` | Chờ P4/Quang review | P4/Quang |
 | `T019-T021 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T019-T021-p2-tin-smoke.md` | P1_VERIFIED; chờ P3/P5 | P2/Tín |
+| `T098-T099 handoff / CP2` | `PUSHED` | `docs/team/fe-be-api-convention.md`, `docs/team/data-convention.md` | Chờ owner xác nhận D1–D4 | P2/Tín, P5/Hiển, P4/Quang, P3/Cường |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
 

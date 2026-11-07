@@ -20,7 +20,7 @@
 | `T001-T007 / CP1` | `P1_VERIFIED` | monorepo dirs, root/API/AI pyproject + `uv.lock`, web Vite/lint/test config, `.gitignore` | Huy đã tái lập gate; chờ Cường (AI) và Hiển (web) review | P3/Cường, P5/Hiển |
 | `T086 / CP1 review` | `TODO` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | Verify member frame của Huy từ `origin/main` | P2/Tín là reviewer |
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; nên chạy `ruff format` | P3/Cường, P5/Hiển |
-| `T099 / CP2` | `BLOCKED` | API convention, OpenAPI và client types | Chờ lead gửi quy ước FE–BE API | P5/Hiển và P1/Huy |
+| `T099 / CP2` | `TODO` | API convention, OpenAPI và client types | Lead đã gửi `docs/team/fe-be-api-convention.md`; xác nhận D1–D4 cùng Hiển rồi đóng băng | P5/Hiển và P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị

@@ -18,7 +18,7 @@
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
 | `T004/T006 / CP1` | `REVIEW` | web Vite/lint/test config do Tín tạo | Review web toolchain | P1/Huy |
-| `T040 / CP2` | `PLANNED` | typed API client và model-info | Chờ FE–BE API convention T099 | P2/Tín |
+| `T040 / CP2` | `PLANNED` | typed API client và model-info | Quy ước lead tại `docs/team/fe-be-api-convention.md`; chờ Tín đóng băng T099 | P2/Tín |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
 
 ## Commit đang chuẩn bị
