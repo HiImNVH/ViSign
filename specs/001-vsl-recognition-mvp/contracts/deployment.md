@@ -18,6 +18,10 @@
 - Model artifact: private versioned S3 object có SHA-256; deployment tải đúng version về volume chỉ đọc.
 - Access: EC2 instance role chỉ đọc đúng model prefix và ghi log cần thiết; GitHub Actions assume deploy
   role bằng OIDC rồi gọi Systems Manager, không dùng access key hoặc SSH.
+- Current access exception (2026-11-07): AWS Free Plan SCP chặn `iam:CreateOpenIDConnectProvider` và
+  bootstrap stack đã rollback sạch. Tín là project team member qua AWS Settings và MAY chạy integration
+  thủ công bằng phiên Console/CloudShell của chính mình; MUST NOT tạo static access key. Ngoại lệ này
+  không thỏa automated CI/CD acceptance và hết hiệu lực khi OIDC được mở khóa có phê duyệt.
 - Secrets/config: SSM Parameter Store `SecureString`; không bake vào image, source, user data hoặc log.
 - Network: EC2 origin chỉ nhận HTTP từ CloudFront origin-facing managed prefix list; không mở SSH.
 
@@ -43,3 +47,6 @@ fixture integration. `deploy-aws.yml` chỉ nhận commit/tag đã qua quality g
 ECR, assume deploy role bằng OIDC và dùng SSM cập nhật host. Evidence phải lưu commit SHA, image digest,
 S3 version ID, CloudFront URL và SSM command result. Production deploy không tự bật `demoReady`;
 readiness vẫn do artifact metadata/release gate.
+
+Cho tới khi OIDC được mở khóa, không tạo `deploy-aws.yml` dùng access-key secrets. Manual deployment
+phải ghi cùng bộ evidence và giữ T091/T096 mở.

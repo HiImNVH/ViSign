@@ -18,7 +18,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | CP1 | `VERIFIED` | T001–T008, T086 `[X]`; closure trong `docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md` |
 | CP2 | `OPEN` | Đóng khi đủ bảng "CP2 còn mở" bên dưới |
 | CP3 | `NOT OPEN` | T039 `[X]`; endpoint, registry và CLI train đã có trên `main`; không đóng trước CP2 |
-| CP7 | `PARTIAL` | T091 quality CI chạy trên mọi push; AWS (`infra/aws/`) là kế hoạch, chưa triển khai |
+| CP7 | `PARTIAL / BLOCKED` | T091 quality CI chạy trên mọi push; OIDC bootstrap rollback do AWS Free Plan SCP; Tín đã có project access, chưa có workload production |
 
 ### CP2 còn mở
 
@@ -58,7 +58,11 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
 - Full gate chia theo video gốc (`video-held-out`, FR-015), không tuyên bố unseen-signer; nguồn/giấy phép
   khai một lần ở mức bộ dữ liệu (video giáo dục công khai).
 - Hạ tầng: hoàn thiện bản local trước. Kế hoạch AWS: `ap-southeast-2`, một EC2 + Elastic IP, ECR, S3,
-  CloudFront, GitHub OIDC + SSM; chưa tạo tài nguyên.
+  CloudFront, GitHub OIDC + SSM. Lần bootstrap OIDC ngày 2026-11-07 bị AWS-managed SCP explicit-deny
+  `iam:CreateOpenIDConnectProvider`; stack `ROLLBACK_COMPLETE`, provider `DELETE_COMPLETE`, không có
+  deploy role/credential/workload. Tín đã là team member project `Rubber Ducking`; chỉ dùng phiên
+  Console/CloudShell cá nhân cho integration thủ công, không static access key. T091/T096 vẫn mở.
+  Evidence: `docs/evidence/checkpoints/CP7/T096-aws-access-bootstrap.md`.
 - `HealthResponse.modelVersion` optional + nullable theo OpenAPI.
 - **US6 mới (FR-034–FR-036, SC-016, T100–T104, P5)**: bản dịch trực tiếp nối các kết quả `accepted` và lịch sử
   bản dịch lưu **chỉ trên trình duyệt** ít nhất 24 giờ; không lưu video/landmark, không lưu server, API không đổi.

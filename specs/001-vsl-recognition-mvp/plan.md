@@ -101,6 +101,13 @@ private S3 và được tải về volume chỉ đọc bằng EC2 instance role.
 role, không tạo access key dài hạn. Secret/config nhạy cảm nằm trong SSM Parameter Store `SecureString`;
 production tắt admin API. CloudWatch thu log/metric an toàn và AWS Budgets cảnh báo mức sử dụng credit.
 
+**AWS access checkpoint 2026-11-07**: bootstrap OIDC tại Sydney thất bại do AWS-managed SCP explicit
+deny `iam:CreateOpenIDConnectProvider`; stack đã `ROLLBACK_COMPLETE` và provider `DELETE_COMPLETE`.
+Tín đã nhận quyền team member của project `Rubber Ducking` qua AWS Settings. Trong khi Free Plan còn
+chặn OIDC, Tín MAY dùng phiên Console/CloudShell của chính mình cho integration thủ công có evidence;
+MUST NOT tạo/chia sẻ access key dài hạn. Đường thủ công không đóng T091/T096. Retry OIDC hoặc activate
+Advanced Features/Paid Plan cần quyết định riêng của owner vì thay đổi quyền, spend limit và billing risk.
+
 **AWS cost boundary**: Tài khoản giữ Free Plan, không nâng cấp Paid Plan nếu chưa có phê duyệt riêng.
 Hạ tầng dùng một EC2 instance, một Elastic IP, `max` một inference worker và chỉ bật trong cửa sổ
 tích hợp/demo; không thêm ALB, NAT Gateway, RDS, ECS/EKS hoặc multi-region. T094 phải tính cả phí
