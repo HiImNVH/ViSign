@@ -6,7 +6,7 @@
 
 | Field | Type | Required | Validation |
 |------|------|----------|------------|
-| `meaningId` | string | yes | Upper snake case, duy nhất, ví dụ `XIN_CHAO` |
+| `meaningId` | string | yes | Upper snake case, duy nhất, ví dụ `CAM_ON` |
 | `displayText` | string | yes | Tiếng Việt, không rỗng |
 | `category` | enum | yes | `basic`, `medical`, `administrative` |
 | `priority` | enum | yes | `P0` cho 10 ý nghĩa MVP; `P1` cho danh sách mở rộng |

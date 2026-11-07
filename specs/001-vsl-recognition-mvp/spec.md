@@ -33,8 +33,10 @@
 - Q: Nguồn và quyền sử dụng ghi ở mức nào? → A: Ghi một lần ở mức bộ dữ liệu: video giáo dục trực tuyến
   công khai, lead duyệt dùng cho học tập/nghiên cứu; dataset card ghi tên website nguồn. Không bắt buộc
   ghi nguồn, giấy phép và người ký cho từng video.
-- Q: Số ý nghĩa của MVP có thay đổi theo raw material mới không? → A: Không; giữ đúng 10 ý nghĩa P0.
-  Các ý nghĩa khác trong raw material (Giúp đỡ, Xin lỗi, Tạm biệt, Tôi) thuộc giai đoạn mở rộng.
+- Q: Danh sách 10 ý nghĩa P0 sau khi Quang lọc lại raw material? → A: Vẫn đúng 10 ý nghĩa, thay thế danh
+  sách 2026-10-22: Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không.
+  Thuốc, Xin chào, Chờ (đợi), Sao chép chuyển sang giai đoạn mở rộng. File raw đặt tên
+  `<VÙNG>_<NGHĨA>_<số thứ tự video>.mp4`.
 
 ### Session 2026-10-24
 
@@ -179,8 +181,8 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
 - **FR-001**: Hệ thống MUST xử lý một ký hiệu riêng lẻ trong mỗi lần nhận diện; hội thoại liên tục nằm
   ngoài phạm vi MVP này.
 - **FR-002**: Phạm vi phát hành đầu tiên MUST hỗ trợ đúng 10 ý nghĩa P0 đã đóng băng trong
-  `data/manifests/p0-meanings.csv`: Giấy tờ (giấy), Đau bụng, Thuốc, Sốt, Nhận, Bạn (Ngôi thứ 2),
-  Xin chào, Cảm ơn, Chờ (đợi) và Sao chép. Hai mươi ý nghĩa còn lại thuộc giai đoạn mở rộng sau khi
+  `data/manifests/p0-meanings.csv`: Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ,
+  Xin lỗi, Đau đầu và Không (chốt lại 2026-11-07). Hai mươi ý nghĩa còn lại thuộc giai đoạn mở rộng sau khi
   pipeline 10 từ đạt cổng chất lượng.
 - **FR-003**: Sản phẩm MVP MUST nhận đầu vào dự đoán trực tiếp từ camera. Video có sẵn MUST chỉ đi
   qua pipeline dữ liệu để huấn luyện và đánh giá; giao diện người dùng tải video lên để dự đoán nằm
@@ -263,7 +265,7 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
 
 ### Key Entities *(include if feature involves data)*
 
-- **Ý nghĩa tiếng Việt**: Nội dung hiển thị cho người dùng, ví dụ “Xin chào” hoặc “Đau bụng”; một ý
+- **Ý nghĩa tiếng Việt**: Nội dung hiển thị cho người dùng, ví dụ “Cảm ơn” hoặc “Đau bụng”; một ý
   nghĩa có thể liên kết với nhiều lớp ký hiệu.
 - **Lớp ký hiệu**: Một động tác ký hiệu khác biệt dùng để nhận diện, gồm mã lớp, ý nghĩa đích, vùng
   miền và trạng thái xác minh.
@@ -320,7 +322,7 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   cùng một nội dung tiếng Việt.
 - Một mẫu từ nguồn trực tuyến có thể được dùng ở giai đoạn thử nghiệm nếu quyền sử dụng phù hợp, nhưng
   phải mang trạng thái chưa xác minh cho đến khi được người có chuyên môn đối chiếu.
-- Danh sách 10 ý nghĩa P0 đã được Quang chốt ngày 2026-10-22; việc chốt danh mục không đồng nghĩa các
+- Danh sách 10 ý nghĩa P0 được Quang chốt lại ngày 2026-11-07 (thay bản 2026-10-22); việc chốt danh mục không đồng nghĩa các
   video mẫu đã được duyệt. Từng mẫu vẫn phải qua lọc nhãn, kiểm tra quyền sử dụng và phân tích độ phủ.
 - Mức 20–30 mẫu mỗi lớp chỉ là planning floor để chạy pilot, không phải bằng chứng dữ liệu đã đủ;
   quyết định full training dựa trên coverage theo meaning × video gốc và split audit. Raw material hiện

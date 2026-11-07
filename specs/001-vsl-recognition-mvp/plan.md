@@ -75,9 +75,9 @@ production; không commit secret/raw video/model binary
 Mức 20–30 mẫu được duyệt mỗi lớp là planning floor cho pilot, không phải quality gate; full track chỉ
 mở khi coverage theo meaning × video gốc và video-held-out split (FR-015) đủ để đánh giá trung thực.
 
-**Frozen P0 Vocabulary**: `GIAY_TO` — Giấy tờ (giấy); `DAU_BUNG` — Đau bụng; `THUOC` — Thuốc;
-`SOT` — Sốt; `NHAN` — Nhận; `BAN` — Bạn (Ngôi thứ 2); `XIN_CHAO` — Xin chào; `CAM_ON` — Cảm ơn;
-`CHO` — Chờ (đợi); `SAO_CHEP` — Sao chép. Registry chuẩn nằm tại
+**Frozen P0 Vocabulary** (chốt lại 2026-11-07): `GIAY_TO` — Giấy tờ (giấy); `DAU_BUNG` — Đau bụng;
+`SOT` — Sốt; `NHAN` — Nhận; `BAN` — Bạn; `CAM_ON` — Cảm ơn; `GIUP_DO` — Giúp đỡ; `XIN_LOI` — Xin lỗi;
+`DAU_DAU` — Đau đầu; `KHONG` — Không. Registry chuẩn nằm tại
 `data/manifests/p0-meanings.csv`; manifest video chỉ được tạo từ mẫu đã qua audit.
 
 **Team Ownership**: P1/Huy quản lý dự án, task, checkpoint và nghiệm thu; P2/Tín phụ trách backend,
@@ -113,7 +113,7 @@ schema/validator/OpenAPI/client types chưa được cập nhật theo bản quy
 | `M1` | Cải thiện phải đánh giá trước full/demo; chỉ triển khai khi trigger xảy ra | OOD strategy, checksum, latency | Không tự động là task đã cam kết |
 | `M2` | Nâng cấp sau MVP hoặc chỉ làm khi benchmark/scope mới yêu cầu | ONNX, DVC, vocabulary mở rộng | Không thuộc critical path MVP |
 | `US Priority P1/P2` | Độ ưu tiên User Story trong `spec.md` | US1 là P1 | Không phải Person ID |
-| `Vocabulary P0` | 10 ý nghĩa thuộc phạm vi từ vựng MVP | `XIN_CHAO` | Không phải M0 hoặc Person P0 |
+| `Vocabulary P0` | 10 ý nghĩa thuộc phạm vi từ vựng MVP | `CAM_ON` | Không phải M0 hoặc Person P0 |
 | `[P]` | Task có thể làm song song | `T014 [P]` | Không phải priority/person |
 
 `tasks.md` là backlog duy nhất. Mã `VS-*` trong phản hồi senior chỉ là proposal reference; một đề xuất

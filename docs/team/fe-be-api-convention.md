@@ -30,7 +30,7 @@ endpoint, field hay status mới ngoài các nguồn trên; mục 8 là các quy
 | JSON field | camelCase, giống nhau ở Python, TS và OpenAPI | `processingTimeMs`, `demoReady` |
 | Enum giá trị trạng thái | lowercase | `ok`, `degraded`, `fixture`, `pilot`, `full` |
 | Error code | UPPER_SNAKE_CASE, bất biến | `CLIP_DECODE_FAILED` |
-| ID nghiệp vụ | `meaningId` và `classLabel` theo [data-convention.md](data-convention.md) | `XIN_CHAO`, `XIN_CHAO_HCM_1` |
+| ID nghiệp vụ | `meaningId` và `classLabel` theo [data-convention.md](data-convention.md) | `CAM_ON`, `CAM_ON_HN_1` |
 | Header | `X-Request-ID`, `Retry-After`, `Allow`, `Location` | — |
 | Đơn vị | Hậu tố `Ms` cho mili giây; tỉ lệ trong [0,1]; thời gian ISO 8601 UTC | `evaluatedAt: "2026-11-07T07:00:00Z"` |
 

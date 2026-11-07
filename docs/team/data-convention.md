@@ -13,8 +13,8 @@ và `ai/tests/dataset/test_manifest_validation.py`.
 
 | ID | Mẫu | Regex | Ví dụ |
 |---|---|---|---|
-| `meaningId` | Chữ hiển thị bỏ dấu, `Đ→D`, UPPER_SNAKE | `^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$` | `XIN_CHAO`, `CAM_ON` |
-| `classLabel` | `{meaningId}_{region}_{variant}`; variant là số nguyên ≥1, không đệm 0 | `^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*_(HCM\|HN\|HP\|OTHER\|UNKNOWN)_[1-9][0-9]*$` | `XIN_CHAO_HCM_1` |
+| `meaningId` | Chữ hiển thị bỏ dấu, `Đ→D`, UPPER_SNAKE | `^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$` | `CAM_ON`, `DAU_DAU` |
+| `classLabel` | `{meaningId}_{region}_{variant}`; variant là số nguyên ≥1, không đệm 0 | `^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*_(HCM\|HN\|HP\|OTHER\|UNKNOWN)_[1-9][0-9]*$` | `CAM_ON_HN_1` |
 | `sourceId` | Mã nguồn ngắn, lowercase kebab; bộ video giáo dục hiện tại dùng một mã chung | `^[a-z0-9]+(-[a-z0-9]+)*$` | `vsl-edu`, `self-rec` |
 | `sampleId` | `{sourceId}_{12 hex đầu SHA-256 của file raw}` | `^[a-z0-9]+(-[a-z0-9]+)*_[0-9a-f]{12}$` | `vsl-edu_3fa2c19b0d7e` |
 | `signerId` | Không bắt buộc. Khi xác định được: `S` + 3 chữ số, không suy ra từ tên | `^S[0-9]{3}$` | `S007` |
@@ -84,49 +84,46 @@ khai hiện tại khai nguồn/quyền một lần ở dataset card và để `l
 
 | # | Quyết định | Lý do |
 |---|---|---|
-| D1 | `classLabel` dạng `XIN_CHAO_HCM_1` | Giữ tương thích fixture legacy và `data-model.md` |
+| D1 | `classLabel` dạng `CAM_ON_HN_1` | Giữ tương thích fixture legacy và `data-model.md` |
 | D2 | `sampleId` lấy từ `sourceId` + hash file, không chứa nhãn | Ổn định khi relabel, phát hiện trùng, không lộ danh tính |
 | D3 | Không chuẩn hoá video trước extractor | Tránh training-serving skew; API nhận video camera gốc |
 | D4 | `signerId` không bắt buộc (dạng `S###` khi có); `datasetVersion` dạng `{manifest}-v{N}` | Raw material không có danh tính người ký; split theo video gốc (FR-015) |
 
-## 8. Ánh xạ tên file raw hiện có (bộ của Quang)
+## 8. Ánh xạ tên file raw của Quang (chốt 2026-11-07)
 
-Bộ `ViSign-videos.zip` (nhánh legacy `data`, 03/11) đặt tên theo mẫu
-`<số>. <ý nghĩa> (ghi chú)/<vùng>_<ý nghĩa có dấu>[_<số>].mp4`. Tên gốc **giữ nguyên** trong
-`incoming/` (mục 2); manifest chuyển sang ID chuẩn theo bảng dưới.
+Raw material P0 có 10 thư mục `<số>. <ý nghĩa>`, file đặt tên **`<VÙNG>_<NGHĨA>_<số>.mp4`**, ví dụ
+`10. Không/HN_Không_3.mp4`. Tên gốc **giữ nguyên** trong `incoming/` (mục 2); manifest chuyển sang ID
+chuẩn như sau.
 
-| Phần trong tên Quang | Ánh xạ sang | Ví dụ |
+| Phần trong tên | Ánh xạ | Ví dụ |
 |---|---|---|
-| Vùng `HCM`, `HN` | `region` giữ nguyên | `HCM_Giấy_1.mp4` → `HCM` |
-| Vùng `O` | `region=OTHER` (khác/không rõ vùng) | `O_Thuốc_1.mp4` → `OTHER` |
-| Thư mục ý nghĩa | `meaningId` theo registry P0 | `9. Chờ (đợi)/HN_Đợi_2.mp4` → `CHO` |
-| Hậu tố `_1`, `_2`, `_3` | **Số thứ tự video**, không phải biến thể động tác | `O_Đau bụng_1..3` → 3 sample cùng `DAU_BUNG_OTHER_1` |
-| Không có hậu tố | Một video | `O_Sao chép.mp4` → `SAO_CHEP_OTHER_1` |
-| Ghi chú chữ khác ý nghĩa gốc | Biến thể riêng (variant 2, 3…) của cùng meaning | `O_Nhận hàng`, `O_Tiếp nhận` → `NHAN_OTHER_2`, `NHAN_OTHER_3` |
+| `<VÙNG>` = `HCM`, `HN`, `HP` | `region` giữ nguyên | `HN_Không_3` → `HN` |
+| `<VÙNG>` = `O` | `region=OTHER` (khác/không rõ vùng) | `O_Sốt_1` → `OTHER` |
+| `<NGHĨA>` | `meaningId` theo bảng dưới | `Không` → `KHONG` |
+| `<số>` | Số thứ tự video (sample), **không** phải biến thể động tác | `HN_Không_1..3` → 3 sample cùng `KHONG_HN_1` |
+| Động tác khác nhau cùng nghĩa, cùng vùng | Variant 2, 3… do Quang đánh dấu trong inventory | `KHONG_HN_2` |
 
-`meaningId` của 10 ý nghĩa P0:
+`classLabel` = `{meaningId}_{region}_{variant}`; mặc định `variant=1`. Mỗi video là một
+`recordingSessionId` (= `sampleId` của video) nên các clip cắt từ cùng video không thể rơi vào hai tập
+split (FR-015).
 
-| Thư mục | `meaningId` |
-|---|---|
-| 1. Giấy tờ (giấy) | `GIAY_TO` |
-| 2. Đau bụng | `DAU_BUNG` |
-| 3. Thuốc | `THUOC` |
-| 4. Sốt | `SOT` |
-| 5. Nhận | `NHAN` |
-| 6. Bạn (Ngôi thứ 2) | `BAN` |
-| 7. Xin chào | `XIN_CHAO` |
-| 8. Cảm ơn | `CAM_ON` |
-| 9. Chờ (đợi) | `CHO` |
-| 10. Sao chép | `SAO_CHEP` |
+| Thư mục | Hiển thị | `meaningId` |
+|---|---|---|
+| 1. Giấy tờ (giấy) | Giấy tờ | `GIAY_TO` |
+| 2. Đau bụng | Đau bụng | `DAU_BUNG` |
+| 3. Sốt | Sốt | `SOT` |
+| 4. Nhận | Nhận | `NHAN` |
+| 5. Bạn | Bạn | `BAN` |
+| 6. Cảm ơn | Cảm ơn | `CAM_ON` |
+| 7. Giúp đỡ | Giúp đỡ | `GIUP_DO` |
+| 8. Xin lỗi | Xin lỗi | `XIN_LOI` |
+| 9. Đau đầu | Đau đầu | `DAU_DAU` |
+| 10. Không | Không | `KHONG` |
 
-Thư mục 11–15 (Giúp đỡ, Xin lỗi, Tạm biệt, Tôi) nằm ngoài P0, giữ ở `incoming/` cho giai đoạn mở rộng
-và không đưa vào `p0.csv`.
+Thuốc, Xin chào, Chờ (đợi), Sao chép, Tạm biệt, Tôi nằm ngoài P0; giữ ở `incoming/` cho giai đoạn mở rộng
+và không đưa vào `p0.csv`. `data/manifests/p0-meanings.csv` (T013) phải dùng đúng bảng trên.
 
 **Quang cần xác nhận**:
 
-1. Hậu tố số là thứ tự video cùng động tác. Nếu `_1`, `_2` là **động tác khác nhau** thì mỗi số là một
-   variant riêng.
-2. `O` nghĩa là khác/không rõ vùng (`OTHER`).
-3. `Các bạn (2 người)`, `Các bạn (nhiều người)`, `Nhận hàng`, `Tiếp nhận` là biến thể của `BAN`/`NHAN`
-   hay nên loại khỏi P0 vì nghĩa khác.
-4. File `15. Tôi/O_Tôi.mp4` chỉ ~20 KB, cần kiểm tra có hỏng không (ngoài P0).
+1. `O` nghĩa là khác/không rõ vùng (`OTHER`).
+2. Video nào trong cùng thư mục là **động tác khác** (không chỉ quay lại) thì ghi variant trong inventory.
