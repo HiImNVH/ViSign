@@ -6,7 +6,7 @@
 |---|---|
 | Checkpoint / task | CP7 / T088 (frontend UI/UX quality audit) |
 | Owner / reviewer | P5 Hiển / P1 Huy and P2 Tín (pending) |
-| Commit | PENDING — add full SHA and GitHub link after publish |
+| Commit | [`a40c68ab8182d95218aac0eb7df1bee07bcb6668`](https://github.com/HiImNVH/ViSign/commit/a40c68ab8182d95218aac0eb7df1bee07bcb6668) |
 | Date / timezone | 2026-11-08, Asia/Ho_Chi_Minh (UTC+07:00) |
 | Environment | Windows, Microsoft Edge `msedge` via Playwright, synthetic camera, API v1 mocks |
 | Status | `TEST_PASS / READY_FOR_REVIEW` after owner gate; reviewer PENDING |
@@ -37,7 +37,7 @@ accessible name (`CameraRecorder.tsx`) and mobile transcript/status overlap
 | Report and limitations | [`docs/frontend-quality-report.md`](../../../frontend-quality-report.md) |
 | Test source | `apps/web/tests/browser/frontend-quality.spec.ts` |
 | Screenshots | `docs/evidence/checkpoints/CP7/T088-screenshots/` (12 JPEGs) |
-| Commit diff | PENDING until commit/push |
+| Commit diff | [T088 implementation + screenshots](https://github.com/HiImNVH/ViSign/commit/a40c68ab8182d95218aac0eb7df1bee07bcb6668) |
 | GitHub Actions | NOT_RUN for this local candidate; P1 owns CI T091 |
 | Cloud / data / model | NOT_RUN; tests use synthetic media/API fixtures |
 
@@ -52,7 +52,7 @@ review. Revert T088 micro-commit if its visual/accessibility changes regress.
 
 - [x] Owner full gate passed after final source/test changes (165 unit passed, 4 skipped; 84 Edge passed, 12 skipped).
 - [x] Only frontend/test/report/synthetic images; no raw video, private dataset, binary model or credentials.
-- [ ] Full SHA and link recorded after push.
+- [x] Full SHA and link recorded after push in this evidence follow-up.
 - [ ] Independent reviewer repeated test.
 
 **Reviewer result:** PENDING. **Reviewer note:** Awaiting independent assessment.
