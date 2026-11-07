@@ -81,7 +81,7 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 
 1. Quang đã đóng băng danh mục 10 Meaning tại `data/manifests/p0-meanings.csv`.
 2. T013 chỉ quản lý vocabulary registry; không còn gộp sample manifest vào cùng một checkbox.
-3. T076 audit bản phát triển/pilot (hiện được báo cáo 42 clip, pilot Sốt-Chờ 6 clip).
+3. T076 audit bản phát triển/pilot (pilot Sốt–Cảm ơn; số clip theo audit thực tế, raw material P0 hiện 27 clip).
 4. T077 hoàn thiện sample manifest full 10 nghĩa, coverage và video-held-out split.
 5. Huy xác nhận checkpoint T077 trước khi Cường chạy full training; T076 chỉ mở pilot fallback.
 
@@ -267,8 +267,8 @@ kiểm tra stable Vietnamese copy, không auto-resubmit và không lộ raw serv
 
 ## Phase 8: User Story 3 Data Completion Follow-up
 
-**Goal**: Tách bằng chứng pilot khỏi manifest full để không dùng 42 clip phát triển hoặc 6 clip
-Sốt-Chờ như bằng chứng phát hành 10 nghĩa.
+**Goal**: Tách bằng chứng pilot khỏi manifest full để không dùng clip phát triển hoặc clip pilot
+Sốt–Cảm ơn như bằng chứng phát hành 10 nghĩa.
 
 **Independent Test**: Chạy manifest validator và split audit; pilot report chỉ công bố phạm vi pilot,
 còn full manifest có đúng 10 nghĩa, nguồn/quyền mức bộ dữ liệu, coverage theo video gốc và không leakage.
@@ -293,7 +293,7 @@ test bảo mật/cleanup/concurrency và không ảnh hưởng public `/api/v1`.
 - [ ] T080 [US4] Đồng bộ response models và endpoint behavior với `specs/001-vsl-recognition-mvp/contracts/admin-tools.md` tại `services/inference-api/src/visign_api/api/admin.py` và `services/inference-api/src/visign_api/api/pilot.py`
 - [ ] T081 [P] [US4] Viết frontend tests cho token form, inspect, preflight, train, active-job conflict, history và W&B online/offline tại `apps/web/tests/admin/admin-training.test.tsx`
 - [ ] T082 [US4] Tích hợp route `/admin/train-model`, typed admin client và stable Vietnamese states tại `apps/web/src/features/admin/AdminTraining.tsx`, `apps/web/src/features/admin/PilotPanel.tsx` và `apps/web/src/services/adminApi.ts`
-- [ ] T083 [US4] Chạy pilot Sốt-Chờ từ bản bàn giao đã audit và ghi dataset/run ID, sample counts, metrics, W&B evidence cùng `demoReady=false` tại `docs/pilot-report.md`
+- [ ] T083 [US4] Chạy pilot Sốt–Cảm ơn (`SOT`, `CAM_ON`) từ bản bàn giao đã audit và ghi dataset/run ID, sample counts, metrics, W&B evidence cùng `demoReady=false` tại `docs/pilot-report.md`
 - [ ] T084 [US4] Review ranh giới user/admin, secret handling, retention và release-claim checklist; ghi quyết định nghiệm thu tại `docs/admin-acceptance.md`
 
 **Checkpoint**: Công cụ admin có thể tích hợp ở checkpoint riêng; không chặn user MVP và không được dùng để bỏ qua

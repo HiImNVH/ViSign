@@ -10,10 +10,10 @@ ViSign nhận diện một ký hiệu VSL trong một clip camera và trả về
 | Artifact | Phạm vi | Trạng thái |
 |---|---|---|
 | `fixture` | Fixture mẫu trong repo công bố **Cảm ơn, Sốt, Giấy tờ**. Phạm vi lấy từ metadata fixture được cấu hình. | Dùng để kiểm tích hợp. `demoReady=false`. |
-| `pilot` | Tối đa 3 nghĩa. Mục tiêu T083 là **Sốt, Chờ** trên bản pilot đã audit. | Đã thử nạp và dự đoán bằng artifact tổng hợp. Chờ run T083 thật. `demoReady=false`. |
+| `pilot` | Tối đa 3 nghĩa. Mục tiêu T083 là **Sốt, Cảm ơn** trên bản pilot đã audit. | Đã thử nạp và dự đoán bằng artifact tổng hợp. Chờ run T083 thật. `demoReady=false`. |
 | `full` | 10 nghĩa P0 theo danh mục cập nhật ngày 07/11/2026. | Đã thử luồng với artifact tổng hợp 10 nghĩa. Chờ manifest full và đánh giá trước khi Huy duyệt phát hành. |
 
-**P0 hiện tại** · Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không. Chờ thuộc pilot và nằm ngoài danh mục full P0 hiện tại. [Đặc tả MVP](../specs/001-vsl-recognition-mvp/spec.md#clarifications) · [Metadata fixture mẫu](../services/inference-api/tests/fixtures/model-artifacts/fixture/model_info.json)
+**P0 hiện tại** · Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không. [Đặc tả MVP](../specs/001-vsl-recognition-mvp/spec.md#clarifications) · [Metadata fixture mẫu](../services/inference-api/tests/fixtures/model-artifacts/fixture/model_info.json)
 
 ## Kiến trúc và quyết định dự đoán
 

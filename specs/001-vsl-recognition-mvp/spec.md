@@ -37,6 +37,9 @@
   sách 2026-10-22: Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không.
   Thuốc, Xin chào, Chờ (đợi), Sao chép chuyển sang giai đoạn mở rộng. File raw đặt tên
   `<VÙNG>_<NGHĨA>_<số thứ tự video>.mp4`.
+- Q: Pilot dùng cặp nghĩa nào khi "Chờ" đã ra khỏi P0? → A: **Sốt + Cảm ơn** (`SOT`, `CAM_ON`): khác nhóm
+  y tế/giao tiếp nên dễ tách động tác, có trong fixture và trong bộ PTIT CC-BY-4.0 nếu cần bổ sung mẫu.
+  Các nghĩa P0 có số nguồn ngang nhau nên chọn theo độ tách biệt.
 
 - Q: Người dùng cần xem bản dịch trực tiếp và xem lại bản dịch đã có trong ít nhất bao lâu? → A: Lead
   2026-11-07 đưa vào MVP: (1) **bản dịch trực tiếp** ghép các kết quả `accepted` liên tiếp thành một dòng
@@ -127,7 +130,7 @@ pilot GRU và xem lại lịch sử hoặc liên kết W&B mà không đưa côn
 nhưng không được trở thành đường tắt bỏ qua audit dữ liệu hoặc quality gate của bản full.
 
 **Independent Test**: Bật công cụ bằng mã admin cục bộ, kiểm tra một clip, chạy preflight rồi train
-pilot trên bộ Sốt-Chờ; xác nhận chỉ một job hoạt động, có trạng thái/báo cáo, và kết quả vẫn
+pilot trên bộ Sốt–Cảm ơn; xác nhận chỉ một job hoạt động, có trạng thái/báo cáo, và kết quả vẫn
 `demoReady=false`.
 
 **Acceptance Scenarios**:
