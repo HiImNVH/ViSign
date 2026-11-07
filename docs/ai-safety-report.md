@@ -47,7 +47,7 @@ uv run --locked --project ai pytest ai/tests/evaluation/test_safety_robustness.p
 
 ## Còn thiếu để nghiệm thu
 
-T089 chờ artifact VSL thật, probe đã audit và bằng chứng qua UI cho các nhóm
+T089 đã có smoke với artifact VSL thật. Còn chờ probe đã audit và bằng chứng qua UI cho các nhóm
 điều kiện. Cần báo cáo false accept theo loại OOD, số clip và người ký theo
 nhóm, tỷ lệ đúng theo nghĩa, lỗi kỹ thuật và độ ổn định qua lặp. Các test scorer
 dùng dữ liệu mô phỏng để kiểm công thức và quy tắc xử lý lỗi.
@@ -62,3 +62,17 @@ P3 chạy trên `2182f85`, API FastAPI cục bộ bằng TestClient, artifact `t
 - 8/8 cặp khớp HTTP status, mã lỗi hoặc nhãn, nội dung, `accepted`, confidence và model version. Sáu lượt HTTP 200 đo 1,715–3,034 s khi tắt và 1,811–2,370 s khi bật. Đây là phép chạy tuần tự trên máy local, chưa phải đối chứng p95 production.
 
 T089 còn mở để đánh giá OOD có người ký, góc máy, ánh sáng và độ ổn định theo người ký trên bộ probe đã audit. [Kết quả đánh giá pilot](pilot-report.md)
+
+## Probe bổ sung trên pilot thật
+
+P3 chạy trên `c73c8b3` với `t083-pilot-v2-approved` qua FastAPI TestClient, detector thật và prewarm bật. Chọn 5 clip ngoài phạm vi theo nhãn inventory T076 và trạng thái nguồn `exact-byte-match` (1 Sốt, 3 Cảm ơn, 1 Xin lỗi). SHA-256 của cả 5 clip khớp inventory. Nhãn ngoài phạm vi dùng theo inventory, chưa qua xác nhận chuyên môn riêng cho bộ probe này.
+
+Chuyển MP4 sang WebM VP8 ở tốc độ frame trung bình của nguồn. Chạy thêm 4 clip test T083, mỗi clip có bản chuyển mã nguyên sáng và bản nhân giá trị RGB với 0,45 trước mã hóa. 13/13 request trả HTTP 200, gồm cả các lượt model từ chối theo ngưỡng.
+
+| Nhóm | Kết quả |
+|---|---|
+| Ký hiệu ngoài phạm vi | 1/5 nhận nhầm. Một clip Cảm ơn được nhận thành Giấy tờ ở confidence 0,5207 với ngưỡng 0,5. |
+| Clip test trong phạm vi, nguyên sáng sau chuyển mã | 2/4 đúng, 2/4 từ chối. |
+| Cùng 4 clip, giảm sáng tổng hợp | 3/4 đúng, 1/4 từ chối. Một clip Giấy tờ đổi từ từ chối sang nhận đúng. |
+
+Đây là phép thử thăm dò. Mẫu quá nhỏ để suy ra tác động của ánh sáng hoặc tỷ lệ nhận nhầm ngoài thực tế. Các kết quả WebM qua API là phép đo riêng với đánh giá T083 trên NPZ. T089 vẫn cần mẫu có người nhưng không ký, góc máy, nhóm người ký và chạy lặp qua UI. Scorer T089: 4/4 test đạt.
