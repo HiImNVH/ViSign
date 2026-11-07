@@ -38,7 +38,8 @@
 | `T045, T050 / CP4` | `DONE` | `services/inference-api/tests/contract/test_predictions_contract.py`, `inference/worker_thread.py` | `P1_VERIFIED`, `[X]` (Huy `181408e`) | P1/Huy, P5/Hiển |
 | `T072, T073 / CP4` | `DONE` | `services/inference-api/src/visign_api/{api/error_handlers.py,domain/errors.py}`, `contracts/openapi.yaml` | `P1_VERIFIED`, `[X]` (Huy `0242745`); câu chữ 404/405 trong `vi.ts` chuyển P5 | P1/Huy, P5/Hiển |
 | `T066 / CP4` | `DONE` | `tests/integration/test_prediction_privacy.py`, `inference/temporary_clip.py` | `P1_VERIFIED`, `[X]` (Huy `0242745`) | P1/Huy, P3/Cường |
-| `T064 / CP4` | `REVIEW` | `tests/integration/test_prediction_pipeline.py`, `t036_artifact_builder.py` | Đã push `5cec97b`; phần cần clip đại diện chạy local qua `VISIGN_CP2_REFERENCE_WEBM` | P1/Huy, P3/Cường |
+| `T064 / CP4` | `DONE` | `tests/integration/test_prediction_pipeline.py`, `t036_artifact_builder.py` | `P1_VERIFIED`, `[X]` (Huy `c875ae5`); phần cần clip đại diện chạy local qua `VISIGN_CP2_REFERENCE_WEBM` | P1/Huy, P3/Cường |
+| `T092 / CP4` | `REVIEW` | `tests/security/`, `scripts/security_audit.py`, `api/security_headers.py`, `docs/security-report.md` | Đã push `2561c7d`; chờ P1 review; rate limit 429 chờ lead chọn WAF ở biên hay limiter trong API | P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
@@ -46,15 +47,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T064` (CP4) |
-| Proposed commit | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` |
-| Exact staged paths | Xem evidence `CP4/T064-p2-tin-smoke.md` |
-| Pre-commit sync | `PASS` — `0 0` trên `72733aa` (sau khi pull review P1 `0242745` và T040 của P5) |
-| Gate commands | 4 test T064 (2 chạy trên CI, 2 cần clip đại diện), 4/4 mutation; 392 passed + 3 skipped (extra `serving`) |
-| Smoke evidence | `docs/evidence/checkpoints/CP4/T064-p2-tin-smoke.md` |
-| Local commit | `5cec97b` |
-| Pre-push sync | `PASS` — `0 1` trên `72733aa` |
-| Push status | `PUSHED` `72733aa..5cec97b`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) |
+| Task/checkpoint | `T092` (CP4) |
+| Proposed commit | `CP4 T092(security): add security audit, headers and docs lockdown` |
+| Exact staged paths | 11 path, xem evidence `CP4/T092-p2-tin-security-smoke.md` |
+| Pre-commit sync | `PASS` — `0 0` trên `231f8d2` (sau khi pull review P1 `c875ae5`, P3 T065/T089/T094/T083 và P5 T074–T075, T100–T104) |
+| Gate commands | `python scripts/security_audit.py` 5/5 PASS (417 passed + 3 skipped); như CI 355 + 44 passed; 25 test bảo mật, 14/14 mutation |
+| Smoke evidence | `docs/evidence/checkpoints/CP4/T092-p2-tin-security-smoke.md` |
+| Local commit | `2561c7d` |
+| Pre-push sync | `PASS` — `0 1` trên `231f8d2` |
+| Push status | `PUSHED` `231f8d2..2561c7d`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) |
 
 ## Commit ledger
 
@@ -99,7 +100,8 @@
 | `CP3/T037 real clips` | Parity và HTTP trên clip có người thật | `CP3 T037(api): record real-clip parity and HTTP smoke` | `0f3c5578767717d9c4a4e7c94999b1de9005eb00` | [commit](https://github.com/HiImNVH/ViSign/commit/0f3c5578767717d9c4a4e7c94999b1de9005eb00) | Parity 32/32; HTTP 32 × 200, 6 × 422; p95 4,73 s; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42385392156) | P3/Cường, P1/Huy | `PUSHED` |
 | `CP4/T072,T073` | 404/405/307 theo contract HTTP | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract` | `d72ab3259547022decdebb1b1382f8ea7f0cce33` | [commit](https://github.com/HiImNVH/ViSign/commit/d72ab3259547022decdebb1b1382f8ea7f0cce33) | 28 test, 6 mutation; web 122/122; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P5/Hiển | `VERIFIED` |
 | `CP4/T066` | Audit quyền riêng tư, dọn clip sót | `CP4 T066(security): audit prediction privacy and sweep stale clips` | `961f59d7ef1465ac3146a8c5d481ffe2da496183` | [commit](https://github.com/HiImNVH/ViSign/commit/961f59d7ef1465ac3146a8c5d481ffe2da496183) | 21 test, 6 mutation; live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P3/Cường | `VERIFIED` |
-| `CP4/T064` | Clip đại diện, nạp/đổi artifact, rollback | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` | `5cec97b5fd59b81fae86729f775f4c3cbedb01b7` | [commit](https://github.com/HiImNVH/ViSign/commit/5cec97b5fd59b81fae86729f775f4c3cbedb01b7) | 4 test, 4 mutation; clip thật 4/4; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) | P1/Huy, P3/Cường | `PUSHED` |
+| `CP4/T064` | Clip đại diện, nạp/đổi artifact, rollback | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` | `5cec97b5fd59b81fae86729f775f4c3cbedb01b7` | [commit](https://github.com/HiImNVH/ViSign/commit/5cec97b5fd59b81fae86729f775f4c3cbedb01b7) | 4 test, 4 mutation; clip thật 4/4; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) | P1/Huy, P3/Cường | `VERIFIED` |
+| `CP4/T092` | Audit bảo mật, security header, tắt docs, lệnh audit cho BGK | `CP4 T092(security): add security audit, headers and docs lockdown` | `2561c7d4c5bace5c7c7db00e632382b15d752344` | [commit](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344) | 25 test, 14 mutation; audit 5/5; live uvicorn; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) | P1/Huy | `PUSHED` |
 
 ## Handoff
 
@@ -107,8 +109,10 @@
   mọi `*.webm` nên golden clip T014/T064 cần ngoại lệ có review; vị trí E2E T032 (`tests/e2e/`) khác
   Playwright `testDir` (`apps/web/tests/`).
 - Required input: Cường review `ai/pyproject.toml`; Hiển review web toolchain; T099 vẫn chờ lead.
-- Next owner/action: Tín làm T092 (audit bảo mật, lệnh audit cho BGK); Huy review T064 và thêm `tests/integration`
-  vào job `api` của CI; Cường cho `extract` đóng detector ở nền (teardown ≈ 0,97 s/request); Huy chốt phạm vi T095.
+- Next owner/action: Huy review T092, chốt rate limit 429 (WAF ở biên hay limiter trong API với mã mới, FE xử lý
+  trước theo D3) và thêm `tests/integration`, `tests/security`, `ruff format --check` vào CI; Cường format
+  `ai/src/visign_ai/evaluation/metrics.py`; Tín review T065 `fd2656f` (detector tạo/đóng song song trên từng worker,
+  đóng vẫn nằm trước khi trả kết quả) rồi chuẩn bị Docker/Compose local cho T095; Huy chốt phạm vi T095.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
@@ -116,3 +120,4 @@
 | Date | From | To | Open work and evidence |
 |---|---|---|---|
 | 2026-11-07 | P1/Huy | P2/Tín | Nhận T001–T007, CP1 integration window active |
+| 2026-11-08 | P2/Tín | P1/Huy | T092 `2561c7d` chờ review; quyết định rate limit 429 và bổ sung CI theo mục 7–8 `docs/security-report.md` |

@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy` |
 | Candidate commit | `CP4 T092(security): add security audit, headers and docs lockdown` |
-| Commit | `PENDING` |
+| Commit | `2561c7d4c5bace5c7c7db00e632382b15d752344` — [2561c7d](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) |
 | Ngày/giờ | `2026-11-08T00:17+07:00` |
-| Status | `PASS` local; chờ CI |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 
