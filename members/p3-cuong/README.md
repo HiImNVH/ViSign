@@ -20,6 +20,7 @@
 | `T003 / CP1` | `VERIFIED` | `ai/pyproject.toml` do Tín tạo | Ruff, mypy và 8 import đạt. Pytest 15 passed, 5 skipped. [Review độc lập](../../docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md#independent-review--p3cường) | P3/Cường |
 | `T014-T016 / CP2` | `REVIEW` | decoder, extractor, transform, schema và tests | Đã push, gate cục bộ đạt. Chờ review clip đại diện và parity qua adapter T037 | P2/Tín và P1/Huy |
 | `T017 / CP2` | `VERIFIED` | CLI trích landmark từ danh sách sampleId/rawPath | D1–D4 đã xác nhận cùng Quang. CI xanh. Test tự động đã push ở 57311bf, 13 pass/1 skip local; Huy/Tín đã duyệt theo xác nhận của Cường; T010 và duyệt schema là gate dữ liệu chính thức | P2/Tín và P1/Huy |
+| `T029, T033 / CP3` | `LOCAL-DRAFT` | Test GRU và classifier packed sequence | 9 test GRU đạt. Chờ push và review. Bước kế là T034 | P1/Huy, P2/Tín |
 | `CP5` | `PLANNED` | training/evaluation/artifact reports | Chờ manifest Quang bàn giao | P4/Quang và P1/Huy |
 
 ## Commit gần nhất
@@ -42,6 +43,7 @@
 |---|---|---|---|---|---|---|---|
 | `CP2/T014-T016` | Shared WebM feature pipeline | `CP2 T014-T016(extractor): add shared WebM feature pipeline` | 865547ebe637da010ac7c953bcce38389ecca831 | [Commit 865547e](https://github.com/HiImNVH/ViSign/commit/865547ebe637da010ac7c953bcce38389ecca831) | PASS cục bộ · 20 test AI | P2/Tín, P1/Huy | PUSHED · P1/P2 đã review code, schema còn draft |
 | `CP2/T017` | Batch extraction CLI | `CP2 T017(extractor): add batch landmark extraction CLI` | 4a5aa5295702197d9509302d4bcf07a1dcd0d154 | [Commit 4a5aa52](https://github.com/HiImNVH/ViSign/commit/4a5aa5295702197d9509302d4bcf07a1dcd0d154) | [PASS cục bộ](../../docs/evidence/checkpoints/CP2/T017-p3-cuong-smoke.md) | P2/Tín, P1/Huy | PUSHED · [CI bản sửa bc642c1](https://github.com/HiImNVH/ViSign/actions/runs/42364019259) đạt · VERIFIED sau 57311bf theo xác nhận của Cường |
+| `CP3/T029,T033` | GRU classifier and contract tests | `CP3 T029,T033(train): add packed GRU classifier and tests` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T029-T033-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 
 ## Handoff
 
