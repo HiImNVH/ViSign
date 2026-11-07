@@ -22,6 +22,14 @@ from .sequence_transform import load_schema, schema_digest
 SAMPLE_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*_[0-9a-f]{12}")
 
 
+class BatchSampleError(ValueError):
+    """Lỗi riêng của thao tác đọc và xuất mẫu trong CLI offline."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 def read_samples(path: Path) -> list[tuple[str, str]]:
     with path.open(encoding="utf-8", newline="") as source:
         reader = csv.reader(source, strict=True)
@@ -52,10 +60,12 @@ def source_path(root: Path, raw_path: str) -> Path:
         or ".." in relative.parts
         or any(char in raw_path for char in ("\\", ":", "\x00"))
     ):
-        raise PipelineError("INVALID_RAW_PATH", "rawPath phải tương đối và dùng dấu /.")
+        raise BatchSampleError(
+            "INVALID_RAW_PATH", "rawPath phải tương đối và dùng dấu /."
+        )
     path = root.joinpath(*relative.parts).resolve()
     if not path.is_relative_to(root):
-        raise PipelineError("INVALID_RAW_PATH", "rawPath trỏ ra ngoài dataset.")
+        raise BatchSampleError("INVALID_RAW_PATH", "rawPath trỏ ra ngoài dataset.")
     return path
 
 
@@ -89,14 +99,16 @@ def extract_sample(
 ) -> dict[str, Any]:
     path = source_path(root, raw_path)
     if not path.is_file():
-        raise PipelineError("SOURCE_NOT_FOUND", "Không tìm thấy file nguồn.")
+        raise BatchSampleError("SOURCE_NOT_FOUND", "Không tìm thấy file nguồn.")
     with path.open("rb") as source:
         digest = hashlib.file_digest(source, "sha256").hexdigest()
     if digest[:12] != sample_id.rsplit("_", 1)[1]:
-        raise PipelineError("SAMPLE_HASH_MISMATCH", "Hash video không khớp sampleId.")
+        raise BatchSampleError(
+            "SAMPLE_HASH_MISMATCH", "Hash video không khớp sampleId."
+        )
     destination = output / f"{sample_id}.npz"
     if destination.exists():
-        raise PipelineError("OUTPUT_EXISTS", "Artifact đã tồn tại.")
+        raise BatchSampleError("OUTPUT_EXISTS", "Artifact đã tồn tại.")
     result = process_video(path, model_dir=model_dir, allow_mp4=True)
     if result["report"]["inputStatus"] != "HAS_USABLE_FRAMES":
         raise PipelineError(
@@ -125,7 +137,7 @@ def run_batch(
             accepted.append(
                 extract_sample(root, output, sample_id, raw_path, model_dir)
             )
-        except PipelineError as error:
+        except (BatchSampleError, PipelineError) as error:
             rejected.append({"sampleId": sample_id, "code": error.code})
         except FileExistsError:
             rejected.append({"sampleId": sample_id, "code": "OUTPUT_EXISTS"})

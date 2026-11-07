@@ -3,9 +3,9 @@
 | Mục | Kết quả |
 |---|---|
 | Baseline kiểm thử | `779d4b3794d67a58e013db084eedb39cb2dcf7cc` |
-| Trạng thái | `LOCAL-DRAFT` |
+| Trạng thái | PUSHED · bản sửa CI ở local |
 | Schema | `visign-xy-32-v0.3-draft` |
-| Commit và review độc lập | `PENDING` |
+| Commit | [4a5aa5295702197d9509302d4bcf07a1dcd0d154](https://github.com/HiImNVH/ViSign/commit/4a5aa5295702197d9509302d4bcf07a1dcd0d154) |
 
 ## Chạy thử tại gốc repo
 
@@ -34,3 +34,9 @@ CLI giữ mã pipeline gốc trong báo cáo. Ánh xạ HTTP thuộc đường A
 - Clip tham chiếu quay từ canvas. Review 5–10 clip camera vật lý, parity offline ↔ API, nhập manifest T010, trích dữ liệu chính thức và train đều chưa chạy trong T017 này.
 
 D1–D4 đã được Quang xác nhận. Danh sách thử nghiệm chỉ dùng ID/path, không định nghĩa schema manifest T010 và không gán nhãn, split hay quyền sử dụng.
+
+## Sửa gate API sau khi push
+
+Gate ánh xạ lỗi quét PipelineError trong thư mục landmark. Bốn mã thao tác file của CLI bị tính vào tập lỗi API. Bản sửa dùng BatchSampleError riêng ở CLI, giữ nguyên JSON/mã lỗi batch và catalog API.
+
+Tái lập trước sửa · 1 fail, 14 pass ở test ánh xạ. Sau sửa · API và contract 145 pass, 1 skip. AI 20 pass, smoke CLI đạt. Ruff và mypy của API/AI đều đạt. GitHub Actions cho bản sửa chờ commit và push.
