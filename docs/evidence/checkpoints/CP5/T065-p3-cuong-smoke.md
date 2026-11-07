@@ -128,3 +128,10 @@ Nhận xét:
 
 **Reviewer result**: `P2_VERIFIED` cho ứng viên khởi tạo detector song song (parity, dọn tài nguyên, độ trễ qua API).
 T065 giữ `[ ]` theo P1: chờ số đo production và SC-002.
+
+
+## Theo dõi review P2 — P3/Cường
+
+Trên baseline `02cb36a`, bổ sung bốn ca cho nhánh `parallel-by-group`: giữ thứ tự frame của cả ba nhóm và đóng detector trên đúng worker khi xử lý thành công hoặc khi từng nhóm hand, pose, face báo lỗi.
+
+Gate Windows gồm toàn bộ test AI và parity offline ↔ API trên một clip thật: **88 passed, 5 skipped** (bốn fixture MediaRecorder chưa cấp, một ca symlink thiếu quyền). Ruff check AI, format file test và mypy AI đạt. Phép chạy này chưa đo độ trễ qua HTTP của bộ detector tạo sẵn.

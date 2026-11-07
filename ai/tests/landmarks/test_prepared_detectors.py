@@ -1,5 +1,7 @@
 from contextlib import contextmanager
 from copy import deepcopy
+from threading import Barrier, get_ident
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -108,3 +110,65 @@ def test_detector_failure_still_consumes_the_set(tmp_path, fake_detectors, monke
         with pytest.raises(RuntimeError, match="one clip"):
             landmarks.extract([], [], schema, tmp_path, prepared_detectors=prepared)
     assert len(closed) == len(opened) == 3
+
+
+@pytest.mark.parametrize("failing_group", [None, "hand", "pose", "face"])
+def test_parallel_detectors_keep_frame_order_and_close_on_worker(
+    tmp_path, monkeypatch, failing_group
+):
+    schema = load_schema()
+    schema["detectorExecution"] = "parallel-by-group"
+    timestamps = [10, 20, 30]
+    frames = [np.zeros((2, 2, 3), dtype=np.uint8) for _ in timestamps]
+    started = Barrier(3, timeout=10)
+    opened = {}
+    closed = {}
+    seen = {}
+
+    @contextmanager
+    def create_detector(detector_type, *args):
+        group = detector_type.__name__.removesuffix("Landmarker").lower()
+        opened[group] = get_ident()
+        try:
+            yield group
+        finally:
+            closed[group] = get_ident()
+
+    def detect_sequence(group, received_frames, received_timestamps):
+        assert get_ident() == opened[group]
+        assert received_frames is frames
+        seen[group] = list(received_timestamps)
+        started.wait()
+        if group == failing_group:
+            raise RuntimeError(f"{group} failed")
+
+        results = []
+        for stamp in received_timestamps:
+            point = SimpleNamespace(x=stamp / 100, y=0.5, visibility=1.0, presence=1.0)
+            if group == "hand":
+                side = SimpleNamespace(category_name="Left", score=1.0)
+                results.append(
+                    SimpleNamespace(hand_landmarks=[[point] * 21], handedness=[[side]])
+                )
+            elif group == "pose":
+                results.append(SimpleNamespace(pose_landmarks=[[point] * 33]))
+            else:
+                points = [point] * (max(schema["faceIndices"]) + 1)
+                results.append(SimpleNamespace(face_landmarks=[points]))
+        return results
+
+    monkeypatch.setattr(landmarks, "_create_detector", create_detector)
+    monkeypatch.setattr(landmarks, "_detect_sequence", detect_sequence)
+    if failing_group is None:
+        coords, valid, *_ = landmarks.extract(frames, timestamps, schema, tmp_path)
+        for index in (0, 42, 48):
+            np.testing.assert_allclose(coords[:, index, 0], [0.1, 0.2, 0.3])
+            assert valid[:, index].all()
+    else:
+        with pytest.raises(RuntimeError, match=f"{failing_group} failed"):
+            landmarks.extract(frames, timestamps, schema, tmp_path)
+
+    assert seen == dict.fromkeys(("hand", "pose", "face"), timestamps)
+    assert closed == opened
+    assert len(set(opened.values())) == 3
+    assert get_ident() not in opened.values()
