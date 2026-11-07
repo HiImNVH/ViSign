@@ -22,7 +22,8 @@
 | `T017 / CP2` | `VERIFIED` | CLI trích landmark từ danh sách sampleId/rawPath | D1–D4 đã xác nhận cùng Quang. CI xanh. Test tự động đã push ở 57311bf, 13 pass/1 skip local; P2 đã duyệt test batch; P3 review bản sửa --help bb40476, đạt trên cp1252 và UTF-8; T010 và duyệt schema là gate dữ liệu chính thức | P2/Tín và P1/Huy |
 | `T029, T033 / CP3` | `LOCAL-DRAFT` | Test GRU và classifier packed sequence | 9 test GRU đạt. T034 đã push; T035 đã kiểm thử local | P1/Huy, P2/Tín |
 | `T034 / CP3` | `PUSHED` | NPZ loader và batching theo class map | 12 test T034 đạt; đã push 6912242, chờ review | P1/Huy, P2/Tín |
-| `T035 / CP3` | `LOCAL-DRAFT` | Cấu hình seed GRU cho pilot/full | Smoke cùng seed trên CPU đạt; bước kế là T036 | P1/Huy, P2/Tín |
+| `T035 / CP3` | `PUSHED` | Cấu hình seed GRU cho pilot/full | Đã push 7a8c277; smoke cùng seed trên CPU đạt | P1/Huy, P2/Tín |
+| `T036 / CP3` | `LOCAL-DRAFT` | CLI train và artifact model | Pilot/full tổng hợp đạt, API đọc metadata; chờ review và dữ liệu chính thức | P1/Huy, P2/Tín |
 | `CP5` | `PLANNED` | training/evaluation/artifact reports | Chờ manifest Quang bàn giao | P4/Quang và P1/Huy |
 
 ## Commit gần nhất
@@ -48,6 +49,7 @@
 | `CP3/T029,T033` | GRU classifier and contract tests | `CP3 T029,T033(train): add packed GRU classifier and tests` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T029-T033-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 | `CP3/T034` | NPZ sequence loader and batching | `CP3 T034(train): load landmark sequences in class map order` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T034-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 | `CP3/T035` | Seeded pilot/full GRU presets | `CP3 T035(train): add reproducible pilot and full GRU presets` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T035-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
+| `CP3/T036` | Reproducible GRU training CLI | `CP3 T036(train): add GRU training CLI and artifact export` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T036-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 
 ## Handoff
 

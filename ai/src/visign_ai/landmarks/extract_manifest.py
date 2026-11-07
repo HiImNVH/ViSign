@@ -14,6 +14,8 @@ from typing import Any
 
 import numpy as np
 
+from visign_ai.cli import make_console_output_safe
+
 from .errors import PipelineError
 from .holistic_extractor import group_masks
 from .pipeline import process_video
@@ -152,14 +154,6 @@ def run_batch(
         "accepted": accepted,
         "rejected": rejected,
     }
-
-
-def make_console_output_safe() -> None:
-    # Console Windows mac dinh cp1252: ky tu tieng Viet trong --help/loi duoc thay bang escape, khong crash
-    for stream in (sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if reconfigure is not None:
-            reconfigure(errors="backslashreplace")
 
 
 def main() -> int:
