@@ -1,5 +1,5 @@
 // apps/web/src/features/recognition/CameraRecorder.tsx - Giao dien xem truoc va dieu khien mot doan quay.
-import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
+import { useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { cameraErrors, vi } from '../../content/vi';
 import { type CameraView, type CameraSession } from './cameraSession';
 import { useCameraCapture } from './useCameraCapture';
@@ -41,7 +41,7 @@ export function CameraRecorder({ recognitionResult = null }: { recognitionResult
   const panel = useRef<HTMLElement>(null);
   const previousPhase = useRef(view.phase);
   const currentResult = view.phase === 'captured' && recognitionResult?.clip === view.clip ? recognitionResult : null;
-  useEffect(() => {
+  useLayoutEffect(() => {
     const focused = document.activeElement;
     if (previousPhase.current !== view.phase && !document.querySelector('dialog[open]')
       && (!focused || focused === document.body || !focused.isConnected)) {

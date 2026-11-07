@@ -5,7 +5,7 @@ xem trước, quay/dừng/hủy một ký hiệu và tắt camera. Chưa tích h
 
 ## Chạy local
 
-Yêu cầu Node.js 22.12+ và npm. Từ thư mục repository:
+Yêu cầu Node.js 22.22.2+ (nhánh 22), 24.15.0+ (nhánh 24) hoặc 26+ và npm, đúng `package.json#engines`. Từ thư mục repository:
 
 ```powershell
 npm.cmd ci --prefix apps/web

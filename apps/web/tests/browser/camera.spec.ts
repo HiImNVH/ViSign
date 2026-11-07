@@ -64,6 +64,7 @@ test('an open help dialog keeps focus when the camera disconnects', async ({ pag
   await page.locator('video').evaluate(video => {
     ((video as HTMLVideoElement).srcObject as MediaStream).getVideoTracks()[0]!.dispatchEvent(new Event('ended'));
   });
+  await expect(page.getByRole('alert')).toContainText('Camera đã mất kết nối');
   await expect(page.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Hướng dẫn', exact: true })).toBeFocused();
@@ -97,8 +98,10 @@ test('automatic recording stop preserves focus on a surviving control', async ({
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
   await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
   const cameraOff = page.getByRole('button', { name: 'Tắt camera', exact: true });
   await cameraOff.focus();
+  await expect(cameraOff).toBeFocused();
   await expect(page.getByRole('status')).toHaveText('Đã quay xong', { timeout: 8000 });
   await expect(cameraOff).toBeFocused();
 });
