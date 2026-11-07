@@ -10,7 +10,7 @@ reviewer khác owner đã kiểm).
 | Nhóm | Điểm | Task ảnh hưởng | Task `[X]` | Trạng thái | Evidence hiện có | Còn thiếu | Owner |
 |---|---:|---|---:|---|---|---|---|
 | I. Sáng tạo & đổi mới | 10 | T085, T087 | 0/2 | `IN_PROGRESS` | `docs/innovation-feasibility.md` (bản đầu) | Review T087; demo điểm khác biệt | Huy |
-| II. Thực tiễn & khả năng áp dụng | 10 | T071, T087, T093 | 0/3 | `IN_PROGRESS` | `docs/innovation-feasibility.md`, `docs/community-impact.md` (bản đầu) | Usability ≥ 10 người (T071) | Huy |
+| II. Thực tiễn & khả năng áp dụng | 10 | T087, T093 | 0/2 | `IN_PROGRESS` | `docs/innovation-feasibility.md`, `docs/community-impact.md` (bản đầu) | Chờ P2/P5 review; T071 đã bỏ (không có người dùng thật) | Huy |
 | III.1 Dữ liệu | 5 | T061, T076–T077, T098 | 0/4 | `IN_PROGRESS` | `data/README.md`, `docs/team/data-convention.md`; snapshot P4 (chưa push) | Manifest pilot/full, dataset card, đóng băng T098 | Quang |
 | III.2 Mô hình | 5 | T054, T057–T062 | 5/7 | `PARTIAL` | `docs/model-card.md`, CLI train/eval/gate (T036, T058, T059) | Metric trên artifact VSL thật (T062), dataset card (T061) | Cường |
 | III.3 An toàn AI & thiên lệch | 5 | T044, T048, T066, T089 | 3/4 | `PARTIAL` | Luật ngưỡng, audit privacy, `docs/ai-safety-report.md` | OOD/bias trên artifact thật (T089) | Cường |
@@ -21,7 +21,7 @@ reviewer khác owner đã kiểm).
 | IV.4 CI/CD | 3 | T091 | 0/1 | `PARTIAL` | `quality.yml` xanh trên mọi push | `deploy-aws.yml` (OIDC bị chặn trên Free Plan) | Huy |
 | IV.5 Bảo mật & độ tin cậy | 3 | T066, T092, T096 | 2/3 | `PARTIAL` | `docs/security-report.md`, header, quét secret/dependency | IAM/OIDC production (T096) | Tín |
 | IV.6 Độ hoàn thiện | 3 | T067, T070, T095–T096 | 0/4 | `PLANNED` | — | Production smoke, rollback, tổng duyệt | Huy |
-| V. Đóng góp & cộng đồng | 10 | T063, T071, T093 | 0/3 | `IN_PROGRESS` | `docs/community-impact.md` (bản đầu) | Usability, accessibility | Huy |
+| V. Đóng góp & cộng đồng | 10 | T063, T093 | 1/2 | `IN_PROGRESS` | `docs/community-impact.md` (bản đầu), T063 `VERIFIED` | T093 chờ review; T071 đã bỏ | Huy |
 | VI. Chi phí & hiệu quả | 10 | T065, T094 | 0/2 | `IN_PROGRESS` | `docs/cost-report.md`, `docs/performance-report.md` (local) | Số đo production, tối ưu latency | Cường |
 | VII. AWS/Google Cloud | 10 | T091, T095–T096 | 0/3 | `IN_PROGRESS` | Kế hoạch `infra/aws/`, evidence bootstrap OIDC T096 | URL HTTPS công khai, monitoring, rollback | Tín |
 | VIII. Làm việc nhóm & trình bày | 10 | T085–T086, T097 | 1/3 | `IN_PROGRESS` | Member logs, evidence theo checkpoint, CI | Demo/Q&A (T097), ma trận này được review | Huy |

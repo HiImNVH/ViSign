@@ -1,6 +1,6 @@
 # ViSign · Hồ sơ sáng tạo và tính khả thi (T087)
 
-**Trạng thái**: bản đầu 2026-11-08, phụ trách P1/Huy. Phần bằng chứng người dùng chờ T071; mọi số liệu dưới
+**Trạng thái**: bản đầu 2026-11-08, phụ trách P1/Huy. Không có kiểm thử người dùng (T071 đã bỏ); mọi số liệu dưới
 đây lấy từ evidence trong repo, không suy diễn.
 
 ## 1. Bài toán và đối tượng sử dụng
@@ -68,5 +68,6 @@ và model; đây vừa là rủi ro (dữ liệu ít) vừa là đóng góp.
 
 ## 7. Bằng chứng người dùng
 
-`PENDING` — T071: kiểm thử với ít nhất 10 người thuộc nhóm mục tiêu, ghi tỷ lệ hoàn thành, lỗi, phản hồi và
-thay đổi ưu tiên. Chỉ cập nhật mục này bằng kết quả thật tại `docs/usability-report.md`.
+**Không có.** Lead bỏ T071 (2026-11-08) vì đây là bản trình chiếu chấm điểm, chưa có người dùng thật. Bằng chứng
+trải nghiệm hiện có: audit accessibility T063, audit FE/UX T088 và nhóm tự kiểm webcam thật qua HTTPS trên AWS.
+Khi trình bày không nêu số liệu usability; nếu được hỏi, nói rõ đây là bước tiếp theo sau MVP.

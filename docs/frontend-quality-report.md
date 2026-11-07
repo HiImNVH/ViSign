@@ -42,7 +42,7 @@ state tập trung ở `useRecognition.ts` (216 dòng); câu chữ tập trung �
 
 ## Chưa kiểm
 
-Webcam và điện thoại thật, ánh sáng/khoảng cách thật, người dùng thuộc nhóm mục tiêu (T071).
+Webcam và điện thoại thật, ánh sáng/khoảng cách thật, người dùng thật (T071 đã bỏ khỏi phạm vi).
 
 ## Cập nhật T088 của P5/Hiển (sau audit P1)
 

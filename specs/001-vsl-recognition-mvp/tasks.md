@@ -23,7 +23,7 @@ CP0; application code chỉ được đưa sang từ legacy theo checkpoint nh�
 
 | Mã người | Thành viên hiện tại | Vai trò chính | Task chịu trách nhiệm chính |
 |---|---|---|---|
-| **P1** | **Huy** | Quản lý dự án, checkpoint, CI, nghiệm thu và trình bày | T032, T047, T067–T071, T084–T087, T090–T091, T093, T097 |
+| **P1** | **Huy** | Quản lý dự án, checkpoint, CI, nghiệm thu và trình bày | T032, T047, T067–T070, ~~T071~~ (bỏ), T084–T087, T090–T091, T093, T097 |
 | **P2** | **Tín** | Backend, API, security, cloud, tích hợp predictor và CP1 toolchain | T001–T007, T019–T026, T030, T037–T038, T044–T045, T048–T050, T055, T060, T064, T066, T072–T073, T078–T080, T092, T095–T096, T099 |
 | **P3** | **Cường** | MediaPipe pipeline, training, evaluation và cost benchmark | T014–T017, T029, T033–T036, T054, T057–T059, T062, T065, T083, T089, T094 |
 | **P4** | **Quang** | Data crawler, data analysis, manifest và split | T008–T013, T018, T056, T061, T076–T077, T098 |
@@ -242,7 +242,7 @@ provenance và `demoReady` đúng gate.
 - [ ] T068 [P] Viết demo script theo rubric, gồm bài toán thực tế, điểm khác biệt, full/pilot disclosure, dữ liệu, model, cloud, chi phí, giới hạn và Q&A tại `docs/demo-script.md`
 - [ ] T069 [P] Viết hướng dẫn cài đặt, cấu trúc module, checkpoint Git, chạy local/cloud, artifact switching/rollback và giới hạn MVP tại `README.md`
 - [ ] T070 Tổng duyệt demo trên URL production và local fallback, ghi camera/browser/model/cloud revision, artifact kind và demoReady tại `docs/demo-rehearsal.md`
-- [ ] T071 Kiểm thử khả thi/usability với ít nhất 10 người thuộc nhóm mục tiêu, ghi task completion, lỗi, phản hồi và thay đổi ưu tiên tại `docs/usability-report.md`
+- [-] ~~T071 Kiểm thử khả thi/usability với ít nhất 10 người thuộc nhóm mục tiêu, ghi task completion, lỗi, phản hồi và thay đổi ưu tiên tại `docs/usability-report.md`~~ — **BỎ KHỎI PHẠM VI** (lead 2026-11-08: sản phẩm là bản trình chiếu chấm điểm, chưa có người dùng thật; không claim kết quả usability)
 
 ---
 

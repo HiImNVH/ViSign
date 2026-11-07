@@ -25,7 +25,7 @@ the checkbox in `specs/001-vsl-recognition-mvp/tasks.md` after merge to `main`.
 | T068 | TODO | Soạn kịch bản full và pilot giới hạn | — |
 | T070 | TODO | Tổng duyệt trên laptop đích với artifact metadata | — |
 | T069 | TODO | Tổng hợp README từ hướng dẫn của các vai trò | — |
-| T071 | TODO | Lập kế hoạch usability test ít nhất 10 người | — |
+| T071 | BỎ | Lead bỏ 2026-11-08: bản trình chiếu chấm điểm, không có người dùng thật | — |
 
 ## Checkpoint Responsibilities
 

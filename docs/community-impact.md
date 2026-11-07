@@ -1,7 +1,7 @@
 # ViSign · Báo cáo tác động cộng đồng (T093)
 
-**Trạng thái**: bản đầu 2026-11-08, phụ trách P1/Huy. Kết quả accessibility (T063) và usability (T071) chưa
-có; các mục đó để `PENDING` và chỉ cập nhật bằng kết quả đo thật.
+**Trạng thái**: bản đầu 2026-11-08, phụ trách P1/Huy. Kiểm thử usability với người dùng (T071) đã
+bị lead bỏ khỏi phạm vi (2026-11-08): đây là bản trình chiếu chấm điểm, chưa có người dùng thật.
 
 ## 1. Nhóm hưởng lợi
 
@@ -19,8 +19,9 @@ có; các mục đó để `PENDING` và chỉ cập nhật bằng kết quả �
 | Thông báo lỗi/hướng dẫn tiếng Việt ổn định, không hiển thị text thô từ server | T052, T074–T075 | Đã có |
 | Kết quả và trạng thái đọc được bằng trình đọc màn hình (`role="alert"`, `aria-live`) | T042, T052, T103 | Đã có trong code |
 | Giao diện không tràn trên khung 320 px, mobile, landscape | Browser test của P5 | Đã có |
-| Audit accessibility (bàn phím, focus, nhãn camera) | T063 | `PENDING` |
-| Usability với ≥ 10 người thuộc nhóm mục tiêu | T071 | `PENDING` |
+| Audit accessibility (bàn phím, focus, nhãn camera; axe WCAG A/AA 0 vi phạm) | T063 | Đã có (`VERIFIED`) |
+| Audit FE/UX: responsive, camera, 7 phát hiện | T088 | Đã có (`VERIFIED`) |
+| Usability với người dùng thật | T071 | **Bỏ khỏi phạm vi** — không có kết quả, không claim |
 
 ## 3. Rủi ro gây hiểu nhầm và biện pháp
 

@@ -147,7 +147,7 @@ có lý do; gate bắt buộc bị `FAIL`, `BLOCKED` hoặc `NOT_RUN` thì khôn
 | CP5 | T054–T062, T065, T076–T077, T083, T089, T094 | split audit, reproducible eval, quality/cost | Pilot và full là hai checkpoint |
 | CP6 | T078–T084 | admin auth/cleanup/concurrency/UI tests | Không deploy admin production |
 | CP7 | T085–T096 | CI green, reports, cloud smoke/rollback | Deploy chỉ sau quality commit |
-| CP8 | T067–T071, T097 | full quickstart, usability, rubric, rehearsal/Q&A | Evidence only, no feature dump |
+| CP8 | T067–T070, T097 (T071 đã bỏ) | full quickstart, rubric, rehearsal/Q&A | Evidence only, no feature dump |
 
 ## Chính sách smoke test và link bằng chứng
 

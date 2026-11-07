@@ -24,6 +24,12 @@
 
 - Q: Quang đã chọn những ý nghĩa nào cho phạm vi P0? → A: Giấy tờ (giấy), Đau bụng, Thuốc, Sốt, Nhận, Bạn (Ngôi thứ 2), Xin chào, Cảm ơn, Chờ (đợi), Sao chép.
 
+### Session 2026-11-08
+
+- Q: Có kiểm thử usability với ≥ 10 người thuộc nhóm mục tiêu (T071) không? → A: **Không.** Lead bỏ T071 vì
+  sản phẩm là bản trình chiếu chấm điểm, chưa có người dùng thật. Mọi tài liệu MUST NOT nêu kết quả usability;
+  bằng chứng trải nghiệm chỉ gồm audit accessibility (T063), audit FE/UX (T088) và kiểm webcam thật của nhóm.
+
 ### Session 2026-11-07
 
 - Q: Raw material P0 không có danh tính người ký và nguồn là video giáo dục trực tuyến công khai; quality

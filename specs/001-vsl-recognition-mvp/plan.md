@@ -36,7 +36,7 @@ Thứ tự checkpoint bắt buộc:
 6. **CP5**: Dataset/model/evaluation evidence, pilot rồi full 10 nghĩa.
 7. **CP6**: Admin tool nội bộ nếu không làm chậm public MVP.
 8. **CP7**: CI/CD, security, cost, community evidence và AWS production.
-9. **CP8**: Full verification, usability, demo rehearsal và presentation/Q&A.
+9. **CP8**: Full verification, demo rehearsal và presentation/Q&A.
 
 Chi tiết lệnh pull/test/commit/push và gate của từng checkpoint nằm tại
 [docs/team/git-checkpoints.md](../../docs/team/git-checkpoints.md). Không checkpoint nào được push
