@@ -23,7 +23,8 @@
 | `T008 / CP1` | `PUSHED` | `data/README.md` | Chờ P4/Quang review | P4/Quang |
 | `T019-T021 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T019-T021-p2-tin-smoke.md` | P1_VERIFIED; chờ P3/P5 | P2/Tín |
 | `T098-T099 handoff / CP2` | `PUSHED` | `docs/team/fe-be-api-convention.md`, `docs/team/data-convention.md` | Chờ owner xác nhận D1–D4 | P2/Tín, P5/Hiển, P4/Quang, P3/Cường |
-| `T091 / CP7 (quality)` | `REVIEW` | `.github/workflows/quality.yml` | Chạy Actions và link run | P2/Tín, P5/Hiển |
+| `T091 / CP7 (quality)` | `PUSHED` | `.github/workflows/quality.yml` | Actions xanh ([run](https://github.com/HiImNVH/ViSign/actions/runs/42351034900)); `deploy-gcp.yml` chờ CP7 | P2/Tín, P5/Hiển |
+| `T014-T016 / CP2 review` | `DONE` | `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | P1_REVIEWED; 6 ghi chú cho P2/P3/P4 | P3/Cường |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
 
@@ -49,6 +50,8 @@
 | `CP0/T086` | Record baseline smoke evidence | `CP0 T086(docs): record baseline smoke evidence` | `22226b25d17e70ce48b153914d7eee1e15e8d3f4` | [commit](https://github.com/HiImNVH/ViSign/commit/22226b25d17e70ce48b153914d7eee1e15e8d3f4) | PASS | P2/Tín | `VERIFIED` |
 | `CP1/T086` | Standardize five member commit ledgers | `CP1 T086(docs): standardize member commit ledgers` | `9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f` | [commit](https://github.com/HiImNVH/ViSign/commit/9cfdf14edd6c80c7c1660e34d34dff3f2ca0ea1f) | PASS | P2/Tín | `PUSHED` |
 | `CP1/T001-T008` | Review setup and document raw data | `CP1 T001-T008(docs): review setup and document raw data` | `189d34bcd4875752dab460716756aa8239996f9f` | [commit](https://github.com/HiImNVH/ViSign/commit/189d34bcd4875752dab460716756aa8239996f9f) | PASS | P3/P5/P4 | `PUSHED` |
+| `CP2/T098-T099` | Lead data + FE-BE API conventions | `CP2 T098-T099(docs): hand off data and FE-BE API conventions` | `377ac98f1cbbb77e5dfd26be08ec492de9691534` | [commit](https://github.com/HiImNVH/ViSign/commit/377ac98f1cbbb77e5dfd26be08ec492de9691534) | Docs check | P2/Tín, P5/Hiển, P4/Quang, P3/Cường | `PUSHED` |
+| `CP7/T091` | Quality gate workflow | `CP7 T091(ci): add quality gate workflow` | `c902ea3fc4fd7958309b30e4a431cee0d3dcd287` | [commit](https://github.com/HiImNVH/ViSign/commit/c902ea3fc4fd7958309b30e4a431cee0d3dcd287) | Actions success | P2/Tín, P5/Hiển | `PUSHED` |
 
 ## Handoff
 

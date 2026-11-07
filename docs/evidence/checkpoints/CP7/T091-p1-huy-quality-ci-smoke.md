@@ -8,9 +8,9 @@
 | Implementer | `P1 Huy` |
 | Reviewer | `P2 Tín` (API/AI job), `P5 Hiển` (web job) |
 | Candidate commit | `CP7 T091(ci): add quality gate workflow` |
-| Commit SHA | `PENDING` |
+| Commit SHA | `c902ea3fc4fd7958309b30e4a431cee0d3dcd287` — [c902ea3](https://github.com/HiImNVH/ViSign/commit/c902ea3fc4fd7958309b30e4a431cee0d3dcd287) |
 | Run time | `2026-11-07T14:22:33+07:00` |
-| Status | `PASS` local; GitHub Actions run pending |
+| Status | `PASS` local và GitHub Actions ([run 42351034900](https://github.com/HiImNVH/ViSign/actions/runs/42351034900)) |
 
 ## Lý do kéo sớm
 
@@ -37,17 +37,27 @@ Pin: uv `0.13.7` và Node 24, khớp môi trường CP1; Python 3.12 do uv quả
 | Web | `npm ci`, lint, typecheck, Vitest, build: PASS |
 | Hygiene | Không file bị cấm được track; YAML parse OK |
 
+## GitHub Actions
+
+| Job | Kết quả | Thời gian |
+|---|---|---|
+| API | success | 10 s |
+| AI | success — 67 package, Ruff/mypy đạt, 15 passed / 5 skipped | 49 s |
+| Web | success | 22 s |
+| Hygiene | success | 4 s |
+
 ## Rủi ro
 
 - `ai/uv.lock` lấy torch từ PyPI nên Linux kéo theo CUDA toolkit (~36 package nvidia/cuda). Job AI chậm
-  và tốn dung lượng; dùng cache uv. Đổi sang index CPU là quyết định T003/T092 của P2/P3.
+  và tốn dung lượng; dùng cache uv. Run đầu chỉ 49 s nên chưa cần đổi; index CPU vẫn là quyết định
+  T003/T092 của P2/P3 nếu image Cloud Run quá nặng.
 - Playwright/E2E chưa vào workflow; thêm khi T032 có spec fake-camera.
 - 5 test AI skip trên CI vì cần clip tham chiếu local; parity thật vẫn do owner chạy.
 
 ## Links
 
-- Commit: `PENDING`.
-- Actions run: `PENDING`.
+- Commit: [c902ea3](https://github.com/HiImNVH/ViSign/commit/c902ea3fc4fd7958309b30e4a431cee0d3dcd287).
+- Actions run: [42351034900](https://github.com/HiImNVH/ViSign/actions/runs/42351034900) — `success`.
 
 ## Reviewer
 
