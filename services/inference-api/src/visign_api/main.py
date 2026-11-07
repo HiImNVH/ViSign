@@ -22,6 +22,7 @@ from visign_api.inference.predictor_registry import (
     PredictorRegistry,
     build_predictor_factories,
 )
+from visign_api.inference.temporary_clip import sweep_stale_clips
 from visign_api.observability import LOGGER_NAME, configure_logging
 
 SERVICE_TITLE = "ViSign Inference API"
@@ -65,6 +66,8 @@ def build_lifespan(
     async def lifespan(service_app: FastAPI) -> AsyncIterator[None]:
         # Tao coordinator trong event loop dang chay de semaphore khong gan voi loop cu
         service_app.state.settings = runtime_settings
+        # Xoa clip con sot cua tien trinh truoc (bi giet cung) truoc khi nhan request (T066, FR-011)
+        sweep_stale_clips()
         service_app.state.inference_coordinator = InferenceCoordinator(
             runtime_settings.inference_wait_timeout_seconds
         )
