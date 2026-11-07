@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T05:05:00+07:00` trên `origin/main` `4594468`.
+Cập nhật `2026-11-08T07:00:00+07:00` trên `origin/main` `3b9a65a`.
 
 ### Checkpoint
 
@@ -68,6 +68,8 @@ Cập nhật `2026-11-08T05:05:00+07:00` trên `origin/main` `4594468`.
 | T081, T082 | P5 | Giao diện admin `/admin/train-model` (`a498da5`, `c0d598f`) | T081 `VERIFIED`, `[X]`; T082 P1_VERIFIED phần FE, giữ `[ ]` chờ backend T078–T080 (P2) và chốt body 202 + tên trường multipart trong contract |
 | T091 | P1 | CI quality gate | Thêm job `docker` (build 2 image, nạp 3 detector MediaPipe trong container chỉ đọc, smoke Compose 14/14 qua nginx), xanh trên `bed64a9`; OIDC deploy bị SCP Free Plan chặn. Chờ P2 review |
 | T084 | P1 | Nghiệm thu ranh giới user/admin, secret, retention | [admin-acceptance.md](../admin-acceptance.md): public/secret/retention đạt trên EC2 (0 clip còn trong `/tmp`, admin API 404); phần admin chờ T078–T080 |
+| T078–T080 | P2 | Admin API opt-in (`70f2601`) | `VERIFIED`, `[X]` (P1): 404 khi tắt, 401, 409, cleanup, inspect ZIP trong Docker; runner pilot P3 còn thiếu (prepare 503) |
+| T018, T056 | P4 | Split theo video + regression leakage | `VERIFIED`, `[X]` (P1 tích hợp theo allowlist); T098 `CHANGES_REQUESTED` nhỏ (cho phép trống `sourceUri`) |
 | T083 | P3 | Pilot nội bộ | P3 đã chạy lại pilot Giấy tờ / Nhận, 15 clip, accuracy 25%, macro-F1 0,3333, demoReady=false. **Huy đã chốt phạm vi Giấy tờ / Nhận (2026-11-08).** P1 nạp artifact `t083-pilot-v2-approved` vào Docker API: `modelReady`, 4 clip test → 200 (2 chấp nhận đúng nghĩa, 2 từ chối), 1,4–2,3 s/clip, RAM 890 MiB. Còn chờ T076 (sửa `sourceUri`) và T078–T082. [Báo cáo](../pilot-report.md) |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần

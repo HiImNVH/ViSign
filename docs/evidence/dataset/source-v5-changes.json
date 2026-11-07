@@ -1,0 +1,30 @@
+{
+  "datasetVersion": "p0-source-v5",
+  "previousDraft": "data\\manifests\\p0-101vid-review.DRAFT.csv",
+  "changes": [
+    {
+      "sampleId": "dataset-p0_7f12b99c2c84",
+      "rawPath": "videos/10. Không/HCM_Không_1.mp4",
+      "sourceUri": "https://nnkh.thaiphong.net/",
+      "basis": "prior-user-confirmation: Unknown assigned to nnkh.thaiphong.net; exact clip URL not independently verified"
+    },
+    {
+      "sampleId": "dataset-p0_88a5dcb7e1e4",
+      "rawPath": "videos/5. Bạn/HN_Bạn_2.mp4",
+      "sourceUri": "https://nnkh.thaiphong.net/",
+      "basis": "prior-user-confirmation: Unknown assigned to nnkh.thaiphong.net; exact clip URL not independently verified"
+    },
+    {
+      "sampleId": "dataset-p0_74f4d1839735",
+      "rawPath": "videos/5. Bạn/HN_Bạn_3.mp4",
+      "sourceUri": "https://nnkh.thaiphong.net/",
+      "basis": "prior-user-confirmation: Unknown assigned to nnkh.thaiphong.net; exact clip URL not independently verified"
+    },
+    {
+      "sampleId": "dataset-p0_563ced3d2937",
+      "rawPath": "videos/9. Đau đầu/HCM_Đau đầu_2.mp4",
+      "sourceUri": "https://nnkh.thaiphong.net/",
+      "basis": "prior-user-confirmation: Unknown assigned to nnkh.thaiphong.net; exact clip URL not independently verified"
+    }
+  ]
+}

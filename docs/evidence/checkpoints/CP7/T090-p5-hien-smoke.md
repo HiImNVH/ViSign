@@ -78,3 +78,11 @@ Các skip là screenshot capture opt-in và live backend, không được coi l�
 
 **Reviewer result**: `P1_VERIFIED`, tick `[X]` T090 (báo cáo kiến trúc review chéo P1 ↔ P5). Các fix FE-T090-01..06
 là việc tiếp theo của P5, ưu tiên FE-T090-01 kèm regression test.
+
+## Independent review FE-T090-01..06 — P1/Huy (2026-11-08, `6f2dfd4`…`3b9a65a`)
+
+- `npm run check` trên Edge: lint/typecheck/build sạch, Vitest **175 passed / 4 skipped**, Playwright **93 passed**, exit 0; CI xanh.
+- Sáu micro-commit khớp sáu hành động trong §7.2 (giữ lịch sử khi cleanup lỗi, đồng bộ đa tab, tách contract
+  controller, bỏ fixture overlay cũ, giới hạn hiển thị transcript/history, focus dialog bằng ref).
+
+**Reviewer result**: `P1_VERIFIED` cho FE-T090-01..06 (T090 đã `[X]`).

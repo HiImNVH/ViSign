@@ -52,3 +52,20 @@ Clip dùng trong smoke là clip tổng hợp không có người; không dùng v
 - **P1/Huy:** phần admin của T084 có thể nghiệm thu (404 khi tắt, 401, 409, giới hạn byte/thời gian, dọn file tạm).
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy (2026-11-08, `70f2601`)
+
+| Kiểm | Kết quả |
+|---|---|
+| Gate | API + contract **401 passed / 3 skipped**; admin contract **30/30**; ruff, mypy 40 file sạch; CI xanh |
+| Bật/tắt | Không có `VISIGN_ADMIN_TOKEN` → `/api/admin/pilot` **404** (router không được gắn); token < 16 ký tự bị từ chối khi khởi động, lỗi cấu hình không in giá trị |
+| Xác thực | Thiếu token / sai token → **401 `ADMIN_UNAUTHORIZED`**; so sánh `hmac.compare_digest`; token không xuất hiện trong log sau toàn bộ phép thử |
+| Inspect (Docker HEAD, root chỉ đọc, `cap_drop ALL`) | Clip WebM có người → **200 ZIP** (`report.json` + `landmarks.npz`, không có video, `sourceName` chung chung), 2,1 s; sai field → 400; file giả → 415; 11 MiB → 413 |
+| Đồng thời | Hai inspect cùng lúc → lần sau **409 `ADMIN_JOB_ACTIVE`**; sau đó `/tmp` không còn thư mục `visign_inspect_*` |
+| Pilot | `GET pilot`/`history` 200; `prepare` → **503 `ADMIN_UNAVAILABLE`** vì chưa có runner `visign_ai.pilot` (P3) — đúng thiết kế |
+| Contract | Đã chốt field `video`, giới hạn 10 MiB + 64 KiB, 202 kèm `TrainingRun` — khớp FE T082 |
+
+Ghi chú nhỏ: header `authorization: bearer …` (chữ thường) bị 401; RFC coi scheme không phân biệt hoa/thường, FE gửi
+`Bearer` nên không ảnh hưởng. FE còn hằng `MAX_ADMIN_CLIP_BYTES = 100 MiB` lệch giới hạn 10 MiB (P5 sửa).
+
+**Reviewer result**: `P1_VERIFIED`, tick `[X]` T078, T079, T080. Runner pilot thật (`visign_ai.pilot`) là phần việc P3 còn mở.

@@ -124,7 +124,7 @@ track MAY bắt đầu khi T019–T028 ổn định và không được trình b
 - [X] T015 Cài `VideoDecoder` PyAV cho WebM VP8/VP9 0.3–6 giây tối đa 10 MiB, giữ nguyên orientation, và MediaPipe video adapter với pinned `extractorVersion` tại `ai/src/visign_ai/landmarks/video_decoder.py` và `ai/src/visign_ai/landmarks/holistic_extractor.py`
 - [X] T016 Cài draft feature schema v0.3 tensor `32×234`, chuẩn hóa tọa độ, resampling và missing-landmark mask dùng chung train/API; chỉ chuyển APPROVED sau representative-clip review tại `ai/src/visign_ai/landmarks/sequence_transform.py` và `ai/configs/feature_schema.json`
 - [X] T017 Cài CLI trích xuất toàn manifest, ghi extractor/schema version và stable decode/extraction rejection code tại `ai/src/visign_ai/landmarks/extract_manifest.py`
-- [ ] T018 Cài video-held-out split theo `recordingSessionId` cho full gate (ưu tiên signer khi có `signerId`), gắn nhãn split và cấm unseen-signer claim tại `ai/src/visign_ai/dataset/create_splits.py`
+- [X] T018 Cài video-held-out split theo `recordingSessionId` cho full gate (ưu tiên signer khi có `signerId`), gắn nhãn split và cấm unseen-signer claim tại `ai/src/visign_ai/dataset/create_splits.py`
 - [X] T019 [P] Định nghĩa model metadata cho `fixture|pilot|full`, extractor/feature schema version, nullable fixture accuracy/precision/recall/Macro-F1 và gate `full && 10 meanings && macroF1 >= 0.80 && mọi perMeaningRecall >= 0.65` tại `services/inference-api/src/visign_api/domain/model_version.py`
 - [X] T020 [P] Định nghĩa prediction request/accepted/rejected/error states không thể kết hợp sai; success response giữ `processingTimeMs` và optional `timingsMs {decode,extract,infer}` plus `qualityHints {handsDetectedRatio,frameCount}` không chứa landmark tại `services/inference-api/src/visign_api/domain/prediction.py`
 - [X] T021 [P] Cài error catalog ổn định gồm `CLIP_DECODE_FAILED` và `SERVICE_BUSY` đúng `contracts/openapi.yaml` tại `services/inference-api/src/visign_api/domain/errors.py`
@@ -215,7 +215,7 @@ provenance và `demoReady` đúng gate.
 
 - [X] T054 [P] [US3] Viết evaluation metric tests và chứng minh fixture/pilot không thể qua full demo gate tại `ai/tests/evaluation/test_model_gate.py`
 - [X] T055 [P] [US3] Viết `GET /health` và `GET /model-info` contract tests cho fixture/pilot/full, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable metrics tại `services/inference-api/tests/contract/test_model_info_contract.py`
-- [ ] T056 [P] [US3] Viết split regression tests chứng minh full test không trùng video gốc và split không có `signerId` không thể mang nhãn unseen-signer tại `ai/tests/dataset/test_split_audit.py`
+- [X] T056 [P] [US3] Viết split regression tests chứng minh full test không trùng video gốc và split không có `signerId` không thể mang nhãn unseen-signer tại `ai/tests/dataset/test_split_audit.py`
 
 ### Implementation for User Story 3
 
@@ -288,9 +288,9 @@ test bảo mật/cleanup/concurrency và không ảnh hưởng public `/api/v1`.
 **Independent Test**: Bật/tắt token, inspect clip, chạy preflight→train pilot, thử tạo job song song,
 đọc history/W&B evidence và xác nhận pilot vẫn `demoReady=false`.
 
-- [ ] T078 [P] [US4] Viết backend tests cho disabled 404, invalid-token 401, inspect byte/concurrency limit, cleanup và single-active-pilot-job tại `services/inference-api/tests/contract/test_admin_tools_contract.py`
-- [ ] T079 [US4] Chuẩn hóa opt-in admin config, sanitized errors, temporary inspect lifecycle và worker/job locking tại `services/inference-api/src/visign_api/api/admin.py`, `services/inference-api/src/visign_api/api/pilot.py` và `services/inference-api/src/visign_api/config.py`
-- [ ] T080 [US4] Đồng bộ response models và endpoint behavior với `specs/001-vsl-recognition-mvp/contracts/admin-tools.md` tại `services/inference-api/src/visign_api/api/admin.py` và `services/inference-api/src/visign_api/api/pilot.py`
+- [X] T078 [P] [US4] Viết backend tests cho disabled 404, invalid-token 401, inspect byte/concurrency limit, cleanup và single-active-pilot-job tại `services/inference-api/tests/contract/test_admin_tools_contract.py`
+- [X] T079 [US4] Chuẩn hóa opt-in admin config, sanitized errors, temporary inspect lifecycle và worker/job locking tại `services/inference-api/src/visign_api/api/admin.py`, `services/inference-api/src/visign_api/api/pilot.py` và `services/inference-api/src/visign_api/config.py`
+- [X] T080 [US4] Đồng bộ response models và endpoint behavior với `specs/001-vsl-recognition-mvp/contracts/admin-tools.md` tại `services/inference-api/src/visign_api/api/admin.py` và `services/inference-api/src/visign_api/api/pilot.py`
 - [X] T081 [P] [US4] Viết frontend tests cho token form, inspect, preflight, train, active-job conflict, history và W&B online/offline tại `apps/web/tests/admin/admin-training.test.tsx`
 - [ ] T082 [US4] Tích hợp route `/admin/train-model`, typed admin client và stable Vietnamese states tại `apps/web/src/features/admin/AdminTraining.tsx`, `apps/web/src/features/admin/PilotPanel.tsx` và `apps/web/src/services/adminApi.ts`
 - [ ] T083 [US4] Chạy pilot Giấy tờ–Nhận (`GIAY_TO`, `NHAN`; lead đổi từ Sốt–Cảm ơn ngày 2026-11-08) từ bản bàn giao đã audit và ghi dataset/run ID, sample counts, metrics, W&B evidence cùng `demoReady=false` tại `docs/pilot-report.md`
