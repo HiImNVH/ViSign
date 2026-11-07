@@ -37,4 +37,8 @@
   "chưa cấu hình"; kết quả vẫn `degraded`. Xử lý cùng cấu hình deploy (T095), ví dụ `env_ignore_empty=True`.
 - Fixture artifact để phát triển/E2E: `MODEL_ARTIFACT_PATH=services/inference-api/tests/fixtures/model-artifacts/fixture`.
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Huy (P1) review endpoint của P2 và kết luận **đạt**; ghi nhận `2026-11-07T21:18:08+07:00` trên `219e10d`. Gate tái chạy: API + contract 211 passed, 1 skipped; CI `quality.yml` xanh.
+
+**Reviewer result**: `P1_VERIFIED` → T055, T060 `[X]`.

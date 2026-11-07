@@ -42,9 +42,10 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T029, T033 | P3 | GRU classifier đóng gói + test | Chờ P1/P2 |
 | T034, T035 | P3 | Loader giữ thứ tự lớp; preset pilot/full | `VERIFIED`, `[X]` (P1) |
 | T036 | P3 | CLI train + xuất artifact | P1_VERIFIED; chờ P2 xác nhận artifact nạp qua registry T037 |
-| T030, T037, T038 | P2 | Loader/registry/fixture predictor, adapter trích đặc trưng, `POST /api/v1/predictions` | **Parity offline ↔ API 6/6 WebM có người PASS** (atol 1e-6, P3 `1b14f1e`); còn factory GRU cho pilot/full (P2); P1 review endpoint |
-| T044, T048 | P2 | Luật quyết định theo ngưỡng confidence | Chờ P1 |
-| T055, T060 | P2 | `GET /api/v1/health`, `GET /api/v1/model-info` | Chờ P1/P5 |
+| T030, T038 | P2 | Fixture contract, `POST /api/v1/predictions` | `VERIFIED`, `[X]` (P1) |
+| T037 | P2 | Registry + adapter trích đặc trưng | **Parity offline ↔ API 6/6 WebM có người PASS** (P3 `1b14f1e`); còn factory GRU cho pilot/full |
+| T044, T048 | P2 | Luật quyết định theo ngưỡng confidence | `VERIFIED`, `[X]` (P1) |
+| T055, T060 | P2 | `GET /api/v1/health`, `GET /api/v1/model-info` | `VERIFIED`, `[X]` (P1) |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip
@@ -88,7 +89,7 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
 | P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Review T034–T036; bắt đầu E2E T032 (endpoint đã có); duyệt schema khi có clip |
-| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | Endpoint T038/T060 xong; chờ review; parity offline ↔ API khi có clip thật |
+| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | Factory GRU cho registry pilot/full (T037); T049 theo quy tắc P3; xác nhận artifact T036 |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Gửi clip đại diện cho schema review; tối ưu latency decode; xác nhận T019 metadata |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | ACTIVE | Push T013; xác nhận vùng `O`/variant rồi đóng băng T098 |
 | P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | Tích hợp T040 với endpoint thật; review T055/T060; sau đó US6 T100–T104 |

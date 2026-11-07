@@ -26,4 +26,8 @@
 | Bắt hồi quy | Đổi `>=` thành `>` → 1 failed (biên 0,70); khôi phục giống hệt |
 | Toàn bộ API + contract | 186 passed, 1 skipped `-W error`; Ruff, format, mypy (40 files) |
 
-**Reviewer result**: `PENDING`
+## Independent review — P1/Huy
+
+Huy (P1) review endpoint của P2 và kết luận **đạt**; ghi nhận `2026-11-07T21:18:08+07:00` trên `219e10d`. Gate tái chạy: API + contract 211 passed, 1 skipped; CI `quality.yml` xanh.
+
+**Reviewer result**: `P1_VERIFIED` → T044, T048 `[X]`.

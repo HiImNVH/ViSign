@@ -154,7 +154,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 ### Tests for User Story 1
 
 - [ ] T029 [P] [US1] Viết model shape, packed-sequence, deterministic forward và class-subset tests dùng chung cho pilot/full tại `ai/tests/training/test_gru_classifier.py`
-- [ ] T030 [P] [US1] Tạo deterministic fixture artifact và viết contract tests cho release `0.0.1`/API `v1`, chứng minh fixture/pilot/full dùng cùng accepted response schema, echo/generated `X-Request-ID`, non-negative optional timings và bounded quality hints tại `services/inference-api/tests/fixtures/model-artifacts/fixture/` và `services/inference-api/tests/contract/test_predictions_contract.py`
+- [X] T030 [P] [US1] Tạo deterministic fixture artifact và viết contract tests cho release `0.0.1`/API `v1`, chứng minh fixture/pilot/full dùng cùng accepted response schema, echo/generated `X-Request-ID`, non-negative optional timings và bounded quality hints tại `services/inference-api/tests/fixtures/model-artifacts/fixture/` và `services/inference-api/tests/contract/test_predictions_contract.py`
 - [ ] T031 [P] [US1] Viết component tests cho permission, recording và accepted result tại `apps/web/tests/recognition/recognition-flow.test.tsx`
 - [ ] T032 [P] [US1] Viết E2E happy path bằng Chromium fake-camera Y4M và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `tests/e2e/recognition-happy-path.spec.ts`
 
@@ -165,7 +165,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 - [X] T035 [US1] Tạo cấu hình seed tái lập cho pilot tối đa 3 từ và full 10 từ tại `ai/configs/pilot-gru.yaml` và `ai/configs/p0-gru.yaml`
 - [ ] T036 [US1] Cài training CLI nhận class subset và lưu artifact metadata bất biến gồm `artifactKind`, dataset/feature schema/class map tại `ai/src/visign_ai/training/train.py`
 - [ ] T037 [US1] Cài predictor interface với deterministic fixture và pilot/full adapter qua `MODEL_ARTIFACT_PATH`; nạp nguyên gói weights/schema/model metadata/evaluation, giữ class order, dùng artifact confidence threshold, kiểm extractor/schema và fail closed để rollback tại `services/inference-api/src/visign_api/inference/predictor.py`
-- [ ] T038 [US1] Cài `POST /api/v1/predictions` cho accepted result với total/per-stage timings và quality hints không chứa frame/landmark tại `services/inference-api/src/visign_api/api/predictions.py`
+- [X] T038 [US1] Cài `POST /api/v1/predictions` cho accepted result với total/per-stage timings và quality hints không chứa frame/landmark tại `services/inference-api/src/visign_api/api/predictions.py`
 - [X] T039 [P] [US1] Cài camera permission, preview và start/stop/cancel recording tại `apps/web/src/features/recognition/CameraRecorder.tsx`
 - [ ] T040 [P] [US1] Cài typed API client gửi camera blob, truyền/đọc `X-Request-ID`, đọc model-info và bỏ qua an toàn optional diagnostics khi không có tại `apps/web/src/services/inferenceApi.ts`
 - [ ] T041 [US1] Cài recognition state machine cho idle/permission/recording/submitting/result và loaded artifact kind tại `apps/web/src/features/recognition/useRecognition.ts`
@@ -185,14 +185,14 @@ hiển thị đúng rejected/error state, không hiển thị một từ như k�
 
 ### Tests for User Story 2
 
-- [ ] T044 [P] [US2] Viết unit tests cho threshold boundary và accepted/rejected decision tại `services/inference-api/tests/unit/test_prediction_decision.py`
+- [X] T044 [P] [US2] Viết unit tests cho threshold boundary và accepted/rejected decision tại `services/inference-api/tests/unit/test_prediction_decision.py`
 - [ ] T045 [P] [US2] Mở rộng contract tests cho 400, 413, 415, `CLIP_DECODE_FAILED`, `SERVICE_BUSY` với optional `Retry-After`, model-not-ready 503, `PREDICTION_FAILED` 500 không lộ exception, low-confidence HTTP 200 và `X-Request-ID` trên mọi response tại `services/inference-api/tests/contract/test_predictions_contract.py`
 - [ ] T046 [P] [US2] Viết web tests cho denied permission, cancel, retry, rejected và service unavailable tại `apps/web/tests/recognition/recognition-errors.test.tsx`
 - [ ] T047 [P] [US2] Viết E2E permission-denied, corrupt clip, service-busy, low-confidence và retry flows bằng fake-camera/control fixture tại `tests/e2e/recognition-negative-paths.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T048 [US2] Cài pure confidence decision trả accepted hoặc “Không nhận diện được” tại `services/inference-api/src/visign_api/inference/prediction_decision.py`
+- [X] T048 [US2] Cài pure confidence decision trả accepted hoặc “Không nhận diện được” tại `services/inference-api/src/visign_api/inference/prediction_decision.py`
 - [ ] T049 [US2] Cài clip validation cho MIME, byte limit, WebM magic bytes, decoder probe, PTS duration, person và landmark sufficiency tại `services/inference-api/src/visign_api/inference/clip_validator.py`
 - [ ] T050 [US2] Hoàn thiện error mapping và cleanup cho prediction endpoint tại `services/inference-api/src/visign_api/api/predictions.py`
 - [ ] T051 [US2] Cài rejected result và retry action tại `apps/web/src/features/recognition/RecognitionResult.tsx`
@@ -214,7 +214,7 @@ provenance và `demoReady` đúng gate.
 ### Tests for User Story 3
 
 - [ ] T054 [P] [US3] Viết evaluation metric tests và chứng minh fixture/pilot không thể qua full demo gate tại `ai/tests/evaluation/test_model_gate.py`
-- [ ] T055 [P] [US3] Viết `GET /health` và `GET /model-info` contract tests cho fixture/pilot/full, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable metrics tại `services/inference-api/tests/contract/test_model_info_contract.py`
+- [X] T055 [P] [US3] Viết `GET /health` và `GET /model-info` contract tests cho fixture/pilot/full, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable metrics tại `services/inference-api/tests/contract/test_model_info_contract.py`
 - [ ] T056 [P] [US3] Viết split regression tests chứng minh full test không trùng video gốc và split không có `signerId` không thể mang nhãn unseen-signer tại `ai/tests/dataset/test_split_audit.py`
 
 ### Implementation for User Story 3
@@ -222,7 +222,7 @@ provenance và `demoReady` đúng gate.
 - [ ] T057 [US3] Cài accuracy, Macro-F1, per-meaning precision/recall, confusion matrix, signer/sample counts và latency evaluation tại `ai/src/visign_ai/evaluation/metrics.py`
 - [ ] T058 [US3] Cài evaluation CLI sinh JSON metrics, confusion-matrix image và split provenance (`video-held-out`/signer) tại `ai/src/visign_ai/evaluation/evaluate.py`
 - [ ] T059 [US3] Cài metadata writer cho mọi artifact và release gate chỉ chấp nhận full 10-meaning model đạt gate trên split FR-015 tại `ai/src/visign_ai/evaluation/release_gate.py`
-- [ ] T060 [US3] Cài `GET /api/v1/health` và `GET /api/v1/model-info` công bố artifact kind, extractor/feature schema version, actual meanings và readiness tại `services/inference-api/src/visign_api/api/system.py`
+- [X] T060 [US3] Cài `GET /api/v1/health` và `GET /api/v1/model-info` công bố artifact kind, extractor/feature schema version, actual meanings và readiness tại `services/inference-api/src/visign_api/api/system.py`
 - [ ] T061 [P] [US3] Viết dataset card công bố nguồn, tính hợp pháp, chất lượng, độ đại diện, phương thức thu thập/xử lý, coverage và bias gaps từ manifest audit tại `docs/dataset-card.md`
 - [ ] T062 [P] [US3] Viết model card gồm lý do chọn GRU, protocol tái lập, artifact kind, supported meanings, accuracy, per-meaning precision/recall, Macro-F1, confusion matrix, latency, split FR-015/OOD result, bias, explainability limits, fallback status và safety disclaimer tại `docs/model-card.md`
 
