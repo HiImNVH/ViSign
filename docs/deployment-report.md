@@ -1,7 +1,7 @@
 # ViSign · Báo cáo deploy AWS (T095)
 
 **Cập nhật**: 2026-11-08 · **Thực hiện**: P1/Huy (Tín bàn giao phần Docker/AWS) · **Trạng thái**: `PARTIAL` —
-origin EC2 chạy được; CloudFront HTTPS bị chặn chờ AWS xác minh tài khoản.
+origin EC2 chạy được, HTTPS tạm qua Cloudflare Quick Tunnel; CloudFront chờ AWS xác minh tài khoản.
 
 ## Tài khoản và chi phí
 
@@ -43,6 +43,24 @@ Lỗi CloudFront: `Your account must be verified before you can add new CloudFro
 | Lỗi | `/api/v1/x` 404 và `POST /api/v1/health` 405 đúng envelope; 10,5 MiB → 413 `CLIP_TOO_LARGE`; 12 MiB → 413 nginx |
 | Dự đoán | Clip WebM → 200; round-trip 1,65–2,07 s dù fixture chỉ xử lý 1 ms → **chi phí mạng VN ↔ Sydney + upload ~1,6–2 s** |
 | Trên máy (SSM) | 2 container `healthy`; API uid 10001, root chỉ đọc, `CapDrop=[ALL]`; RAM API 58 MiB, web 4,8 MiB lúc nghỉ; máy còn 1,29 GB khả dụng; đĩa 21% |
+
+## HTTPS tạm qua Cloudflare Quick Tunnel (2026-11-08, Huy duyệt)
+
+Trong lúc chờ AWS xác minh CloudFront, container `cloudflare/cloudflared:2026.10.7`
+(digest `sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba`) chạy trên EC2, nối nội bộ tới
+`web:8080`; không mở thêm cổng AWS. Container chỉ đọc, `cap_drop ALL`, giới hạn 128 MiB, tự khởi động lại.
+
+| Kiểm qua `https://<tên-ngẫu-nhiên>.trycloudflare.com` | Kết quả |
+|---|---|
+| `/` qua HTTPS | 200, chứng chỉ hợp lệ; giữ CSP và `Permissions-Policy camera=(self)` của nginx |
+| `/api/v1/health` | `modelReady=true`, `vsl-fixture-v0.0.1` |
+| `/admin/train-model` | 200 (SPA); admin API vẫn tắt |
+| Dự đoán clip WebM | 200, round-trip **0,42–0,63 s** (nhanh hơn origin trực tiếp 1,7–2 s nhờ edge Cloudflare + kết nối giữ sẵn) |
+| RAM trên EC2 | tunnel 16,9 MiB, web 4,8 MiB, API 60 MiB; máy còn 1,27 GB khả dụng |
+
+Giới hạn: URL **đổi mỗi khi container/EC2 khởi động lại** (xem bằng `docker logs visign-tunnel` qua SSM); quick tunnel
+không có cam kết uptime; công khai, chưa có rate limit. Tắt: `docker rm -f visign-tunnel`. Thay bằng CloudFront khi AWS
+duyệt.
 
 ## Rủi ro và việc tiếp theo
 
