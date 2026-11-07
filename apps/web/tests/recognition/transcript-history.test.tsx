@@ -131,3 +131,21 @@ test('blocked local storage does not block live transcription, and history expla
   expect(screen.getByRole('alert')).toHaveTextContent('Bộ nhớ trình duyệt không khả dụng.');
   expect(screen.getByText('Chưa có bản dịch được lưu.')).toBeInTheDocument();
 });
+
+test('FE-T090-01 a failed expired-history cleanup still exposes clear and can retry after storage recovers', () => {
+  const expired = { requestId: uuid(0), text: 'Đã hết hạn', confidence: .9,
+    modelVersion: 'v1', createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString() };
+  localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries: [expired] }));
+  const denied = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('storage denied'); });
+  render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: 'Lịch sử' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('Bộ nhớ trình duyệt không khả dụng.');
+  expect(screen.getByText('Chưa có bản dịch được lưu.')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Xoá toàn bộ lịch sử' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
+  expect(screen.getAllByRole('alert').some(alert => alert.textContent?.includes('Không xoá được lịch sử'))).toBe(true);
+  denied.mockRestore();
+  fireEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
+  expect(localStorage.getItem(HISTORY_STORAGE_KEY)).toBeNull();
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});

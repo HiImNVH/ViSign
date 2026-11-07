@@ -56,4 +56,34 @@ describe('browser-only accepted translation history', () => {
     expect(clearTranslationHistory()).toBe(true);
     expect(readTranslationHistory().entries).toEqual([]);
   });
+
+  it('retains valid metadata when pruning duplicates or stale entries exceeds quota', () => {
+    const expired = { ...second, createdAt: new Date(now.getTime() - HISTORY_TTL_MS).toISOString() };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries: [first, first, expired] }));
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new DOMException('quota', 'QuotaExceededError'); });
+    expect(readTranslationHistory()).toEqual({ entries: [first], available: false });
+    expect(JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)!).entries).toHaveLength(3);
+    // An append can retry cleanup and persist without discarding the previously readable entry.
+    expect(appendTranslationHistory(second)).toEqual({ entries: [first, second], available: true });
+  });
+
+  it('keeps cleanup results available to UI even if removal of expired entries fails', () => {
+    const expired = { ...first, createdAt: new Date(now.getTime() - HISTORY_TTL_MS).toISOString() };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries: [expired] }));
+    const denied = vi.spyOn(Storage.prototype, 'removeItem').mockImplementationOnce(() => { throw new Error('denied'); });
+    expect(readTranslationHistory()).toEqual({ entries: [], available: false });
+    expect(localStorage.getItem(HISTORY_STORAGE_KEY)).not.toBeNull();
+    denied.mockRestore();
+    expect(clearTranslationHistory()).toBe(true);
+    expect(localStorage.getItem(HISTORY_STORAGE_KEY)).toBeNull();
+  });
+
+  it('treats an unreadable storage as unavailable and never replaces unknown saved entries', () => {
+    appendTranslationHistory(first);
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementationOnce(() => { throw new Error('read denied'); });
+    const writes = vi.spyOn(Storage.prototype, 'setItem');
+    expect(appendTranslationHistory(second)).toEqual({ entries: [], available: false });
+    expect(writes).not.toHaveBeenCalled();
+    expect(readTranslationHistory().entries).toEqual([first]);
+  });
 });

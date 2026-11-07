@@ -42,7 +42,7 @@ export function HistoryPanel({ history, refreshHistory, clearHistory }: Props) {
         </li>)}
       </ol> : <p className="history-empty">{vi.history.empty}</p>}
       {clearError && <p role="alert" className="history-warning">{vi.history.clearFailed}</p>}
-      {history.entries.length > 0 && <div className="history-actions">
+      {(history.entries.length > 0 || !history.available) && <div className="history-actions">
         {confirming ? <>
           <p>{vi.history.confirm}</p>
           <button ref={confirmButton} className="primary-button" onClick={clear}>{vi.history.confirmYes}</button>

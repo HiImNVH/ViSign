@@ -34,19 +34,27 @@ function project(entry: TranslationHistoryEntry): TranslationHistoryEntry {
     modelVersion: entry.modelVersion, createdAt: entry.createdAt };
 }
 
-function load(now: number): HistoryRead {
+type HistoryLoad = HistoryRead & { readable: boolean };
+
+function load(now: number): HistoryLoad {
+  let storage: Storage;
+  let raw: string | null;
   try {
-    const storage = window.localStorage;
-    const raw = storage.getItem(HISTORY_STORAGE_KEY);
-    if (raw === null) return { entries: [], available: true };
+    storage = window.localStorage;
+    raw = storage.getItem(HISTORY_STORAGE_KEY);
+  } catch {
+    return { entries: [], available: false, readable: false };
+  }
+  const entries: TranslationHistoryEntry[] = [];
+  try {
+    if (raw === null) return { entries: [], available: true, readable: true };
     let parsed: unknown;
     try { parsed = JSON.parse(raw); } catch { parsed = null; }
     if (!isObject(parsed) || parsed.schemaVersion !== 1 || !Array.isArray(parsed.entries)) {
       storage.removeItem(HISTORY_STORAGE_KEY);
-      return { entries: [], available: true };
+      return { entries: [], available: true, readable: true };
     }
     const seen = new Set<string>();
-    const entries: TranslationHistoryEntry[] = [];
     for (const item of parsed.entries) {
       if (validEntry(item, now) && !seen.has(item.requestId)) {
         seen.add(item.requestId);
@@ -58,19 +66,23 @@ function load(now: number): HistoryRead {
       if (entries.length) storage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries }));
       else storage.removeItem(HISTORY_STORAGE_KEY);
     }
-    return { entries, available: true };
+    return { entries, available: true, readable: true };
   } catch {
-    return { entries: [], available: false };
+    // A failed cleanup write must not hide valid entries that were already read.
+    return { entries, available: false, readable: true };
   }
 }
 
-export function readTranslationHistory(now = Date.now()): HistoryRead { return load(now); }
+export function readTranslationHistory(now = Date.now()): HistoryRead {
+  const { entries, available } = load(now);
+  return { entries, available };
+}
 
 export function appendTranslationHistory(entry: TranslationHistoryEntry, now = Date.now()): HistoryRead {
   const previous = load(now);
-  if (!previous.available) return previous;
-  if (!validEntry(entry, now)) return previous;
-  if (previous.entries.some(item => item.requestId === entry.requestId)) return previous;
+  if (!previous.readable) return { entries: previous.entries, available: false };
+  if (!validEntry(entry, now) || previous.entries.some(item => item.requestId === entry.requestId))
+    return { entries: previous.entries, available: previous.available };
   const entries = [...previous.entries, project(entry)]
     .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
   try {
