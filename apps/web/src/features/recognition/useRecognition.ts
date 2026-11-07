@@ -4,8 +4,6 @@ import type { CameraView } from './cameraSession';
 import { useCameraCapture } from './useCameraCapture';
 import { createInferenceApi, InferenceApiError } from '../../services/inferenceApi';
 import type { ArtifactKind, ModelInfo, PredictionResponse } from '../../types/inference-api';
-import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory,
-  type TranslationHistoryEntry } from './translationHistory';
 
 type Api = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
 
@@ -32,10 +30,6 @@ export function useRecognition(api?: Api) {
   const camera = useCameraCapture();
   const [model, setModel] = useState<ModelStatus>({ status: 'loading' });
   const [prediction, setPrediction] = useState<CapturedPrediction | null>(null);
-  const [compatibilityError, setCompatibilityError] = useState<InferenceApiError | null>(null);
-  const [transcript, setTranscript] = useState<TranslationHistoryEntry[]>([]);
-  const [history, setHistory] = useState(readTranslationHistory);
-  const historyWriteFailed = useRef(false);
   const metadataController = useRef<AbortController | null>(null);
   const metadataGeneration = useRef(0);
   const readyMetadataGeneration = useRef(0);
@@ -119,25 +113,7 @@ export function useRecognition(api?: Api) {
   const clearPrediction = useCallback(() => {
     abortRequest();
     setPrediction(null);
-    setCompatibilityError(null);
   }, [abortRequest]);
-
-  const refreshHistory = useCallback(() => {
-    const latest = readTranslationHistory();
-    setHistory({ ...latest, available: latest.available && !historyWriteFailed.current });
-  }, []);
-  const clearHistory = useCallback(() => {
-    if (!clearTranslationHistory()) {
-      setHistory(previous => ({ ...previous, available: false }));
-      return false;
-    }
-    // Clearing also invalidates pending work so an old response cannot reinsert a cleared word.
-    clearPrediction();
-    historyWriteFailed.current = false;
-    setTranscript([]);
-    setHistory({ entries: [], available: true });
-    return true;
-  }, [clearPrediction]);
 
   const enableCamera = useCallback(() => camera.session.enable(camera.videoRef.current), [camera.session, camera.videoRef]);
   const startRecording = useCallback(() => { clearPrediction(); camera.session.record(); }, [camera.session, clearPrediction]);
@@ -175,29 +151,11 @@ export function useRecognition(api?: Api) {
         void refreshModelInfo(); // discard the stale result; never resubmit automatically
       } else {
         setPrediction({ captureId, view: { phase: 'result', artifactKind: info.artifactKind, result: data, requestId } });
-        if (data.accepted) {
-          const entry: TranslationHistoryEntry = {
-            requestId: data.requestId, text: data.text.trim(), confidence: data.confidence,
-            modelVersion: data.modelVersion, createdAt: new Date().toISOString(),
-          };
-          setTranscript(previous => previous.some(item => item.requestId === entry.requestId) ? previous : [...previous, entry]);
-          const saved = appendTranslationHistory(entry);
-          historyWriteFailed.current = !saved.available;
-          setHistory(saved);
-        }
       }
     } catch (error) {
       if (isCurrentRequest()) {
-        const typedError = asApiError(error);
-        if (typedError.kind === 'route-not-found' || typedError.status === 404) {
-          // A missing API route invalidates this upload. Release the clip, but retain safe guidance.
-          camera.session.cancel();
-          setPrediction(null);
-          setCompatibilityError(typedError);
-        } else {
-          setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
-            error: typedError } });
-        }
+        setPrediction({ captureId, view: { phase: 'error', source: 'api', artifactKind: info.artifactKind,
+          error: asApiError(error) } });
       }
     } finally {
       if (activeRequest.current === request) activeRequest.current = null;
@@ -210,7 +168,6 @@ export function useRecognition(api?: Api) {
 
   return {
     state, model, camera, enableCamera, startRecording, stopRecording,
-    submit, cancel, reset, reloadModelInfo, compatibilityError,
-    transcript, history, refreshHistory, clearHistory,
+    submit, cancel, reset, reloadModelInfo,
   };
 }

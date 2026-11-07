@@ -2,7 +2,7 @@
 
 Owner: P5 Hiển
 Backend contract: `docs/team/backend-http-status-contract.md`
-Status: Implemented in local P5 working tree (`T074`/`T075`); pending P1/P2 independent review
+Status: Placeholder specification, not implemented by this note
 
 ## Purpose
 
@@ -40,7 +40,7 @@ received from the server.
   invalidation contract. Until then, a conditional model-info request returning
   `200` is correct.
 
-## Placeholder catalog implemented in code
+## Suggested placeholders in code
 
 Add keys to the Vietnamese error catalog rather than embedding text in the API
 client:
@@ -57,17 +57,14 @@ view should select copy from `content/vi.ts` and retain the existing accessible
 
 ## Frontend implementation checklist
 
-- [x] Add the three Vietnamese placeholder keys to `apps/web/src/content/vi.ts`.
-- [x] Add typed `404` and `405` classifications in `apps/web/src/services/inferenceApi.ts`.
-- [x] Reserve the `403` key without presenting it as a currently reachable MVP state.
-- [x] Ensure every API constant uses a canonical path without a trailing slash.
-- [x] Keep `307` invisible to users and prevent normal prediction uploads from redirecting.
-- [x] Add component tests for `404` and `405` using stable Vietnamese copy.
-- [x] Add a transport test confirming raw backend messages are never rendered.
+- [ ] Add the three Vietnamese placeholder keys to `apps/web/src/content/vi.ts`.
+- [ ] Add typed `404` and `405` classifications in `apps/web/src/services/inferenceApi.ts`.
+- [ ] Reserve the `403` key without presenting it as a currently reachable MVP state.
+- [ ] Ensure every API constant uses a canonical path without a trailing slash.
+- [ ] Keep `307` invisible to users and prevent normal prediction uploads from redirecting.
+- [ ] Add component tests for `404` and `405` using stable Vietnamese copy.
+- [ ] Add a transport test confirming raw backend messages are never rendered.
 - [ ] Add future `304` coverage only after Backend implements the ETag contract.
-
-Local implementation and tests are ready for independent review. Checkpoint task boxes
-in `specs/001-vsl-recognition-mvp/tasks.md` remain open until integration acceptance.
 
 ## Acceptance cases
 
