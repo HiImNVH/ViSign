@@ -96,3 +96,4 @@ Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `
   của API; thêm ngoại lệ preflight CORS (không `X-Request-ID`, origin lạ nhận `400` text thường, FE xử lý như lỗi
   mạng/CORS) và ghi hậu quả của `CORS_ALLOW_CREDENTIALS=true`; thêm mục lịch sử thay đổi.
 - Không đổi `openapi.yaml`, Python domain hay `inference-api.ts`: drift test vẫn xanh trong gate API + contract.
+- Follow-up đã push: [`8cadadc`](https://github.com/HiImNVH/ViSign/commit/8cadadc83919aa4a003eaf2014a255848d2d6265); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).

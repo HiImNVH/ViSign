@@ -125,3 +125,4 @@ Ghi chú không chặn — xử lý ở task sau:
 
 - **T023**: `VERIFIED` (P1; P5 không yêu cầu sửa logging), `[X]`.
 - **T022**: mở — P5 `CHANGES_REQUESTED`: chặn `cors_allow_credentials=True` qua cấu hình (áp dụng cả wiring T026).
+- Follow-up đã push: [`b139007`](https://github.com/HiImNVH/ViSign/commit/b1390074e57aafa57c8ad3e8f5c928dae2d6d932); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).

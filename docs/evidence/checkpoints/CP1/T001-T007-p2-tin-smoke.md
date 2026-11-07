@@ -159,3 +159,4 @@ commit (đã ghi trong review P5); toolchain và lockfile không đổi nên kh�
   hygiene của `quality.yml` đang chặn (`0954dd1`).
 - `git check-ignore`: `a.zip`, `b/c.7z`, `d.rar` bị ignore; `keep.csv`, `data/manifests/p0-meanings.csv` vẫn được track.
 - `git ls-files`: không có file nén nào đang được track. Không đổi checkbox T007 (đã `[X]` khi đóng CP1).
+- Follow-up đã push: [`9abd2f3`](https://github.com/HiImNVH/ViSign/commit/9abd2f35c34cbe859444e2a52f2a7859dc20e0ab); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).

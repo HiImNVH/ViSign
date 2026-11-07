@@ -136,3 +136,5 @@ Ghi chú không chặn:
 - Test viết trước: thêm `{"classLabel": "   "}` → 1 failed; sau khi sửa 19 passed.
 - Toàn bộ API + contract `-W error`: 179 passed, 1 skipped; Ruff, mypy đạt.
 - T020 chờ P5 kiểm lại cả hai điểm (`6ee9e61` và commit này).
+- Follow-up đã push: [`542e33f`](https://github.com/HiImNVH/ViSign/commit/542e33f9061a9b9a8374b8c4cabf378805f7a320); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42371289103).
+- Follow-up T020 lần 1 đã push: [`6ee9e61`](https://github.com/HiImNVH/ViSign/commit/6ee9e613e5fcafa5ed2fdcbc83aaf863d110d00d); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42370782722).
