@@ -25,5 +25,8 @@ No dataset rights or specialist verification is asserted by this documentation c
 
 ## Publication
 
-Commit SHA, remote verification and CI result will be recorded after publication in a follow-up evidence update.
+- Published commit: [c034e6e421f3788fdb7ecbc90ab558476ae310b0](https://github.com/HiImNVH/ViSign/commit/c034e6e421f3788fdb7ecbc90ab558476ae310b0).
+- git pull --rebase origin main: HEAD up to date; pre-push divergence 0 1.
+- git push origin HEAD:main: exit 0, 3815e45..c034e6e.
+- GitHub Actions: not verified in this session; documentation gates above passed locally.
 No force push or amend. Local unrelated draft files remain in the original workspace.
