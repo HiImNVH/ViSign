@@ -57,3 +57,27 @@ MediaPipe/torch, healthcheck, header thật qua nginx, độ trễ clip thật t
    Elastic IP + Docker, CloudFront hai behavior; T096 cho IAM, SSM, CloudWatch, Budget, HSTS.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy (local Docker, 2026-11-08)
+
+Máy: Windows 11 + Docker Desktop 29.9.2 (engine Linux x86_64, 12 CPU, ~12 GB RAM). Build và chạy đúng lệnh bàn giao
+(`compose.production.yml` + `compose.local.yml`), qua nginx `127.0.0.1:8080`.
+
+| Kiểm | Kết quả | Trạng thái |
+|---|---|---|
+| Build lần đầu (cả hai image) | 9 phút 51 giây; `inference-api` 2,86 GB, `web` 90,5 MB | PASS |
+| Smoke artifact fixture (14 mục bàn giao) | `/healthz` 200; `/` có CSP `default-src 'self'` + `Permissions-Policy camera=(self)`; API có CSP `default-src 'none'`, `no-store`, echo `X-Request-ID`, `Server: nginx` (không lộ uvicorn/phiên bản); 404/405 là envelope; 10,5 MiB → 413 `CLIP_TOO_LARGE` từ API; 12 MiB → 413 của nginx; clip WebM → 200 | PASS |
+| Hardening | `id` = uid 10001; `ReadonlyRootfs=true`; `CapDrop=[ALL]`; giới hạn 1,5 GiB; healthcheck `healthy`; `/tmp` tmpfs ghi được | PASS |
+| Luồng GRU thật (artifact pilot tổng hợp `pilot-gru-test-v1`, MediaPipe thật) | **Lỗi:** mọi `POST /predictions` trả 500 `PREDICTION_FAILED`; log: `OSError: libEGL.so.1: cannot open shared object file` khi MediaPipe Tasks nạp thư viện C | **FAIL → đã sửa** |
+| Sau bản vá Dockerfile (thêm `libegl1 libgles2` ở stage runtime) | Rebuild 2 phút 46 giây; clip không có người → 422 `NO_PERSON_DETECTED` đúng contract, 0,94–2,23 s/clip qua nginx | PASS |
+| Bộ detector tạo sẵn của `a214a3c` trong container | RAM nghỉ 447,5 MiB; 6 clip liên tiếp 0,94–1,25 s; **RAM đỉnh 962 MiB** (< 1.536 MiB); không có cảnh báo detector | PASS |
+
+Bản vá `infra/aws/docker/inference-api.Dockerfile` do P1 viết nên **P2/Tín cần review** (không tự xác nhận). CI hiện
+không build image, nên lỗi này chỉ lộ khi chạy MediaPipe thật trong container; đề xuất thêm job build + smoke
+`/predictions` cho Docker (T091/T095).
+
+Chưa kiểm: clip có người thật trong container (chỉ dùng clip không có người, không dùng video mặt người khác), CSP với
+trình duyệt thật (Hiển), toàn bộ phần AWS. Việc AWS cần lead quyết: tài khoản, instance ≥ 2 GB RAM x86_64 (đề xuất
+≥ 2 GB vì API đỉnh ~1 GB + web ~12 MB + hệ điều hành), hạn mức chi phí; quyết định rate limit 429.
+
+**Reviewer result**: `P1_PARTIAL` — Docker local đạt sau bản vá libEGL; T095 giữ `[ ]` chờ Tín review bản vá và deploy AWS.

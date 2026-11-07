@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
+Cập nhật `2026-11-08T02:55:00+07:00` trên `origin/main` `a214a3c`.
 
 ### Checkpoint
 
@@ -43,7 +43,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T034–T036 | P3 | Loader, preset pilot/full, CLI train + xuất artifact | `VERIFIED`, `[X]` (P1; P2 xác nhận artifact) |
 | T030, T037, T038 | P2 | Registry, adapter đặc trưng (parity 6/6), adapter GRU pilot/full, `POST /predictions` | `VERIFIED`, `[X]` |
 | T041–T043, T046, T052 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi, thông báo lỗi tiếng Việt | `VERIFIED`, `[X]` (P1) |
-| T065 | P3 | Benchmark latency/tài nguyên | Đã khởi tạo detector song song (−13% p95) nhưng web p95 5,87 s — **SC-002 vẫn trượt**; chờ production |
+| T065 | P3 + P2 | Benchmark latency/tài nguyên | Detector song song (P3) + bộ detector tạo sẵn (P2, `a214a3c`, −194 ms/request khi có khoảng nghỉ) P1_VERIFIED; local p95 3,26 s — **SC-002 vẫn trượt**; chờ production |
 | T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
 | T066, T072, T073 | P2 | Audit privacy + dọn clip tạm; 404/405/307 theo contract | `VERIFIED`, `[X]` (P1) |
 | T064 | P2 | Pipeline clip đại diện + đổi artifact fixture/pilot/full | `VERIFIED`, `[X]` (P1) |
@@ -53,8 +53,9 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
 | T068, T090 | P1 | Demo script; báo cáo kiến trúc (6 hành động đề xuất) | Bản đầu; T090 chờ P5 phần FE; chờ review |
 | T027, T028, T031, T051 | P5 | Types, câu chữ, component test, kết quả bị từ chối | `VERIFIED`, `[X]` (P1) |
-| T063 | P5 | Audit accessibility (Hiển, `b5ca295`) | P1 `CHANGES_REQUESTED`: nội dung đạt, bộ test chập chờn 1–4/21 do lỗi camera khi quay |
-| T088 | P5 (trợ lý làm theo uỷ quyền P1) | Audit UX: 18 ảnh, 7 phát hiện, 1 lỗi bố cục mobile 320 px | Chờ P5 review |
+| T063 | P5 | Audit accessibility (Hiển, `b5ca295`, sửa recorder `a6d8a9d`) | `VERIFIED`, `[X]` (P1): 90/90 lặp 3 lần; trình đọc màn hình thật NOT_RUN |
+| T088 | P5 + P1 | Audit UX (P1) + sửa a11y/bố cục 320 px (P5 `a40c68a`) | `VERIFIED`, `[X]` (review chéo) |
+| T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá + AWS |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |

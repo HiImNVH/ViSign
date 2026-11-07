@@ -74,3 +74,14 @@ tài nguyên device), vì người dùng thật có thể gặp; (2) làm bộ t
 - Full gate `cd apps/web; $env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check`: **exit 0**, ESLint/TypeScript/Vite PASS, **168 unit PASS / 4 skip**, **84 Edge browser PASS / 12 skip**. Skips: 9 optional T088 screenshot specs; 3 T040 live API specs.
 - **Follow-up status: TEST_PASS / READY_FOR_INDEPENDENT_REREVIEW.** Historical P1 `CHANGES_REQUESTED` is preserved. Requires P1/P2 to re-run on the environment that originally failed; no self-VERIFIED and T063 remains `[ ]`.
 - Follow-up commit: [`a6d8a9d28330a68df7e16076ead1bd3febfb4872`](https://github.com/HiImNVH/ViSign/commit/a6d8a9d28330a68df7e16076ead1bd3febfb4872), pushed to `origin/main` on 2026-11-08.
+
+## Independent re-review — P1/Huy (2026-11-08, sau `a6d8a9d`)
+
+- Đọc `cameraSession.ts`: chỉ chuyển sang `recording` sau khi `MediaRecorder.start()` thành công; trạng thái recorder
+  bất thường được fail-closed thay vì treo; log chỉ có tên lỗi trong danh sách cho phép, giai đoạn, MIME, số byte/chunk,
+  thời gian, trạng thái track — không có video, nhãn/ID thiết bị hay thông điệp lỗi.
+- Trên đúng máy từng hỏng (Edge, camera giả): trước bản sửa, `npm run check` hỏng 7 test T063 với `Camera gặp lỗi`
+  (máy đang build Docker song song); sau bản sửa, `recognition-accessibility.spec.ts` + `frontend-quality.spec.ts`
+  `--repeat-each=3 --retries=0 --workers=1` = **90/90 PASS**.
+
+**Reviewer result**: `P1_VERIFIED`, tick `[X]` T063. Vẫn NOT_RUN: trình đọc màn hình thật (NVDA/VoiceOver), webcam thật.

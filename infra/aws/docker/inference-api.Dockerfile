@@ -45,9 +45,10 @@ for item in manifest:
 EOF
 
 FROM ${PYTHON_IMAGE} AS runtime
-# libGL/glib cho opencv-contrib-python ma MediaPipe dung (giong buoc cai cua job AI tren CI)
+# libGL/glib cho opencv-contrib-python; libEGL/GLES cho thu vien C cua MediaPipe Tasks
+# (thieu libEGL.so.1 -> moi POST /predictions tra 500 PREDICTION_FAILED, P1 smoke 2026-11-08)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 libegl1 libgles2 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --uid 10001 --no-create-home --shell /usr/sbin/nologin visign
 COPY --from=builder /opt/venv /opt/venv

@@ -56,3 +56,14 @@ review. Revert T088 micro-commit if its visual/accessibility changes regress.
 - [ ] Independent reviewer repeated test.
 
 **Reviewer result:** PENDING. **Reviewer note:** Awaiting independent assessment.
+
+## Independent review — P1/Huy (2026-11-08)
+
+- Báo cáo ban đầu do P1 viết đã được P5 đối chiếu độc lập; phần code của P5 do P1 review.
+- `CameraRecorder.tsx`: accessible name của nút gửi đổi thành `Đang nhận diện…` khi pending, khớp chữ hiển thị
+  (WCAG 2.5.3); test unit và T053 cập nhật tương ứng. `styles.css`: dưới 480 px, `.transcript-panel` xuống `top: 48px`,
+  hết che badge trạng thái (phát hiện #1 của P1).
+- Lặp `frontend-quality.spec.ts` 3 lần × 3 viewport cùng T063: **90/90 PASS**; unit 165 passed/4 skipped.
+- Phát hiện #2–#6 còn là việc theo dõi mức thấp/trung bình; #7 (camera chập chờn) đã xử lý ở T063 `a6d8a9d`.
+
+**Reviewer result**: `P1_VERIFIED`, tick `[X]` T088.

@@ -237,7 +237,7 @@ provenance và `demoReady` đúng gate.
 - [X] T064 [P] Thêm integration test cùng representative clip tạo tensor/mask khớp offline↔API, rồi nạp artifact, prediction, temporary-video cleanup và artifact swap cho fixture/pilot/full tại `tests/integration/test_prediction_pipeline.py`
 - [ ] T065 Chạy performance benchmark và ghi p50/p95 per-stage/total, throughput, CPU/RAM peak trên local và production tại `ai/src/visign_ai/evaluation/benchmark_inference.py` và `docs/performance-report.md`
 - [X] T066 Audit privacy để chứng minh không có video/frame/PII trong log hoặc artifact tại `tests/integration/test_prediction_privacy.py`
-- [ ] T063 [P] Chạy accessibility audit cho keyboard, focus, status announcements và camera labels tại `apps/web/tests/accessibility/recognition-accessibility.spec.ts`, lưu kết quả trong `docs/verification-report.md`
+- [X] T063 [P] Chạy accessibility audit cho keyboard, focus, status announcements và camera labels tại `apps/web/tests/accessibility/recognition-accessibility.spec.ts`, lưu kết quả trong `docs/verification-report.md`
 - [ ] T067 Chạy toàn bộ quickstart gồm local, CI, cloud smoke, fallback/swap/rollback và lưu commit/revision/results vào `docs/verification-report.md`
 - [ ] T068 [P] Viết demo script theo rubric, gồm bài toán thực tế, điểm khác biệt, full/pilot disclosure, dữ liệu, model, cloud, chi phí, giới hạn và Q&A tại `docs/demo-script.md`
 - [ ] T069 [P] Viết hướng dẫn cài đặt, cấu trúc module, checkpoint Git, chạy local/cloud, artifact switching/rollback và giới hạn MVP tại `README.md`
@@ -312,7 +312,7 @@ workflow và production smoke/rollback mà không cần hỏi người viết co
 - [ ] T085 [P] [US5] Duy trì ma trận 8 nhóm/100 điểm với owner, task, artifact, gate và trạng thái tại `docs/team/judging-criteria-mapping.md`
 - [X] T086 [P] [US5] Thiết lập quy tắc direct-main tuần tự, integration queue, commit format/scope theo từng thành viên, pre-push gates, mẫu smoke evidence có SHA/Actions/report/cloud link và 5 workspace logs tại `docs/team/git-checkpoints.md`, `docs/team/checkpoint-evidence-template.md`, `docs/team/member-template.md`, `members/README.md` và `members/p1-huy/README.md` đến `members/p5-hien/README.md`
 - [ ] T087 [P] [US5] Viết hồ sơ sáng tạo và tính khả thi gồm đối tượng sử dụng, pain point, điểm khác biệt, comparison, phạm vi áp dụng và bằng chứng user validation tại `docs/innovation-feasibility.md`
-- [ ] T088 [P] [US5] Audit FE/UI/UX theo responsive, accessibility, camera usability, module/component boundaries và visual consistency; lưu screenshot/test evidence tại `docs/frontend-quality-report.md`
+- [X] T088 [P] [US5] Audit FE/UI/UX theo responsive, accessibility, camera usability, module/component boundaries và visual consistency; lưu screenshot/test evidence tại `docs/frontend-quality-report.md`
 - [ ] T089 [P] [US5] Viết tests/report cho OOD, signer/lighting/angle edge cases, false accept, class imbalance/bias, stability và giải thích decision rule tại `ai/tests/evaluation/test_safety_robustness.py` và `docs/ai-safety-report.md`
 - [ ] T090 [P] [US5] Review cấu trúc module, dependency direction, coding conventions, duplication và khả năng mở rộng FE/BE/AI; ghi action/evidence tại `docs/architecture-quality-report.md`
 - [ ] T091 [US5] Cài GitHub Actions quality/deploy gates cho lint, typecheck, unit, contract, integration, web build và AWS deploy-after-pass bằng OIDC tại `.github/workflows/quality.yml` và `.github/workflows/deploy-aws.yml`

@@ -63,3 +63,16 @@ này (p95 3,26 s); cần đo trên host production (T095).
 - T095: tính thêm khoảng 160 MiB RAM cho API khi chọn instance; giới hạn 1.536 MiB trong Compose vẫn đủ.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy (2026-11-08)
+
+- Chạy lại trên `a214a3c`: `services/inference-api` **355 passed, 3 skipped**; contract/security/integration ở `tests/`
+  **60 passed, 2 skipped**; ruff sạch; mypy 33 file sạch.
+- Đọc `detector_pool.py`: một bộ dự phòng, tạo/đóng ở thread nền, chờ tối đa 2 s rồi tự tạo; candidate artifact lỗi
+  không khởi động pool; lifespan đóng bộ dự phòng. Có cờ `DETECTOR_PREWARM_ENABLED` để tắt mà không đổi code.
+- Trong Docker (root read-only, cap_drop ALL): pool khởi động bình thường, RAM nghỉ 447,5 MiB, đỉnh 962 MiB, clip 5 s
+  ~1,0 s qua nginx (trước prewarm ~1,5 s), không có cảnh báo detector. Chi tiết ở evidence T095.
+- Phần AI của P3 (`34e63ee`): 8/8 ca `test_prepared_detectors.py` (thêm 4 ca song song giữ thứ tự frame và đóng
+  detector trên đúng worker kể cả khi một nhóm lỗi), toàn bộ AI 87 passed/5 skipped, ruff + mypy sạch.
+
+**Reviewer result**: `P1_VERIFIED` phần tích hợp prewarm. T065 giữ `[ ]`: SC-002 cần số đo trên host production.
