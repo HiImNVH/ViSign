@@ -1,25 +1,61 @@
+# .gitignore
+# Loai raw video, artifact sinh ra, model binary, file tam va secret; giu manifest/metadata.
+
+# Thu muc build va dependency cua web
 node_modules/
 dist/
 coverage/
 playwright-report/
 test-results/
-.env.local
 
-# Python runtime and test cache
+# Cache Python, cache cong cu va moi truong ao cuc bo
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 .venv/
+.venv-ai/
 
-# Local integration environments and private inventories
+# Moi truong tich hop cuc bo va danh muc rieng tu
 .int-env/
 .local/
 
-# AI local environment, detector assets and generated outputs
-.venv-ai/
+# Secret va credential; .env.example van duoc track lam tai lieu
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*-credentials.json
+service-account*.json
+
+# Raw video nam ngoai repository (FR-011, hien phap IV)
+*.mp4
+*.webm
+*.mov
+*.avi
+*.mkv
+data/raw/
+data/processed/
+
+# Landmark bulk va model binary; metadata JSON/CSV van duoc track
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.tflite
+*.task
 ai/models/
 ai/artifacts/
 ai/processed/
-*.egg-info/
-.ruff_cache/
-.mypy_cache/
+
+# File tam
+*.tmp
+*.temp
+tmp/

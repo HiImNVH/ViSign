@@ -1,0 +1,21 @@
+# pyproject.toml
+# Cau hinh Ruff, mypy va pytest dung chung cho cac project Python cua monorepo.
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = [
+    "services/inference-api/tests",
+    "ai/tests",
+]
+pythonpath = [
+    "services/inference-api/src",
+    "ai/src",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+follow_imports = "skip"
