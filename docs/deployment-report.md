@@ -57,6 +57,7 @@ Trong lúc chờ AWS xác minh CloudFront, container `cloudflare/cloudflared:202
 | `/admin/train-model` | 200 (SPA); admin API vẫn tắt |
 | Dự đoán clip WebM | 200, round-trip **0,42–0,63 s** (nhanh hơn origin trực tiếp 1,7–2 s nhờ edge Cloudflare + kết nối giữ sẵn) |
 | RAM trên EC2 | tunnel 16,9 MiB, web 4,8 MiB, API 60 MiB; máy còn 1,27 GB khả dụng |
+| Webcam thật (Huy, laptop, trình duyệt desktop) | Bật camera → quay → gửi qua HTTPS → hiển thị "Cảm ơn" 95%, cảnh báo fixture `demoReady=false`, bản dịch trực tiếp cập nhật — **luồng end-to-end trên AWS đạt** |
 
 Giới hạn: URL **đổi mỗi khi container/EC2 khởi động lại** (xem bằng `docker logs visign-tunnel` qua SSM); quick tunnel
 không có cam kết uptime; công khai, chưa có rate limit. Tắt: `docker rm -f visign-tunnel`. Thay bằng CloudFront khi AWS
