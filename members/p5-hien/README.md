@@ -17,7 +17,7 @@
 
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
-| `T004/T006 / CP1` | `REVIEW` | web Vite/lint/test config do Tín tạo | Review web toolchain | P1/Huy |
+| `T004/T006 / CP1` | `P5_VERIFIED` | web Vite/lint/test config do Tín tạo | Evidence `docs/evidence/checkpoints/CP1/T004-T006-p5-hien-review.md` | P1/Huy |
 | `T040 / CP2` | `PLANNED` | typed API client và model-info | Quy ước lead tại `docs/team/fe-be-api-convention.md`; chờ Tín đóng băng T099 | P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
@@ -40,6 +40,7 @@
 
 | CP/Task | Purpose | Proposed/actual message | Full SHA | GitHub link | Gate | Reviewer | Status |
 |---|---|---|---|---|---|---|---|
+| `CP1/T004-T006` | Review web toolchain | `CP1 T004-T006(verify): record P5 web toolchain review` | `01eea59dc35eac388223498bee8836a8263e25db` | [commit](https://github.com/HiImNVH/ViSign/commit/01eea59dc35eac388223498bee8836a8263e25db) | Install/lint/typecheck/build, 42 unit và 21 browser PASS; xem evidence về worktree | P5/Hiển | `P5_VERIFIED` |
 | `CP2/T040` | Versioned inference API client | `CP2 T040(web): add versioned inference API client` | `PENDING` | `PENDING` | `NOT_RUN` | P2/Tín, P1/Huy | `BLOCKED` |
 | `CP3/T039` | Explicit local camera capture và resource cleanup | `CP3 T039(web): add explicit camera capture and cleanup` | `e9badadf94ff6f0a086bac5dabddbc49c5cd1f46` | [commit](https://github.com/HiImNVH/ViSign/commit/e9badadf94ff6f0a086bac5dabddbc49c5cd1f46) | 32 unit/component + 8 browser Edge; lint/typecheck/build PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `a074849599176e95abfbb3f606fbbf1df611c0ad` | [commit](https://github.com/HiImNVH/ViSign/commit/a074849599176e95abfbb3f606fbbf1df611c0ad) | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `PUSHED` |
