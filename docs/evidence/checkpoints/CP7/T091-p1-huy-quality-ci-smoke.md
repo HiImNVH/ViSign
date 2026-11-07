@@ -112,3 +112,9 @@ Tái lập trên `origin/main` `7b1e84f`:
 | Whitespace | `git diff --check 7b3c073 HEAD`: PASS |
 
 **Follow-up result**: `P2_VERIFIED` — 4/4 ghi chú đã xử lý đúng; `ruff format --check` vẫn để T092.
+
+## Follow-up — chặn file nén (`2026-11-07T16:38:40+07:00`)
+
+Review T008 phát hiện `.zip` không bị `.gitignore` lẫn CI chặn (repo legacy từng track ZIP video 21 MB).
+Bước hygiene thêm `zip|7z|rar` vào danh sách đuôi cấm; hiện không có file nén nào được track.
+`.gitignore` thuộc P2 (T001–T007), đề xuất Tín thêm `*.zip` riêng.

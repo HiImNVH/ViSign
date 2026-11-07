@@ -102,7 +102,7 @@ jobs:
           fetch-depth: 0
       - name: Reject tracked raw media, model binaries and secrets
         run: |
-          forbidden=$(git ls-files | grep -E -i '\.(mp4|webm|mov|avi|mkv|npz|npy|pt|pth|ckpt|onnx|safetensors|tflite|task|pem|key|p12)$|(^|/)\.env$|service-account.*\.json$|-credentials\.json$' || true)
+          forbidden=$(git ls-files | grep -E -i '\.(mp4|webm|mov|avi|mkv|npz|npy|pt|pth|ckpt|onnx|safetensors|tflite|task|zip|7z|rar|pem|key|p12)$|(^|/)\.env$|service-account.*\.json$|-credentials\.json$' || true)
           if [ -n "$forbidden" ]; then
             echo "Forbidden tracked files:"; echo "$forbidden"; exit 1
           fi
