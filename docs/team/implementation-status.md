@@ -63,8 +63,8 @@ Cập nhật `2026-11-08T03:10:00+07:00` trên `origin/main` `f9232cd`.
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
-| T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; giữ `[ ]` chờ metric thật |
-| T083 | P3 | Pilot **Sốt–Cảm ơn** (`SOT`, `CAM_ON`) | **BLOCKED 0 clip**: manifest ghi `licenseStatus=unknown` trái quyết định khai quyền mức bộ dữ liệu (P4 sửa); split trống; schema v0.3 đã APPROVED |
+| T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; đã ghi metric pilot nội bộ, chờ review cập nhật và đánh giá full |
+| T083 | P3 | Pilot nội bộ | P3 đã chạy lại pilot Giấy tờ / Nhận, 15 clip, accuracy 25%, macro-F1 0,3333, demoReady=false. Chờ Huy chốt đổi phạm vi từ Sốt / Cảm ơn, xác nhận T076 và nghiệm thu T078–T082. [Báo cáo](../pilot-report.md) |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip
