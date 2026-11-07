@@ -1,0 +1,38 @@
+{
+  "modelVersion": "vsl-fixture-low-confidence-v0.0.1",
+  "artifactKind": "fixture",
+  "datasetVersion": "fixture-no-dataset",
+  "featureSchemaVersion": "visign-xy-32-v0.3-draft",
+  "extractorVersion": "tasks-hand-pose-face-1.1.1-24d9ff64192c8dc3",
+  "meanings": [
+    "CAM_ON",
+    "SOT",
+    "GIAY_TO"
+  ],
+  "classLabels": [
+    "CAM_ON_HN_1",
+    "SOT_HCM_1",
+    "GIAY_TO_HCM_1"
+  ],
+  "meaningMap": {
+    "CAM_ON_HN_1": "CAM_ON",
+    "SOT_HCM_1": "SOT",
+    "GIAY_TO_HCM_1": "GIAY_TO"
+  },
+  "displayTextMap": {
+    "CAM_ON": "Cảm ơn",
+    "SOT": "Sốt",
+    "GIAY_TO": "Giấy tờ"
+  },
+  "acceptanceThreshold": 0.7,
+  "accuracy": null,
+  "macroF1": null,
+  "perMeaningPrecision": null,
+  "perMeaningRecall": null,
+  "evaluatedAt": null,
+  "demoReady": false,
+  "fixtureResponse": {
+    "classLabel": "SOT_HCM_1",
+    "confidence": 0.42
+  }
+}

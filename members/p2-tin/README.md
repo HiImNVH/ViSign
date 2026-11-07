@@ -28,7 +28,7 @@
 | `T026 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | Huy verify `6cc3900`; chờ Hiển xem CORS/expose header | P1/Huy, P5/Hiển (CORS) |
 | `T024-T025 / CP2` | `DONE` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Huy verify `6cc3900`; đã đánh `[X]` trong `tasks.md`; ghi chú: kiểm 10 MiB trước khi đọc hết body (T049) | P1/Huy |
 | `T099 / CP2` | `P1_VERIFIED` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Lead verify `6cc3900`; `HealthResponse.modelVersion` chốt optional + nullable; chờ Hiển xác nhận consumer | P5/Hiển và P1/Huy |
-| `T037 / CP3` | `DOING` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter đặc trưng + parity đã push `7d5c16a` (CI success), chờ Cường chạy parity clip đại diện; GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
+| `T037 / CP3` | `DOING` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter + parity đã push `7d5c16a`; loader/fixture/registry gate local PASS, chờ owner cho push; GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
@@ -36,15 +36,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T095 / CP7` (benchmark chọn instance AWS) |
-| Proposed commit | `CP7 T095(cloud): add serving RAM and latency benchmark for AWS sizing` |
-| Exact staged paths | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md`, `members/p2-tin/README.md` |
-| Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `1c4539f` lúc 2026-11-07T17:12+07:00 |
-| Gate commands | Đầu dò RAM +300 MB đúng; benchmark 4 clip × 2 lần; Ruff/format/mypy script; gate API mặc định |
-| Smoke evidence | `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` |
-| Local commit | `89f5443d82a8292e5fb8a0f0c9b637e0dda7445d` |
-| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`) |
-| Push status | `PUSHED` lúc 2026-11-07T17:07:24+07:00 — [commit](https://github.com/HiImNVH/ViSign/commit/89f5443d82a8292e5fb8a0f0c9b637e0dda7445d); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42362596296) |
+| Task/checkpoint | `T030/T037 / CP3` (loader, fixture predictor, registry) |
+| Proposed commit | `CP3 T030,T037(api): add artifact loader, fixture predictor and registry` |
+| Exact staged paths | `services/inference-api/src/visign_api/inference/{artifact_loader,predictor,predictor_registry}.py`, `services/inference-api/tests/unit/{test_artifact_loader,test_predictor_registry}.py`, `services/inference-api/tests/fixtures/model-artifacts/{fixture,fixture-low-confidence}/model_info.json`, `members/p2-tin/README.md`, `docs/evidence/checkpoints/CP3/T037-p2-tin-artifact-registry-smoke.md` |
+| Pre-commit sync | `PASS` — stash/pull/apply qua `bc642c1` (T017 của P3); gate chạy lại; `origin/main...HEAD` = `0 0` |
+| Gate commands | RED→GREEN 28 passed, 3 mutation fail, API+contract 173 passed + 1 skipped ×3 `-W error`, Ruff/format/mypy |
+| Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-artifact-registry-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `NOT_PUSHED` — CP3: chờ owner xác nhận push |
 
 ## Commit ledger
 
@@ -68,6 +68,7 @@
 | `CP3/T037 serving` | Adapter đặc trưng + parity offline ↔ API | `CP3 T037(api): add serving feature extraction adapter with parity test` | `7d5c16ac3db817764d042853b8b6276cd825b870` | [commit](https://github.com/HiImNVH/ViSign/commit/7d5c16ac3db817764d042853b8b6276cd825b870) | 145 passed + parity VP8/VP9; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42361742686) | P3/Cường, P1/Huy | `PUSHED` |
 | `CP2/T024-T025 done` | Đánh `[X]` T024–T025 sau P1 verify | `CP2 T024-T025(api): mark temporary clip tasks done after P1 verify` | `1c4539f3dd244de569dbb6e2ee38e8fa1cd3c010` | [commit](https://github.com/HiImNVH/ViSign/commit/1c4539f3dd244de569dbb6e2ee38e8fa1cd3c010) | Task format 99/0 | P1/Huy | `PUSHED` |
 | `CP7/T095 benchmark` | Benchmark RAM/độ trễ cho AWS | `CP7 T095(cloud): add serving RAM and latency benchmark for AWS sizing` | `89f5443d82a8292e5fb8a0f0c9b637e0dda7445d` | [commit](https://github.com/HiImNVH/ViSign/commit/89f5443d82a8292e5fb8a0f0c9b637e0dda7445d) | 4 clip × 2 lần; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42362596296) | P1/Huy, P3/Cường | `PUSHED` |
+| `CP3/T030,T037 registry` | Loader, fixture predictor, registry fail closed | `CP3 T030,T037(api): add artifact loader, fixture predictor and registry` | `PENDING` | `PENDING` | 173 passed + 1 skipped | P3/Cường, P1/Huy | `LOCAL-DRAFT` |
 
 ## Handoff
 
