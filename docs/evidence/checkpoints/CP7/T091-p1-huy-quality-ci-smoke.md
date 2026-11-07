@@ -99,3 +99,16 @@ Run đầu [42356363410](https://github.com/HiImNVH/ViSign/actions/runs/42356363
 Actions run sau sửa: [42356425710](https://github.com/HiImNVH/ViSign/actions/runs/42356425710) trên `4909fb4` — 4/4 job `success`, không còn annotation cảnh báo Node 20; hygiene kiểm dải `before..HEAD` của push.
 
 **Follow-up result**: 4/4 ghi chú P2 đã xử lý; chờ P2 xác nhận lại nếu cần.
+
+### Xác nhận follow-up — P2/Tín (`2026-11-07T15:50+07:00`)
+
+Tái lập trên `origin/main` `7b1e84f`:
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Tag action tồn tại | `actions/checkout@v7`, `actions/setup-node@v7`, `astral-sh/setup-uv@v10.3.3`: GitHub API trả 200 |
+| Actions | [42356425710](https://github.com/HiImNVH/ViSign/actions/runs/42356425710) (`4909fb4`) và [42356530609](https://github.com/HiImNVH/ViSign/actions/runs/42356530609) (`7b1e84f`): `success` |
+| Nội dung | YAML parse OK; job `api` vẫn chạy `tests/contract` (drift T099); group concurrency theo `github.sha` cho push; hygiene kiểm `before..HEAD`, danh sách đuôi có `.safetensors`/`.tflite` |
+| Whitespace | `git diff --check 7b3c073 HEAD`: PASS |
+
+**Follow-up result**: `P2_VERIFIED` — 4/4 ghi chú đã xử lý đúng; `ruff format --check` vẫn để T092.
