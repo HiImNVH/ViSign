@@ -283,3 +283,46 @@ def test_runtime_takes_detector_directory_and_duration_window_from_settings(
 
     assert gru_runtime.modelDirectory == tmp_path / "detectors"
     assert gru_runtime.durationWindow == DurationWindow(minMs=500, maxMs=5000)
+
+
+def test_runtime_prewarms_detectors_unless_disabled() -> None:
+    enabled = GruRuntime.from_settings(Settings(_env_file=None))  # type: ignore[call-arg]
+    disabled = GruRuntime.from_settings(
+        Settings(_env_file=None, detector_prewarm_enabled=False)  # type: ignore[call-arg]
+    )
+
+    assert enabled.prewarmDetectors is True
+    assert disabled.prewarmDetectors is False
+    # Tao truc tiep (test, cong cu) thi khong chay thread nen tru khi bat ro
+    assert GruRuntime(modelDirectory=None).prewarmDetectors is False
+
+
+class ClosableExtractor(StubExtractor):
+    def __init__(self) -> None:
+        super().__init__(lambda clip_path: extracted_features())
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def test_closing_predictor_releases_feature_extractor() -> None:
+    closable_extractor = ClosableExtractor()
+    gru_components = GruComponents(
+        featureExtractor=closable_extractor,
+        classifier=StubClassifier(np.array([0.2, 0.7, 0.1], dtype=np.float32)),
+        durationWindow=CONTRACT_WINDOW,
+    )
+
+    GruPredictor(pilot_artifact(), gru_components).close()
+
+    assert closable_extractor.closed is True
+
+
+def test_closing_predictor_without_background_resources_is_safe() -> None:
+    plain_predictor = predictor_with(
+        StubClassifier(np.array([0.2, 0.7, 0.1], dtype=np.float32)),
+        lambda clip_path: extracted_features(),
+    )
+
+    plain_predictor.close()

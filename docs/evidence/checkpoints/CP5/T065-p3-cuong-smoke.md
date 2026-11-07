@@ -135,3 +135,10 @@ T065 giữ `[ ]` theo P1: chờ số đo production và SC-002.
 Trên baseline `02cb36a`, bổ sung bốn ca cho nhánh `parallel-by-group`: giữ thứ tự frame của cả ba nhóm và đóng detector trên đúng worker khi xử lý thành công hoặc khi từng nhóm hand, pose, face báo lỗi.
 
 Gate Windows gồm toàn bộ test AI và parity offline ↔ API trên một clip thật: **88 passed, 5 skipped** (bốn fixture MediaRecorder chưa cấp, một ca symlink thiếu quyền). Ruff check AI, format file test và mypy AI đạt. Phép chạy này chưa đo độ trễ qua HTTP của bộ detector tạo sẵn.
+
+## Tích hợp API — P2/Tín
+
+API dùng `prepare_detectors` qua pool một bộ dự phòng ở thread nền (`DETECTOR_PREWARM_ENABLED`, mặc định bật).
+A/B 38 clip người thật × 2 vòng: 76/76 cặp cùng đầu ra; extract p50 2.861 → 2.589 ms; processing giảm trung vị
+194 ms khi request có khoảng nghỉ, không lợi khi request dồn liên tục; RAM đỉnh +157 MiB; p95 processing 3.259 ms nên
+SC-002 vẫn chưa đạt. Chi tiết: [evidence P2](T065-p2-tin-prepared-detectors-smoke.md).

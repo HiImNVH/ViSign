@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # Swagger/ReDoc/openapi.json chi bat khi dev local (API_DOCS_ENABLED=true); production tat de khong lo
     # be mat API thua (T092). Contract chinh thuc nam o specs/.../contracts/openapi.yaml
     api_docs_enabled: bool = False
+    # Tao san bo detector MediaPipe o thread nen cho request ke tiep (T065, SC-002); tat bang
+    # DETECTOR_PREWARM_ENABLED=false de quay ve tao detector theo tung clip ma khong can doi code
+    detector_prewarm_enabled: bool = True
 
     @field_validator("cors_origins")
     @classmethod

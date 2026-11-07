@@ -43,22 +43,22 @@
 | `T092 / CP4` | `DONE` | `tests/security/`, `scripts/security_audit.py`, `api/security_headers.py`, `docs/security-report.md` | `P1_VERIFIED`, `[X]` (Huy `b23c10f`); rate limit 429 chờ lead chọn WAF ở biên hay limiter trong API | P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `T095 / CP7 Docker` | `HANDOFF` → P1/Huy | `infra/aws/docker/`, `infra/aws/nginx/`, `infra/aws/compose.*.yml`, lock torch CPU | Build qua mọi bước, chưa smoke vì ổ C: máy build hết chỗ; Huy build/smoke rồi làm AWS khi chốt tài khoản và instance (`CP7/T095-p2-tin-docker-handoff.md`) | P1/Huy |
-| `T065 / CP5 API` | `PLANNED` | `services/inference-api/src/visign_api/inference/` | Tích hợp `prepare_detectors` của P3 (`592db9c`): tạo bộ detector ở worker nền, đóng sau request, xử lý đổi artifact và shutdown; đo lại p95 HTTP kèm parity (SC-002) | P3/Cường, P1/Huy |
+| `T065 / CP5 API` | `REVIEW` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`): 76 cặp clip thật cùng đầu ra; giảm 194 ms/request khi có khoảng nghỉ, không lợi khi request dồn; RAM +157 MiB; SC-002 vẫn chưa đạt (p95 3,26 s) | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T065` review (CP5), `T095` Docker bàn giao (CP7) |
-| Proposed commit | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` |
-| Exact staged paths | 14 path: evidence T065 và T095, README này, `infra/aws/README.md`, `infra/aws/docker/` (4), `infra/aws/nginx/` (2), `infra/aws/compose.*.yml` (2), API `pyproject.toml`, `uv.lock` |
-| Pre-commit sync | `PASS` — `0 0` trên `a255a7c` (sau khi pull review P1 T092/T065, P3 `592db9c`, P5 web và schema v0.3 `a255a7c`) |
-| Gate commands | API + contract + integration + security 417 passed, 3 skipped (extra `serving`); như CI 355 passed, 2 skipped, Ruff, mypy 58 file; `docker compose config`; image web build OK, image API qua mọi bước tới unpack |
-| Smoke evidence | `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; review trong `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md` |
-| Local commit | `02cb36a` |
-| Pre-push sync | `PASS` — `0 1` trên `a255a7c` |
-| Push status | `PUSHED` `a255a7c..02cb36a`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) |
+| Task/checkpoint | `T065` phần API (CP5) |
+| Proposed commit | `CP5 T065(api): prewarm single-use detector sets off the request path` |
+| Exact staged paths | 15 path: `detector_pool.py` (mới), `feature_extraction.py`, `gru_predictor.py`, `predictor.py`, `predictor_registry.py`, `main.py`, `config.py`; 4 file unit test, 1 file integration test; evidence P2 và evidence T065 của P3; README này |
+| Pre-commit sync | `PASS` — `0 0` trên `e5d1f26` (sau khi pull T065 test của P3 và 4 commit web/tài liệu của P5) |
+| Gate commands | Có `serving` và clip thật: 439 passed, 0 skipped; như CI 371 passed, 3 skipped và security + integration 44 passed, 2 skipped; Ruff, format, mypy 61 file; 14/14 mutation; A/B 76 cặp clip thật |
+| Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `PENDING` |
 
 ## Commit ledger
 
@@ -117,8 +117,9 @@
 - Next owner/action: Huy nhận phần Docker/Compose T095 (build, smoke local, rồi AWS sau khi chốt tài khoản và
   instance) theo `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; Huy chốt rate limit 429 (WAF ở biên
   hay limiter trong API, FE xử lý trước theo D3) và thêm `tests/integration`, `tests/security`, `ruff format --check`
-  vào CI; Cường format `ai/src/visign_ai/evaluation/metrics.py` và thêm unit test nhánh `parallel-by-group`; Tín tích
-  hợp `prepare_detectors` vào API (SC-002).
+  vào CI; Cường format `ai/src/visign_ai/evaluation/metrics.py`; Huy và Cường review pool bộ detector tạo sẵn phía
+  API (`docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md`); SC-002 vẫn trượt nên cần thêm
+  hướng giảm độ trễ (giữ detector giữa các request, lấy mẫu trước khi chuyển RGB) và đo trên host production.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history

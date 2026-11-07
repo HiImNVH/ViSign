@@ -78,6 +78,8 @@ def build_lifespan(
             runtime_settings, predictor_factories
         )
         yield
+        # Dong bo detector tao san cua predictor dang phuc vu truoc khi tien trinh dung
+        service_app.state.predictor_registry.close()
 
     return lifespan
 

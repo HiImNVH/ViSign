@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
+from visign_api.config import Settings
 from visign_api.domain.errors import ModelNotReadyException
 from visign_api.domain.model_version import ArtifactKind
 from visign_api.inference.artifact_loader import (
@@ -21,6 +23,7 @@ from visign_api.inference.predictor_registry import (
     FIXTURE_PREDICTOR_FACTORIES,
     PredictorRegistry,
 )
+from visign_api.main import create_app
 
 FIXTURE_ARTIFACTS = Path(__file__).resolve().parents[1] / "fixtures" / "model-artifacts"
 CLIP_PATH = Path("unused-clip.webm")
@@ -143,3 +146,69 @@ def test_factory_failure_keeps_previous_predictor() -> None:
         predictor_registry.active_predictor.metadata.modelVersion
         == "vsl-fixture-v0.0.1"
     )
+
+
+class ClosablePredictor(FixturePredictor):
+    # Predictor giu tai nguyen nen (nhu bo detector tao san) va ghi lai lan bi dong
+    def __init__(self, loaded_artifact: LoadedArtifact) -> None:
+        super().__init__(loaded_artifact)
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def closable_registry() -> PredictorRegistry:
+    return PredictorRegistry({ArtifactKind.FIXTURE: ClosablePredictor})
+
+
+def test_activating_new_artifact_releases_previous_predictor() -> None:
+    predictor_registry = closable_registry()
+    predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
+    previous = predictor_registry.active_predictor
+
+    predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
+
+    assert isinstance(previous, ClosablePredictor) and previous.closed is True
+    current = predictor_registry.active_predictor
+    assert isinstance(current, ClosablePredictor) and current.closed is False
+
+
+def test_rejected_candidate_keeps_active_predictor_open(tmp_path: Path) -> None:
+    predictor_registry = closable_registry()
+    predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
+    active = predictor_registry.active_predictor
+
+    with pytest.raises(ArtifactRejectedError):
+        predictor_registry.activate(tmp_path / "missing-artifact", None)
+
+    assert isinstance(active, ClosablePredictor) and active.closed is False
+
+
+def test_registry_close_releases_active_predictor() -> None:
+    predictor_registry = closable_registry()
+    predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
+    active = predictor_registry.active_predictor
+
+    predictor_registry.close()
+
+    assert isinstance(active, ClosablePredictor) and active.closed is True
+
+
+def test_app_shutdown_releases_predictor_resources() -> None:
+    created: list[ClosablePredictor] = []
+
+    def build_closable(loaded_artifact: LoadedArtifact) -> ClosablePredictor:
+        created.append(ClosablePredictor(loaded_artifact))
+        return created[-1]
+
+    fixture_settings = Settings(  # type: ignore[call-arg]
+        _env_file=None, model_artifact_path=FIXTURE_ARTIFACTS / "fixture"
+    )
+    with TestClient(
+        create_app(fixture_settings, {ArtifactKind.FIXTURE: build_closable})
+    ):
+        open_while_serving = [predictor.closed for predictor in created]
+
+    assert open_while_serving == [False]
+    assert [predictor.closed for predictor in created] == [True]

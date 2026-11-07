@@ -2,6 +2,7 @@
 # Ranh gioi API voi pipeline chung cua visign_ai: goi process_video, doi loi sang ma API,
 # chi giu tensor/mask va chi so chat luong, khong de landmark tho roi khoi adapter (T037, FR-019).
 from collections.abc import Callable, Mapping
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Self
@@ -16,6 +17,7 @@ from visign_api.domain.errors import (
     build_api_exception,
 )
 from visign_api.domain.prediction import PredictionQualityHints
+from visign_api.inference.detector_pool import DetectorPool
 from visign_api.inference.pipeline_errors import map_pipeline_error_code
 
 # Tensor schema v0.3: moi diem gom X, Y va mot co hop le
@@ -65,10 +67,19 @@ class ExtractedFeatures:
 
 class FeatureExtractor:
     def __init__(
-        self, pipeline_binding: PipelineBinding, feature_source: FeatureSource
+        self,
+        pipeline_binding: PipelineBinding,
+        feature_source: FeatureSource,
+        detector_pool: DetectorPool | None = None,
     ) -> None:
         self._pipeline_binding = pipeline_binding
         self._feature_source = feature_source
+        self._detector_pool = detector_pool
+
+    def close(self) -> None:
+        # Dong bo detector du phong va cho bo dang dong xong (doi artifact, tat app)
+        if self._detector_pool is not None:
+            self._detector_pool.close(wait=True)
 
     def extract(self, clip_path: Path) -> ExtractedFeatures:
         pipeline_result = self._run_pipeline(clip_path)
@@ -76,13 +87,19 @@ class FeatureExtractor:
         return build_extracted_features(pipeline_result)
 
     def _run_pipeline(self, clip_path: Path) -> Mapping[str, Any]:
+        pipeline_options = {
+            "expected_schema_version": self._feature_source.expectedSchemaVersion,
+            "schema_path": self._feature_source.schemaPath,
+            "model_dir": self._feature_source.modelDirectory,
+        }
         try:
-            return self._pipeline_binding.run(
-                clip_path,
-                expected_schema_version=self._feature_source.expectedSchemaVersion,
-                schema_path=self._feature_source.schemaPath,
-                model_dir=self._feature_source.modelDirectory,
-            )
+            if self._detector_pool is None:
+                return self._pipeline_binding.run(clip_path, **pipeline_options)
+            # None khi chua co bo san sang: pipeline tu tao detector cho clip nay
+            with self._detector_pool.lease() as prepared_detectors:
+                return self._pipeline_binding.run(
+                    clip_path, **pipeline_options, prepared_detectors=prepared_detectors
+                )
         except self._pipeline_binding.errorType as pipeline_error:
             # Ma goc nam trong __cause__ de log server truy vet; client chi nhan ma on dinh cua API
             pipeline_code = str(getattr(pipeline_error, "code", ""))
@@ -133,6 +150,19 @@ def hands_detected_ratio(group_mask: NDArray[np.bool_]) -> float:
         group_mask[:, LEFT_HAND_GROUP] | group_mask[:, RIGHT_HAND_GROUP]
     )
     return float(frames_with_any_hand.mean())
+
+
+def open_visign_ai_detectors(
+    schema_path: Path, model_directory: Path | None
+) -> AbstractContextManager[Any]:
+    # Bo detector dung mot lan cho dung schema cua artifact va thu muc detector; kiem hash nhu luc trich
+    from visign_ai.landmarks.holistic_extractor import prepare_detectors
+    from visign_ai.landmarks.sequence_transform import load_schema
+
+    detector_set: AbstractContextManager[Any] = prepare_detectors(
+        load_schema(schema_path), model_directory
+    )
+    return detector_set
 
 
 def build_visign_ai_binding() -> PipelineBinding:

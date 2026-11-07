@@ -2,7 +2,7 @@
 # Giao dien predictor chung cho fixture/pilot/full va fixture predictor cho ket qua co dinh (T037, T030).
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from visign_api.domain.model_version import ModelMetadata
 from visign_api.domain.prediction import PredictionQualityHints, PredictionTimings
@@ -28,6 +28,17 @@ class Predictor(Protocol):
     def metadata(self) -> ModelMetadata: ...
 
     def predict(self, clip_path: Path) -> RawPrediction: ...
+
+
+@runtime_checkable
+class ReleasableResource(Protocol):
+    def close(self) -> None: ...
+
+
+def release_resources(component: object) -> None:
+    # Predictor/extractor giu tai nguyen nen (bo detector tao san) thi dong; thanh phan khac bo qua
+    if isinstance(component, ReleasableResource):
+        component.close()
 
 
 class FixturePredictor:

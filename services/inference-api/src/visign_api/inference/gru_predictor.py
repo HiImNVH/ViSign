@@ -6,6 +6,7 @@ import pickle
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from functools import partial
 from pathlib import Path
 from typing import Any, Protocol, Self
 
@@ -22,11 +23,13 @@ from visign_api.domain.model_version import ModelMetadata
 from visign_api.domain.prediction import PredictionTimings
 from visign_api.inference.artifact_loader import ArtifactRejectedError, LoadedArtifact
 from visign_api.inference.clip_validator import DurationWindow, validate_extracted_clip
+from visign_api.inference.detector_pool import DetectorPool
 from visign_api.inference.feature_extraction import (
     ExtractedFeatures,
     FeatureExtractor,
     FeatureSource,
     build_visign_ai_binding,
+    open_visign_ai_detectors,
 )
 from visign_api.inference.gru_bundle import (
     FEATURE_SCHEMA_FILE,
@@ -35,7 +38,7 @@ from visign_api.inference.gru_bundle import (
     ServingSchema,
     verify_gru_bundle,
 )
-from visign_api.inference.predictor import RawPrediction
+from visign_api.inference.predictor import RawPrediction, release_resources
 
 MILLISECONDS_PER_SECOND = 1000
 # Chi co khi cai extra serving; thieu thi pilot/full fail closed va service chay degraded
@@ -72,6 +75,8 @@ class GruRuntime:
     # Thu muc detector MediaPipe tren may phuc vu (VISIGN_MODEL_DIR); None de visign_ai dung mac dinh
     modelDirectory: Path | None
     durationWindow: DurationWindow = field(default_factory=contract_duration_window)
+    # Bat tu Settings khi phuc vu that; tao truc tiep (test, cong cu) thi khong chay thread nen
+    prewarmDetectors: bool = False
 
     @classmethod
     def from_settings(cls, runtime_settings: Settings) -> Self:
@@ -81,6 +86,7 @@ class GruRuntime:
                 minMs=runtime_settings.min_duration_ms,
                 maxMs=runtime_settings.max_duration_ms,
             ),
+            prewarmDetectors=runtime_settings.detector_prewarm_enabled,
         )
 
 
@@ -101,6 +107,9 @@ class GruPredictor:
     @property
     def metadata(self) -> ModelMetadata:
         return self._loaded_artifact.metadata
+
+    def close(self) -> None:
+        release_resources(self._gru_components.featureExtractor)
 
     def predict(self, clip_path: Path) -> RawPrediction:
         extracted_features = self._gru_components.featureExtractor.extract(clip_path)
@@ -183,9 +192,21 @@ def load_gru_predictor(
         schemaPath=schema_path,
         modelDirectory=gru_runtime.modelDirectory,
     )
+    classifier = TorchSequenceClassifier(build_network(gru_bundle.checkpoint))
+    # Tao pool sau cung: candidate bi tu choi o bat ky buoc nao khong de lai thread nen. Bo detector cho
+    # request ke tiep duoc tao o thread nen ngay khi artifact san sang (T065, SC-002)
+    detector_pool = (
+        DetectorPool(
+            partial(open_visign_ai_detectors, schema_path, gru_runtime.modelDirectory)
+        )
+        if gru_runtime.prewarmDetectors
+        else None
+    )
     gru_components = GruComponents(
-        featureExtractor=FeatureExtractor(build_visign_ai_binding(), feature_source),
-        classifier=TorchSequenceClassifier(build_network(gru_bundle.checkpoint)),
+        featureExtractor=FeatureExtractor(
+            build_visign_ai_binding(), feature_source, detector_pool
+        ),
+        classifier=classifier,
         durationWindow=gru_runtime.durationWindow,
     )
     return GruPredictor(loaded_artifact, gru_components)

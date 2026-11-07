@@ -13,7 +13,11 @@ from visign_api.inference.artifact_loader import (
     load_artifact,
 )
 from visign_api.inference.gru_predictor import GruRuntime, load_gru_predictor
-from visign_api.inference.predictor import FixturePredictor, Predictor
+from visign_api.inference.predictor import (
+    FixturePredictor,
+    Predictor,
+    release_resources,
+)
 
 PredictorFactory = Callable[[LoadedArtifact], Predictor]
 
@@ -73,6 +77,15 @@ class PredictorRegistry:
                 f"Chua co predictor cho artifactKind {artifact_kind.value}"
             )
         # Chi thay predictor sau khi candidate nap xong; loi o bat ky buoc nao deu giu predictor cu
-        self._active = ActivePredictor(
-            predictor_factory(loaded_artifact), artifact_directory
+        previous, self._active = (
+            self._active,
+            ActivePredictor(predictor_factory(loaded_artifact), artifact_directory),
         )
+        if previous is not None:
+            # Request dang chay van giu predictor cu; chi dong tai nguyen nen (bo detector du phong)
+            release_resources(previous.predictor)
+
+    def close(self) -> None:
+        # Tat app: dong tai nguyen nen; predictor van tra loi duoc neu con request cuoi
+        if self._active is not None:
+            release_resources(self._active.predictor)

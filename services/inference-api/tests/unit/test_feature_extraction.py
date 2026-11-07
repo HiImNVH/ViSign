@@ -3,6 +3,7 @@
 import dataclasses
 import subprocess
 import sys
+import time
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -17,6 +18,7 @@ from visign_api.domain.errors import (
     ModelNotReadyException,
     PredictionFailedException,
 )
+from visign_api.inference.detector_pool import DetectorPool
 from visign_api.inference.feature_extraction import (
     ExtractedFeatures,
     FeatureExtractor,
@@ -26,6 +28,7 @@ from visign_api.inference.feature_extraction import (
 
 TARGET_FRAME_COUNT = 32
 LANDMARK_COUNT = 78
+POOL_DEADLINE_SECONDS = 2
 SAMPLED_FRAME_COUNT = 4
 DRAFT_SCHEMA_VERSION = "visign-xy-32-v0.3-draft"
 
@@ -258,3 +261,55 @@ def test_importing_adapter_does_not_load_heavy_ai_stack() -> None:
     ).stdout.strip()
 
     assert imported_heavy_modules == ""
+
+
+class SentinelDetectorSets:
+    # Bo detector gia cho pool: pipeline nhan dung doi tuong nay va test biet bo nao da dong
+    def __init__(self) -> None:
+        self.opened: list[object] = []
+        self.closed: list[object] = []
+
+    def open(self) -> "SentinelDetectorContext":
+        return SentinelDetectorContext(self)
+
+
+class SentinelDetectorContext:
+    # Context dang class: chi ghi dong khi __exit__ duoc goi that, GC khong the dong thay extractor
+    def __init__(self, detector_sets: SentinelDetectorSets) -> None:
+        self._detector_sets = detector_sets
+        self._detector_set = object()
+
+    def __enter__(self) -> object:
+        self._detector_sets.opened.append(self._detector_set)
+        return self._detector_set
+
+    def __exit__(self, *exc_info: object) -> None:
+        self._detector_sets.closed.append(self._detector_set)
+
+
+def wait_until_opened(detector_sets: SentinelDetectorSets, count: int) -> None:
+    deadline = time.monotonic() + POOL_DEADLINE_SECONDS
+    while len(detector_sets.opened) < count:
+        assert time.monotonic() < deadline, f"chua mo du {count} bo detector"
+        time.sleep(0.01)
+
+
+def test_pipeline_receives_prepared_detectors_from_pool(tmp_path: Path) -> None:
+    recording_pipeline = RecordingPipeline()
+    detector_sets = SentinelDetectorSets()
+    extractor = FeatureExtractor(
+        PipelineBinding(run=recording_pipeline, errorType=FakePipelineError),
+        FeatureSource(),
+        DetectorPool(detector_sets.open),
+    )
+
+    extractor.extract(tmp_path / "clip.webm")
+    # Request xong thi bo du phong duoc tao o thread nen; doi no mo roi moi dong extractor
+    wait_until_opened(detector_sets, 2)
+    extractor.close()
+
+    assert recording_pipeline.calls[0]["prepared_detectors"] is detector_sets.opened[0]
+    # Bo da dung dong sau request; dong extractor dong ca bo du phong chua dung
+    assert sorted(map(id, detector_sets.closed)) == sorted(
+        map(id, detector_sets.opened)
+    )
