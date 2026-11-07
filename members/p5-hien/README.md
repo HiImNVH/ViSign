@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | CP7 T088 frontend quality audit: test/report/screenshot evidence, chờ P1/P2 review; US2 T074–T075 và US6 T100–T104 vẫn là các commit độc lập |
+| Current checkpoint | CP7 T090 frontend architecture review: P5 report/evidence, chờ P1/P2 review; T088 vẫn chờ review riêng |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-08` |
 
@@ -32,6 +32,7 @@
 | `T053 / CP4` | `TEST_PASS / READY_FOR_REVIEW` | `useRecognition.ts`, `inferenceApi.ts`, unit/browser lifecycle tests | Timeout 15s, cancel/reset, late response và retry thủ công; 129 unit, 48 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T053-p5-hien-timeout-cancel-reset-smoke.md` | P2/Tín và P1/Huy |
 | `T063 / CP4` | `TEST_PASS / READY_FOR_REREVIEW` | Accessibility tests, camera/help/history UI, verification report | P1 `CHANGES_REQUESTED` do camera test chập chờn; P5 follow-up: native recorder diagnostics, encode-ready test, 63/63 Edge lặp không retry, full gate 168 unit + 84 browser PASS; chờ P1/P2 kiểm lại trên máy từng gặp lỗi | P1/Huy, P2/Tín |
 | `T088 / CP7` | `TEST_PASS / READY_FOR_REVIEW` | `docs/frontend-quality-report.md`, `apps/web/tests/browser/frontend-quality.spec.ts`, T088 screenshots, 2 UI fixes | Responsive 5 sizes, 12 screenshots, axe/keyboard/camera checks 9/9 PASS; full gate 165 unit/84 Edge passed (4/12 skipped); đã giữ audit 7 phát hiện của P1 và thêm phụ lục P5; cần P1/P2 review | P1/Huy, P2/Tín |
+| `T090 / CP7` | `TEST_PASS / READY_FOR_REVIEW` | `docs/architecture-quality-report.md` §7, `docs/evidence/checkpoints/CP7/T090-p5-hien-smoke.md` | Đã review FE module/state/dependency/CSS/duplication/scalability, ghi 6 action ưu tiên FE-T090-01..06; 168 unit và 84 Edge browser PASS (4/12 skipped); cần P1/P2 review, chưa đóng task | P1/Huy, P2/Tín |
 
 ## Checkpoint T046 đã push
 
@@ -67,6 +68,7 @@
 | `CP4/T063` | Accessibility audit: keyboard, focus, status, camera labels | `CP4 T063(e2e): audit camera keyboard focus and labels` | `b5ca29506750601d0503c419d0f2ae839888a1f6` | [commit](https://github.com/HiImNVH/ViSign/commit/b5ca29506750601d0503c419d0f2ae839888a1f6) | 165 unit + 75 Edge browser PASS (4 / 3 skipped); 21 T063 cases; axe 0 violations in audited snapshots | P1/Huy, P2/Tín | `PUSHED / READY_FOR_REVIEW` |
 | `CP4/T063 follow-up` | Address intermittent recorder lifecycle/reviewer finding | `CP4 T063(e2e): harden native recorder accessibility gate` | `a6d8a9d28330a68df7e16076ead1bd3febfb4872` | [commit](https://github.com/HiImNVH/ViSign/commit/a6d8a9d28330a68df7e16076ead1bd3febfb4872) | 30 targeted unit; 63 repeated Edge accessibility PASS, full gate 168 unit + 84 Edge PASS (4 / 12 skipped) | P1/Huy, P2/Tín | `PUSHED / READY_FOR_REREVIEW` |
 | `CP7/T088` | Responsive, axe, camera usability, component boundaries, visual consistency | `CP7 T088(ux): audit frontend quality and fix responsive a11y defects` | `a40c68ab8182d95218aac0eb7df1bee07bcb6668` | [commit](https://github.com/HiImNVH/ViSign/commit/a40c68ab8182d95218aac0eb7df1bee07bcb6668) | T088 9/9 Playwright; 12 JPEGs; 5 sizes; 165 unit and 84 Edge passed (4/12 skipped); static/build PASS | P1/Huy, P2/Tín | `PUSHED / READY_FOR_REVIEW` |
+| `CP7/T090` | P5 FE architecture review: state/UI boundary, storage risks, duplicate overlay, performance and CSS actions | `CP7 T090(ux): review frontend architecture quality` | Pending push | Pending push | 168 unit (4 skipped), 84 Edge browser (12 skipped); lint/typecheck/build PASS; FE review 6 findings | P1/Huy, P2/Tín | `TEST_PASS / READY_FOR_REVIEW` |
 
 ## Handoff
 

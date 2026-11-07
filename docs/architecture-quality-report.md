@@ -68,5 +68,58 @@ apps/web ──HTTP (OpenAPI v1)──▶ services/inference-api ──import (e
 
 ## 7. Phần FE cần P5 bổ sung
 
-Ranh giới component (`features/recognition/*`), quản lý state (`useRecognition.ts`), tái sử dụng UI và quy ước
-CSS — P5 xác nhận hoặc bổ sung mục này trước khi T090 được review.
+### 7.1. Review frontend của P5/Hiển (2026-11-08)
+
+**Phạm vi**: `apps/web/src/` và các test FE hiện có trên `main` tại `a214a3c` (sau khi đồng bộ
+origin). Review tĩnh mã nguồn, đối chiếu component đang dùng và test; không thay đổi hành vi ứng dụng.
+
+**Ranh giới và chiều phụ thuộc FE**:
+
+```text
+App (composition)
+ ├─ useRecognition (camera + model metadata + prediction + transcript/history orchestration)
+ │   ├─ useCameraCapture → cameraSession (MediaRecorder, clip lifecycle)
+ │   ├─ services/inferenceApi (HTTP + runtime response guards)
+ │   └─ translationHistory (localStorage, metadata only, TTL 24 giờ)
+ └─ CameraRecorder / HistoryPanel / CameraHelp
+      └─ RecognitionResult / RecognitionError / TranscriptPanel (presentation)
+```
+
+- **Điểm đạt**: `App.tsx` chỉ ghép UI và hook; transport không nằm trong component; camera được quản lý
+  riêng ở `cameraSession.ts` / `useCameraCapture.ts`; `useRecognition.ts` dùng `AbortController`,
+  generation và capture identity để chặn phản hồi muộn hoặc không còn khớp clip. Các trạng thái
+  accepted/rejected và version được kiểm tra trước khi hiển thị ở `RecognitionResult.tsx`.
+  Không cần thêm global state library cho phạm vi MVP hiện tại.
+- **State**: `useRecognition.ts` (~216 dòng) còn gộp orchestration camera, metadata, prediction,
+  transcript và lưu lịch sử. Điều này chấp nhận được với một màn hình, nhưng cần chia contract
+  state/actions trước khi thêm admin UI hoặc nhiều màn hình dùng chung.
+- **UI/CSS**: `styles.css` đã có style nút chung và class cho viewport/overlay; nội dung tiếng Việt
+  chính nằm trong `content/vi.ts`. Chưa có convention tách component style/variant chặt chẽ;
+  `.help-dialog` còn được dùng bởi lịch sử, và `CameraRecorder.tsx` tìm target focus bằng selector CSS.
+
+### 7.2. Phát hiện và hành động FE
+
+| ID | Mức | Bằng chứng cụ thể | Ảnh hưởng / hành động tiếp theo | Owner |
+|---|---|---|---|---|
+| FE-T090-01 | **Trung bình; xác nhận theo luồng code** | `translationHistory.ts:37-64` bắt lỗi của cả `getItem`, parse và ghi cleanup chung một `try/catch`. Khi dữ liệu đọc được nhưng `setItem`/`removeItem` trong cleanup ném lỗi, kết quả bị thay bằng `entries: []`. `HistoryPanel.tsx:45` chỉ hiện nút xóa khi danh sách có mục. | Tách đọc/parse khỏi cleanup; giữ các entry đã đọc khi ghi thất bại, gắn `available=false`, và bảo đảm người dùng vẫn thử xóa được dữ liệu tồn dư. Viết test quota/cleanup/remove lỗi. | P5 |
+| FE-T090-02 | **Trung bình; rủi ro suy ra, chưa tái hiện đa tab** | `translationHistory.ts:69-81` lưu nguyên danh sách theo chu kỳ read–modify–write; `useRecognition.ts:125-135` chỉ refresh sau action cục bộ, không có đồng bộ `storage` giữa tab. | Xác định semantics multi-tab, test append/clear cạnh tranh trước khi chọn đồng bộ; tránh cam kết nhất quán giữa tab khi chưa có giải pháp. | P5 |
+| FE-T090-03 | **Trung bình; nợ cấu trúc** | `CameraRecorder.tsx:10-14` và `HistoryPanel.tsx:5` lấy props từ `ReturnType<typeof useRecognition>`; `CameraRecorder` nhận `camera.session` qua controller, có `Partial` để giữ fixture cũ; `useRecognition.ts:112-117` xử lý session bị gọi trực tiếp. | Định nghĩa interface view/actions độc lập từ hook và dồn mutation camera qua controller; giữ regression abort/cancel/reset/focus khi tách. | P5 |
+| FE-T090-04 | **Trung bình; trùng logic/test fidelity** | `RecognitionOverlay.tsx:10-17` trùng validation/markup một phần với `RecognitionResult.tsx:13-43`, nhưng không kiểm metadata/model notice; app thực tế dùng `RecognitionResult` ở `CameraRecorder.tsx:73`. Một trường hợp ở `tests/browser/camera.spec.ts` dựng HTML overlay riêng để thử viewport. | Bỏ/cô lập UI cũ sau khi di chuyển test sang response fixture qua API và component production; đảm bảo test xanh có nghĩa luồng thật xanh. | P5 |
+| FE-T090-05 | **Trung bình khi session dài; chưa benchmark** | `useRecognition.ts:183` nối transcript không có giới hạn số mục, `TranscriptPanel.tsx:8` ghép và `aria-live` toàn bộ chuỗi, `HistoryPanel.tsx:38` render mọi entry; history ghi lại toàn bộ JSON. | Benchmark với nhiều kết quả, đo DOM/quota/announce trước khi quyết định phân trang hoặc virtualize. **Không tự xóa** dữ liệu còn trong TTL 24 giờ. | P5 |
+| FE-T090-06 | **Thấp** | `CameraRecorder.tsx:62,79` tìm focus bằng selector CSS; `HistoryPanel.tsx:30` tái dùng `.help-dialog`; `CameraHelp.tsx:23` hard-code thời gian 5 giây. | Đổi focus target sang ref, làm tên style dialog trung tính và gom copy/giới hạn hiển thị về chỗ có test đồng bộ. | P5 |
+
+**Thứ tự xử lý**: FE-T090-01 (mất khả năng đọc/xóa lịch sử khi cleanup lỗi) →
+FE-T090-02 (quy định nhất quán multi-tab) → FE-T090-03/04 (component boundaries và test fidelity)
+→ đo FE-T090-05 → sửa FE-T090-06. Mỗi fix là micro-commit FE riêng kèm test/evidence;
+T090 chỉ ghi review và hành động, chưa thực hiện các fix này.
+
+**Giới hạn của kết luận**: chưa đo hiệu năng session dài, chưa tái hiện đồng thời hai tab và chưa
+kiểm trên camera/screen reader thật. Các mục được đánh dấu "rủi ro suy ra" không phải lỗi runtime đã
+chứng minh. Đã có unit/browser regression cho camera, nhưng không coi test mock là chứng cứ cho
+thiết bị thật. Bàn giao P1/P2 review độc lập trước khi đánh T090 `[X]`.
+
+**Đối chiếu bản đầu cần P1 xác nhận**: bản đầu ở mục 1 ghi 17 file test web, trong khi phép đếm
+`*.test.*` / `*.spec.*` dưới `apps/web/tests` ngày 2026-11-08 cho **20 file**. Mục 5 về "thêm nghĩa
+không đổi FE" chỉ áp dụng trong contract MVP tối đa **10 nghĩa** hiện được chặn tại
+`apps/web/src/services/inferenceApi.ts:54`; tăng qua 10 cần thống nhất lại contract và runtime guard.
+Chi tiết gate của P5: `docs/evidence/checkpoints/CP7/T090-p5-hien-smoke.md`.
