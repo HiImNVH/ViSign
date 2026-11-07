@@ -62,6 +62,8 @@ Backend đang giới hạn một lượt inference đồng thời; giá trị 3 
 
 ## Phần còn chờ để mở pilot
 
+**Cập nhật 2026-11-08**: lead (Huy) đã duyệt schema v0.3 trên 6 clip đại diện; `status` chuyển `APPROVED`. Tên version `visign-xy-32-v0.3-draft` giữ nguyên vì `schema_digest` bỏ qua `status` (digest không đổi, không cần trích lại).
+
 Hợp đồng kỹ thuật đã được mô tả và kiểm tra bằng code. Schema vẫn giữ DRAFT_PENDING_LEAD_REVIEW: chưa tự đổi APPROVED, vì chưa có review độ giữ được diễn biến ký hiệu sau lấy mẫu, quy ước trái/phải với clip camera đại diện và dữ liệu pilot được duyệt. Khi review hoàn tất, cập nhật trạng thái có căn cứ; nếu thay đổi quy tắc tensor thì tạo version mới, trích lại và train lại. Không đổi schema của artifact đã phát hành.
 
 Quang bàn giao pilot.csv, class map, video approved/verified và split audit. Cường train/evaluate thật rồi giao artifact; Tín chạy preflight và HTTP, Hiển thử camera/result/error/retry; Huy quyết định checkpoint/full và phát hành. Kiểm thử với GRU tổng hợp chỉ chứng minh cơ chế, không chứng minh nhận diện VSL.

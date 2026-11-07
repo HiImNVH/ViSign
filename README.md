@@ -81,7 +81,7 @@ Cấu hình thường dùng (biến môi trường): `MODEL_ARTIFACT_PATH`, `VIS
 
 ## Train, đánh giá và phát hành model
 
-Cần manifest đã audit (T013/T076–T077) và feature schema `APPROVED`; schema v0.3 hiện vẫn là draft.
+Cần manifest đã audit (T013/T076–T077) và feature schema `APPROVED`; schema v0.3 đã được lead duyệt (`APPROVED`, 2026-11-08).
 
 1. Trích landmark: `python -m visign_ai.landmarks.extract_manifest` (T017).
 2. Train: `python -m visign_ai.training.train` với `ai/configs/pilot-gru.yaml` hoặc `p0-gru.yaml` (T036).

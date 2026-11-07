@@ -148,3 +148,16 @@ uv run --project services/inference-api --locked --extra serving pytest services
 ```
 
 P1/Huy review mức giữ động tác sau lấy mẫu và quy ước tay trái/phải, gồm ảnh hưởng của nguồn đã lật. Kết quả parity kiểm sự nhất quán của hai đường xử lý. Schema giữ `DRAFT_PENDING_LEAD_REVIEW` đến khi có quyết định của P1.
+
+## Lead schema review — P1/Huy
+
+`2026-11-08T01:45:07+07:00` trên `bccab1e`. Huy xem trực tiếp 6 clip đại diện đã bàn giao (thư mục dùng chung "6 vid kiểm thử", SHA-256
+ở mục bàn giao phía trên) và **xác nhận đạt**: động tác được giữ sau lấy mẫu 32 bước, quy ước tay trái/phải đúng,
+kể cả với nguồn đã lật.
+
+- `ai/configs/feature_schema.json`: `status` → `APPROVED`. `featureSchemaVersion` giữ `visign-xy-32-v0.3-draft`
+  vì `schema_digest` bỏ qua `status`: digest trước/sau cùng `6f1e32eeb8be9e6f…` → parity và artifact không đổi.
+- Test `test_video_pipeline.py` cập nhật kiểm `APPROVED`; AI 83 passed, API + contract + integration 374 passed.
+
+**Lead result**: schema v0.3 `APPROVED`; T014, T015, T016 `[X]` (đã có P1 review code, P2 verify serving,
+parity 6/6 và 32/32 clip thật).

@@ -89,7 +89,7 @@ def test_size_checked_before_decoder(tmp_path):
 def test_draft_schema_tensor_normalization_and_missing_points():
     schema = load_schema()
     assert schema["featureSchemaVersion"] == "visign-xy-32-v0.3-draft"
-    assert schema["status"] == "DRAFT_PENDING_LEAD_REVIEW"
+    assert schema["status"] == "APPROVED"
     coords = np.zeros((3, 78, 2), dtype=np.float32)
     valid = np.zeros((3, 78), dtype=bool)
     coords[:, 42:44] = [[0.25, 0.5], [0.75, 0.5]]
