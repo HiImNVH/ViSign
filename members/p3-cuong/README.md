@@ -9,7 +9,7 @@
 | Role | AI preprocessing, training và evaluation |
 | Canonical ownership | `ai/landmarks/`, `ai/training/`, `ai/evaluation/` |
 | Allowed commit scopes | `ai`, `extractor`, `train`, `eval`, `model` |
-| Current checkpoint | `CP5` · T054/T057 và T058 đã push, T059 đạt gate cục bộ |
+| Current checkpoint | `CP5` · T054/T057/T058 đã VERIFIED, T059 đã push, T062 model card đã soạn |
 | Integration window | `WAITING` |
 | Last updated | `2026-11-07` |
 
@@ -24,9 +24,10 @@
 | `T034 / CP3` | `PUSHED` | NPZ loader và batching theo class map | 12 test T034 đạt; đã push 6912242, chờ review | P1/Huy, P2/Tín |
 | `T035 / CP3` | `PUSHED` | Cấu hình seed GRU cho pilot/full | Đã push 7a8c277; smoke cùng seed trên CPU đạt | P1/Huy, P2/Tín |
 | `T036 / CP3` | `LOCAL-DRAFT` | CLI train và artifact model | Pilot/full tổng hợp đạt, API đọc metadata; chờ review và dữ liệu chính thức | P1/Huy, P2/Tín |
-| `T054, T057 / CP5` | `PUSHED` | Metric theo nghĩa và test full gate | 15 test mới đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T054-T057-p3-cuong-smoke.md) | P1/Huy |
-| `T058 / CP5` | `PUSHED` | CLI đánh giá, JSON, ảnh confusion matrix và provenance | Gate cục bộ đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T058-p3-cuong-smoke.md) | P1/Huy, P4/Quang |
-| `T059 / CP5` | `LOCAL-DRAFT` | Metadata writer và full release gate | Gate cục bộ đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T059-p3-cuong-smoke.md) | P1/Huy, P2/Tín |
+| `T054, T057 / CP5` | `VERIFIED` | Metric theo nghĩa và test full gate | 15 test mới đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T054-T057-p3-cuong-smoke.md) | P1/Huy |
+| `T058 / CP5` | `VERIFIED` | CLI đánh giá, JSON, ảnh confusion matrix và provenance | Gate cục bộ đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T058-p3-cuong-smoke.md) | P1/Huy, P4/Quang |
+| `T059 / CP5` | `PUSHED` | Metadata writer và full release gate | Gate cục bộ đạt. [Evidence](../../docs/evidence/checkpoints/CP5/T059-p3-cuong-smoke.md) | P1/Huy, P2/Tín |
+| `T062 / CP5` | `LOCAL-DRAFT` | [Model card](../../docs/model-card.md) | Chờ review. Chỉ số VSL thật chờ manifest, schema và các run đánh giá | P1/Huy |
 
 ## Commit gần nhất
 
@@ -52,9 +53,10 @@
 | `CP3/T034` | NPZ sequence loader and batching | `CP3 T034(train): load landmark sequences in class map order` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T034-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 | `CP3/T035` | Seeded pilot/full GRU presets | `CP3 T035(train): add reproducible pilot and full GRU presets` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T035-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 | `CP3/T036` | Reproducible GRU training CLI | `CP3 T036(train): add GRU training CLI and artifact export` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T036-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
-| `CP5/T054,T057` | Meaning metrics and full gate tests | `CP5 T054,T057(eval): add meaning metrics and release gate tests` | d92436a67fceb4bedf62f750ff257f5904065cca | [Commit d92436a](https://github.com/HiImNVH/ViSign/commit/d92436a67fceb4bedf62f750ff257f5904065cca) | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T054-T057-p3-cuong-smoke.md) | P1/Huy | PUSHED |
-| `CP5/T058` | Held-out evaluation CLI | `CP5 T058(eval): export held-out metrics and confusion matrix` | 29c0464f55f6ae4e30630e5eeea31d789701cc82 | [Commit 29c0464](https://github.com/HiImNVH/ViSign/commit/29c0464f55f6ae4e30630e5eeea31d789701cc82) | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T058-p3-cuong-smoke.md) | P1/Huy, P4/Quang | PUSHED |
-| `CP5/T059` | Artifact metadata and full release gate | `CP5 T059(model): write evaluated metadata and gate release` | PENDING PUSH | PENDING PUSH | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T059-p3-cuong-smoke.md) | P1/Huy, P2/Tín | LOCAL-DRAFT |
+| `CP5/T054,T057` | Meaning metrics and full gate tests | `CP5 T054,T057(eval): add meaning metrics and release gate tests` | d92436a67fceb4bedf62f750ff257f5904065cca | [Commit d92436a](https://github.com/HiImNVH/ViSign/commit/d92436a67fceb4bedf62f750ff257f5904065cca) | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T054-T057-p3-cuong-smoke.md) | P1/Huy | VERIFIED |
+| `CP5/T058` | Held-out evaluation CLI | `CP5 T058(eval): export held-out metrics and confusion matrix` | 29c0464f55f6ae4e30630e5eeea31d789701cc82 | [Commit 29c0464](https://github.com/HiImNVH/ViSign/commit/29c0464f55f6ae4e30630e5eeea31d789701cc82) | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T058-p3-cuong-smoke.md) | P1/Huy, P4/Quang | VERIFIED |
+| `CP5/T059` | Artifact metadata and full release gate | `CP5 T059(model): write evaluated metadata and gate release` | 630f9ab815c80cde374a2df3772c33fe7a5de811 | [Commit 630f9ab](https://github.com/HiImNVH/ViSign/commit/630f9ab815c80cde374a2df3772c33fe7a5de811) | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T059-p3-cuong-smoke.md) | P1/Huy, P2/Tín | PUSHED |
+| `CP5/T062` | Model card | `CP5 T062(model): document ViSign model scope and evaluation` | PENDING PUSH | PENDING PUSH | [PASS cục bộ](../../docs/evidence/checkpoints/CP5/T062-p3-cuong-smoke.md) | P1/Huy | LOCAL-DRAFT |
 
 ## Handoff
 
