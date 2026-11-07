@@ -25,7 +25,7 @@
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
-| `T026 / CP2` | `DOING` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | Gate local + live smoke PASS; chờ commit/push | P1/Huy, P5/Hiển (CORS) |
+| `T026 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | Đã push `4a2dad1`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590); chờ Huy verify, Hiển xem CORS/expose header | P1/Huy, P5/Hiển (CORS) |
 | `T024-T025 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Đã push `e3c5d8a`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42357998638); chờ Huy verify | P1/Huy |
 | `T099 / CP2` | `REVIEW` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Đã push `5add400`; chờ P1 verify (lead) và P5 xác nhận consumer | P5/Hiển và P1/Huy |
 | `T037 / CP3` | `PAUSED` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi đã push; dừng CP3 theo chỉ đạo P1 (chốt CP1 → đóng CP2 → mở CP3) | P3/Cường, P1/Huy |
@@ -41,9 +41,9 @@
 | Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `e2bdf7f` |
 | Gate commands | RED→GREEN 19 passed, mutation CORS fail, API+contract 129 passed ×3 `-W error`, Ruff/format/mypy, live uvicorn smoke |
 | Smoke evidence | `docs/evidence/checkpoints/CP2/T026-p2-tin-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` |
+| Local commit | `4a2dad16d41b13f09a20e6ab90e91d288e838f37` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`) |
+| Push status | `PUSHED` lúc 2026-11-07T16:21:56+07:00 — [commit](https://github.com/HiImNVH/ViSign/commit/4a2dad16d41b13f09a20e6ab90e91d288e838f37); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590) |
 
 ## Commit ledger
 
@@ -63,7 +63,7 @@
 | `CP1/T086 review` | Verify member frame của P1 | `CP1 T086(verify): record P2 member frame verification` | `c09853594adcebb580a6953ed376c3044fbe89c0` | [commit](https://github.com/HiImNVH/ViSign/commit/c09853594adcebb580a6953ed376c3044fbe89c0) | `VERIFIED`; P1 đề nghị chữ cuối `review`, commit đã push nên giữ nguyên | P1/Huy | `PUSHED` |
 | `CP7/T091 follow-up` | Xác nhận 4 ghi chú T091 đã xử lý | `CP7 T091(verify): confirm P2 follow-up workflow review` | `45ea2148a7ffefcf81057282399612bdb9a94b53` | [commit](https://github.com/HiImNVH/ViSign/commit/45ea2148a7ffefcf81057282399612bdb9a94b53) | Tag action, 2 run success | P1/Huy | `PUSHED` |
 | `CP2/T024-T025` | Clip tạm luôn bị xóa | `CP2 T024-T025(api): guarantee temporary clip deletion on every path` | `e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30` | [commit](https://github.com/HiImNVH/ViSign/commit/e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30) | 7 passed, API+contract 110 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42357998638) | P1/Huy | `PUSHED` |
-| `CP2/T026` | Nền FastAPI `/api/v1` | `CP2 T026(api): add FastAPI v1 foundation with request id and error mapping` | `PENDING` | `PENDING` | 129 passed, live smoke | P1/Huy, P5/Hiển | `LOCAL-DRAFT` |
+| `CP2/T026` | Nền FastAPI `/api/v1` | `CP2 T026(api): add FastAPI v1 foundation with request id and error mapping` | `4a2dad16d41b13f09a20e6ab90e91d288e838f37` | [commit](https://github.com/HiImNVH/ViSign/commit/4a2dad16d41b13f09a20e6ab90e91d288e838f37) | 129 passed, live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590) | P1/Huy, P5/Hiển | `PUSHED` |
 
 ## Handoff
 

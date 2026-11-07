@@ -9,10 +9,10 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` (CORS/expose header cho client T040) |
 | Candidate commit | `CP2 T026(api): add FastAPI v1 foundation with request id and error mapping` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `4a2dad16d41b13f09a20e6ab90e91d288e838f37` — [4a2dad1](https://github.com/HiImNVH/ViSign/commit/4a2dad16d41b13f09a20e6ab90e91d288e838f37); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590) |
 | Ngày/giờ | `2026-11-07T16:19+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15, FastAPI 0.162.0, Starlette 1.10.0, pytest 9.2.0 |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## 2. Phạm vi thay đổi
 
