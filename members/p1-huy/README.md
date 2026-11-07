@@ -1,13 +1,58 @@
 # P1 Huy - Project/Integration
 
-- Current: CP0 đã được P2 `VERIFIED`; T001–T007 đã gán cho Tín; mở CP1 window.
-- Tasks: T085–T087 và integration queue.
-- Ownership: Spec Kit, `docs/team/`, CI coordination, verification, demo và presentation.
-- Commit scopes: `spec`, `docs`, `ci`, `verify`, `release`.
+## Member profile
 
-| Task | Planned files | Gate/result | Commit | Handoff |
+| Field | Value |
+|---|---|
+| Worker ID | `P1` |
+| Current member | Huy |
+| Role | Project manager / integration owner |
+| Canonical ownership | Spec Kit, `docs/team/`, CI coordination, verification, presentation |
+| Allowed commit scopes | `spec`, `docs`, `ci`, `verify`, `release` |
+| Current checkpoint | `CP1` |
+| Integration window | `CLOSED` cho P1; `ACTIVE` cho P2/Tín |
+| Last updated | `2026-11-07` |
+
+## Current assignments
+
+| Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
-| CP0 | Spec Kit, rubric, checkpoint/member docs | PASS: prerequisites, task format, OpenAPI, analyze, diff/artifact scan | `5102bbbbe7efcf327a64477051bfc6137e9b5bce` | P2 VERIFIED trên `22226b2` |
-| CP3/CP4 | Happy/negative E2E và checkpoint review | Chưa chạy | Chưa commit | Review cùng owner module |
-| CP7 | CI quality/deploy evidence | Chưa chạy | Chưa commit | Review cùng Tín |
-| CP8 | Full verification, rehearsal, contribution/Q&A | Chưa chạy | Chưa commit | Cả nhóm xác nhận |
+| `T085-T086 / CP0` | `VERIFIED` | Spec Kit, rubric, member/checkpoint docs | Không còn blocker | P2/Tín |
+| `T086 / CP1` | `REVIEW` | Member commit frame và đồng bộ Git workflow | Commit/push candidate docs sau khi gate đạt | P2/Tín |
+| `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
+| `CP1 integration` | `REVIEW OWNER` | `docs/team/implementation-status.md` | Chờ Tín bàn giao T001–T007 | P3/Cường và P5/Hiển hỗ trợ review |
+
+## Commit đang chuẩn bị
+
+| Field | Value |
+|---|---|
+| Task/checkpoint | `T086 / CP1` |
+| Proposed commit | `CP1 T086(docs): standardize member commit ledgers` |
+| Exact staged paths | `docs/team/git-checkpoints.md`, `docs/team/member-template.md`, `members/`, smoke evidence |
+| Pre-commit sync | `2026-11-07T13:39:12+07:00`; `origin/main=abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4`; behind/ahead `0/0` |
+| Gate commands | member-frame validator, sync-rule validator, `git diff --cached --check` |
+| Smoke evidence | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `NOT_PUSHED` |
+
+## Commit ledger
+
+| CP/Task | Purpose | Proposed/actual message | Full SHA | GitHub link | Gate | Reviewer | Status |
+|---|---|---|---|---|---|---|---|
+| `CP0/T085-T086` | Bootstrap Spec Kit governance | `CP0 T085-T086(spec): bootstrap Spec Kit governance` | `5102bbbbe7efcf327a64477051bfc6137e9b5bce` | [commit](https://github.com/HiImNVH/ViSign/commit/5102bbbbe7efcf327a64477051bfc6137e9b5bce) | PASS | P2/Tín | `VERIFIED` |
+| `CP0/T086` | Record baseline smoke evidence | `CP0 T086(docs): record baseline smoke evidence` | `22226b25d17e70ce48b153914d7eee1e15e8d3f4` | [commit](https://github.com/HiImNVH/ViSign/commit/22226b25d17e70ce48b153914d7eee1e15e8d3f4) | PASS | P2/Tín | `VERIFIED` |
+| `CP1/T086` | Standardize five member commit ledgers | `CP1 T086(docs): standardize member commit ledgers` | `PENDING` | `PENDING` | PASS local | P2/Tín | `REVIEW` |
+
+## Handoff
+
+- Current risks: CP1 thay đổi nhiều module nhưng chỉ có một integration owner.
+- Required input: Tín cung cấp candidate diff và gate; Cường review AI setup, Hiển review web setup.
+- Next owner/action: P2/Tín hoàn thành T001–T007 rồi bàn giao Huy review.
+- Work-in-progress limit: tối đa 2 task `DOING`.
+
+## Handoff history
+
+| Date | From | To | Open work and evidence |
+|---|---|---|---|
+| 2026-11-07 | P1/Huy | P2/Tín | CP0 verified; mở CP1 T001–T007 |

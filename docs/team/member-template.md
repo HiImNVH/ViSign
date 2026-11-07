@@ -1,38 +1,59 @@
-# [Role Name] Work Dashboard
+# Pn Name - Role
 
-> Với repo mới, đặt bản sao template tại `members/pN-name/README.md`. Không đặt source code trong
-> thư mục member; source luôn nằm tại canonical module paths.
+> File này là nhật ký task/commit/handoff. Source code luôn nằm trong canonical module, không sao
+> chép vào `members/`.
+
+## Member profile
 
 | Field | Value |
 |---|---|
 | Worker ID | `P1`–`P5` |
-| Role ID | `[stable-role-id]` |
 | Current member | `[name]` |
-| Scope | `[responsibility boundary]` |
+| Role | `[role]` |
+| Canonical ownership | `[paths/responsibility]` |
+| Allowed commit scopes | `[scope trong git-checkpoints.md]` |
+| Current checkpoint | `CP0`–`CP8` |
+| Integration window | `WAITING` / `ACTIVE` / `CLOSED` |
 | Last updated | `YYYY-MM-DD` |
-| Checkpoint | `CP0`–`CP8` |
-| Integration window | `waiting` / `active` / `closed` |
-| Commit scopes | `[scope được cấp trong git-checkpoints.md]` |
 
-## Current Progress
+## Current assignments
 
-| Task | Status | Next action / Blocker | Smoke evidence / Commit |
-|---|---|---|---|
-| TXXX | TODO | Define the next verifiable action | `docs/evidence/checkpoints/CPx/...`; full SHA sau push |
+| Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
+|---|---|---|---|---|
+| `TXXX / CPx` | `TODO` | `path/` | Một hành động có thể kiểm chứng | `Pn` |
 
-## Checkpoint Responsibilities
+## Commit đang chuẩn bị
 
-- `[checkpoint and approval/review responsibility]`
-- Commit format: `CPx Txxx(scope): outcome`.
-- Smoke evidence tạo từ [checkpoint-evidence-template.md](checkpoint-evidence-template.md).
+Mỗi lần chỉ giữ một dòng `ACTIVE`. Xóa giá trị mẫu sau khi điền; không dùng `git add .`.
 
-## Handoff Notes
+| Field | Value |
+|---|---|
+| Task/checkpoint | `TXXX / CPx` |
+| Proposed commit | `CPx Txxx(scope): outcome` |
+| Exact staged paths | `path/a`, `path/b`, member README và smoke evidence |
+| Pre-commit sync | `PENDING` hoặc timestamp + `origin/main` SHA đã fetch/rebase |
+| Gate commands | Lệnh lint/test/build/contract liên quan |
+| Smoke evidence | `docs/evidence/checkpoints/CPx/Txxx-<owner>-smoke.md` |
+| Local commit | `PENDING` hoặc short SHA |
+| Pre-push sync | `PENDING` hoặc timestamp + kết quả `git pull --rebase origin main` |
+| Push status | `NOT_PUSHED` / `PUSHED` / `VERIFIED` / `BLOCKED` |
+
+## Commit ledger
+
+Không sửa hoặc xóa dòng lịch sử. Full SHA và GitHub link được bổ sung sau push bằng evidence commit.
+
+| CP/Task | Purpose | Proposed/actual message | Full SHA | GitHub link | Gate | Reviewer | Status |
+|---|---|---|---|---|---|---|---|
+| `CPx/TXXX` | Kết quả nhỏ, rollback được | `CPx Txxx(scope): outcome` | `PENDING` | `PENDING` | `NOT_RUN` | `Pn` | `PLANNED` |
+
+## Handoff
 
 - Current risks: None recorded.
-- Required reviewers: `[role IDs]`.
-- Work-in-progress limit: Maximum 2 tasks in `DOING`.
+- Required input: None recorded.
+- Next owner/action: `[person/action]`.
+- Work-in-progress limit: tối đa 2 task `DOING`.
 
-## Handoff History
+## Handoff history
 
 | Date | From | To | Open work and evidence |
 |---|---|---|---|

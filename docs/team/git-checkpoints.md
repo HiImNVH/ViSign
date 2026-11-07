@@ -43,7 +43,7 @@ Quy tắc:
 | Thành viên | Scope được dùng | Checkpoint/commit dự kiến | Smoke tối thiểu | Reviewer chính |
 |---|---|---|---|---|
 | P1 Huy | `spec`, `docs`, `ci`, `verify`, `release` | CP0 Spec Kit; CP3/4 E2E; CP7 CI; CP8 nghiệm thu | Spec Kit validation; E2E/rehearsal; link Actions | Owner module liên quan; cả nhóm ở CP8 |
-| P2 Tín | `api`, `backend`, `security`, `cloud` | CP1 monorepo/toolchain T001–T007; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | unit/contract; live health/predict; negative/security; Cloud Run health/rollback | Huy; Cường cho predictor; Hiển cho API contract |
+| P2 Tín | `setup` (chỉ T001–T007), `api`, `backend`, `security`, `cloud` | CP1 monorepo/toolchain T001–T007; CP2 contract; CP3 predictor; CP4 errors/security; CP6 admin API; CP7 cloud | install/lint/empty smoke/build; unit/contract; live health/predict; negative/security; Cloud Run health/rollback | Huy; Cường cho AI setup/predictor; Hiển cho web setup/API contract |
 | P3 Cường | `ai`, `extractor`, `train`, `eval`, `model` | CP1 review T003; CP2 preprocessing/schema; CP3 fixture/predictor; CP5 pilot rồi full; CP7 cost | tensor/mask parity; deterministic train; model load/predict; metrics/cost | Huy; Tín cho serving; Quang cho manifest |
 | P4 Quang | `data`, `dataset` | CP1 data skeleton; CP2 convention/schema; CP5 pilot/full manifest | schema/filename validator; provenance/license audit; split/coverage audit | Huy và Cường |
 | P5 Hiển | `web`, `ui`, `ux`, `e2e` | CP1 review T004/T006; CP2 API client/types; CP3 happy path; CP4 placeholders/accessibility; CP6 admin UI; CP8 UX evidence | lint/build/unit; fake-camera E2E; status/accessibility/responsive checks | Huy và Tín |
@@ -53,11 +53,41 @@ chờ đến cuối CP mới dồn toàn bộ thay đổi của người đó v�
 
 ## Quy trình bắt buộc cho mỗi checkpoint
 
+### 1. Đồng bộ trước khi bắt đầu sửa
+
 ```powershell
 git switch main
-git pull --rebase origin main
 git status --short
+git pull --rebase origin main
 ```
+
+Worktree phải sạch ở bước này. Nếu không sạch, owner phải xác định rõ thay đổi thuộc candidate nào;
+không pull đè hoặc cất chung thay đổi không liên quan.
+
+### 2. Đồng bộ lại ngay trước commit
+
+Sau khi sửa nhưng **trước khi stage/commit**, luôn fetch và kiểm tra remote có tiến lên không:
+
+```powershell
+git fetch origin main
+git rev-list --left-right --count origin/main...HEAD
+```
+
+- Kết quả `0 0`: local đã cập nhật, tiếp tục chạy gate và stage.
+- Nếu số bên trái lớn hơn 0: remote đang đi trước. Tạm cất đúng candidate, pull/rebase, khôi phục,
+  xử lý conflict và chạy lại toàn bộ gate bị ảnh hưởng:
+
+```powershell
+git stash push --include-untracked -m "pre-commit-sync CPx Txxx"
+git pull --rebase origin main
+git stash apply
+# resolve conflicts, rerun gates
+git stash drop  # chỉ chạy sau khi candidate đã được xác nhận khôi phục an toàn
+```
+
+Không được commit khi `HEAD` còn chậm hơn `origin/main`.
+
+### 3. Gate, stage chính xác và commit
 
 1. Chỉ sửa file thuộc task và canonical ownership; cập nhật `members/<owner>/README.md`.
 2. Chạy gate, ghi command/result/skip reason; kiểm tra không có secret/raw/model binary.
@@ -70,13 +100,18 @@ git diff --cached --stat
 git commit -m "CPx Txxx(scope): concise outcome"
 ```
 
-4. Ngay trước push, đồng bộ lần cuối. Nếu rebase đổi source, chạy lại gate bị ảnh hưởng.
+### 4. Đồng bộ lần cuối ngay trước push
+
+Sau commit, worktree phải sạch. Luôn pull/rebase thêm một lần; nếu rebase đổi commit/source, chạy lại
+gate bị ảnh hưởng rồi mới push.
 
 ```powershell
 git pull --rebase origin main
 # rerun affected checkpoint gate
 git push origin main
 ```
+
+Không được push nếu local chưa ngang hoặc đi trước đúng một chuỗi commit hợp lệ so với `origin/main`.
 
 5. Ghi full commit SHA và handoff vào member log. Reviewer chạy gate độc lập rồi đổi status
 thành `VERIFIED`.
@@ -97,6 +132,7 @@ có lý do; gate bắt buộc bị `FAIL`, `BLOCKED` hoặc `NOT_RUN` thì khôn
 - Commit raw video, landmark bulk, model weights, `.env`, token hoặc cloud credential.
 - Gộp nhiều checkpoint độc lập vào một commit full code.
 - Push khi member khác đang giữ integration window.
+- Commit hoặc push mà chưa fetch/pull/rebase với `origin/main` theo hai cổng đồng bộ phía trên.
 - Đánh dấu task `[x]` chỉ vì code có trong legacy repo hoặc máy cá nhân.
 
 ## Checkpoint gates
