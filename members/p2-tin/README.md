@@ -25,6 +25,7 @@
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
+| `T024-T025 / CP2` | `DOING` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Gate local PASS; chờ commit/push | P1/Huy |
 | `T099 / CP2` | `REVIEW` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Đã push `5add400`; chờ P1 verify (lead) và P5 xác nhận consumer | P5/Hiển và P1/Huy |
 | `T037 / CP3` | `PAUSED` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi đã push; dừng CP3 theo chỉ đạo P1 (chốt CP1 → đóng CP2 → mở CP3) | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
@@ -33,15 +34,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T004 / CP1` (sửa engines) + review T039, T091, T086 |
-| Proposed commit | `CP1 T004(setup): align Node engines with dependency floor`; review: `CP3 T039(verify)`, `CP7 T091(verify)`, `CP1 T086(verify)` |
-| Exact staged paths | `apps/web/{package.json,package-lock.json}`, `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md`, `members/p2-tin/README.md`; review: `docs/evidence/checkpoints/{CP3/T039-p5-hien-smoke.md,CP7/T091-p1-huy-quality-ci-smoke.md,CP1/T086-p1-huy-member-frame-smoke.md}` |
-| Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `5b6a441` lúc 2026-11-07T14:55+07:00 |
-| Gate commands | semver range check, `npm ci`, lint, typecheck; review: Edge browser 21 passed, vitest flaky 13/15 → 30/30 với `useLayoutEffect` |
-| Smoke evidence | `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md` |
-| Local commit | `84478b28b99dfd180fb09e09e187a5b813160894`, `d81e5e3a4dc15f58294e4056af7c82020c4197be`, `d3d33e1a42271788476b4c9786bf8ba9f12affab`, `c09853594adcebb580a6953ed376c3044fbe89c0` |
-| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 4`) |
-| Push status | `PUSHED` lúc 2026-11-07T14:55:40+07:00; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) |
+| Task/checkpoint | `T024-T025 / CP2` |
+| Proposed commit | `CP2 T024-T025(api): guarantee temporary clip deletion on every path` |
+| Exact staged paths | `services/inference-api/src/visign_api/inference/temporary_clip.py`, `services/inference-api/tests/unit/test_temporary_clip.py`, `members/p2-tin/README.md`, `docs/evidence/checkpoints/CP2/T024-T025-p2-tin-smoke.md` |
+| Pre-commit sync | `PASS` — stash/pull/apply qua `5ab1b97`; gate chạy lại; `origin/main...HEAD` = `0 0` lúc 2026-11-07T16:02+07:00 |
+| Gate commands | RED→GREEN 7 passed, độc lập thứ tự, 2 mutation fail, API+contract 110 passed ×3 `-W error`, Ruff/format/mypy |
+| Smoke evidence | `docs/evidence/checkpoints/CP2/T024-T025-p2-tin-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `NOT_PUSHED` |
 
 ## Commit ledger
 
@@ -59,6 +60,8 @@
 | `CP3/T039 review` | Review camera UI của P5 | `CP3 T039(verify): request fix for flaky camera focus test` | `d81e5e3a4dc15f58294e4056af7c82020c4197be` | [commit](https://github.com/HiImNVH/ViSign/commit/d81e5e3a4dc15f58294e4056af7c82020c4197be) | Edge 21 passed; flaky 13/15 → 30/30 | P5/Hiển | `PUSHED` |
 | `CP7/T091 review` | Review quality workflow của P1 | `CP7 T091(verify): record P2 quality workflow review` | `d3d33e1a42271788476b4c9786bf8ba9f12affab` | [commit](https://github.com/HiImNVH/ViSign/commit/d3d33e1a42271788476b4c9786bf8ba9f12affab) | `P2_VERIFIED` | P1/Huy | `PUSHED` |
 | `CP1/T086 review` | Verify member frame của P1 | `CP1 T086(verify): record P2 member frame verification` | `c09853594adcebb580a6953ed376c3044fbe89c0` | [commit](https://github.com/HiImNVH/ViSign/commit/c09853594adcebb580a6953ed376c3044fbe89c0) | `VERIFIED`; P1 đề nghị chữ cuối `review`, commit đã push nên giữ nguyên | P1/Huy | `PUSHED` |
+| `CP7/T091 follow-up` | Xác nhận 4 ghi chú T091 đã xử lý | `CP7 T091(verify): confirm P2 follow-up workflow review` | `45ea2148a7ffefcf81057282399612bdb9a94b53` | [commit](https://github.com/HiImNVH/ViSign/commit/45ea2148a7ffefcf81057282399612bdb9a94b53) | Tag action, 2 run success | P1/Huy | `PUSHED` |
+| `CP2/T024-T025` | Clip tạm luôn bị xóa | `CP2 T024-T025(api): guarantee temporary clip deletion on every path` | `PENDING` | `PENDING` | 7 passed, API+contract 110 passed | P1/Huy | `LOCAL-DRAFT` |
 
 ## Handoff
 
