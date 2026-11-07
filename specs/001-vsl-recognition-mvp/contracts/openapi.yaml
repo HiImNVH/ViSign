@@ -89,7 +89,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '422':
-          description: Clip is readable but does not satisfy inference constraints
+          description: Clip cannot be decoded or does not satisfy inference constraints
           headers:
             X-Request-ID:
               $ref: '#/components/headers/RequestId'

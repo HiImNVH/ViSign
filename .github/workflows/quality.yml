@@ -40,7 +40,7 @@ jobs:
       - name: Typecheck
         run: uv run --project services/inference-api python -m mypy services/inference-api/src services/inference-api/tests
       - name: Unit and contract tests
-        run: uv run --project services/inference-api pytest services/inference-api/tests -q
+        run: uv run --project services/inference-api pytest services/inference-api/tests tests/contract -q
 
   ai:
     name: AI (ruff, mypy, pytest)
