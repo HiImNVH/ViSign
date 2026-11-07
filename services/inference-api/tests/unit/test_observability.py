@@ -122,7 +122,12 @@ def test_configure_logging_is_idempotent() -> None:
     first_logger = configure_logging()
     second_logger = configure_logging()
 
+    # pytest 9 tu gan handler bat log vao logger tat propagate nen chi dem handler JSON cua service
+    structured_handlers = [
+        service_handler
+        for service_handler in second_logger.handlers
+        if isinstance(service_handler.formatter, StructuredJsonFormatter)
+    ]
     assert first_logger is second_logger
-    assert len(second_logger.handlers) == 1
-    assert isinstance(second_logger.handlers[0].formatter, StructuredJsonFormatter)
+    assert len(structured_handlers) == 1
     assert second_logger.propagate is False
