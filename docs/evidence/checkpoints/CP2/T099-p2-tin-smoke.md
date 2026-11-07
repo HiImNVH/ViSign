@@ -83,9 +83,12 @@ Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `
 | Điểm lệch 1 (`HealthResponse.modelVersion`) | **Lead quyết định theo OpenAPI**: optional + nullable. Đã sửa `docs/team/fe-be-api-convention.md` mục 4 trong commit review này; không đổi schema/TS |
 | Điểm lệch 2, 3 | Đồng ý chuyển sang T073 và T049 |
 
-**Lead result**: `P1_VERIFIED`; `P5` (consumer) còn `PENDING`.
+**Lead result**: `P1_VERIFIED`. P5 consumer xác nhận D1–D4 tại
+`docs/evidence/checkpoints/CP2/T099-p5-hien-consumer-confirmation.md` (`e0c6f4e`).
 
-**Reviewer note**: Chờ P5 xác nhận consumer (D2 timeout, D3 fallback, `inference-api.ts`).
+**T099 result**: `VERIFIED` — đánh `[X]` trong `tasks.md`.
+
+**Reviewer note**: D2 timeout và client đầy đủ thuộc T040/T053, không chặn T099.
 
 ## Follow-up sau review P5 — câu chữ preflight (`2026-11-07T19:12+07:00`)
 

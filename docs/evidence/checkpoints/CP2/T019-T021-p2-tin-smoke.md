@@ -122,3 +122,9 @@ Ghi chú không chặn:
 - Bắt hồi quy: bỏ kiểm chữ → 2 failed; khôi phục giống hệt.
 - Toàn bộ API + contract `-W error`: 176 passed, 1 skipped; Ruff, `ruff format --check`, mypy đạt.
 - Ảnh hưởng: chỉ siết validation domain; OpenAPI/TS không đổi (OpenAPI không có `const` cho `text`).
+
+## Task closure — P1/Huy (2026-11-07)
+
+- **T021**: `VERIFIED` (P1 + P5 tại `docs/evidence/checkpoints/CP2/T020-T021-T022-T026-p5-hien-review.md`), `[X]`.
+- **T019**: mở — chờ P3 xác nhận metadata và việc metadata writer T059 ghi `demoReady`.
+- **T020**: mở — P5 `CHANGES_REQUESTED`: `accepted=false` phải dùng đúng `Không nhận diện được`; `classLabel` không được rỗng/khoảng trắng.

@@ -127,16 +127,16 @@ track MAY bắt đầu khi T019–T028 ổn định và không được trình b
 - [ ] T018 Cài video-held-out split theo `recordingSessionId` cho full gate (ưu tiên signer khi có `signerId`), gắn nhãn split và cấm unseen-signer claim tại `ai/src/visign_ai/dataset/create_splits.py`
 - [ ] T019 [P] Định nghĩa model metadata cho `fixture|pilot|full`, extractor/feature schema version, nullable fixture accuracy/precision/recall/Macro-F1 và gate `full && 10 meanings && macroF1 >= 0.80 && mọi perMeaningRecall >= 0.65` tại `services/inference-api/src/visign_api/domain/model_version.py`
 - [ ] T020 [P] Định nghĩa prediction request/accepted/rejected/error states không thể kết hợp sai; success response giữ `processingTimeMs` và optional `timingsMs {decode,extract,infer}` plus `qualityHints {handsDetectedRatio,frameCount}` không chứa landmark tại `services/inference-api/src/visign_api/domain/prediction.py`
-- [ ] T021 [P] Cài error catalog ổn định gồm `CLIP_DECODE_FAILED` và `SERVICE_BUSY` đúng `contracts/openapi.yaml` tại `services/inference-api/src/visign_api/domain/errors.py`
+- [X] T021 [P] Cài error catalog ổn định gồm `CLIP_DECODE_FAILED` và `SERVICE_BUSY` đúng `contracts/openapi.yaml` tại `services/inference-api/src/visign_api/domain/errors.py`
 - [ ] T022 Cài cấu hình model path, MIME allowlist, byte/duration limit, inference wait timeout và CORS tại `services/inference-api/src/visign_api/config.py`
-- [ ] T023 Cài structured logging không persist payload gồm request ID, model version, total/per-stage duration, accepted và error code tại `services/inference-api/src/visign_api/observability.py`
+- [X] T023 Cài structured logging không persist payload gồm request ID, model version, total/per-stage duration, accepted và error code tại `services/inference-api/src/visign_api/observability.py`
 - [X] T024 Cài temporary-clip boundary luôn xóa file trong success/failure tại `services/inference-api/src/visign_api/inference/temporary_clip.py`
 - [X] T025 [P] Viết unit tests chứng minh temporary clip bị xóa ở mọi đường đi tại `services/inference-api/tests/unit/test_temporary_clip.py`
 - [ ] T026 Cài FastAPI app release `0.0.1`, public router `/api/v1`, `X-Request-ID` receive/generate/echo middleware, bounded single-inference coordinator và exception mapping tại `services/inference-api/src/visign_api/main.py` và `services/inference-api/src/visign_api/api/router.py`
 - [ ] T027 [P] Định nghĩa TypeScript API types tối thiểu bám `contracts/openapi.yaml`, giữ `X-Request-ID`, optional prediction diagnostics, `artifactKind`, `extractorVersion`, `featureSchemaVersion`, actual meanings và nullable fixture metrics tại `apps/web/src/types/inference-api.ts`; tự động sinh type bằng `openapi-typescript` thuộc M1
 - [ ] T028 [P] Tạo Vietnamese UI copy, disclaimer và accessible labels tại `apps/web/src/content/vi.ts`
 - [ ] T098 Sau khi lead bàn giao quy ước, đóng băng naming/normalization/version cho file dữ liệu, cập nhật validator và ví dụ hợp lệ/không hợp lệ tại `docs/contracts/data-conventions.md`, `ai/src/visign_ai/dataset/manifest_schema.py` và `ai/tests/dataset/test_manifest_validation.py`
-- [ ] T099 Sau khi lead bàn giao quy ước, đóng băng API v1 naming/status/error/versioning cho FE-BE và cập nhật contract/types/drift tests tại `docs/contracts/api-conventions.md`, `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`, `apps/web/src/types/inference-api.ts` và `tests/contract/`
+- [X] T099 Sau khi lead bàn giao quy ước, đóng băng API v1 naming/status/error/versioning cho FE-BE và cập nhật contract/types/drift tests tại `docs/contracts/api-conventions.md`, `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`, `apps/web/src/types/inference-api.ts` và `tests/contract/`
 
 **Checkpoint**: Manifest có thể audit; cùng feature schema được dùng cho training và serving; API app
 khởi động nhưng chưa cần model thật. T098–T099 là ID thêm sau để giữ lịch sử backlog nhưng bắt buộc

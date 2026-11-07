@@ -8,38 +8,52 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-- Remote repository trống trước CP0; baseline hiện đã có trên `origin/main`.
-- CP0 Spec Kit/rubric/checkpoint/member files đã push tại commit
-  `5102bbbbe7efcf327a64477051bfc6137e9b5bce`.
-- CP0 đã `VERIFIED`: P2 tái lập 5/5 gate trên `22226b25d17e70ce48b153914d7eee1e15e8d3f4`; ghi chú
-  không chặn (owner T001–T007, owner kép T090, link legacy hỏng) nằm trong
-  `docs/evidence/checkpoints/CP0/T085-T086-p1-huy-smoke.md`.
-- Application code legacy chưa được nhập; task checkbox chưa đóng trước independent review.
-- CP1 toolchain T001–T007 đã push tại `84958a34c44bc5e1d7e655cae6b6ed85e07d0c08`; P1 đã tái lập
-  API/AI/Web gates. T003 còn chờ P3 review, T004/T006 còn chờ P5 review.
-- T008 raw-material/rights guidance đã push tại `189d34bcd4875752dab460716756aa8239996f9f`; chờ P4 review.
-- CP2 T019–T021 (API domain models) đã push tại `9b888a182592a2739b665a287ec37a8a4aa9f8f3`
-  (evidence link `5dc97a6`); P1 đã tái lập gate (44 passed, Ruff, mypy); chờ P3 review metadata,
-  P5 review response/error shape.
-- CP2 T014–T016 (shared WebM feature pipeline) của P3 đã push tại `865547e`; chờ P2/P1 review và
-  representative-clip review cho schema `visign-xy-32-v0.3-draft`.
-- Lead đã bàn giao quy ước: [fe-be-api-convention.md](fe-be-api-convention.md) cho T099 và
-  [data-convention.md](data-convention.md) cho T098. Owner xác nhận các quyết định bổ sung rồi đóng băng.
-- 2026-11-07 Quang chốt lại 10 ý nghĩa P0: Giấy tờ, Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi,
-  Đau đầu, Không; file raw `<VÙNG>_<NGHĨA>_<số video>.mp4`.
-- 2026-11-07 lead quyết định dữ liệu: giữ đúng 10 ý nghĩa P0; full gate chia theo video gốc (`video-held-out`,
-  FR-015 mới), không tuyên bố unseen-signer; nguồn/giấy phép khai một lần ở mức bộ dữ liệu (video giáo dục
-  công khai). Ánh xạ tên file của Quang ở `data-convention.md` mục 8, chờ Quang xác nhận 2 điểm còn lại.
-- **CP1 `VERIFIED`** (2026-11-07): đủ review độc lập P1/P2/P3/P5; T001–T008 và T086 đánh `[X]`.
-  Chi tiết: mục "CP1 closure" trong `docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md`.
-- Hạ tầng: nhóm chốt hoàn thiện bản local trước; AWS (`infra/aws/`) là kế hoạch, chưa triển khai.
-- 2026-11-07 lead chuyển hạ tầng từ Google Cloud sang AWS (Free Plan/credit thân thiện hơn): một EC2
-  chạy web + API qua Compose, ECR theo commit SHA, model trên S3 có version, CloudFront HTTPS, deploy
-  bằng GitHub OIDC + SSM; `infra/gcp/` đổi thành `infra/aws/`. Rủi ro: EC2 free tier 1 GB RAM có thể
-  không đủ cho decode + MediaPipe + torch (review T014–T016 ước 250–600 MB/request) — P2 benchmark trước khi chốt instance.
-- T091 quality workflow (`.github/workflows/quality.yml`) kéo sớm từ CP7; deploy vẫn chờ CP7.
-- CP2 T022–T023 (config/logging) của P2 tại `fb56354`: P1_VERIFIED; P5 review CORS còn pending.
-  T014–T016: P1_REVIEWED và P2_VERIFIED (serving); representative-clip review schema còn pending.
+Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
+
+### Checkpoint
+
+| CP | Trạng thái | Ghi chú |
+|---|---|---|
+| CP0 | `VERIFIED` | Spec Kit, rubric, member/checkpoint docs — `docs/evidence/checkpoints/CP0/` |
+| CP1 | `VERIFIED` | T001–T008, T086 `[X]`; closure trong `docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md` |
+| CP2 | `OPEN` | Đóng khi đủ bảng "CP2 còn mở" bên dưới |
+| CP3 | `NOT OPEN` | Đã có T030/T037/T039/T040 trên `main` theo micro-commit; không đóng trước CP2 |
+| CP7 | `PARTIAL` | T091 quality CI chạy trên mọi push; AWS (`infra/aws/`) là kế hoạch, chưa triển khai |
+
+### CP2 còn mở
+
+| Hạng mục | Owner → reviewer | Trạng thái |
+|---|---|---|
+| T099 FE–BE API convention | P2 → P1 lead, P5 consumer | `VERIFIED`, `[X]` |
+| T024–T025 temporary clip | P2 → P1 | `VERIFIED`, `[X]` |
+| T021 error catalog, T023 logging | P2 → P1, P5 | `VERIFIED`, `[X]` |
+| T019 model metadata | P2 → P1, P3 | P1_VERIFIED; chờ P3 xác nhận metadata/`demoReady` (T059) |
+| T020 rejected-response text | P2 | `CHANGES_REQUESTED` (P5): `accepted=false` phải dùng đúng `Không nhận diện được`; `classLabel` không được rỗng/khoảng trắng |
+| CORS T022/T026 | P2 | `CHANGES_REQUESTED` (P5): chặn `cors_allow_credentials=True` qua cấu hình |
+| T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
+| T017 batch extraction CLI | P3 → P2, P1 | P3 đã thêm test (`57311bf`); chờ P2 review lại và P1 review |
+| T013 registry 10 meaning P0 | P4 → P3, P1 | Hoàn thành local trên máy P4, **chưa push** |
+| T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
+| T040 typed API client | P5 → P2 | Đã push `240d290`; chờ review |
+
+### Quyết định lead 2026-11-07
+
+- P0 = 10 ý nghĩa: Giấy tờ, Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không; file raw
+  `<VÙNG>_<NGHĨA>_<số video>.mp4` (ánh xạ ở `data-convention.md` mục 8).
+- Full gate chia theo video gốc (`video-held-out`, FR-015), không tuyên bố unseen-signer; nguồn/giấy phép
+  khai một lần ở mức bộ dữ liệu (video giáo dục công khai).
+- Hạ tầng: hoàn thiện bản local trước. Kế hoạch AWS: `ap-southeast-2`, một EC2 + Elastic IP, ECR, S3,
+  CloudFront, GitHub OIDC + SSM; chưa tạo tài nguyên.
+- `HealthResponse.modelVersion` optional + nullable theo OpenAPI.
+
+### Rủi ro đang theo dõi
+
+- Latency: benchmark T095 đo 2,4–3,4 s/clip trên Windows **chưa gồm GRU**, sát/vượt SC-002 p95 ≤ 3 s.
+  P3 xem lại decode toàn bộ frame trước khi lấy mẫu (review T014–T016 mục 3).
+- RAM: đỉnh 480–600 MB/clip; host 1 GB quá sát — chọn instance sau khi đo trên Linux.
+- Hiến pháp III còn yêu cầu báo cáo kết quả với người chưa xuất hiện; chờ lead quyết định sửa hiến pháp
+  hay ghi giới hạn trong model card.
+- Merge commit `fc7d606` (P3) trái quy tắc lịch sử thẳng; dùng `git pull --rebase origin main`.
 
 ## Status rules
 
@@ -52,11 +66,11 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 | Person | Owner | Canonical scope | Current status | Next gate |
 |---|---|---|---|---|
-| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | CP1 đã chốt; điều phối đóng CP2 (T098, T099 P5, T013, schema review); review T017/T030/T037 |
-| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | PARTIAL_VERIFIED / REVIEW | CP1 chờ P3/P5; T019–T023 P1_VERIFIED, chờ P3/P5; T099 mở — xác nhận quy ước API |
-| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | REVIEW | Review T003; T014–T016 chờ review; xác nhận data-convention D1–D4 |
-| P4 | Quang | `data/`, `ai/dataset`, dataset card | REVIEW | Review T008; T098 mở — xác nhận data-convention D1–D4 rồi đóng băng |
-| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | REVIEW | Review T004/T006; xác nhận API convention D1–D4 với Tín |
+| P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Điều phối đóng CP2; review T017; duyệt schema khi có clip; T085/T087/T093 |
+| P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | Sửa T020 + CORS theo P5; review lại T017; review T040 |
+| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Gửi clip đại diện cho schema review; tối ưu latency decode; xác nhận T098 |
+| P4 | Quang | `data/`, `ai/dataset`, dataset card | ACTIVE | Push T013; xác nhận vùng `O`/variant rồi đóng băng T098 |
+| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | T040 chờ review; tiếp CP3 khi có endpoint T038/T060 |
 
 ## External reference only
 

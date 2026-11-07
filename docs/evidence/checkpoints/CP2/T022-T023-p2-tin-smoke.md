@@ -120,3 +120,8 @@ Ghi chú không chặn — xử lý ở task sau:
 - Bắt hồi quy: trả kiểu về `bool` → 2 failed; khôi phục giống hệt.
 - Khởi động thật: `CORS_ALLOW_CREDENTIALS=true python -c "import visign_api.main"` → `literal_error`, app không chạy.
 - Toàn bộ API + contract `-W error`: 178 passed, 1 skipped; Ruff, format, mypy (38 files) đạt.
+
+## Task closure — P1/Huy (2026-11-07)
+
+- **T023**: `VERIFIED` (P1; P5 không yêu cầu sửa logging), `[X]`.
+- **T022**: mở — P5 `CHANGES_REQUESTED`: chặn `cors_allow_credentials=True` qua cấu hình (áp dụng cả wiring T026).
