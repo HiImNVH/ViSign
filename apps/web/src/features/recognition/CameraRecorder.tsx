@@ -4,13 +4,14 @@ import { vi } from '../../content/vi';
 import { type CameraView } from './cameraSession';
 import { RecognitionError } from './RecognitionError';
 import { RecognitionResult } from './RecognitionResult';
+import { TranscriptPanel } from './TranscriptPanel';
 import { type useRecognition } from './useRecognition';
 
-// Keep legacy camera-only fixtures valid; the recognition hook supplies this field in production.
+// Keep legacy camera-only fixtures valid; the recognition hook supplies these fields in production.
 type RecognitionController = Pick<ReturnType<typeof useRecognition>,
   'state' | 'model' | 'camera' | 'enableCamera' | 'startRecording' | 'stopRecording' |
   'submit' | 'cancel' | 'reset' | 'reloadModelInfo'>
-  & Partial<Pick<ReturnType<typeof useRecognition>, 'compatibilityError'>>;
+  & Partial<Pick<ReturnType<typeof useRecognition>, 'compatibilityError' | 'transcript'>>;
 
 function CameraViewport({ videoRef, view, children }: { videoRef: RefObject<HTMLVideoElement | null>; view: CameraView; children: ReactNode }) {
   const active = ['preview', 'recording', 'stopping', 'captured'].includes(view.phase);
@@ -44,7 +45,7 @@ function CameraControls({ controller, view, rejectedVisible }: { controller: Rec
 
 export function CameraRecorder({ controller }: { controller: RecognitionController }) {
   const { view, videoRef } = controller.camera;
-  const { state, model, reloadModelInfo, startRecording, compatibilityError } = controller;
+  const { state, model, reloadModelInfo, startRecording, compatibilityError, transcript = [] } = controller;
   const panel = useRef<HTMLElement>(null);
   const previousPhase = useRef(view.phase);
   const previousRecognitionPhase = useRef(state.phase);
@@ -64,6 +65,7 @@ export function CameraRecorder({ controller }: { controller: RecognitionControll
   }, [view.phase, state.phase]);
   return <section ref={panel} className="camera-workspace" aria-label="Nhận diện ký hiệu bằng camera" aria-describedby="camera-privacy">
     <CameraViewport videoRef={videoRef} view={view}>
+      <TranscriptPanel entries={transcript} />
       {view.phase === 'error' && <RecognitionError type="camera" error={view.error} />}
       <div className="camera-dock">
         {compatibilityError && <div className="recognition-feedback"><RecognitionError type="api" stage="prediction" error={compatibilityError} /></div>}

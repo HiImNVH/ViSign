@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | T074–T075 / US2: HTTP compatibility đã qua web gate; T100–T104 / US6 chuẩn bị commit riêng; chờ review độc lập |
+| Current checkpoint | US2 T074–T075 và US6 T100–T104 được chia thành hai commit độc lập; web gates PASS, chờ P1/P2 review |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-08` |
 
@@ -21,7 +21,7 @@
 | `T020/T022/T026 / CP2 review` | `P5_VERIFIED` | API prediction validation, CORS settings và FastAPI middleware của P2 | Fix đã kiểm lại; evidence `docs/evidence/checkpoints/CP2/T020-T021-T022-T026-p5-hien-review.md`; task đã `[X]` | P2/Tín, P1/Huy |
 | `T040 / CP2` | `LIVE_TEST_PASS / READY_FOR_REVIEW` | `apps/web/src/services/inferenceApi.ts`, unit/live/browser tests | P2 đã review contract; live HTTP accepted/rejected/degraded và camera WebM trực tiếp PASS, cần P2/P1 review integration mới; evidence `docs/evidence/checkpoints/CP2/T040-p5-hien-smoke.md` | P2/Tín, P1/Huy |
 | `T074-T075 / US2` | `TEST_PASS / READY_FOR_REVIEW` | Typed 404/405, stable Vietnamese copy, camera error panel, tests | 159 unit + 48 Edge browser PASS; evidence `docs/evidence/checkpoints/CP4/T074-T075-p5-hien-smoke.md`. Commit riêng sau revert commit gộp `231f8d2` | P1/Huy, P2/Tín |
-| `T100-T104 / US6` | `TODO / RESTORE_IN_SEPARATE_COMMIT` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt 24 giờ; commit riêng ngay sau T074–T075 | P1/Huy, P2/Tín |
+| `T100-T104 / US6` | `TEST_PASS / READY_FOR_REVIEW` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Accepted-only transcript, metadata localStorage TTL 24 giờ, xoá thủ công, bộ nhớ bị chặn vẫn dịch được. Evidence `docs/evidence/checkpoints/CP6/T100-T104-p5-hien-smoke.md`; commit riêng T074–T075 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
 | `T041 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | Commit `943065594421facf6c659ccb0e0f6e36495704d4`; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
 | `T042 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/RecognitionResult.tsx`, component/browser tests | SHA `3f3eb369fb18df5a85f399b59de8e18159bffdbb`, 80 unit và 24 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T042-p5-hien-accepted-result-smoke.md` | P2/Tín, P1/Huy |

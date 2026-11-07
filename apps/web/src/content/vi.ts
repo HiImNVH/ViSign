@@ -43,6 +43,21 @@ export const vi = {
   preview: 'Hình ảnh xem trước từ camera',
   privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay chỉ được gửi đến dịch vụ nhận diện khi bạn bấm Gửi nhận diện.',
   disclaimer: 'ViSign là công cụ hỗ trợ thử nghiệm. Kết quả có thể không chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.',
+  transcript: {
+    title: 'Bản dịch trực tiếp',
+    description: 'Các ý nghĩa được ghép theo thứ tự nhận diện; chưa phải câu dịch có ngữ pháp.',
+  },
+  history: {
+    open: 'Lịch sử', title: 'Lịch sử bản dịch', close: 'Đóng lịch sử',
+    disclosure: 'Chỉ lưu trên thiết bị này trong 24 giờ. Không gửi lịch sử lên máy chủ.',
+    empty: 'Chưa có bản dịch được lưu.',
+    unavailable: 'Bộ nhớ trình duyệt không khả dụng. Bạn vẫn có thể nhận diện và xem bản dịch trực tiếp.',
+    clear: 'Xoá toàn bộ lịch sử',
+    confirm: 'Xoá tất cả lịch sử và bản dịch trực tiếp của phiên này?',
+    confirmYes: 'Xác nhận xoá', cancel: 'Giữ lại',
+    clearFailed: 'Không xoá được lịch sử trên thiết bị. Vui lòng kiểm tra quyền lưu trữ rồi thử lại.',
+    confidence: 'Độ tin cậy', model: 'Model',
+  },
   recognition: {
     send: 'Gửi nhận diện',
     sending: 'Đang nhận diện…',
