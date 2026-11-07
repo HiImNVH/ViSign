@@ -6,7 +6,6 @@ import time
 from dataclasses import dataclass
 
 from fastapi import APIRouter, Request, UploadFile
-from starlette.concurrency import run_in_threadpool
 
 from visign_api.api.clip_upload_route import ClipUploadRoute
 from visign_api.config import Settings
@@ -22,6 +21,7 @@ from visign_api.inference.prediction_decision import decide_prediction
 from visign_api.inference.predictor import RawPrediction
 from visign_api.inference.predictor_registry import PredictorRegistry
 from visign_api.inference.temporary_clip import open_temporary_clip
+from visign_api.inference.worker_thread import run_to_completion
 from visign_api.observability import LOGGER_NAME
 
 MILLISECONDS_PER_SECOND = 1000
@@ -80,9 +80,10 @@ async def run_inference(request: Request, clip_bytes: bytes) -> InferenceOutcome
     _ = predictor_registry.active_predictor
     async with coordinator.acquire_slot():
         active_predictor = predictor_registry.active_predictor
-        # Clip tam ghi trong slot nen dia chi giu toi da mot clip; luon bi xoa du predictor loi
+        # Clip tam ghi trong slot nen dia chi giu toi da mot clip; luon bi xoa du predictor loi.
+        # Request bi huy van cho worker xong moi roi slot va xoa clip (T050)
         with open_temporary_clip(clip_bytes) as uploaded_clip:
-            raw_prediction = await run_in_threadpool(
+            raw_prediction = await run_to_completion(
                 active_predictor.predict, uploaded_clip.path
             )
     return InferenceOutcome(

@@ -2,6 +2,7 @@
 # Route class cho POST /predictions (T049): chan body vuot gioi han theo Content-Length truoc khi FastAPI parse
 # multipart va dem byte thuc nhan cho request chunked; loi mien bi FastAPI boc thanh 400 duoc tra lai dung ma.
 from collections.abc import Callable, Coroutine
+from http import HTTPStatus
 from typing import Any
 
 from fastapi import Request, Response
@@ -12,7 +13,11 @@ from starlette.exceptions import HTTPException
 from starlette.types import Message, Receive
 
 from visign_api.config import Settings
-from visign_api.domain.errors import ClipTooLargeException, ViSignApiException
+from visign_api.domain.errors import (
+    ClipTooLargeException,
+    InvalidRequestException,
+    ViSignApiException,
+)
 from visign_api.inference.clip_validator import (
     ensure_declared_length_within_limit,
     max_upload_body_bytes,
@@ -60,6 +65,9 @@ class ClipUploadRoute(APIRoute):
                 # FastAPI boc moi loi khi doc form thanh HTTPException 400; loi mien goc nam o __cause__
                 if isinstance(body_error.__cause__, ViSignApiException):
                     raise body_error.__cause__ from None
+                if body_error.status_code == HTTPStatus.BAD_REQUEST:
+                    # T050: multipart hong tra ErrorEnvelope INVALID_REQUEST, khong lo {"detail": ...}
+                    raise InvalidRequestException() from body_error
                 raise
 
         return guarded_handler

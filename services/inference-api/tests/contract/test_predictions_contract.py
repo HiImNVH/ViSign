@@ -11,7 +11,12 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.formparsers import MultiPartParser
 from visign_api.config import Settings
-from visign_api.domain.errors import ClipDecodeFailedException
+from visign_api.domain.errors import (
+    ERROR_CATALOG,
+    ClipDecodeFailedException,
+    ErrorCode,
+    build_api_exception,
+)
 from visign_api.domain.model_version import ArtifactKind, ModelMetadata
 from visign_api.domain.prediction import (
     REJECTED_PREDICTION_TEXT,
@@ -31,6 +36,9 @@ SAMPLE_CLIP = b"\x1aE\xdf\xa3\x9f\x42\x86\x81\x01\x42\x82\x84webm fixture camera
 MP4_BYTES = b"\x00\x00\x00\x18ftypmp42" + bytes(64)
 TEN_GIB = str(10 * 1024**3)
 MULTIPART_BOUNDARY = "visign-test-boundary"
+ALLOWED_ORIGIN = "http://localhost:5173"
+RETRY_AFTER_HEADER = "Retry-After"
+MP4_MEDIA_TYPE = "video/mp4"
 WEBM_MEDIA_TYPE = "video/webm;codecs=vp8"
 INTERNAL_SECRET = "C:\\noi-bo\\visign_clip_bi-mat.webm"
 REQUIRED_RESPONSE_FIELDS = {
@@ -437,3 +445,180 @@ def test_chunked_body_over_limit_is_rejected_while_streaming(
     # Bo dem byte cat stream giua chung: multipart khong duoc parse het roi moi bi tu choi
     assert parse_outcomes == ["aborted"]
     assert inference_calls == []
+
+
+@pytest.mark.parametrize("error_code", list(ErrorCode))
+def test_every_error_code_returns_its_catalog_envelope(error_code: ErrorCode) -> None:
+    # T045: moi ma loi cung mot envelope; Retry-After chi co khi catalog khai bao; clip tam luon bi xoa
+    seen_paths: list[Path] = []
+
+    def raise_error_code(clip_path: Path) -> RawPrediction:
+        seen_paths.append(clip_path)
+        raise build_api_exception(error_code)
+
+    with build_client(
+        settings_for(FIXTURE_ARTIFACTS / "fixture"), factories_with(raise_error_code)
+    ) as failing_client:
+        error_response = post_clip(failing_client)
+
+    error_definition = ERROR_CATALOG[error_code]
+    expected_retry_after = (
+        None
+        if error_definition.retryAfterSeconds is None
+        else str(error_definition.retryAfterSeconds)
+    )
+    assert error_response.status_code == error_definition.statusCode
+    assert error_response.headers["content-type"].startswith("application/json")
+    assert error_response.json() == {
+        "code": error_code.value,
+        "message": error_definition.message,
+        "requestId": error_response.headers[REQUEST_ID_HEADER],
+    }
+    assert error_response.headers.get(RETRY_AFTER_HEADER) == expected_retry_after
+    assert not seen_paths[0].exists()
+
+
+def truncated_multipart_body() -> bytes:
+    return multipart_clip_body(SAMPLE_CLIP).split(
+        b"\r\n--" + MULTIPART_BOUNDARY.encode()
+    )[0]
+
+
+@pytest.mark.parametrize(
+    ("content_type", "raw_body"),
+    [
+        ("multipart/form-data", b"--x\r\nkhong co boundary"),
+        (
+            f"multipart/form-data; boundary={MULTIPART_BOUNDARY}",
+            truncated_multipart_body(),
+        ),
+    ],
+)
+def test_malformed_multipart_is_invalid_request_envelope(
+    fixture_client: TestClient, content_type: str, raw_body: bytes
+) -> None:
+    # T050: loi parse body tra ErrorEnvelope, khong lo {"detail": ...} cua FastAPI
+    malformed_response = fixture_client.post(
+        PREDICTIONS_PATH, content=raw_body, headers={"Content-Type": content_type}
+    )
+
+    assert malformed_response.status_code == 400
+    assert malformed_response.json() == {
+        "code": ErrorCode.INVALID_REQUEST.value,
+        "message": ERROR_CATALOG[ErrorCode.INVALID_REQUEST].message,
+        "requestId": malformed_response.headers[REQUEST_ID_HEADER],
+    }
+
+
+def fixture_post(**request_options: Any) -> httpx2.Response:
+    with build_client(settings_for(FIXTURE_ARTIFACTS / "fixture")) as test_client:
+        return test_client.post(PREDICTIONS_PATH, **request_options)
+
+
+def scripted_post(scripted_behavior: ScriptedBehavior) -> httpx2.Response:
+    with build_client(
+        settings_for(FIXTURE_ARTIFACTS / "fixture"), factories_with(scripted_behavior)
+    ) as scripted_client:
+        return post_clip(scripted_client)
+
+
+def crash(clip_path: Path) -> RawPrediction:
+    raise RuntimeError("loi bat ngo")
+
+
+def fail_decoding(clip_path: Path) -> RawPrediction:
+    raise ClipDecodeFailedException()
+
+
+def low_confidence_post() -> httpx2.Response:
+    with build_client(
+        settings_for(FIXTURE_ARTIFACTS / "fixture-low-confidence")
+    ) as low_client:
+        return post_clip(low_client)
+
+
+def not_ready_post() -> httpx2.Response:
+    with build_client(settings_for(None)) as degraded_client:
+        return post_clip(degraded_client)
+
+
+RESPONSE_SCENARIOS = {
+    "200-accepted": lambda: fixture_post(
+        files={"clip": ("capture.webm", SAMPLE_CLIP, WEBM_MEDIA_TYPE)}
+    ),
+    "200-rejected": low_confidence_post,
+    "400-missing-clip": lambda: fixture_post(data={"other": "khong-co-clip"}),
+    "400-malformed-body": lambda: fixture_post(
+        content=b"--x", headers={"Content-Type": "multipart/form-data"}
+    ),
+    "413-declared-length": lambda: fixture_post(
+        files={"clip": ("capture.webm", SAMPLE_CLIP, WEBM_MEDIA_TYPE)},
+        headers={"Content-Length": TEN_GIB},
+    ),
+    "415-media-type": lambda: fixture_post(
+        files={"clip": ("capture.mp4", SAMPLE_CLIP, MP4_MEDIA_TYPE)}
+    ),
+    "422-decode-failed": lambda: scripted_post(fail_decoding),
+    "500-prediction-failed": lambda: scripted_post(crash),
+    "503-model-not-ready": not_ready_post,
+}
+
+
+@pytest.mark.parametrize("scenario_name", sorted(RESPONSE_SCENARIOS))
+def test_every_response_carries_its_request_id(scenario_name: str) -> None:
+    scenario_response = RESPONSE_SCENARIOS[scenario_name]()
+
+    effective_request_id = scenario_response.headers[REQUEST_ID_HEADER]
+    assert str(scenario_response.status_code) == scenario_name.split("-")[0]
+    assert str(uuid.UUID(effective_request_id)) == effective_request_id
+    assert scenario_response.json()["requestId"] == effective_request_id
+
+
+def test_caller_request_id_is_echoed_on_errors_and_invalid_ids_are_replaced(
+    fixture_client: TestClient,
+) -> None:
+    caller_request_id = str(uuid.uuid4())
+    unsupported_clip = {"clip": ("capture.mp4", SAMPLE_CLIP, MP4_MEDIA_TYPE)}
+
+    echoed_response = fixture_client.post(
+        PREDICTIONS_PATH,
+        files=unsupported_clip,
+        headers={REQUEST_ID_HEADER: caller_request_id},
+    )
+    replaced_response = fixture_client.post(
+        PREDICTIONS_PATH,
+        files=unsupported_clip,
+        headers={REQUEST_ID_HEADER: "khong-phai-uuid"},
+    )
+
+    assert echoed_response.headers[REQUEST_ID_HEADER] == caller_request_id
+    assert echoed_response.json()["requestId"] == caller_request_id
+    replaced_request_id = replaced_response.headers[REQUEST_ID_HEADER]
+    assert str(uuid.UUID(replaced_request_id)) == replaced_request_id
+    assert replaced_response.json()["requestId"] == replaced_request_id
+
+
+@pytest.mark.parametrize("scenario_name", ["415-media-type", "503-model-not-ready"])
+def test_error_responses_expose_correlation_headers_to_web_origin(
+    scenario_name: str,
+) -> None:
+    # Trinh duyet chi doc duoc X-Request-ID/Retry-After cua response loi khi CORS cho phep
+    def with_origin(request_options: dict[str, Any]) -> httpx2.Response:
+        return fixture_post(headers={"Origin": ALLOWED_ORIGIN}, **request_options)
+
+    if scenario_name == "415-media-type":
+        error_response = with_origin(
+            {"files": {"clip": ("capture.mp4", SAMPLE_CLIP, MP4_MEDIA_TYPE)}}
+        )
+    else:
+        with build_client(settings_for(None)) as degraded_client:
+            error_response = post_clip(degraded_client, {"Origin": ALLOWED_ORIGIN})
+
+    exposed_headers = {
+        header_name.strip().lower()
+        for header_name in error_response.headers[
+            "access-control-expose-headers"
+        ].split(",")
+    }
+    assert error_response.headers["access-control-allow-origin"] == ALLOWED_ORIGIN
+    assert {"x-request-id", "retry-after"} <= exposed_headers
