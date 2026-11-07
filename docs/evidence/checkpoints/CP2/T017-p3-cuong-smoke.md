@@ -80,3 +80,18 @@ Phát hiện:
 Đã thêm test tại [test_extract_manifest.py](../../../../ai/tests/landmarks/test_extract_manifest.py) theo mục 1 trong review P2. Test dùng pipeline giả để chạy độc lập với detector và video thật. Phạm vi gồm CSV lỗi/trùng ID, đường dẫn thoát root và symlink, thiếu file, sai hash, lỗi pipeline, nội dung NPZ, bảo toàn artifact khi chạy lại và mã thoát 0/1/2.
 
 Gate local trên Windows: 13 test T017 pass, 1 skip do quyền tạo symlink. Toàn AI với fixture: 33 pass, 1 skip. API và contract: 173 pass, 1 skip. Ruff, mypy của AI/API và smoke CLI với MediaPipe thật đều đạt. Bộ test đã push tại [57311bf](https://github.com/HiImNVH/ViSign/commit/57311bfac066306751ef9a71c29494809d54d02d). Chờ xác nhận CI cho commit này và P2/P1 review lại.
+
+## Independent re-review — P2/Tín (`2026-11-07T19:22+07:00`)
+
+Trên `origin/main` `9abd2f3` (chứa `57311bf`, `fc7d606`):
+
+| Gate | Kết quả |
+|---|---|
+| Test mới | `ai/tests/landmarks/test_extract_manifest.py`: header/cột/`sampleId` sai → exit 2; `rawPath` tuyệt đối/`..`/`\`/`:` và symlink thoát root bị từ chối; file thiếu/hash sai → exit 1, không có NPZ; mã `INSUFFICIENT_LANDMARKS` (qua `inputStatus`) và `INVALID_TIMESTAMPS` (qua `PipelineError`) được giữ; NPZ đúng dtype/shape/mask đảo/timestamp/metadata với `allow_pickle=False`; chạy lại trả `OUTPUT_EXISTS`, không gọi lại pipeline, byte giữ nguyên, không sót `.tmp` |
+| Chạy | `uv run --project ai --locked pytest ai/tests -q -rs`: 28 passed, 6 skipped (symlink cần quyền trên Windows; CI Linux job AI trên `fc7d606` success nên test symlink đã chạy); Ruff, mypy (12 files) PASS |
+| CI | Run `fc7d606` đỏ ở job Web do test focus flaky T039 (đã sửa ở `39209c7`), không do T017; job AI success |
+
+Ghi chú quy trình: `fc7d606` là merge commit (`git pull` kiểu merge), trái quy tắc chỉ dùng `git pull --rebase`
+của P1; không cần sửa lịch sử, chỉ tránh lặp lại.
+
+**Reviewer result**: `VERIFIED` (P2) — đóng mục `CHANGES_REQUESTED` thiếu test; các ghi chú `LOW` trước vẫn là đề xuất.
