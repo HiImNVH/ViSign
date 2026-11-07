@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T04:20:00+07:00` trên `origin/main` `c0d598f`.
+Cập nhật `2026-11-08T04:45:00+07:00` trên `origin/main` `bed64a9`.
 
 ### Checkpoint
 
@@ -56,7 +56,7 @@ Cập nhật `2026-11-08T04:20:00+07:00` trên `origin/main` `c0d598f`.
 | T027, T028, T031, T051 | P5 | Types, câu chữ, component test, kết quả bị từ chối | `VERIFIED`, `[X]` (P1) |
 | T063 | P5 | Audit accessibility (Hiển, `b5ca295`, sửa recorder `a6d8a9d`) | `VERIFIED`, `[X]` (P1): 90/90 lặp 3 lần; trình đọc màn hình thật NOT_RUN |
 | T088 | P5 + P1 | Audit UX (P1) + sửa a11y/bố cục 320 px (P5 `a40c68a`) | `VERIFIED`, `[X]` (review chéo) |
-| T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá. **AWS (2026-11-08)**: Free Plan, credit 100 USD; Budget `visign-monthly-credit-guard` (5/20/50 USD); stack `visign-storage` (ECR + S3) tạo xong; image `3b29d4a2cec1` + artifact fixture đã đẩy; **origin EC2 `visign-origin` chạy** (`52.65.207.133`, smoke 14/14, [báo cáo](../deployment-report.md)); CloudFront bị chặn chờ AWS Support xác minh tài khoản; chưa có HTTPS nên chưa dùng camera |
+| T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá. **AWS (2026-11-08)**: Free Plan, credit 100 USD; Budget `visign-monthly-credit-guard` (5/20/50 USD); stack `visign-storage` (ECR + S3) tạo xong; image `3b29d4a2cec1` + artifact fixture đã đẩy; **EC2 chạy artifact pilot Giấy tờ/Nhận** qua HTTPS tạm (Cloudflare Quick Tunnel), webcam thật end-to-end đạt; processing 4–4,7 s/clip trên t3.small → **trượt SC-002**; CloudFront chờ AWS xác minh ([báo cáo](../deployment-report.md)) |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
@@ -65,6 +65,8 @@ Cập nhật `2026-11-08T04:20:00+07:00` trên `origin/main` `c0d598f`.
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
 | T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; đã ghi metric pilot nội bộ, chờ review cập nhật và đánh giá full |
 | T081, T082 | P5 | Giao diện admin `/admin/train-model` (`a498da5`, `c0d598f`) | T081 `VERIFIED`, `[X]`; T082 P1_VERIFIED phần FE, giữ `[ ]` chờ backend T078–T080 (P2) và chốt body 202 + tên trường multipart trong contract |
+| T091 | P1 | CI quality gate | Thêm job `docker` (build 2 image, nạp 3 detector MediaPipe trong container chỉ đọc, smoke Compose 14/14 qua nginx), xanh trên `bed64a9`; OIDC deploy bị SCP Free Plan chặn. Chờ P2 review |
+| T084 | P1 | Nghiệm thu ranh giới user/admin, secret, retention | [admin-acceptance.md](../admin-acceptance.md): public/secret/retention đạt trên EC2 (0 clip còn trong `/tmp`, admin API 404); phần admin chờ T078–T080 |
 | T083 | P3 | Pilot nội bộ | P3 đã chạy lại pilot Giấy tờ / Nhận, 15 clip, accuracy 25%, macro-F1 0,3333, demoReady=false. **Huy đã chốt phạm vi Giấy tờ / Nhận (2026-11-08).** P1 nạp artifact `t083-pilot-v2-approved` vào Docker API: `modelReady`, 4 clip test → 200 (2 chấp nhận đúng nghĩa, 2 từ chối), 1,4–2,3 s/clip, RAM 890 MiB. Còn chờ T076 (sửa `sourceUri`) và T078–T082. [Báo cáo](../pilot-report.md) |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
