@@ -3,6 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { RecognitionOverlay } from '../../src/features/recognition/RecognitionOverlay';
+import { RecognitionResult } from '../../src/features/recognition/RecognitionResult';
 
 async function expectInCameraLayout(page: Page) {
   const camera = await page.locator('.camera-viewport').boundingBox();
@@ -87,6 +88,33 @@ test('accepted presentation and controls fit a zoom-sized viewport', async ({ pa
     const camera = (await page.locator('.camera-viewport').boundingBox())!;
     const controls = (await page.locator('.capture-controls').boundingBox())!;
     const translation = (await page.locator('.translation-panel').boundingBox())!;
+    expect(translation.y).toBeGreaterThanOrEqual(camera.y);
+    expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
+    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
+    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('T042 pilot warning, meanings and disclaimer fit inside camera with controls', async ({ page }) => {
+  await page.goto('/');
+  const markup = renderToStaticMarkup(createElement(RecognitionResult, {
+    result: { requestId: 'test', text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
+      confidence: .92, accepted: true, modelVersion: 'pilot-v1', processingTimeMs: 12 },
+    model: { modelVersion: 'pilot-v1', artifactKind: 'pilot', demoReady: false,
+      meanings: ['Giấy tờ', 'Xin chào'] },
+  }));
+  await page.evaluate(markup => document.querySelector('.camera-dock')!.insertAdjacentHTML('afterbegin', markup), markup);
+  for (const viewport of [page.viewportSize()!, { width: 375, height: 667 }, { width: 320, height: 180 }]) {
+    await page.setViewportSize(viewport);
+    const result = page.getByRole('region', { name: 'Văn bản dịch' });
+    await expect(result).toContainText('Giấy tờ (giấy)');
+    await expect(result).toContainText('Độ tin cậy 92%');
+    await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
+    await expect(result.locator('.translation-coverage')).toContainText('Giấy tờ, Xin chào');
+    await expect(result.locator('.translation-notice')).toBeVisible();
+    const camera = (await page.locator('.camera-viewport').boundingBox())!;
+    const controls = (await page.locator('.capture-controls').boundingBox())!;
+    const translation = (await result.boundingBox())!;
     expect(translation.y).toBeGreaterThanOrEqual(camera.y);
     expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
     expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);

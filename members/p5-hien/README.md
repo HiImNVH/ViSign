@@ -9,7 +9,7 @@
 | Role | Frontend, UX và browser E2E |
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
-| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; `T039 / CP3` đã push |
+| Current checkpoint | `CP2 T020/T022/T026` đã `P5_VERIFIED`; `T039/T041 / CP3` đã push; `T042` chờ review |
 | Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-07` |
 
@@ -22,7 +22,8 @@
 | `T040 / CP2` | `REVIEW` | typed API client và model-info | Client đã có transport test; chờ review P2 và tích hợp endpoint | P2/Tín |
 | `T100-T104 / US6` | `TODO` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt ≥24 giờ; làm sau T040/T043 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
-| `T041 / CP3` | `IMPLEMENTED_LOCAL` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | 11 hook tests, 58 unit và 21 Edge browser PASS; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
+| `T041 / CP3` | `PUSHED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/useRecognition.ts`, `apps/web/tests/recognition/useRecognition.test.tsx` | Commit `943065594421facf6c659ccb0e0f6e36495704d4`; evidence `docs/evidence/checkpoints/CP3/T041-p5-hien-recognition-state-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
+| `T042 / CP3` | `IMPLEMENTED / READY_FOR_REVIEW` | `apps/web/src/features/recognition/RecognitionResult.tsx`, component/browser tests | 22 test mới, tổng 80 unit và 24 Edge browser PASS; disclaimer, confidence, fixture/pilot/full disclosure; evidence `docs/evidence/checkpoints/CP3/T042-p5-hien-accepted-result-smoke.md`; chờ review và integration T043 | P2/Tín, P1/Huy |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
 
 ## Commit đang chuẩn bị
@@ -50,6 +51,8 @@
 | `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `a074849599176e95abfbb3f606fbbf1df611c0ad` | [commit](https://github.com/HiImNVH/ViSign/commit/a074849599176e95abfbb3f606fbbf1df611c0ad) | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 overlay` | Áp dụng demo đã duyệt: nút/chữ trong camera, chữ chỉ khi accepted | `CP3 T039(ui): apply approved camera overlay layout` | `812b46a422dee62970d6165f33bad222fe3a57d0` | [commit](https://github.com/HiImNVH/ViSign/commit/812b46a422dee62970d6165f33bad222fe3a57d0) | 42 unit/component + 15 browser Edge; lint/typecheck/build, no-scroll và result guard PASS | P2/Tín, P1/Huy | `PUSHED` |
 | `CP3/T039 review` | Sửa zoom/focus, thêm accepted browser fixture | `CP3 T039(ui): fix zoom controls and preserve keyboard focus` | `e7ae3f797509bc8f6e0216bd8f00453ce7e986c7` | [commit](https://github.com/HiImNVH/ViSign/commit/e7ae3f797509bc8f6e0216bd8f00453ce7e986c7) | 42 unit/component + 21 browser Edge PASS; API 73; AI 15 PASS/5 SKIPPED | P2/Tín, P1/Huy | `PUSHED` |
+| `CP3/T041` | Recognition state machine và metadata handling | `CP3 T041(web): add recognition state machine` | `943065594421facf6c659ccb0e0f6e36495704d4` | [commit](https://github.com/HiImNVH/ViSign/commit/943065594421facf6c659ccb0e0f6e36495704d4) | 58 unit và 21 browser Edge PASS | P2/Tín, P1/Huy | `PUSHED / READY_FOR_REVIEW` |
+| `CP3/T042` | Accepted result view và thông báo demoReady | `CP3 T042(ui): add accepted result and model scope notices` | Chờ commit | Chờ push | 80 unit và 24 browser Edge PASS; lint/typecheck/build PASS | P2/Tín, P1/Huy | `IMPLEMENTED / READY_FOR_REVIEW` |
 
 ## Handoff
 

@@ -20,6 +20,17 @@ export const vi = {
   preview: 'Hình ảnh xem trước từ camera',
   privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay ở trong bộ nhớ trang, chưa được gửi đi.',
   disclaimer: 'ViSign là công cụ hỗ trợ thử nghiệm. Kết quả có thể không chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.',
+  recognition: {
+    confidence: 'Độ tin cậy',
+    shortDisclaimer: 'Kết quả thử nghiệm, có thể không chính xác.',
+    modelNotReady: {
+      fixture: 'Tích hợp nội bộ (fixture), chưa sẵn sàng demo.',
+      pilot: 'Thí điểm giới hạn (pilot), chưa sẵn sàng demo.',
+      full: 'Model hiện tại chưa đạt điều kiện demo chính thức.',
+    },
+    meanings: 'Ý nghĩa hỗ trợ',
+    noMeanings: 'Chưa công bố ý nghĩa hỗ trợ.',
+  },
   states: {
     idle: 'Camera chưa bật', permission: 'Đang chờ quyền camera', preview: 'Camera sẵn sàng',
     recording: 'Đang quay ký hiệu', stopping: 'Đang hoàn tất đoạn quay', captured: 'Đã quay xong', error: 'Camera gặp lỗi',
