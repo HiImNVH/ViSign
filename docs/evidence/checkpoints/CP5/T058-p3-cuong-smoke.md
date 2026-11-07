@@ -27,3 +27,11 @@ uv run --locked --project ai python -m visign_ai.evaluation.evaluate --artifact 
 Test tích hợp tạo artifact GRU từ tensor tổng hợp, xoá NPZ train/validation trước khi chạy evaluate, kiểm JSON và PNG, chặn ghi đè và chặn manifest khác hash. Test split kiểm video gốc trùng giữa hai tập và phân biệt video-held-out với signer-held-out. Chưa chạy đánh giá trên dữ liệu dự án.
 
 **Reviewer result** PENDING
+
+## Independent review — P1/Huy
+
+Huy (P1) review và kết luận **đạt**; ghi nhận `2026-11-07T22:06:58+07:00` trên `630f9ab`. Gate tái chạy: AI 73 passed, 5 skipped (thiếu fixture clip local); API + contract 332 passed, 2 skipped; web lint, typecheck, Vitest 88/88, build PASS; CI `quality.yml` xanh.
+
+Báo cáo giữ `demoReady=false`; ghi `demoReady` thuộc T059 (mở).
+
+**Reviewer result**: `P1_VERIFIED` → T058 `[X]`.

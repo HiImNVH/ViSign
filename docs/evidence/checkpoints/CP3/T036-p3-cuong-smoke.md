@@ -43,3 +43,11 @@ test**, chia theo video gốc. Raw material hiện tại của P4 chỉ khoảng
 
 **Reviewer result**: `P1_VERIFIED`. Chờ P2 xác nhận artifact (`model_info.json`, `labelBinding`) nạp đúng
 qua registry T037 trước khi đánh `[X]`.
+
+## Independent review — P1/Huy
+
+Huy (P1) review và kết luận **đạt**; ghi nhận `2026-11-07T22:06:58+07:00` trên `630f9ab`. Gate tái chạy: AI 73 passed, 5 skipped (thiếu fixture clip local); API + contract 332 passed, 2 skipped; web lint, typecheck, Vitest 88/88, build PASS; CI `quality.yml` xanh.
+
+P2 xác nhận artifact T036 nạp được qua registry/adapter GRU tại `docs/evidence/checkpoints/CP3/T037-p2-tin-gru-adapter-smoke.md`.
+
+**Reviewer result**: `P1_VERIFIED` → T036 `[X]`.

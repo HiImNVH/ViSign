@@ -35,6 +35,7 @@
 | `T034-T036 / CP3 review` | `DONE` | evidence T034–T036 | T034/T035 `[X]`; T036 chờ P2; rủi ro số video/lớp | P3/Cường |
 | `US6 spec / FR-034–FR-036` | `PUSHED` | spec, data-model, tasks T100–T104 | Lead duyệt bản dịch trực tiếp + lịch sử trình duyệt 24 giờ; reviewer E2E | P5/Hiển, P2/Tín |
 | `T030/T038/T044/T048/T055/T060 review` | `DONE` | evidence CP3–CP5 của P2 | Huy review endpoint: đạt; 6 task `[X]` | P2/Tín |
+| `Round review CP3–CP5` | `DONE` | 12 evidence P2/P3/P5 | Huy review: đạt; 14 task `[X]` | P2, P3, P5 |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 

@@ -26,3 +26,9 @@ Hook tests dùng API/camera mô phỏng để kiểm tra chuyển trạng thái,
 ## Bàn giao
 
 T041 **IMPLEMENTED_LOCAL / READY_FOR_REVIEW**. Chưa có review độc lập từ P2/P1; chưa push, chưa đánh dấu `[X]` trong task checklist chung. T042 (accepted result view) và T043 (App integration), kiểm thử với API/model thực tế và nghiệm thu trên thiết bị thật được theo dõi riêng; không lấy browser regression hiện tại làm bằng chứng tích hợp nhận diện.
+
+## Independent review — P1/Huy
+
+Huy (P1) review và kết luận **đạt**; ghi nhận `2026-11-07T22:06:58+07:00` trên `630f9ab`. Gate tái chạy: AI 73 passed, 5 skipped (thiếu fixture clip local); API + contract 332 passed, 2 skipped; web lint, typecheck, Vitest 88/88, build PASS; CI `quality.yml` xanh.
+
+**Reviewer result**: `P1_VERIFIED` → T041 `[X]`.

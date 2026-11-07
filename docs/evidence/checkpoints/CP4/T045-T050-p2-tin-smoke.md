@@ -59,3 +59,9 @@ Không thuộc phạm vi: 404/405 vẫn là `{"detail"}` mặc định (T072/T07
   còn trong thư mục tạm. Đề xuất cho T066/T095: dọn `visign_clip_*` cũ khi khởi động và đặt giới hạn bộ nhớ đủ để tránh OOM.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Huy (P1) review và kết luận **đạt**; ghi nhận `2026-11-07T22:06:58+07:00` trên `630f9ab`. Gate tái chạy: AI 73 passed, 5 skipped (thiếu fixture clip local); API + contract 332 passed, 2 skipped; web lint, typecheck, Vitest 88/88, build PASS; CI `quality.yml` xanh.
+
+**Reviewer result**: `P1_VERIFIED` → T045, T050 `[X]`.

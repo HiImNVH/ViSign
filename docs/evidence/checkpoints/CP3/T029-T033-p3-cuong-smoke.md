@@ -14,3 +14,9 @@ Test dùng tensor tổng hợp 32×234 cho pilot 2/3 lớp và full 10 lớp. Ba
 | Ruff và mypy AI | PASS |
 
 T034 loader, T035 config và T036 train CLI là các bước sau. Chưa huấn luyện hoặc đánh giá nhận diện trên dữ liệu chính thức.
+
+## Independent review — P1/Huy
+
+Huy (P1) review và kết luận **đạt**; ghi nhận `2026-11-07T22:06:58+07:00` trên `630f9ab`. Gate tái chạy: AI 73 passed, 5 skipped (thiếu fixture clip local); API + contract 332 passed, 2 skipped; web lint, typecheck, Vitest 88/88, build PASS; CI `quality.yml` xanh.
+
+**Reviewer result**: `P1_VERIFIED` → T029, T033 `[X]`.

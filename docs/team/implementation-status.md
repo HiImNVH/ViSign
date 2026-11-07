@@ -39,13 +39,14 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 
 | Task | Owner | Nội dung | Review |
 |---|---|---|---|
-| T029, T033 | P3 | GRU classifier đóng gói + test | Chờ P1/P2 |
-| T034, T035 | P3 | Loader giữ thứ tự lớp; preset pilot/full | `VERIFIED`, `[X]` (P1) |
-| T036 | P3 | CLI train + xuất artifact | P1_VERIFIED; chờ P2 xác nhận artifact nạp qua registry T037 |
-| T030, T038 | P2 | Fixture contract, `POST /api/v1/predictions` | `VERIFIED`, `[X]` (P1) |
-| T037 | P2 | Registry + adapter trích đặc trưng | **Parity offline ↔ API 6/6 WebM có người PASS** (P3 `1b14f1e`); còn factory GRU cho pilot/full |
-| T044, T048 | P2 | Luật quyết định theo ngưỡng confidence | `VERIFIED`, `[X]` (P1) |
-| T055, T060 | P2 | `GET /api/v1/health`, `GET /api/v1/model-info` | `VERIFIED`, `[X]` (P1) |
+| T029, T033 | P3 | GRU classifier + test | `VERIFIED`, `[X]` (P1) |
+| T034–T036 | P3 | Loader, preset pilot/full, CLI train + xuất artifact | `VERIFIED`, `[X]` (P1; P2 xác nhận artifact) |
+| T030, T037, T038 | P2 | Registry, adapter đặc trưng (parity 6/6), adapter GRU pilot/full, `POST /predictions` | `VERIFIED`, `[X]` |
+| T041–T043, T046 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi | `VERIFIED`, `[X]` (P1) |
+| T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
+| T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
+| T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
+| T059 | P3 | Ghi `demoReady` theo gate full | Mở — việc tiếp theo |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip
