@@ -2,8 +2,9 @@ import hashlib
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
+from threading import Lock
 
 import mediapipe as mp
 import numpy as np
@@ -11,6 +12,7 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 from .errors import PipelineError
+from .sequence_transform import schema_digest
 
 
 def resolve_model_dir(path=None):
@@ -22,18 +24,24 @@ def resolve_model_dir(path=None):
     )
 
 
+def _read_model(model_dir, filename):
+    try:
+        return (model_dir / filename).read_bytes()
+    except OSError as exc:
+        raise PipelineError(
+            "MODEL_ASSET_MISMATCH", f"Không đọc được detector {filename}."
+        ) from exc
+
+
 def extractor_identity(schema, model_dir=None):
-    model_dir = resolve_model_dir(model_dir)
+    directory = resolve_model_dir(model_dir)
+    return _verify_models(schema, lambda filename: _read_model(directory, filename))
+
+
+def _verify_models(schema, read_model):
     assets = {}
     for filename in schema["modelFiles"].values():
-        try:
-            assets[filename] = hashlib.sha256(
-                (model_dir / filename).read_bytes()
-            ).hexdigest()
-        except OSError as exc:
-            raise PipelineError(
-                "MODEL_ASSET_MISMATCH", f"Không đọc được detector {filename}."
-            ) from exc
+        assets[filename] = hashlib.sha256(read_model(filename)).hexdigest()
     expected = json.loads(
         (
             Path(__file__).resolve().parents[3] / "configs/download-manifest.json"
@@ -55,6 +63,60 @@ def extractor_identity(schema, model_dir=None):
     }
 
 
+class PreparedDetectors:
+    """One unused detector set leased by the context that prepared it."""
+
+    def __init__(self, detectors, schema, directory):
+        self._detectors = detectors
+        self._schema_hash = schema_digest(schema)
+        self._directory = directory
+        self._available = True
+        self._lock = Lock()
+
+    @contextmanager
+    def _claim(self, schema, directory):
+        if schema_digest(schema) != self._schema_hash:
+            raise PipelineError(
+                "FEATURE_SCHEMA_MISMATCH", "Schema không khớp bộ detector đã chuẩn bị."
+            )
+        if directory.resolve() != self._directory:
+            raise PipelineError(
+                "MODEL_ASSET_MISMATCH", "Thư mục không khớp bộ detector đã chuẩn bị."
+            )
+        with self._lock:
+            if not self._available:
+                raise RuntimeError("Prepared detectors may only be used for one clip")
+            self._available = False
+            yield self._detectors
+
+
+@contextmanager
+def prepare_detectors(schema, model_dir=None):
+    """Open fresh verified detectors. Keep the context open through extraction."""
+    directory = resolve_model_dir(model_dir).resolve()
+    models = {
+        filename: _read_model(directory, filename)
+        for filename in schema["modelFiles"].values()
+    }
+    identity = _verify_models(schema, models.__getitem__)
+    if identity["version"] != schema["extractorVersion"]:
+        raise PipelineError(
+            "EXTRACTOR_VERSION_MISMATCH", "Extractor khác phiên bản schema đã khóa."
+        )
+    with ExitStack() as stack:
+        detectors = [
+            stack.enter_context(_create_detector(*args))
+            for args in _detector_args(schema, models.__getitem__)
+        ]
+        prepared = PreparedDetectors(detectors, schema, directory)
+        try:
+            yield prepared
+        finally:
+            with prepared._lock:
+                prepared._available = False
+                stack.close()
+
+
 def group_masks(valid):
     """Group pose flag means shoulders available, not all six arm points."""
     return np.column_stack(
@@ -67,7 +129,7 @@ def group_masks(valid):
     )
 
 
-def extract(frames, timestamps, schema, model_dir=None):
+def extract(frames, timestamps, schema, model_dir=None, *, prepared_detectors=None):
     model_dir = resolve_model_dir(model_dir)
     n, count = len(frames), len(schema["landmarkOrder"])
     coords = np.full((n, count, 2), np.nan, dtype=np.float32)
@@ -76,28 +138,35 @@ def extract(frames, timestamps, schema, model_dir=None):
     presence = np.full((n, count), np.nan, np.float32)
     hand_scores = np.full((n, 2), np.nan, np.float32)
     ambiguous = []
-    detector_specs = (
-        (vision.HandLandmarker, vision.HandLandmarkerOptions, "hand", {"num_hands": 2}),
-        (vision.PoseLandmarker, vision.PoseLandmarkerOptions, "pose", {}),
-        (vision.FaceLandmarker, vision.FaceLandmarkerOptions, "face", {}),
-    )
-    detector_args = [
-        (detector, options, model_dir / schema["modelFiles"][name], kwargs)
-        for detector, options, name, kwargs in detector_specs
-    ]
     with ExitStack() as stack:
+        if prepared_detectors is None:
+            detector_args = _detector_args(
+                schema, lambda filename: model_dir / filename
+            )
+        else:
+            detectors = stack.enter_context(
+                prepared_detectors._claim(schema, model_dir)
+            )
         if schema.get("detectorExecution") == "parallel-by-group":
             pool = stack.enter_context(ThreadPoolExecutor(max_workers=3))
-            futures = [
-                pool.submit(_detect_sequence, args, frames, timestamps)
-                for args in detector_args
-            ]
+            if prepared_detectors is None:
+                futures = [
+                    pool.submit(_detect_new_sequence, args, frames, timestamps)
+                    for args in detector_args
+                ]
+            else:
+                futures = [
+                    pool.submit(_detect_sequence, detector, frames, timestamps)
+                    for detector in detectors
+                ]
             groups = [future.result() for future in futures]
             results = zip(*groups)
         else:
-            detectors = [
-                stack.enter_context(_create_detector(*args)) for args in detector_args
-            ]
+            if prepared_detectors is None:
+                detectors = [
+                    stack.enter_context(_create_detector(*args))
+                    for args in detector_args
+                ]
             results = (
                 _detect_frame(detectors, frame, stamp)
                 for frame, stamp in zip(frames, timestamps)
@@ -155,22 +224,39 @@ def _detect_frame(detectors, frame, timestamp):
     return [detector.detect_for_video(image, int(timestamp)) for detector in detectors]
 
 
-def _create_detector(detector, options, model_path, kwargs):
-    base = python.BaseOptions(model_asset_buffer=model_path.read_bytes())
+def _detector_args(schema, model_for):
+    specs = (
+        (vision.HandLandmarker, vision.HandLandmarkerOptions, "hand", {"num_hands": 2}),
+        (vision.PoseLandmarker, vision.PoseLandmarkerOptions, "pose", {}),
+        (vision.FaceLandmarker, vision.FaceLandmarkerOptions, "face", {}),
+    )
+    return [
+        (detector, options, model_for(schema["modelFiles"][name]), kwargs)
+        for detector, options, name, kwargs in specs
+    ]
+
+
+def _create_detector(detector, options, model, kwargs):
+    data = model.read_bytes() if isinstance(model, Path) else model
+    base = python.BaseOptions(model_asset_buffer=data)
     return detector.create_from_options(
         options(base_options=base, running_mode=vision.RunningMode.VIDEO, **kwargs)
     )
 
 
-def _detect_sequence(detector_args, frames, timestamps):
+def _detect_new_sequence(detector_args, frames, timestamps):
     # Initialize and close on the same worker. Tracking state stays local to this clip.
     with _create_detector(*detector_args) as detector:
-        return [
-            detector.detect_for_video(
-                mp.Image(
-                    image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(frame)
-                ),
-                int(timestamp),
-            )
-            for frame, timestamp in zip(frames, timestamps)
-        ]
+        return _detect_sequence(detector, frames, timestamps)
+
+
+def _detect_sequence(detector, frames, timestamps):
+    return [
+        detector.detect_for_video(
+            mp.Image(
+                image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(frame)
+            ),
+            int(timestamp),
+        )
+        for frame, timestamp in zip(frames, timestamps)
+    ]

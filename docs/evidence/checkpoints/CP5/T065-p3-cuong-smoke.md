@@ -60,3 +60,40 @@ Detector giờ khởi tạo song song trên worker riêng, p95 giảm ~13%, như
 bằng timestamp mới) và lấy mẫu trước khi chuyển RGB; đo lại kèm parity.
 
 **Reviewer result**: T065 giữ `[ ]` (chưa đạt SC-002, chưa đo production).
+
+## Bàn giao bộ detector dùng một lần cho P2
+
+Baseline đo `231f8d2`. Đã đồng bộ và kiểm lại API trên `dc9e357`. Tín có thể gọi
+`prepare_detectors(load_schema(schema_path), model_dir)` ở worker nền, giữ
+context sống và truyền bộ trả về qua `prepared_detectors` vào
+`process_video(..., schema_path=schema_path, model_dir=model_dir)`. Bên gọi
+`extract` trực tiếp có thể dùng cùng tham số. Ví dụ vòng đời một bộ:
+
+```python
+with ExitStack() as lease:
+    prepared = worker.submit(
+        lease.enter_context, prepare_detectors(load_schema(schema_path), model_dir)
+    ).result()
+    result = process_video(
+        clip_path, schema_path=schema_path, model_dir=model_dir,
+        prepared_detectors=prepared,
+    )
+```
+
+API giữ quyền sở hữu context và đóng sau request hoặc khi bỏ bộ chưa dùng,
+ví dụ lúc đổi artifact hoặc shutdown. Mỗi bộ chỉ dùng một lần, kể cả khi detector
+lỗi giữa chừng. Factory kiểm hash trên chính byte dùng để tạo detector.
+Bộ đã chuẩn bị bị từ chối nếu schema hoặc thư mục detector khác. Đường gọi
+không truyền bộ sẵn vẫn tạo detector cho từng clip như trước. Phần bộ đệm
+nền và chính sách timeout/đổi artifact thuộc API của P2.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Ruff, mypy và `pytest ai/tests -q -rs` | Ruff và mypy đạt. 87 pass, 1 skip do quyền symlink, gồm 4 test vòng đời detector |
+| `pytest ai/tests/landmarks/test_prepared_detectors.py services/inference-api/tests tests/contract tests/integration tests/security/test_api_security.py -q -rs` | 415 pass trên `dc9e357` với WebM tham chiếu |
+| 6 WebM review, detector thật, tạo bộ ở thread nền | 6/6 tensor khớp `atol=1e-6, rtol=0`; mask, timestamp, chỉ số frame và hash schema khớp chính xác |
+| Đối chứng 64 frame cục bộ | p95 tiền xử lý xấp xỉ 5,31 giây ở cả hai nhánh. Tạo bộ sẵn mất 478–579 ms ngoài thời gian xử lý đã đo. Chưa có bằng chứng giảm độ trễ trên HTTP/web |
+| Thử 48 frame ngoài luồng serving | Mask khớp 93,75–99,12% điểm/bước. Hai clip mất lần lượt 1 và 2 bước tensor dùng được. Chưa có metric nhận diện VSL |
+
+Schema hiện tại giữ tối đa 64 frame. Phương án 48 cần schema version mới, trích
+lại và train/evaluate trên dữ liệu đã audit trước khi chọn cho serving.

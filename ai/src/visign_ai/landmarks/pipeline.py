@@ -19,6 +19,7 @@ def process_video(
     model_dir=None,
     *,
     allow_mp4=False,
+    prepared_detectors=None,
 ):
     start = time.perf_counter()
     schema = load_schema(schema_path)
@@ -43,7 +44,7 @@ def process_video(
     timestamps = timestamps[source_indices]
     integer_ms = integer_ms[source_indices]
     coords, valid, visibility, presence, hand_scores, ambiguous = extract(
-        frames, integer_ms, schema, model_dir
+        frames, integer_ms, schema, model_dir, prepared_detectors=prepared_detectors
     )
     extracted = time.perf_counter()
     tensor, tensor_valid, target = transform(
