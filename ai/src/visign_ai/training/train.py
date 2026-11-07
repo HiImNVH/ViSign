@@ -21,6 +21,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 
 from visign_ai.cli import make_console_output_safe
+from visign_ai.evaluation.release_gate import build_model_metadata
 from visign_ai.landmarks.sequence_transform import schema_digest
 
 from .gru_classifier import GRUClassifier
@@ -213,22 +214,18 @@ def train(args: argparse.Namespace) -> None:
         raise FileExistsError(f"Output exists: {output}")
     inputs = prepare_inputs(args)
     checkpoint, report = fit(inputs, args)
-    metadata = {
-        **checkpoint["labelBinding"],
-        "modelVersion": args.model_version,
-        "artifactKind": inputs.config["artifact_kind"],
-        "datasetVersion": args.dataset_version,
-        "featureSchemaVersion": inputs.schema["featureSchemaVersion"],
-        "extractorVersion": inputs.schema["extractorVersion"],
-        "meanings": list(inputs.display_text_map),
-        "acceptanceThreshold": report["acceptanceThreshold"],
-        "accuracy": None,
-        "macroF1": None,
-        "perMeaningPrecision": None,
-        "perMeaningRecall": None,
-        "evaluatedAt": None,
-        "demoReady": False,
-    }
+    metadata = build_model_metadata(
+        {
+            **checkpoint["labelBinding"],
+            "modelVersion": args.model_version,
+            "artifactKind": inputs.config["artifact_kind"],
+            "datasetVersion": args.dataset_version,
+            "featureSchemaVersion": inputs.schema["featureSchemaVersion"],
+            "extractorVersion": inputs.schema["extractorVersion"],
+            "meanings": list(inputs.display_text_map),
+            "acceptanceThreshold": report["acceptanceThreshold"],
+        }
+    )
     report["datasetVersion"] = args.dataset_version
     publish(
         output,

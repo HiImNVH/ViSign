@@ -231,7 +231,7 @@ def test_evaluation_cli_reads_only_test_and_preserves_artifact(
     training_files: tuple[list[str], dict[str, Any]],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    from visign_ai.evaluation import evaluate
+    from visign_ai.evaluation import evaluate, release_gate
 
     args, schema = training_files
     artifact = tmp_path / "artifact"
@@ -293,6 +293,25 @@ def test_evaluation_cli_reads_only_test_and_preserves_artifact(
     assert evaluate.main() == 2
     assert "manifestSha256" in capsys.readouterr().err
     assert not invalid_output.exists()
+
+    report_path = output / "evaluation-report.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["release_gate", "--artifact", str(artifact), "--report", str(report_path)],
+    )
+    assert release_gate.main() == 0
+    metadata = json.loads(model_info.read_bytes())
+    assert metadata["accuracy"] == report["accuracy"]
+    assert metadata["macroF1"] == report["macroF1"]
+    assert metadata["demoReady"] is False
+    assert metadata["evaluatedAt"] == report["evaluatedAt"]
+    updated = model_info.read_bytes()
+    report["weightsSha256"] = "0" * 64
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    assert release_gate.main() == 2
+    assert "provenance" in capsys.readouterr().err
+    assert model_info.read_bytes() == updated
 
 
 def test_evaluation_split_rejects_session_leakage_and_reports_signer_mode() -> None:

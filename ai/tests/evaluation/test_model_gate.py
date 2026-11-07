@@ -89,3 +89,58 @@ def test_full_fails_closed_when_one_requirement_is_missing_or_fails(
     report = _passing_report()
     report[field] = invalid
     assert not passes_release_gate("full", P0, report, P0)
+
+
+def test_metadata_requires_explicit_approval_and_exact_p0() -> None:
+    from visign_ai.evaluation.release_gate import build_model_metadata
+
+    base = {
+        "artifactKind": "full",
+        "modelVersion": "synthetic",
+        "datasetVersion": "p0-v1",
+        "featureSchemaVersion": "schema-v1",
+        "extractorVersion": "extractor-v1",
+        "acceptanceThreshold": 0.7,
+        "meanings": list(P0),
+        "classLabels": ["EXAMPLE"],
+    }
+    report = {
+        **base,
+        **_passing_report(),
+        "accuracy": 0.9,
+        "perMeaningPrecision": dict.fromkeys(P0, 0.8),
+        "evaluatedAt": "2026-11-07T21:00:00+07:00",
+        "demoReady": True,
+    }
+    assert build_model_metadata(base)["accuracy"] is None
+    pending = build_model_metadata(base, report)
+    assert pending["demoReady"] is False
+    assert pending["accuracy"] == 0.9
+    assert pending["classLabels"] == ["EXAMPLE"]
+    assert build_model_metadata(base, report, approve_demo=True, p0_meanings=P0)[
+        "demoReady"
+    ]
+    with pytest.raises(ValueError, match="full release gate"):
+        build_model_metadata(
+            base, report, approve_demo=True, p0_meanings=(*P0[:-1], "OTHER")
+        )
+    with pytest.raises(ValueError, match="full release gate"):
+        build_model_metadata(
+            base, {**report, "macroF1": 0.79}, approve_demo=True, p0_meanings=P0
+        )
+    with pytest.raises(ValueError, match="does not match model metadata"):
+        build_model_metadata(base, {**report, "modelVersion": "other"})
+    with pytest.raises(ValueError, match="Invalid evaluation metric"):
+        build_model_metadata(base, {**report, "accuracy": float("nan")})
+
+
+def test_fixture_metadata_resets_metrics_and_cannot_be_approved() -> None:
+    from visign_ai.evaluation.release_gate import build_model_metadata
+
+    base = {"artifactKind": "fixture", "meanings": ["SOT"], "demoReady": True}
+    metadata = build_model_metadata(base)
+    assert metadata["demoReady"] is False
+    assert metadata["accuracy"] is None
+    assert metadata["macroF1"] is None
+    with pytest.raises(ValueError, match="full evaluation report"):
+        build_model_metadata(base, approve_demo=True)

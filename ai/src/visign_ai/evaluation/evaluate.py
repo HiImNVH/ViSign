@@ -26,13 +26,7 @@ from visign_ai.training.sequence_dataset import SequenceDataset
 from visign_ai.training.training_inputs import MANIFEST_FIELDS, audit_rows, read_csv
 
 from .metrics import EvaluationMetrics, evaluate_metrics
-
-
-def read_object(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict):
-        raise TypeError(f"{path.name} must contain a JSON object")
-    return value
+from .release_gate import read_object
 
 
 def audit_split(
@@ -150,9 +144,10 @@ def evaluate(args: argparse.Namespace) -> None:
         raise ValueError("Approved schema must match artifact metadata")
     if info.get("artifactKind") not in ("pilot", "full"):
         raise ValueError("Evaluation requires a trained pilot or full GRU")
-    checkpoint = torch.load(
-        artifact / "model.pt", map_location="cpu", weights_only=True
-    )
+    with (artifact / "model.pt").open("rb") as weights:
+        weights_digest = hashlib.file_digest(weights, "sha256").hexdigest()
+        weights.seek(0)
+        checkpoint = torch.load(weights, map_location="cpu", weights_only=True)
     if checkpoint["schemaSha256"] != schema_digest(schema) or checkpoint[
         "labelBinding"
     ] != {key: info[key] for key in ("classLabels", "meaningMap", "displayTextMap")}:
@@ -211,6 +206,7 @@ def evaluate(args: argparse.Namespace) -> None:
         },
         "evaluatedAt": datetime.now(UTC).isoformat(),
         "manifestSha256": digest,
+        "weightsSha256": weights_digest,
         "schemaSha256": schema_digest(schema),
         "splitAudit": audit,
         "device": args.device,
