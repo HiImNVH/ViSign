@@ -10,10 +10,10 @@
 | Reviewer | `P3 Cường` (đường serving, parity); `P1 Huy` |
 | Quyết định phạm vi | Owner làm theo đề nghị của P3 ("Tín nối đường serving T037") dù P1 chưa đóng CP2; giữ đúng tiền lệ P1 chấp nhận cho `5b6a441` (module thuần, không endpoint) |
 | Candidate commit | `CP3 T037(api): add serving feature extraction adapter with parity test` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `7d5c16ac3db817764d042853b8b6276cd825b870` — [7d5c16a](https://github.com/HiImNVH/ViSign/commit/7d5c16ac3db817764d042853b8b6276cd825b870); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42361742686) — job `api` cài `uv sync --locked` không kèm extra `serving` |
 | Ngày/giờ | `2026-11-07T16:50:27+07:00` |
 | Môi trường | Windows 11, uv 0.13.7, CPython 3.12.15; extra `serving`: visign-ai 0.0.1 (editable), MediaPipe 1.1.1, torch 2.11.0+cpu |
-| Status | `PASS` local |
+| Status | `PASS` local và CI; parity clip đại diện chờ P1/P3 |
 
 ## 2. Phạm vi thay đổi
 

@@ -28,7 +28,7 @@
 | `T026 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/{main.py,api/,inference/coordinator.py}` | Huy verify `6cc3900`; chờ Hiển xem CORS/expose header | P1/Huy, P5/Hiển (CORS) |
 | `T024-T025 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/inference/temporary_clip.py`, unit tests | Huy verify `6cc3900`; ghi chú: kiểm 10 MiB trước khi đọc hết body (T049) | P1/Huy |
 | `T099 / CP2` | `P1_VERIFIED` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Lead verify `6cc3900`; `HealthResponse.modelVersion` chốt optional + nullable; chờ Hiển xác nhận consumer | P5/Hiển và P1/Huy |
-| `T037 / CP3` | `DOING` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter đặc trưng + parity theo đề nghị Cường (owner quyết định), module thuần chưa có endpoint; GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
+| `T037 / CP3` | `DOING` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi `P1_VERIFIED`; adapter đặc trưng + parity đã push `7d5c16a` (CI success), chờ Cường chạy parity clip đại diện; GRU predictor chờ T033/T036 của P3 | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
@@ -41,9 +41,9 @@
 | Pre-commit sync | `PASS` — pull `013cded`; `origin/main...HEAD` = `0 0` lúc 2026-11-07T16:50+07:00 |
 | Gate commands | RED→GREEN, 4 mutation fail, CI-equivalent 145 passed + 1 skipped ×3 `-W error`, Ruff/format/mypy; parity thật VP8/VP9 với extra `serving` |
 | Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-serving-feature-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` — CP3: chờ owner xác nhận push |
+| Local commit | `7d5c16ac3db817764d042853b8b6276cd825b870` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`) |
+| Push status | `PUSHED` lúc 2026-11-07T16:55:22+07:00 theo xác nhận của owner — [commit](https://github.com/HiImNVH/ViSign/commit/7d5c16ac3db817764d042853b8b6276cd825b870); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42361742686) |
 
 ## Commit ledger
 
@@ -64,7 +64,7 @@
 | `CP7/T091 follow-up` | Xác nhận 4 ghi chú T091 đã xử lý | `CP7 T091(verify): confirm P2 follow-up workflow review` | `45ea2148a7ffefcf81057282399612bdb9a94b53` | [commit](https://github.com/HiImNVH/ViSign/commit/45ea2148a7ffefcf81057282399612bdb9a94b53) | Tag action, 2 run success | P1/Huy | `PUSHED` |
 | `CP2/T024-T025` | Clip tạm luôn bị xóa | `CP2 T024-T025(api): guarantee temporary clip deletion on every path` | `e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30` | [commit](https://github.com/HiImNVH/ViSign/commit/e3c5d8ae57e8ec33a956bb13a0bcb87c39845d30) | 7 passed, API+contract 110 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42357998638) | P1/Huy | `PUSHED` |
 | `CP2/T026` | Nền FastAPI `/api/v1` | `CP2 T026(api): add FastAPI v1 foundation with request id and error mapping` | `4a2dad16d41b13f09a20e6ab90e91d288e838f37` | [commit](https://github.com/HiImNVH/ViSign/commit/4a2dad16d41b13f09a20e6ab90e91d288e838f37) | 129 passed, live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590) | P1/Huy, P5/Hiển | `PUSHED` |
-| `CP3/T037 serving` | Adapter đặc trưng + parity offline ↔ API | `CP3 T037(api): add serving feature extraction adapter with parity test` | `PENDING` | `PENDING` | 145 passed + parity VP8/VP9 | P3/Cường, P1/Huy | `LOCAL-DRAFT` |
+| `CP3/T037 serving` | Adapter đặc trưng + parity offline ↔ API | `CP3 T037(api): add serving feature extraction adapter with parity test` | `7d5c16ac3db817764d042853b8b6276cd825b870` | [commit](https://github.com/HiImNVH/ViSign/commit/7d5c16ac3db817764d042853b8b6276cd825b870) | 145 passed + parity VP8/VP9; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42361742686) | P3/Cường, P1/Huy | `PUSHED` |
 
 ## Handoff
 
