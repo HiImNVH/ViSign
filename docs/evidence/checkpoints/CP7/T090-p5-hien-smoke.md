@@ -6,11 +6,11 @@
 |---|---|
 | Checkpoint / task | CP7 / T090 — review chất lượng kiến trúc FE/BE/AI; phần P5 đóng góp FE |
 | Owner / reviewer | P5 Hiển / P1 Huy, P2 Tín (độc lập, đang chờ) |
-| Commit | Pending push; cập nhật full SHA và commit URL sau push |
+| Commit | [`a4eb02cc45a1d6723c6e55d0ede2254f1e3c560b`](https://github.com/HiImNVH/ViSign/commit/a4eb02cc45a1d6723c6e55d0ede2254f1e3c560b) |
 | Ngày / múi giờ | 2026-11-08T02:31:00+07:00, Asia/Ho_Chi_Minh |
 | Base khi review | `main` / `a214a3c`, đã `git pull --rebase origin main` sạch trước khi sửa |
 | Môi trường | Windows PowerShell, Node `v26.7.0`, npm `11.19.0`, Playwright Microsoft Edge `msedge` |
-| Status | `TEST_PASS / READY_FOR_REVIEW`; reviewer `PENDING` |
+| Status | `PUSHED / READY_FOR_REVIEW`; reviewer `PENDING` |
 
 ## 2. Phạm vi
 
@@ -41,7 +41,7 @@ Các skip là screenshot capture opt-in và live backend, không được coi l�
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit | Pending full SHA sau push | Chỉ có thay đổi report, member log và evidence |
+| Commit | [T090 frontend architecture review](https://github.com/HiImNVH/ViSign/commit/a4eb02cc45a1d6723c6e55d0ede2254f1e3c560b) | Chỉ có thay đổi report, member log và evidence |
 | Report | `docs/architecture-quality-report.md` §7 | Phát hiện FE-T090-01..06 và hành động P5 |
 | Test evidence | `apps/web/tests/` | Unit và Playwright Edge gate; số liệu mục 3 |
 | GitHub Actions | NOT_RUN tại máy local; sau push kiểm tra workflow T091 riêng | T090 không đổi CI |
@@ -60,7 +60,7 @@ Các skip là screenshot capture opt-in và live backend, không được coi l�
 
 - [x] Owner đã chạy full web gate trên nguồn hiện hành sau sync `origin/main`.
 - [x] Không stage video/landmark/model, secret hoặc artifact runtime.
-- [ ] Full SHA và link được cập nhật sau push.
+- [x] Full SHA và link được cập nhật sau push (follow-up evidence).
 - [ ] Reviewer tái lập kết quả và ghi đánh giá.
 
 **Reviewer result:** `PENDING`. **Reviewer note:** Chờ P1/P2 đọc §7 và xác nhận gate/action.
