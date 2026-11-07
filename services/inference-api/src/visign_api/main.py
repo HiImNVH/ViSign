@@ -16,10 +16,11 @@ from visign_api.api.router import api_v1_router
 from visign_api.config import Settings, get_settings
 from visign_api.domain.model_version import ArtifactKind
 from visign_api.inference.coordinator import InferenceCoordinator
+from visign_api.inference.gru_predictor import GruRuntime
 from visign_api.inference.predictor_registry import (
-    DEFAULT_PREDICTOR_FACTORIES,
     PredictorFactory,
     PredictorRegistry,
+    build_predictor_factories,
 )
 from visign_api.observability import LOGGER_NAME, configure_logging
 
@@ -79,10 +80,12 @@ def create_app(
     runtime_settings: Settings | None = None,
     predictor_factories: PredictorFactories | None = None,
 ) -> FastAPI:
-    # Adapter GRU cho pilot/full se duoc dang ky qua predictor_factories khi P3 ban giao T036
+    # Mac dinh: fixture + adapter GRU pilot/full; predictor_factories chi de test tiem predictor gia
     active_settings = runtime_settings or get_settings()
     active_factories = (
-        DEFAULT_PREDICTOR_FACTORIES
+        build_predictor_factories(
+            GruRuntime(modelDirectory=active_settings.visign_model_dir)
+        )
         if predictor_factories is None
         else predictor_factories
     )

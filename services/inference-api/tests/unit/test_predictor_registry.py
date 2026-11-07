@@ -18,7 +18,7 @@ from visign_api.inference.predictor import (
     Predictor,
 )
 from visign_api.inference.predictor_registry import (
-    DEFAULT_PREDICTOR_FACTORIES,
+    FIXTURE_PREDICTOR_FACTORIES,
     PredictorRegistry,
 )
 
@@ -74,7 +74,7 @@ def test_fixture_predictor_satisfies_predictor_protocol() -> None:
 
 
 def test_registry_without_artifact_is_not_ready() -> None:
-    predictor_registry = PredictorRegistry(DEFAULT_PREDICTOR_FACTORIES)
+    predictor_registry = PredictorRegistry(FIXTURE_PREDICTOR_FACTORIES)
 
     assert predictor_registry.is_ready is False
     assert predictor_registry.active_artifact_directory is None
@@ -83,7 +83,7 @@ def test_registry_without_artifact_is_not_ready() -> None:
 
 
 def test_registry_activates_fixture_artifact() -> None:
-    predictor_registry = PredictorRegistry(DEFAULT_PREDICTOR_FACTORIES)
+    predictor_registry = PredictorRegistry(FIXTURE_PREDICTOR_FACTORIES)
 
     predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
 
@@ -97,7 +97,7 @@ def test_registry_activates_fixture_artifact() -> None:
 
 def test_failed_candidate_keeps_previous_predictor(tmp_path: Path) -> None:
     # Rollback trong tien trinh: candidate loi khong duoc thay predictor dang phuc vu
-    predictor_registry = PredictorRegistry(DEFAULT_PREDICTOR_FACTORIES)
+    predictor_registry = PredictorRegistry(FIXTURE_PREDICTOR_FACTORIES)
     predictor_registry.activate(FIXTURE_ARTIFACTS / "fixture", None)
 
     with pytest.raises(ArtifactRejectedError):
@@ -114,7 +114,7 @@ def test_pilot_without_registered_predictor_fails_closed_without_fixture_fallbac
     tmp_path: Path,
 ) -> None:
     # Contract AI-BE: artifact loi khi khoi dong thi degraded, khong suy luan bang fixture thay the
-    predictor_registry = PredictorRegistry(DEFAULT_PREDICTOR_FACTORIES)
+    predictor_registry = PredictorRegistry(FIXTURE_PREDICTOR_FACTORIES)
 
     with pytest.raises(ArtifactRejectedError):
         predictor_registry.activate(copy_fixture_as(tmp_path / "pilot", "pilot"), None)

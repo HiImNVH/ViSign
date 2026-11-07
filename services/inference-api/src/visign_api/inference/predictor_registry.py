@@ -2,6 +2,7 @@
 # Giu predictor dang phuc vu; candidate loi khong thay predictor dang chay va khong lui ve fixture (T037).
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 
 from visign_api.domain.errors import ModelNotReadyException
@@ -11,14 +12,27 @@ from visign_api.inference.artifact_loader import (
     LoadedArtifact,
     load_artifact,
 )
+from visign_api.inference.gru_predictor import GruRuntime, load_gru_predictor
 from visign_api.inference.predictor import FixturePredictor, Predictor
 
 PredictorFactory = Callable[[LoadedArtifact], Predictor]
 
-# Pilot/full se dang ky adapter GRU khi P3 ban giao T033/T036; truoc do hai kind nay fail closed
-DEFAULT_PREDICTOR_FACTORIES: Mapping[ArtifactKind, PredictorFactory] = {
+# Registry chi co fixture thi pilot/full fail closed; dung lam nen cho bo factory mac dinh
+FIXTURE_PREDICTOR_FACTORIES: Mapping[ArtifactKind, PredictorFactory] = {
     ArtifactKind.FIXTURE: FixturePredictor,
 }
+
+
+def build_predictor_factories(
+    gru_runtime: GruRuntime,
+) -> Mapping[ArtifactKind, PredictorFactory]:
+    # Pilot/full dung chung adapter GRU; torch chi duoc nap khi kich hoat artifact that
+    gru_factory = partial(load_gru_predictor, gru_runtime=gru_runtime)
+    return {
+        **FIXTURE_PREDICTOR_FACTORIES,
+        ArtifactKind.PILOT: gru_factory,
+        ArtifactKind.FULL: gru_factory,
+    }
 
 
 @dataclass(frozen=True)
