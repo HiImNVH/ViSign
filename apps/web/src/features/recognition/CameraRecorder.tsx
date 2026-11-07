@@ -23,8 +23,8 @@ function CameraControls({ session, view, enable }: { session: CameraSession; vie
     {(view.phase === 'preview' || view.phase === 'captured') && <button className="primary-button" onClick={() => session.record()}><span className="record-dot" aria-hidden="true" />{view.phase === 'captured' ? 'Quay lại' : 'Quay ký hiệu'}</button>}
     {view.phase === 'recording' && <button className="primary-button stop-button" onClick={() => session.stop()}><span className="stop-mark" aria-hidden="true" />Kết thúc</button>}
     {view.phase === 'stopping' && <span className="finishing-label">Đang hoàn tất…</span>}
-    {(view.phase === 'recording' || view.phase === 'stopping' || view.phase === 'captured') && <button className="quiet-button" onClick={() => session.cancel()}>Hủy đoạn quay</button>}
-    {['preview', 'recording', 'stopping', 'captured'].includes(view.phase) && <button className="quiet-button camera-off" onClick={() => session.reset()}>Tắt camera</button>}
+    {(view.phase === 'recording' || view.phase === 'stopping' || view.phase === 'captured') && <button className="quiet-button" onClick={() => session.cancel()}><span className="long-label">Hủy đoạn quay</span><span className="compact-label" aria-hidden="true">Hủy</span></button>}
+    {['preview', 'recording', 'stopping', 'captured'].includes(view.phase) && <button className="quiet-button camera-off" onClick={() => session.reset()}><span className="long-label">Tắt camera</span><span className="compact-label" aria-hidden="true">Tắt</span></button>}
   </div>;
 }
 
@@ -42,7 +42,9 @@ export function CameraRecorder({ recognitionResult = null }: { recognitionResult
   const previousPhase = useRef(view.phase);
   const currentResult = view.phase === 'captured' && recognitionResult?.clip === view.clip ? recognitionResult : null;
   useEffect(() => {
-    if (previousPhase.current !== view.phase && !document.querySelector('dialog[open]')) {
+    const focused = document.activeElement;
+    if (previousPhase.current !== view.phase && !document.querySelector('dialog[open]')
+      && (!focused || focused === document.body || !focused.isConnected)) {
       panel.current?.querySelector<HTMLButtonElement>('.capture-controls button')?.focus();
     }
     previousPhase.current = view.phase;

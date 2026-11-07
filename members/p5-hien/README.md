@@ -10,7 +10,7 @@
 | Canonical ownership | `apps/web/`, frontend tests và UX evidence |
 | Allowed commit scopes | `web`, `ui`, `ux`, `e2e` |
 | Current checkpoint | `CP1 review`; `T039 / CP3` camera local |
-| Integration window | `WAITING` |
+| Integration window | Push theo yêu cầu trực tiếp của owner trong phiên; chưa xác nhận window của Huy |
 | Last updated | `2026-11-07` |
 
 ## Current assignments
@@ -27,14 +27,14 @@
 | Field | Value |
 |---|---|
 | Task/checkpoint | `T039 / CP3` — chuẩn bị local theo yêu cầu; không đóng checkpoint |
-| Proposed commit | `CP3 T039(ui): apply approved camera overlay layout` |
+| Proposed commit | `CP3 T039(ui): fix zoom controls and preserve keyboard focus` |
 | Exact staged paths | `apps/web/src/App.tsx`, `src/features/recognition/{CameraRecorder.tsx,RecognitionOverlay.tsx}`, `src/styles.css`, `tests/browser/camera.spec.ts`, `tests/recognition/recognition-overlay.test.tsx`, `playwright.config.ts`, `apps/web/README.md`, member README và `docs/evidence/checkpoints/CP3/T039-p5-hien-overlay-smoke.md` |
 | Pre-commit sync | Fetch/rebase `origin/main` tại `38cc95519510954b3c45a61315620a20804a7a94`; giữ dòng T040 theo handoff mới của lead, khôi phục candidate. Gate frontend sau rebase 377ac98 PASS; các cập nhật c902ea3/38cc955 chỉ có CI/docs, không đổi source frontend |
 | Gate commands | `npm.cmd run typecheck`; `VISIGN_BROWSER_CHANNEL=msedge npm.cmd run check` (PowerShell đặt env riêng) |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-overlay-smoke.md` |
+| Smoke evidence | `docs/evidence/checkpoints/CP3/T039-p5-hien-prepush-review.md` |
 | Local commit | `PENDING` |
 | Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` — chờ foundation của Tín, Huy mở window và review độc lập |
+| Push status | `READY_TO_PUSH` theo chỉ đạo trực tiếp của owner; review Tín/Huy vẫn PENDING |
 
 ## Commit ledger
 
@@ -44,6 +44,7 @@
 | `CP3/T039` | Explicit local camera capture và resource cleanup | `CP3 T039(web): add explicit camera capture and cleanup` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; lint/typecheck/build PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
 | `CP3/T039 layout` | Camera lớn, văn bản dịch bên dưới theo yêu cầu | `CP3 T039(ui): restore large camera and text below` | `PENDING` trước push | `PENDING` | 32 unit/component + 8 browser Edge; kiểm tra thứ tự dọc và chiều rộng camera PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
 | `CP3/T039 overlay` | Áp dụng demo đã duyệt: nút/chữ trong camera, chữ chỉ khi accepted | `CP3 T039(ui): apply approved camera overlay layout` | `PENDING` trước push | `PENDING` | 42 unit/component + 15 browser Edge; lint/typecheck/build, no-scroll và result guard PASS | P2/Tín, P1/Huy | `NOT_PUSHED` |
+| `CP3/T039 review` | Sửa zoom/focus, thêm accepted browser fixture | `CP3 T039(ui): fix zoom controls and preserve keyboard focus` | `PENDING` | `PENDING` | 42 unit/component + 21 browser Edge PASS; API 73; AI 15 PASS/5 SKIPPED | P2/Tín, P1/Huy | `READY_TO_PUSH` |
 
 ## Handoff
 

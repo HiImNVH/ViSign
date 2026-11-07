@@ -67,6 +67,7 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
 .help-steps li { margin: 20px 0; padding-left: 4px; }
 .help-steps p { margin: 6px 0 0; color: var(--color-muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.compact-label { display: none; }
 @media (hover: hover) and (pointer: fine) {
   .primary-button:hover { background: #106747; }
   .stop-button:hover { background: #8e342f; }
@@ -89,3 +90,17 @@ p { max-width: 65ch; line-height: 1.7; overflow-wrap: anywhere; }
   .help-dialog { padding: 20px; }
 }
 @media (max-height: 420px) { .capture-feedback { top: 44px; bottom: 76px; } .capture-feedback h3 { font-size: 16px; } .capture-feedback p { margin-top: 4px; } }
+@media (max-height: 260px) {
+  .app-shell { grid-template-rows: 44px minmax(0, 1fr); padding: 4px; gap: 4px; }
+  .app-header .quiet-button { min-height: 44px; padding: 8px 10px; }
+  .brand > span, .trial-label { display: none; }
+  .camera-dock { left: 4px; right: 4px; bottom: 4px; gap: 4px; }
+  .capture-controls { padding: 4px; gap: 4px; }
+  .capture-controls .primary-button, .capture-controls .quiet-button { min-height: 44px; padding: 8px 10px; font-size: 14px; }
+  .long-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .compact-label { display: inline; }
+  .status-badge { top: 4px; right: 4px; font-size: 0; padding: 4px; gap: 0; }
+  .translation-panel { padding: 2px 6px; }
+  .translation-text { font-size: 16px; line-height: 1.15; }
+  .translation-confidence, .translation-notice { margin: 1px 0 0; font-size: 11px; line-height: 1.2; }
+}

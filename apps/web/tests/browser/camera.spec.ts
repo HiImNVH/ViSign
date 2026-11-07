@@ -1,5 +1,8 @@
 // apps/web/tests/browser/camera.spec.ts - Kiem tra MediaRecorder that voi camera Y4M va khong upload.
 import { expect, test, type Page } from '@playwright/test';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { RecognitionOverlay } from '../../src/features/recognition/RecognitionOverlay';
 
 async function expectInCameraLayout(page: Page) {
   const camera = await page.locator('.camera-viewport').boundingBox();
@@ -66,6 +69,38 @@ test('an open help dialog keeps focus when the camera disconnects', async ({ pag
   await expect(page.getByRole('button', { name: 'Hướng dẫn', exact: true })).toBeFocused();
   await expect(page.getByRole('alert')).toContainText('Camera đã mất kết nối');
   await expectInCameraLayout(page);
+});
+
+test('accepted presentation and controls fit a zoom-sized viewport', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
+  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: 'Kết thúc', exact: true }).click();
+  await page.getByRole('button', { name: 'Quay lại', exact: true }).waitFor();
+  const markup = renderToStaticMarkup(createElement(RecognitionOverlay, { result: { clip: new Blob(['fixture']), accepted: true, text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1', confidence: .92 } }));
+  await page.evaluate(markup => document.querySelector('.camera-dock')!.insertAdjacentHTML('afterbegin', markup), markup);
+  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
+    await page.setViewportSize(viewport);
+    await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Độ tin cậy 92%');
+    const camera = (await page.locator('.camera-viewport').boundingBox())!;
+    const controls = (await page.locator('.capture-controls').boundingBox())!;
+    const translation = (await page.locator('.translation-panel').boundingBox())!;
+    expect(translation.y).toBeGreaterThanOrEqual(camera.y);
+    expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
+    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
+    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('automatic recording stop preserves focus on a surviving control', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
+  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
+  const cameraOff = page.getByRole('button', { name: 'Tắt camera', exact: true });
+  await cameraOff.focus();
+  await expect(page.getByRole('status')).toHaveText('Đã quay xong', { timeout: 8000 });
+  await expect(cameraOff).toBeFocused();
 });
 
 test('help supports Escape, focus restoration and reduced motion', async ({ page }) => {
