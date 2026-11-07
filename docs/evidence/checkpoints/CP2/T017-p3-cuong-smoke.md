@@ -3,7 +3,7 @@
 | Mục | Kết quả |
 |---|---|
 | Baseline kiểm thử | `779d4b3794d67a58e013db084eedb39cb2dcf7cc` |
-| Trạng thái | VERIFIED bởi P2 sau khi bổ sung test |
+| Trạng thái | P2 VERIFIED bộ test batch; P3 VERIFIED bản sửa --help của P1 |
 | Schema | `visign-xy-32-v0.3-draft` |
 | Commit | [4a5aa5295702197d9509302d4bcf07a1dcd0d154](https://github.com/HiImNVH/ViSign/commit/4a5aa5295702197d9509302d4bcf07a1dcd0d154) |
 
@@ -120,3 +120,20 @@ và thêm test gọi `main(["--help"])` với stdout `cp1252`. Hành vi trích x
   `--help` trên console Windows thật exit 0.
 
 **Reviewer result**: chờ P3/Cường (owner) review bản sửa; P1 không tự đóng T017 vì là người sửa.
+
+## Independent review — P3/Cường
+
+Review time: `2026-11-07T19:36:29+07:00` trên commit `bb404761671a74c0aec80cee41dfb808025608ad`.
+
+| Gate | Kết quả |
+|---|---|
+| Subprocess ép PYTHONIOENCODING=cp1252:strict, --help | Bản trước sửa tái lập UnicodeEncodeError và exit 1. Bản sửa exit 0, đủ usage và option |
+| Subprocess cp1252, --dataset-root trỏ vào file | PASS, exit 2, stderr có thông báo T017, không traceback |
+| Subprocess UTF-8, --help | PASS, giữ tiếng Việt có dấu |
+| Ruff, mypy AI | PASS |
+| Pytest AI có fixture browser và detector | 43 passed, 1 skipped do quyền symlink Windows |
+| Pytest API và contract | 179 passed, 1 skipped |
+
+Ghi chú — Việc đặt errors=backslashreplace giữ nguyên encoding của terminal. Chỉ ký tự không biểu diễn được mới chuyển sang escape. Không thấy thay đổi contract JSON hay logic trích xuất. Với CLI tiếp theo, kiểm tra help và đường lỗi qua entry point thực tế với encoding hẹp, thay vì chỉ kiểm hàm xử lý hoặc chạy pytest trong môi trường UTF-8.
+
+**Reviewer result**: `VERIFIED` cho bản sửa --help.
