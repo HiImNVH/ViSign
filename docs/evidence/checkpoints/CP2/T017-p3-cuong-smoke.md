@@ -79,4 +79,4 @@ Phát hiện:
 
 Đã thêm test tại [test_extract_manifest.py](../../../../ai/tests/landmarks/test_extract_manifest.py) theo mục 1 trong review P2. Test dùng pipeline giả để chạy độc lập với detector và video thật. Phạm vi gồm CSV lỗi/trùng ID, đường dẫn thoát root và symlink, thiếu file, sai hash, lỗi pipeline, nội dung NPZ, bảo toàn artifact khi chạy lại và mã thoát 0/1/2.
 
-Gate local trên Windows: 13 test T017 pass, 1 skip do quyền tạo symlink. Toàn AI với fixture: 33 pass, 1 skip. API và contract: 173 pass, 1 skip. Ruff, mypy của AI/API và smoke CLI với MediaPipe thật đều đạt. Chờ commit, CI và P2/P1 review lại.
+Gate local trên Windows: 13 test T017 pass, 1 skip do quyền tạo symlink. Toàn AI với fixture: 33 pass, 1 skip. API và contract: 173 pass, 1 skip. Ruff, mypy của AI/API và smoke CLI với MediaPipe thật đều đạt. Bộ test đã push tại [57311bf](https://github.com/HiImNVH/ViSign/commit/57311bfac066306751ef9a71c29494809d54d02d). Chờ xác nhận CI cho commit này và P2/P1 review lại.
