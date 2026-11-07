@@ -5,6 +5,7 @@ import { CameraSession, type CameraView } from '../../src/features/recognition/c
 import * as cameraHook from '../../src/features/recognition/useCameraCapture';
 import { useRecognition } from '../../src/features/recognition/useRecognition';
 import { InferenceApiError, createInferenceApi } from '../../src/services/inferenceApi';
+import { HISTORY_STORAGE_KEY } from '../../src/features/recognition/translationHistory';
 
 type Api = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
 type PredictionReply = Awaited<ReturnType<Api['predict']>>;
@@ -312,4 +313,44 @@ test('uses loaded pilot artifact metadata for rejected results without changing 
     result: { accepted: false, classLabel: null, text: 'Không nhận diện được' },
   });
   expect(api.predict).toHaveBeenCalledWith(clip, { signal: expect.any(AbortSignal) });
+});
+
+test('another tab updates history without interrupting submission, but clearing it aborts an in-flight result', async () => {
+  localStorage.removeItem(HISTORY_STORAGE_KEY);
+  cameraView = { phase: 'captured', clip, durationMs: 650 };
+  let finish!: (reply: PredictionReply) => void;
+  vi.mocked(api.predict).mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+  const hook = renderHook(() => useRecognition(api));
+  await waitFor(() => expect(hook.result.current.model.status).toBe('ready'));
+
+  let pending!: Promise<void>;
+  act(() => { pending = hook.result.current.submit(); });
+  const signal = vi.mocked(api.predict).mock.calls[0]![1]?.signal;
+  expect(signal?.aborted).toBe(false);
+
+  const saved = JSON.stringify({ schemaVersion: 1, entries: [{
+    requestId: '123e4567-e89b-42d3-a456-426614174001', text: 'Từ tab khác', confidence: .91,
+    modelVersion: 'fixture-v1', createdAt: new Date().toISOString(),
+  }] });
+  act(() => {
+    localStorage.setItem(HISTORY_STORAGE_KEY, saved);
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: HISTORY_STORAGE_KEY, newValue: saved, storageArea: localStorage,
+    }));
+  });
+  expect(hook.result.current.history.entries.map(entry => entry.text)).toEqual(['Từ tab khác']);
+  expect(signal?.aborted).toBe(false);
+
+  act(() => {
+    localStorage.removeItem(HISTORY_STORAGE_KEY);
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: HISTORY_STORAGE_KEY, oldValue: saved, newValue: null, storageArea: localStorage,
+    }));
+  });
+  expect(signal?.aborted).toBe(true);
+  expect(hook.result.current.history.entries).toEqual([]);
+  expect(hook.result.current.transcript).toEqual([]);
+  await act(async () => { finish({ data: accepted, requestId: 'late-response' }); await pending; });
+  expect(hook.result.current.state.phase).toBe('captured');
+  expect(localStorage.getItem(HISTORY_STORAGE_KEY)).toBeNull();
 });

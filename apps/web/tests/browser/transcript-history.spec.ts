@@ -118,3 +118,21 @@ test('T104 stored metadata expires on reload at 24 hours', async ({ page }) => {
   expect(mock.uploads).toBe(1);
   expect(mock.postUrls).toHaveLength(1);
 });
+
+test('FE-T090-02 another tab refreshes open history on append and on clear', async ({ page, context }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Lịch sử' }).click();
+  const history = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
+  await expect(history).toContainText('Chưa có bản dịch được lưu.');
+  const other = await context.newPage();
+  await other.goto('/');
+  await other.evaluate(key => localStorage.setItem(key, JSON.stringify({ schemaVersion: 1,
+    entries: [{ requestId: '123e4567-e89b-42d3-a456-426614174001', text: 'Từ tab thứ hai',
+      confidence: .9, modelVersion: 'pilot-v1', createdAt: new Date().toISOString() }],
+  })), historyKey);
+  await expect(history).toContainText('Từ tab thứ hai');
+  await other.evaluate(key => localStorage.removeItem(key), historyKey);
+  await expect(history).toContainText('Chưa có bản dịch được lưu.');
+  await expect(history.locator('li')).toHaveCount(0);
+  await other.close();
+});

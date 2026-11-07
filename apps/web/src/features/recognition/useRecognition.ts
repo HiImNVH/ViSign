@@ -4,7 +4,7 @@ import { useCameraCapture } from './useCameraCapture';
 import { createInferenceApi, InferenceApiError } from '../../services/inferenceApi';
 import type { PredictionState, RecognitionState, ModelStatus, RecognitionController } from './recognitionController';
 import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory,
-  type TranslationHistoryEntry } from './translationHistory';
+  HISTORY_STORAGE_KEY, type TranslationHistoryEntry } from './translationHistory';
 
 type Api = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
 
@@ -124,6 +124,22 @@ export function useRecognition(api?: Api): RecognitionController {
     setHistory({ entries: [], available: true });
     return true;
   }, [clearPrediction]);
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.storageArea !== window.localStorage || (event.key !== HISTORY_STORAGE_KEY && event.key !== null)) return;
+      // Other tabs can clear all persisted history. Invalidate pending work to
+      // avoid resurrecting a cleared result after the response arrives.
+      if (event.newValue === null || event.key === null) {
+        clearPrediction();
+        setTranscript([]);
+      }
+      historyWriteFailed.current = false;
+      refreshHistory();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [clearPrediction, refreshHistory]);
 
   const enableCamera = useCallback(() => camera.session.enable(camera.videoRef.current), [camera.session, camera.videoRef]);
   const startRecording = useCallback(() => { clearPrediction(); camera.session.record(); }, [camera.session, clearPrediction]);
