@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` (parity, artifact T036) |
 | Candidate commit | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` |
-| Commit | `PENDING` |
+| Commit | `5cec97b5fd59b81fae86729f775f4c3cbedb01b7` — [5cec97b](https://github.com/HiImNVH/ViSign/commit/5cec97b5fd59b81fae86729f775f4c3cbedb01b7); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) |
 | Ngày/giờ | `2026-11-07T23:20+07:00` |
-| Status | `PASS` local |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 
@@ -32,7 +32,7 @@ không chứng minh nhận diện VSL.
 ## Pre-commit synchronization
 
 - `origin/main...HEAD` = `0 0` tại `28de816` trước khi sửa (đã pull T053 của P5).
-- Trước commit: pull review T053/T066/T072/T073 của P1 (`0242745`) và T040 của P5 (không trùng file); gate chạy lại: API + contract + integration như CI 374 passed, 4 skipped.
+- Trước commit: pull review T053/T066/T072/T073 của P1 (`0242745`) và T040 của P5 (không trùng file); gate chạy lại trong venv còn extra `serving`: API + contract + integration 392 passed, 3 skipped (bản đầu ghi nhầm 374/4 là số của môi trường như CI, sửa ở link commit).
 - `origin/main...HEAD` = `0 0` tại `72733aa`.
 
 ## Smoke

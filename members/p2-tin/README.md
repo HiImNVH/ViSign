@@ -36,8 +36,9 @@
 | `T037 / CP3` | `DONE` | `services/inference-api/src/visign_api/inference/` | `P1_VERIFIED`, `[X]` (Huy `181408e`); parity clip thật 32/32 và HTTP 32 × 200 (`0f3c557`); độ trễ p95 4,73 s trên CPU Windows chưa đạt SC-002 | P3/Cường, P1/Huy |
 | `T049 / CP4` | `DONE` | `services/inference-api/src/visign_api/{inference/clip_validator.py,api/clip_upload_route.py}` | `P1_VERIFIED`, `[X]` (Huy `181408e`); quy tắc P3 qua HTTP và trên 32 clip thật | P3/Cường, P1/Huy, P5/Hiển |
 | `T045, T050 / CP4` | `DONE` | `services/inference-api/tests/contract/test_predictions_contract.py`, `inference/worker_thread.py` | `P1_VERIFIED`, `[X]` (Huy `181408e`) | P1/Huy, P5/Hiển |
-| `T072, T073 / CP4` | `REVIEW` | `services/inference-api/src/visign_api/{api/error_handlers.py,domain/errors.py}`, `contracts/openapi.yaml` | Đã push `d72ab32`; chờ Huy, Hiển (câu chữ 404/405 trong `vi.ts`) | P1/Huy, P5/Hiển |
-| `T066 / CP4` | `REVIEW` | `tests/integration/test_prediction_privacy.py`, `inference/temporary_clip.py` | Đã push `961f59d`; cần thêm `tests/integration` vào job `api` của CI | P1/Huy, P3/Cường |
+| `T072, T073 / CP4` | `DONE` | `services/inference-api/src/visign_api/{api/error_handlers.py,domain/errors.py}`, `contracts/openapi.yaml` | `P1_VERIFIED`, `[X]` (Huy `0242745`); câu chữ 404/405 trong `vi.ts` chuyển P5 | P1/Huy, P5/Hiển |
+| `T066 / CP4` | `DONE` | `tests/integration/test_prediction_privacy.py`, `inference/temporary_clip.py` | `P1_VERIFIED`, `[X]` (Huy `0242745`) | P1/Huy, P3/Cường |
+| `T064 / CP4` | `REVIEW` | `tests/integration/test_prediction_pipeline.py`, `t036_artifact_builder.py` | Đã push `5cec97b`; phần cần clip đại diện chạy local qua `VISIGN_CP2_REFERENCE_WEBM` | P1/Huy, P3/Cường |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
@@ -45,15 +46,15 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T072/T073` → `T066` (2 micro-commit CP4) |
-| Proposed commit | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract`; `CP4 T066(security): audit prediction privacy and sweep stale clips` |
-| Exact staged paths | Xem evidence `CP4/T072-T073-p2-tin-smoke.md`, `CP4/T066-p2-tin-privacy-smoke.md` |
-| Pre-commit sync | `PASS` — `0 0` trên `cfa9f04` (sau khi pull T051/T052 của P5, T065 của P3, review P1) |
-| Gate commands | 49 test mới, 12/12 mutation bị bắt; API + contract + integration 372 passed + 2 skipped; web lint, typecheck, Vitest 122/122; live uvicorn |
-| Smoke evidence | `docs/evidence/checkpoints/CP4/T072-T073-p2-tin-smoke.md`, `CP4/T066-p2-tin-privacy-smoke.md` |
-| Local commit | `d72ab32`, `961f59d` |
-| Pre-push sync | `PASS` — `0 2` trên `cfa9f04` |
-| Push status | `PUSHED` `cfa9f04..961f59d`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) |
+| Task/checkpoint | `T064` (CP4) |
+| Proposed commit | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` |
+| Exact staged paths | Xem evidence `CP4/T064-p2-tin-smoke.md` |
+| Pre-commit sync | `PASS` — `0 0` trên `72733aa` (sau khi pull review P1 `0242745` và T040 của P5) |
+| Gate commands | 4 test T064 (2 chạy trên CI, 2 cần clip đại diện), 4/4 mutation; 392 passed + 3 skipped (extra `serving`) |
+| Smoke evidence | `docs/evidence/checkpoints/CP4/T064-p2-tin-smoke.md` |
+| Local commit | `5cec97b` |
+| Pre-push sync | `PASS` — `0 1` trên `72733aa` |
+| Push status | `PUSHED` `72733aa..5cec97b`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) |
 
 ## Commit ledger
 
@@ -96,8 +97,9 @@
 | `CP4/T049 P3 rule` | Quy tắc không có người theo P3 | `CP4 T049(api): use pre-normalization points for no-person rule` | `3b47521aa64c47f0bd9068078639626b3b4996c2` | [commit](https://github.com/HiImNVH/ViSign/commit/3b47521aa64c47f0bd9068078639626b3b4996c2) | 4 mutation; 345 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42381710523) | P3/Cường | `VERIFIED` |
 | `CP3/T037 HTTP test` | Dự đoán GRU và quy tắc P3 qua HTTP; artifact full | `CP3 T037(api): test GRU predictions over HTTP for pilot and full` | `396d3141729941eff454c0e88702f9cfd4936f75` | [commit](https://github.com/HiImNVH/ViSign/commit/396d3141729941eff454c0e88702f9cfd4936f75) | 5 test mới, 5 mutation; 350 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42382956024) | P3/Cường, P1/Huy | `VERIFIED` |
 | `CP3/T037 real clips` | Parity và HTTP trên clip có người thật | `CP3 T037(api): record real-clip parity and HTTP smoke` | `0f3c5578767717d9c4a4e7c94999b1de9005eb00` | [commit](https://github.com/HiImNVH/ViSign/commit/0f3c5578767717d9c4a4e7c94999b1de9005eb00) | Parity 32/32; HTTP 32 × 200, 6 × 422; p95 4,73 s; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42385392156) | P3/Cường, P1/Huy | `PUSHED` |
-| `CP4/T072,T073` | 404/405/307 theo contract HTTP | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract` | `d72ab3259547022decdebb1b1382f8ea7f0cce33` | [commit](https://github.com/HiImNVH/ViSign/commit/d72ab3259547022decdebb1b1382f8ea7f0cce33) | 28 test, 6 mutation; web 122/122; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P5/Hiển | `PUSHED` |
-| `CP4/T066` | Audit quyền riêng tư, dọn clip sót | `CP4 T066(security): audit prediction privacy and sweep stale clips` | `961f59d7ef1465ac3146a8c5d481ffe2da496183` | [commit](https://github.com/HiImNVH/ViSign/commit/961f59d7ef1465ac3146a8c5d481ffe2da496183) | 21 test, 6 mutation; live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P3/Cường | `PUSHED` |
+| `CP4/T072,T073` | 404/405/307 theo contract HTTP | `CP4 T072,T073(api): add 404/405 error envelopes and routing contract` | `d72ab3259547022decdebb1b1382f8ea7f0cce33` | [commit](https://github.com/HiImNVH/ViSign/commit/d72ab3259547022decdebb1b1382f8ea7f0cce33) | 28 test, 6 mutation; web 122/122; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P5/Hiển | `VERIFIED` |
+| `CP4/T066` | Audit quyền riêng tư, dọn clip sót | `CP4 T066(security): audit prediction privacy and sweep stale clips` | `961f59d7ef1465ac3146a8c5d481ffe2da496183` | [commit](https://github.com/HiImNVH/ViSign/commit/961f59d7ef1465ac3146a8c5d481ffe2da496183) | 21 test, 6 mutation; live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42388018420) | P1/Huy, P3/Cường | `VERIFIED` |
+| `CP4/T064` | Clip đại diện, nạp/đổi artifact, rollback | `CP4 T064(api): add representative-clip pipeline and artifact swap tests` | `5cec97b5fd59b81fae86729f775f4c3cbedb01b7` | [commit](https://github.com/HiImNVH/ViSign/commit/5cec97b5fd59b81fae86729f775f4c3cbedb01b7) | 4 test, 4 mutation; clip thật 4/4; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42392276509) | P1/Huy, P3/Cường | `PUSHED` |
 
 ## Handoff
 
@@ -105,9 +107,8 @@
   mọi `*.webm` nên golden clip T014/T064 cần ngoại lệ có review; vị trí E2E T032 (`tests/e2e/`) khác
   Playwright `testDir` (`apps/web/tests/`).
 - Required input: Cường review `ai/pyproject.toml`; Hiển review web toolchain; T099 vẫn chờ lead.
-- Next owner/action: Huy review T072/T073/T066 và thêm `tests/integration` vào job `api` của CI; Hiển thêm câu
-  chữ 404/405 vào `vi.ts`; Cường tối ưu trích đặc trưng (p95 clip thật 4,73 s); Tín làm T064 rồi T092 (gồm
-  quyết định `/docs`); Huy chốt phạm vi T095 trước khi tạo tài nguyên AWS.
+- Next owner/action: Tín làm T092 (audit bảo mật, lệnh audit cho BGK); Huy review T064 và thêm `tests/integration`
+  vào job `api` của CI; Cường cho `extract` đóng detector ở nền (teardown ≈ 0,97 s/request); Huy chốt phạm vi T095.
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history
