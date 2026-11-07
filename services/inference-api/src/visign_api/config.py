@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Gia tri mac dinh theo docs/team/fe-be-api-convention.md muc 3 va ai-backend-contract.md
@@ -14,6 +14,9 @@ DEFAULT_MAX_DURATION_MS = 6000
 # Thoi gian doi slot suy luan, khong phai thoi gian xu ly toan luong
 DEFAULT_INFERENCE_WAIT_TIMEOUT_SECONDS = 3.0
 WILDCARD_ORIGIN = "*"
+# Cong cu admin noi bo (T079): token ngan de doan nen bi tu choi; inspect mot clip 6 s mat vai giay
+MIN_ADMIN_TOKEN_LENGTH = 16
+DEFAULT_ADMIN_INSPECT_TIMEOUT_SECONDS = 60.0
 
 DEFAULT_ALLOWED_MIME_TYPES = [
     "video/webm",
@@ -31,8 +34,12 @@ VITE_DEV_AND_PREVIEW_ORIGINS = [
 
 
 class Settings(BaseSettings):
+    # hide_input_in_errors: loi cau hinh (vd token qua ngan) khong in lai gia tri vao log khoi dong
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        hide_input_in_errors=True,
     )
 
     # None nghia la chua cau hinh artifact: service degraded, khong tu dung fixture thay the
@@ -63,6 +70,34 @@ class Settings(BaseSettings):
     # Tao san bo detector MediaPipe o thread nen cho request ke tiep (T065, SC-002); tat bang
     # DETECTOR_PREWARM_ENABLED=false de quay ve tao detector theo tung clip ma khong can doi code
     detector_prewarm_enabled: bool = True
+    # Cong cu admin noi bo (T079, FR-021, contracts/admin-tools.md): chi bat khi co VISIGN_ADMIN_TOKEN; token
+    # khong duoc commit, log hay tra ve. Workspace local luu trang thai/lich su pilot; None thi pilot tra 503
+    visign_admin_token: SecretStr | None = None
+    visign_admin_workspace: Path | None = None
+    admin_inspect_timeout_seconds: float = Field(
+        DEFAULT_ADMIN_INSPECT_TIMEOUT_SECONDS, gt=0
+    )
+
+    @field_validator("visign_admin_token", mode="before")
+    @classmethod
+    def treat_blank_admin_token_as_disabled(cls, admin_token: object) -> object:
+        if isinstance(admin_token, str) and not admin_token.strip():
+            return None
+        return admin_token
+
+    @field_validator("visign_admin_token")
+    @classmethod
+    def require_strong_admin_token(
+        cls, admin_token: SecretStr | None
+    ) -> SecretStr | None:
+        if (
+            admin_token is not None
+            and len(admin_token.get_secret_value()) < MIN_ADMIN_TOKEN_LENGTH
+        ):
+            raise ValueError(
+                f"VISIGN_ADMIN_TOKEN phai dai it nhat {MIN_ADMIN_TOKEN_LENGTH} ky tu"
+            )
+        return admin_token
 
     @field_validator("cors_origins")
     @classmethod

@@ -44,21 +44,22 @@
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
 | `T095 / CP7 Docker` | `HANDOFF` → P1/Huy | `infra/aws/docker/`, `infra/aws/nginx/`, `infra/aws/compose.*.yml`, lock torch CPU | Huy build/smoke local (`P1_PARTIAL`), vá thiếu `libEGL` (`f9232cd`, P2 review `P2_VERIFIED` qua ELF của wheel MediaPipe) và đang deploy EC2 (`2182f85`) (`CP7/T095-p2-tin-docker-handoff.md`) | P1/Huy |
 | `T065 / CP5 API` | `P1_VERIFIED` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`), Huy verify `f9232cd`; giảm 194 ms/request khi có khoảng nghỉ; lấy mẫu trước khi chuyển RGB chỉ giảm 16 ms ở cỡ web nên không đề xuất; SC-002 chờ số đo production | P3/Cường, P1/Huy |
+| `T078-T080 / CP6` | `REVIEW` | `services/inference-api/src/visign_api/{api/admin.py,api/pilot.py,admin/}`, `contracts/admin-tools.md`, `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` | API admin opt-in: 404 khi tắt, 401, inspect ZIP một lượt có timeout và dọn file, pilot một job và lịch sử; 30 test, 15/15 mutation; `prepare`/`train` chờ runner `visign_ai.pilot` của P3 | P1/Huy, P5/Hiển, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T065` đo lấy mẫu trước khi chuyển RGB (CP5), `T095` review bản vá libEGL (CP7) |
-| Proposed commit | `CP5-CP7 T065,T095(verify): measure RGB-first sampling, review EGL fix` |
-| Exact staged paths | 3 path: evidence T065 của P3, evidence T095 bàn giao Docker, README này |
-| Pre-commit sync | `PASS` — `0 0` trên `fe17fad` (sau khi pull deploy EC2 của P1, admin UI của P5, smoke pilot của P3) |
-| Gate commands | Chỉ đổi tài liệu; số đo: 32 clip × 3 cỡ × 5 lần, ảnh chọn ra giống hệt 32/32; ELF `libmediapipe.so` |
-| Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md`, `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md` |
-| Local commit | `c73c8b3` |
-| Pre-push sync | `PASS` — `0 1` trên `fe17fad` |
-| Push status | `PUSHED` `fe17fad..c73c8b3`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42413030409) |
+| Task/checkpoint | `T078–T080` (CP6) |
+| Proposed commit | `CP6 T078-T080(api): add opt-in admin inspect and single-job pilot API` |
+| Exact staged paths | 14 path: `config.py`, `main.py`, `api/admin.py`, `api/pilot.py`, `admin/` (5 file), test contract admin, `contracts/admin-tools.md`, `docs/security-report.md`, evidence CP6, README này |
+| Pre-commit sync | `PASS` — `0 0` trên `6d9a958` |
+| Gate commands | 30 test admin (5 lần liên tiếp đạt), 15/15 mutation; như CI 401 passed, 3 skipped và 44 passed, 2 skipped; Ruff, format, mypy 69 file; có `serving` 465 passed, 4 skipped; live uvicorn với pipeline thật |
+| Smoke evidence | `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `PENDING` |
 
 ## Commit ledger
 
@@ -119,9 +120,10 @@
 - Next owner/action: Huy nhận phần Docker/Compose T095 (build, smoke local, rồi AWS sau khi chốt tài khoản và
   instance) theo `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md`; Huy chốt rate limit 429 (WAF ở biên
   hay limiter trong API, FE xử lý trước theo D3) và thêm `tests/integration`, `tests/security`, `ruff format --check`
-  vào CI; Cường format `ai/src/visign_ai/evaluation/metrics.py`; Huy và Cường review pool bộ detector tạo sẵn phía
-  API (`docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md`); SC-002 vẫn trượt nên cần thêm
-  hướng giảm độ trễ (giữ detector giữa các request, lấy mẫu trước khi chuyển RGB) và đo trên host production.
+  vào CI; Cường format `ai/src/visign_ai/evaluation/metrics.py`; Huy review T078–T080 và nghiệm thu phần admin của
+  T084; Hiển smoke T082 với backend admin thật và đổi giới hạn clip FE về 10 MiB; Cường cung cấp
+  `visign_ai.pilot.build_pilot_runner()` theo `contracts/admin-tools.md` để chạy pilot T083 qua công cụ admin; SC-002
+  cần đo trên host production (giảm số frame vào MediaPipe cần schema mới và train lại).
 - Work-in-progress limit: tối đa 2 task `DOING`.
 
 ## Handoff history

@@ -99,6 +99,10 @@ xuất đổi major `eslint`/`typescript-eslint`), nên không chạy `npm audit
   còn `/openapi.json` vẫn giữ header chặt. Contract chính thức là `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`.
 - CORS: không bao giờ trả `Access-Control-Allow-Credentials`; preflight từ origin lạ → 400 (ngoại lệ đã ghi trong
   `docs/contracts/api-conventions.md` v1.0.1).
+- Công cụ admin nội bộ (T078–T080): chỉ gắn route `/api/admin/*` khi có `VISIGN_ADMIN_TOKEN` (ít nhất 16 ký tự, giá
+  trị không in ra khi cấu hình sai); Bearer so sánh hằng thời gian, sai hoặc thiếu → 401. `compose.production.yml`
+  không đặt biến này nên production trả 404; CORS không cho header `Authorization` nên trình duyệt chỉ gọi được cùng
+  origin. Chi tiết: `specs/001-vsl-recognition-mvp/contracts/admin-tools.md`.
 
 ## 7. Ghi chú từ các checkpoint trước
 

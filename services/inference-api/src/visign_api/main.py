@@ -9,6 +9,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from visign_api.admin.dependencies import (
+    AdminDependencies,
+    close_admin_tools,
+    install_admin_tools,
+)
+from visign_api.admin.errors import register_admin_error_handler
+from visign_api.api.admin import admin_router
 from visign_api.api.error_handlers import RETRY_AFTER_HEADER, register_error_handlers
 from visign_api.api.request_context import REQUEST_ID_HEADER
 from visign_api.api.request_middleware import attach_request_context
@@ -63,8 +70,12 @@ def build_predictor_registry(
 
 
 def build_lifespan(
-    runtime_settings: Settings, predictor_factories: PredictorFactories
+    runtime_settings: Settings,
+    predictor_factories: PredictorFactories,
+    admin_dependencies: AdminDependencies | None,
 ) -> Lifespan:
+    admin_enabled = runtime_settings.visign_admin_token is not None
+
     @asynccontextmanager
     async def lifespan(service_app: FastAPI) -> AsyncIterator[None]:
         # Tao coordinator trong event loop dang chay de semaphore khong gan voi loop cu
@@ -77,7 +88,11 @@ def build_lifespan(
         service_app.state.predictor_registry = build_predictor_registry(
             runtime_settings, predictor_factories
         )
+        if admin_enabled:
+            install_admin_tools(service_app, runtime_settings, admin_dependencies)
         yield
+        if admin_enabled:
+            close_admin_tools(service_app)
         # Dong bo detector tao san cua predictor dang phuc vu truoc khi tien trinh dung
         service_app.state.predictor_registry.close()
 
@@ -94,8 +109,9 @@ def documentation_urls(runtime_settings: Settings) -> dict[str, str | None]:
 def create_app(
     runtime_settings: Settings | None = None,
     predictor_factories: PredictorFactories | None = None,
+    admin_dependencies: AdminDependencies | None = None,
 ) -> FastAPI:
-    # Mac dinh: fixture + adapter GRU pilot/full; predictor_factories chi de test tiem predictor gia
+    # Mac dinh: fixture + adapter GRU pilot/full; predictor_factories va admin_dependencies de test tiem ban gia
     active_settings = runtime_settings or get_settings()
     active_factories = (
         build_predictor_factories(GruRuntime.from_settings(active_settings))
@@ -106,7 +122,7 @@ def create_app(
     service_app = FastAPI(
         title=SERVICE_TITLE,
         version=version(PACKAGE_NAME),
-        lifespan=build_lifespan(active_settings, active_factories),
+        lifespan=build_lifespan(active_settings, active_factories, admin_dependencies),
         **documentation_urls(active_settings),
     )
     # Middleware them sau nam ngoai: CORS bao ngoai de moi response, ke ca 500, deu co header CORS
@@ -120,7 +136,11 @@ def create_app(
         expose_headers=CORS_EXPOSED_HEADERS,
     )
     register_error_handlers(service_app)
+    register_admin_error_handler(service_app)
     service_app.include_router(api_v1_router)
+    # Cong cu admin noi bo chi ton tai khi co token (FR-021): khong co token thi /api/admin/* la 404
+    if active_settings.visign_admin_token is not None:
+        service_app.include_router(admin_router)
     return service_app
 
 
