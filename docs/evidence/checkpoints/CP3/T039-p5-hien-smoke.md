@@ -100,4 +100,32 @@ Test denial dùng Chromium CDP với permission `camera`; test dialog kiểm tra
 - Rollback bằng revert riêng commit T039 sau review; không reset/force-push main.
 - Override: UI tiếng Việt theo constitution thay core §5.2; commit theo CP/task thay core §11.2.
 
-**Reviewer result**: PENDING
+## Independent review — P2/Tín
+
+Review time: `2026-11-07T14:55+07:00` trên `origin/main` `5b6a441` (chứa T039 `e9badad`…`dc52640`); Windows 11,
+Node 24.18.0, Edge (`VISIGN_BROWSER_CHANNEL=msedge`).
+
+| Gate | Kết quả độc lập |
+|---|---|
+| Static/build | `npm ci`, `npm run lint`, `typecheck`, `build`: PASS |
+| Browser | `npx playwright test`: 21 passed trên Edge |
+| Unit | `vitest run`: 42 passed nhưng **không ổn định** — xem mục 1 |
+| Contract | Giới hạn 300 ms/5000 ms/6000 ms/10 MiB, ưu tiên `video/webm;codecs=vp8` → `vp9` → `video/webm`, `audio: false` khớp `docs/contracts/api-conventions.md`; mirror chỉ là CSS `scaleX(-1)` trên `video`, dữ liệu gửi đi không bị lật |
+
+Phát hiện:
+
+1. `CHANGES_REQUESTED` — **test focus flaky làm đỏ CI `main`**. `CameraRecorder.tsx` chuyển focus trong
+   `useEffect` (passive, chạy sau commit), còn `recognition-flow.test.tsx` kiểm `toHaveFocus()` ngay sau
+   `waitFor(status = 'Camera sẵn sàng')`. Khi assertion chạy giữa commit và effect, focus vẫn ở `body`.
+   - Local: 13/15 lần pass với code hiện tại.
+   - Thử đổi sang `useLayoutEffect` (chạy đồng bộ sau commit, trước paint — đúng chỗ cho quản lý focus):
+     30/30 lần pass, toàn bộ 42 test vẫn pass. P2 đã khôi phục file, không commit thay owner.
+   - CI: [run 42352747056](https://github.com/HiImNVH/ViSign/actions/runs/42352747056) job Web fail ở
+     bước Unit tests với đúng assertion này; các run trước trên cùng code (`dc52640`, `a8ea4c6`) xanh.
+   - Đề xuất: P5 đổi sang `useLayoutEffect`; nếu muốn giữ `useEffect` thì test phải `await waitFor(() =>
+     expect(button).toHaveFocus())`.
+2. Ghi chú: thời lượng client đo bằng `performance.now()`; server vẫn là nguồn quyết định theo PTS (T049).
+3. Engine Node: đã sửa ở T004 (`^22.22.2 || ^24.15.0 || >=26.0.0`) theo ghi chú của P5;
+   `apps/web/README.md` còn ghi "Node.js 22.12+", P5 cập nhật khi sửa mục 1.
+
+**Reviewer result**: `CHANGES_REQUESTED` (P2) — chỉ mục 1; phần còn lại đạt. P1 còn `PENDING`.
