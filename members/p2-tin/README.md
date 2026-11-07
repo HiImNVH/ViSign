@@ -42,9 +42,9 @@
 | Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `1c4539f` lúc 2026-11-07T17:12+07:00 |
 | Gate commands | Đầu dò RAM +300 MB đúng; benchmark 4 clip × 2 lần; Ruff/format/mypy script; gate API mặc định |
 | Smoke evidence | `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` |
+| Local commit | `89f5443d82a8292e5fb8a0f0c9b637e0dda7445d` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`) |
+| Push status | `PUSHED` lúc 2026-11-07T17:07:24+07:00 — [commit](https://github.com/HiImNVH/ViSign/commit/89f5443d82a8292e5fb8a0f0c9b637e0dda7445d); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42362596296) |
 
 ## Commit ledger
 
@@ -67,7 +67,7 @@
 | `CP2/T026` | Nền FastAPI `/api/v1` | `CP2 T026(api): add FastAPI v1 foundation with request id and error mapping` | `4a2dad16d41b13f09a20e6ab90e91d288e838f37` | [commit](https://github.com/HiImNVH/ViSign/commit/4a2dad16d41b13f09a20e6ab90e91d288e838f37) | 129 passed, live smoke; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42359426590) | P1/Huy, P5/Hiển | `PUSHED` |
 | `CP3/T037 serving` | Adapter đặc trưng + parity offline ↔ API | `CP3 T037(api): add serving feature extraction adapter with parity test` | `7d5c16ac3db817764d042853b8b6276cd825b870` | [commit](https://github.com/HiImNVH/ViSign/commit/7d5c16ac3db817764d042853b8b6276cd825b870) | 145 passed + parity VP8/VP9; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42361742686) | P3/Cường, P1/Huy | `PUSHED` |
 | `CP2/T024-T025 done` | Đánh `[X]` T024–T025 sau P1 verify | `CP2 T024-T025(api): mark temporary clip tasks done after P1 verify` | `1c4539f3dd244de569dbb6e2ee38e8fa1cd3c010` | [commit](https://github.com/HiImNVH/ViSign/commit/1c4539f3dd244de569dbb6e2ee38e8fa1cd3c010) | Task format 99/0 | P1/Huy | `PUSHED` |
-| `CP7/T095 benchmark` | Benchmark RAM/độ trễ cho AWS | `CP7 T095(cloud): add serving RAM and latency benchmark for AWS sizing` | `PENDING` | `PENDING` | 4 clip × 2 lần | P1/Huy, P3/Cường | `LOCAL-DRAFT` |
+| `CP7/T095 benchmark` | Benchmark RAM/độ trễ cho AWS | `CP7 T095(cloud): add serving RAM and latency benchmark for AWS sizing` | `89f5443d82a8292e5fb8a0f0c9b637e0dda7445d` | [commit](https://github.com/HiImNVH/ViSign/commit/89f5443d82a8292e5fb8a0f0c9b637e0dda7445d) | 4 clip × 2 lần; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42362596296) | P1/Huy, P3/Cường | `PUSHED` |
 
 ## Handoff
 

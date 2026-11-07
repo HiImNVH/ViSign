@@ -8,7 +8,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy` (quyết định instance); `P3 Cường` (bộ nhớ decoder T015) |
 | Candidate commit | `CP7 T095(cloud): add serving RAM and latency benchmark for AWS sizing` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `89f5443d82a8292e5fb8a0f0c9b637e0dda7445d` — [89f5443](https://github.com/HiImNVH/ViSign/commit/89f5443d82a8292e5fb8a0f0c9b637e0dda7445d); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42362596296) |
 | Ngày/giờ | `2026-11-07T17:10+07:00` |
 | Môi trường đo | Windows 11 (máy P2), CPython 3.12.15, extra `serving`: visign-ai 0.0.1, MediaPipe 1.1.1, OpenCV 5.0.0.93, PyAV 19.0.2, torch 2.11.0+cpu |
 | Status | `PASS` (số đo Windows); số đo Linux/EC2 `NOT_RUN` |
