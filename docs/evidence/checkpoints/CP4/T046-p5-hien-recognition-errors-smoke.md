@@ -7,10 +7,10 @@
 | Checkpoint / task | `CP4 / T046` (`US2`) |
 | Owner | `P5 Hiển` |
 | Reviewer | `P2 Tín`, `P1 Huy` — chờ kiểm thử độc lập |
-| Commit | `CP4 T046(web): cover negative recognition flows`; full SHA được bổ sung sau commit |
+| Commit | [`18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a`](https://github.com/HiImNVH/ViSign/commit/18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a) — `CP4 T046(web): cover negative recognition flows` (đã push) |
 | Ngày/giờ | `2026-11-07T21:31:45+07:00` |
 | Môi trường | Windows / PowerShell, Node `26.7.0`, npm `11.19.0`, Vitest `5.0.5`, Playwright `1.64.1`, Edge (`VISIGN_BROWSER_CHANNEL=msedge`) |
-| Status | `PASS` tại local; chờ reviewer xác nhận |
+| Status | `PUSHED / READY_FOR_REVIEW`; local gate PASS, chờ reviewer xác nhận |
 
 ## 2. Phạm vi
 
@@ -35,12 +35,14 @@ Test chỉ mock quyền/stream, recorder và API theo hợp đồng. Thông báo
 
 **Pre-commit sync:** `git fetch origin main` thấy 6 commit mới (`44b1405` → `6b411aa`) thuộc API/spec/evidence P1/P2; stash đúng 3 file T046, `git pull --rebase origin main` fast-forward và khôi phục candidate không conflict. Sau đồng bộ, chạy lại `npm.cmd run check`: lint/typecheck/build PASS, 88/88 Vitest PASS, 39/39 Edge PASS, exit `0`. Fetch lần cuối thấy thêm commit CP7 cloud docs `a26aa5d`; thực hiện stash/pull/reapply lần nữa không conflict, frontend không đổi.
 
+**Pre-push sync / gate:** rebase T046 lên `db984e7` sau 2 commit CP3 API của P2; chạy lại `$env:VISIGN_BROWSER_CHANNEL='msedge'; npm.cmd run check` (PowerShell, `apps/web`): lint/typecheck PASS, Vitest 88/88 PASS, build PASS, Playwright Edge 39/39 PASS, exit `0`. `git pull --rebase origin main` ngay trước push không có commit mới; `git push origin main` thành công cho `18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a`.
+
 ## 4. Artifact / link
 
 | Loại | Tham chiếu | Ghi chú |
 |---|---|---|
-| Commit diff | Bổ sung full SHA/link sau commit/push | Review theo micro-commit |
-| CI | `NOT_RUN` — chờ push/CI workflow | Chưa tự nhận CI pass |
+| Commit diff | [18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a](https://github.com/HiImNVH/ViSign/commit/18a7f60b8e8c6af1ba908082eeaf6e0268a55a9a) | Review theo micro-commit |
+| CI | `NOT_VERIFIED` — chưa kiểm tra kết quả GitHub Actions sau push | Không tự nhận CI pass |
 | Test source | `apps/web/tests/recognition/recognition-errors.test.tsx` | 8 negative component cases |
 | Báo cáo | `docs/evidence/checkpoints/CP4/T046-p5-hien-recognition-errors-smoke.md` | Commands và kết quả tái lập |
 | API/model | Mock API `v1` + metadata pilot giả lập | Không có binary/video thật trong Git |
@@ -50,13 +52,13 @@ Test chỉ mock quyền/stream, recorder và API theo hợp đồng. Thông báo
 - Chưa được kiểm chứng trên camera/device thật, backend đang chạy hoặc GRU pilot/full; để T047 và tích hợp nhóm xác minh các tầng đó.
 - Có thể revert riêng commit T046 nếu test không còn phù hợp contract khi tích hợp.
 - P2/Tín và P1/Huy cần review độc lập; việc tick `[X]` phụ thuộc verification theo `docs/team/git-checkpoints.md`.
-- Push chờ integration window của P1/Huy: `members/p1-huy/README.md` hiện ghi `ACTIVE` cho P1, chưa có bàn giao window T046 cho P5.
+- Owner đã trực tiếp cho phép push khi gate PASS; đã push T046 lên `main` ngày 2026-11-07. P1/Huy vẫn cần điều phối review/integration.
 
 ## 6. Xác nhận
 
 - [x] Owner đã chạy full web gate sau chỉnh sửa test.
-- [ ] Kiểm tra staged diff không chứa secret/raw video/model binary.
-- [ ] Full SHA và link public được điền sau push.
+- [x] `git diff --cached --check` exit `0`, chỉ stage 3 file test/evidence/member README; không có secret/raw video/model binary.
+- [x] Full SHA và link commit GitHub đã ghi sau push.
 - [ ] Reviewer tái chạy gate và xác nhận.
 
 **Reviewer result**: `PENDING`.
