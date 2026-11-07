@@ -77,3 +77,50 @@ Ghi chú không chặn — cần xử lý trước khi đóng CP2/CP3:
 
 **Reviewer result**: `P1_REVIEWED` — code/gate đạt; P2 review đường serving và representative-clip
 review schema vẫn `PENDING`. Schema giữ `DRAFT_PENDING_LEAD_REVIEW`.
+
+## Independent API-boundary review — P2/Tín
+
+Review time: `2026-11-07T14:25+07:00` trên `origin/main` chứa `865547ebe637da010ac7c953bcce38389ecca831`;
+worktree sạch. Phạm vi: đường serving mà adapter T037/T049 sẽ gọi.
+
+| Gate | Kết quả độc lập |
+|---|---|
+| Env | `uv sync --project ai --locked`; `ai/setup_models.py` tải 3 detector, SHA-256 khớp manifest: PASS |
+| Unit | `pytest ai/tests -q -rs`: 15 passed, 5 skipped (thiếu `VISIGN_BROWSER_FIXTURES`, `VISIGN_CP2_REFERENCE_WEBM`) |
+| Lint/format/type | `ruff check ai`, `ruff format --check ai`, `python -m mypy ai/src`: PASS |
+| Boundary probe | Gọi `process_video` như API với clip PyAV tổng hợp 320×240, 30 fps |
+
+| Clip tổng hợp | Kết quả pipeline | Mã/status API |
+|---|---|---|
+| VP8 1,5 s, VP9 1,5 s (không có người) | Tensor `[32,234]`, `inputStatus=INSUFFICIENT_LANDMARKS` | Cần quy tắc T049 (mục 2) |
+| 0,2 s | `CLIP_TOO_SHORT` | 422, khớp catalog |
+| 6,5 s | `CLIP_TOO_LONG` | 422, khớp catalog |
+| Thân file hỏng | `CLIP_DECODE_FAILED` | 422, khớp catalog |
+| Không phải WebM | `UNSUPPORTED_MEDIA_TYPE` | 415, khớp catalog |
+| > 10 MiB | `CLIP_TOO_LARGE` | 413, khớp catalog |
+
+Bổ sung cho ghi chú P1 (không lặp lại mục 1–6 của P1):
+
+1. **Độ trễ trên máy P2** (trả lời mục 4 của P1): `process_video` với 46 frame 320×240 mất `7400 ms`
+   ở lần gọi đầu và `2580–2640 ms` ở các lần sau; extract kèm khởi tạo detector `2310–2540 ms`, kiểm
+   hash detector `~60 ms` mỗi lần. Chưa gồm GRU/HTTP nên sát gate p95 ≤ 3 s. API sẽ warm-up lúc startup;
+   đề xuất P3 cho phép cache `extractor_identity` một lần mỗi tiến trình.
+2. **`NO_PERSON_DETECTED` không bao giờ được phát** và `INSUFFICIENT_LANDMARKS` chỉ nằm trong
+   `report.inputStatus`, không raise. P2/P3 cần chốt quy tắc (ví dụ không frame nào có vai →
+   `NO_PERSON_DETECTED`) trước T049.
+3. **`MODEL_ASSET_MISMATCH`** (detector thiếu/sai hash) cũng nằm ngoài catalog; adapter T037 ánh xạ
+   sang `MODEL_NOT_READY` (503) cùng nhóm với mục 1 của P1.
+4. Đổi kích thước frame giữa clip, > 900 frame hoặc > 4K trả `INVALID_REQUEST` (400); với clip camera
+   đây là lỗi nội dung clip hơn lỗi request, đề xuất 422 `CLIP_DECODE_FAILED` (đưa vào T099 nếu đồng ý).
+5. Giới hạn 10 MiB/300/6000 ms đang khai báo ở cả decoder và `services/inference-api/.../config.py`
+   (T022); đề xuất export hằng số từ `visign_ai` để dùng chung một nguồn.
+6. Kết quả `process_video` chứa landmark thô (`coords`, `ambiguous[].candidateXY`); API chỉ dùng
+   `tensor`/`report`, không log hoặc trả các trường này (FR-019).
+7. Theo `.agent/core.md`: file chưa có header path, hàm chưa có type hint, comment tiếng Anh, vài hàm
+   > 30 dòng (`process_video`, `extract`, `decode_video`). Không chặn.
+
+**Reviewer result**: `P2_VERIFIED` cho đường serving của T014–T016; parity offline ↔ API giữ `NOT_RUN`
+đến T037.
+
+**Reviewer note**: Không cần sửa trước khi đóng T014–T016; mục 2 cần P3 xác nhận, mục 1/3 do P2 xử lý
+trong T037/T049.

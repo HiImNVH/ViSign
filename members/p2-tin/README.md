@@ -21,7 +21,7 @@
 | `T086 / CP1 review` | `TODO` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | Verify member frame của Huy từ `origin/main` | P2/Tín là reviewer |
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `DOING` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Gate local PASS; chờ integration window | P1/Huy, P5/Hiển (CORS) |
-| `T014-T016 / CP2 review` | `DOING` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã tái lập gate + probe; kết quả `P2_VERIFIED` sẽ ghi vào evidence của Cường khi có window | P2/Tín là reviewer |
+| `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
 | `T099 / CP2` | `TODO` | API convention, OpenAPI và client types | Lead đã gửi `docs/team/fe-be-api-convention.md`; xác nhận D1–D4 cùng Hiển rồi đóng băng | P5/Hiển và P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
 
@@ -48,6 +48,7 @@
 | `CP1/T001-T007` | Implement monorepo toolchain | `CP1 T001-T007(setup): scaffold monorepo toolchain` | `84958a34c44bc5e1d7e655cae6b6ed85e07d0c08` | [commit](https://github.com/HiImNVH/ViSign/commit/84958a34c44bc5e1d7e655cae6b6ed85e07d0c08) | Owner + P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
 | `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` | [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) | 44 passed, Ruff, mypy; P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
 | `CP2/T022-T023` | Runtime settings và structured logging | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` | `PENDING` | `PENDING` | 73 passed, Ruff, format, mypy | P1/Huy, P5/Hiển | `LOCAL-DRAFT` |
+| `CP2/T014-T016 review` | P2 API-boundary review cho pipeline của P3 | `CP2 T014-T016(api): record P2 serving boundary review` | `PENDING` | `PENDING` | 15 passed/5 skipped, probe 7 clip | P3/Cường | `LOCAL-DRAFT` |
 
 ## Handoff
 
