@@ -28,7 +28,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T024–T025 temporary clip | P2 → P1 | `VERIFIED`, `[X]` |
 | T021 error catalog, T023 logging | P2 → P1, P5 | `VERIFIED`, `[X]` |
 | T019 model metadata | P2 → P1, P3 | P1_VERIFIED; chờ P3 xác nhận metadata/`demoReady` (T059) |
-| T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng |
+| T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng; P5 kiểm lại độc lập trên `bb40476` (179 passed, 1 skipped) và ghi `P5_VERIFIED` trong evidence CP2 |
 | T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
 | T017 batch extraction CLI | P3 → P2, P1 | P2 `VERIFIED`; lỗi `--help` trên Windows đã được P1 sửa + test, chờ P3 review bản sửa |
 | T013 registry 10 meaning P0 | P4 → P3, P1 | Hoàn thành local trên máy P4, **chưa push** |
