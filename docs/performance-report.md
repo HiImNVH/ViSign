@@ -21,6 +21,46 @@ Throughput HTTP tuần tự **0,220 request/giây**, tính trên tổng thời g
 
 **SC-002 chưa đạt ở local** · Cả sáu lượt web vượt 3 giây. Trong phép đo HTTP, phần trích landmark chiếm phần lớn độ trễ, trong khi GRU dưới 5 ms ở p95. Ưu tiên đo lại riêng chi phí khởi tạo detector, số frame thực sự được đưa vào MediaPipe và thời gian chạy detector. Khi tối ưu, kiểm lại tensor/mask parity và chất lượng landmark trên cùng clip.
 
+## Thử tối ưu khởi tạo detector
+
+Trên baseline `cfa9f04`, phần tạo ba detector tuần tự mất khoảng 175–196 ms ở năm
+lượt sau lần đầu (489 ms). Bản thử cho từng worker tạo, chạy và đóng detector của
+mình. Mỗi clip vẫn có ba detector mới, cùng model, timestamp và thứ tự điểm.
+
+Đo `process_video` trên Windows, CPython 3.12.15 và MediaPipe 1.1.1 với cùng
+sáu clip review. Mỗi phương án có một lượt warm-up và 12 lượt đo. Đảo thứ tự A/B
+giữa các clip và hai vòng. Các clip có 56–104 frame, trong đó 56–64 frame được
+đưa vào MediaPipe.
+
+| Phép đo | Baseline p50 / p95 (ms) | Khởi tạo song song p50 / p95 (ms) |
+|---|---:|---:|
+| Decode | 429 / 536 | 333 / 556 |
+| Extract gồm khởi tạo | 4.070 / 5.338 | 2.893 / 4.575 |
+| Tiền xử lý toàn bộ | 4.646 / 6.002 | 3.332 / 5.250 |
+| CPU time của tiến trình | 9.695 / 11.820 | 7.695 / 11.285 |
+
+Tensor khớp trong sai số tuyệt đối `1e-6` và ba mask khớp chính xác ở cả 12/12
+cặp. Độ trễ dao động đáng kể giữa các lượt, kể cả phần decode dùng cùng mã.
+Mức giảm p95 khoảng 13% là quan sát của lần đo này. Schema và giới hạn lấy mẫu
+vẫn dùng bản v0.3 draft.
+
+Smoke HTTP trên candidate dùng Uvicorn loopback và artifact T036 tổng hợp
+`pilot-gru-test-v1`. Sau một lượt warm-up, 6/6 clip review trả 200 và request ID
+khớp. p50/p95 HTTP là 3.912/5.473 ms. p95 decode/extract/GRU là 586/4.850/5 ms.
+Throughput tuần tự 0,263 request/s. Tổng video gửi 3,831 MiB chưa tính multipart.
+Đỉnh CPU theo cửa sổ request là 216,2%. Peak working set 866,7 MiB của tiến trình
+đo chung với bộ kiểm thử và Uvicorn chỉ để tham chiếu. Đo RAM worker riêng khi
+chọn instance. Số đo HTTP này là smoke một vòng, còn đối chứng ở bảng trên chỉ
+đo tiền xử lý.
+
+Đo lại web local trên `c875ae5` với candidate, Edge headless, MediaRecorder
+khoảng 2,3 giây, sáu clip review cấp qua camera mô phỏng và POST thật qua
+Vite proxy đến một worker Uvicorn. Từ click **Gửi nhận diện** đến khi thấy
+kết quả, p50/p95/max lần lượt là **4,91 / 5,87 / 6,16 giây**. 6/6 HTTP 200,
+0/6 đạt 3 giây. Worker dùng GRU tổng hợp `pilot-gru-test-v1`.
+**SC-002 vẫn chưa đạt local.** Các lượt đo cũ và mới chạy ở hai phiên
+riêng. Đối chứng trong cùng tiến trình ở bảng trên chỉ đo tiền xử lý.
+
 ## Tái lập và production
 
 Chạy backend với artifact và detector xác định. Từ gốc repo, chạy CLI dưới đây với video đại diện, một worker riêng và không có tải khác.

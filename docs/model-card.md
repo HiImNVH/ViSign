@@ -37,7 +37,7 @@ Backend kiểm tra clip và chất lượng landmark trước khi gọi GRU. Mod
 | Confusion matrix | CLI đã xuất ảnh với dữ liệu tổng hợp. Ma trận VSL thật chờ dữ liệu test. Cột từ chối thể hiện những mẫu dưới ngưỡng. |
 | Split FR-015 | Đã kiểm thử cơ chế phát hiện rò rỉ video gốc. Chờ audit manifest thật, báo cáo số clip mỗi split và mức độ nhận diện được người ký. |
 | OOD và false accept | Chờ T089 đo trên ký hiệu ngoài phạm vi, không ký hiệu và các điều kiện camera khác nhau. Smoke API đã kiểm mã lỗi không có người và thiếu landmark bằng đặc trưng có kiểm soát. |
-| Latency | Smoke local của Tín trên 32 clip thật với GRU trọng số tổng hợp ghi p95 xử lý API 4,73 s, trong đó p95 trích landmark 4,48 s. T058 đo p50/p95 của GRU trên tensor đã nạp. Chờ T065 đo decode, extract, infer và tổng thời gian local/production. Mục tiêu SC-002 là p95 không quá 3 giây từ lúc gửi đến khi UI hiện kết quả hoặc lỗi có thể xử lý. |
+| Latency | T065 đã đo local với GRU trọng số tổng hợp. p95 web 6,42 s ở lượt ban đầu và 5,87 s khi chạy lại với candidate khởi tạo detector song song. SC-002 yêu cầu p95 không quá 3 giây từ lúc gửi đến khi UI hiện kết quả hoặc lỗi có thể xử lý. Chờ đo production. [T065](performance-report.md) |
 
 [T058 và ma trận](evidence/checkpoints/CP5/T058-p3-cuong-smoke.md) · [Smoke HTTP T037](evidence/checkpoints/CP3/T037-p2-tin-gru-adapter-smoke.md) · [Smoke clip thật của Tín](evidence/checkpoints/CP3/T037-p2-tin-real-clip-smoke.md) · [Benchmark serving tham chiếu](evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md)
 

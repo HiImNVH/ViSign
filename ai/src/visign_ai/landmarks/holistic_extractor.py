@@ -76,31 +76,28 @@ def extract(frames, timestamps, schema, model_dir=None):
     presence = np.full((n, count), np.nan, np.float32)
     hand_scores = np.full((n, 2), np.nan, np.float32)
     ambiguous = []
+    detector_specs = (
+        (vision.HandLandmarker, vision.HandLandmarkerOptions, "hand", {"num_hands": 2}),
+        (vision.PoseLandmarker, vision.PoseLandmarkerOptions, "pose", {}),
+        (vision.FaceLandmarker, vision.FaceLandmarkerOptions, "face", {}),
+    )
+    detector_args = [
+        (detector, options, model_dir / schema["modelFiles"][name], kwargs)
+        for detector, options, name, kwargs in detector_specs
+    ]
     with ExitStack() as stack:
-        detectors = []
-        for name, cls, opts in [
-            ("hand", vision.HandLandmarker, vision.HandLandmarkerOptions),
-            ("pose", vision.PoseLandmarker, vision.PoseLandmarkerOptions),
-            ("face", vision.FaceLandmarker, vision.FaceLandmarkerOptions),
-        ]:
-            base = python.BaseOptions(
-                model_asset_buffer=(model_dir / schema["modelFiles"][name]).read_bytes()
-            )
-            kwargs = {"num_hands": 2} if name == "hand" else {}
-            options = opts(
-                base_options=base, running_mode=vision.RunningMode.VIDEO, **kwargs
-            )
-            detectors.append(stack.enter_context(cls.create_from_options(options)))
-        parallel = schema.get("detectorExecution", "serial") == "parallel-by-group"
-        if parallel:
+        if schema.get("detectorExecution") == "parallel-by-group":
             pool = stack.enter_context(ThreadPoolExecutor(max_workers=3))
             futures = [
-                pool.submit(_detect_sequence, detector, frames, timestamps)
-                for detector in detectors
+                pool.submit(_detect_sequence, args, frames, timestamps)
+                for args in detector_args
             ]
             groups = [future.result() for future in futures]
             results = zip(*groups)
         else:
+            detectors = [
+                stack.enter_context(_create_detector(*args)) for args in detector_args
+            ]
             results = (
                 _detect_frame(detectors, frame, stamp)
                 for frame, stamp in zip(frames, timestamps)
@@ -158,12 +155,22 @@ def _detect_frame(detectors, frame, timestamp):
     return [detector.detect_for_video(image, int(timestamp)) for detector in detectors]
 
 
-def _detect_sequence(detector, frames, timestamps):
-    # Each detector owns one ordered video stream and a fresh tracking state per clip.
-    results = []
-    for frame, timestamp in zip(frames, timestamps):
-        image = mp.Image(
-            image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(frame)
-        )
-        results.append(detector.detect_for_video(image, int(timestamp)))
-    return results
+def _create_detector(detector, options, model_path, kwargs):
+    base = python.BaseOptions(model_asset_buffer=model_path.read_bytes())
+    return detector.create_from_options(
+        options(base_options=base, running_mode=vision.RunningMode.VIDEO, **kwargs)
+    )
+
+
+def _detect_sequence(detector_args, frames, timestamps):
+    # Initialize and close on the same worker. Tracking state stays local to this clip.
+    with _create_detector(*detector_args) as detector:
+        return [
+            detector.detect_for_video(
+                mp.Image(
+                    image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(frame)
+                ),
+                int(timestamp),
+            )
+            for frame, timestamp in zip(frames, timestamps)
+        ]

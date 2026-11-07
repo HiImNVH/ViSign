@@ -30,3 +30,23 @@ parity offline ↔ API.
 
 **Reviewer result**: `P1_VERIFIED` phần local. T065 giữ `[ ]` vì task yêu cầu cả **production** (chưa có
 URL/host đo) và SC-002 chưa đạt.
+
+## Candidate khởi tạo detector song song
+
+Baseline đo `cfa9f04`. Dùng cùng 6 clip review, detector đã kiểm SHA-256, cùng
+schema và cùng lịch lấy mẫu. Số đo và cách đối chứng ở [báo cáo T065](../../../performance-report.md#thử-tối-ưu-khởi-tạo-detector).
+Chạy lại Ruff, mypy, pytest AI/API và T064 trên `5cec97b` sau khi đồng bộ các
+commit CP2/CP4 mới. Phần mã AI dùng cho phép đo giống nhau giữa hai mốc.
+
+| Kiểm tra local | Kết quả |
+|---|---|
+| `ruff check ai` và `python -m mypy ai/src ai/tests` | PASS, mypy kiểm 27 file |
+| `pytest ai/tests -q -rs` | 79 pass, 1 skip do Windows thiếu quyền tạo symlink. Có cấp 4 clip VP8/VP9 Chrome/Edge và clip WebM tham chiếu |
+| `pytest services/inference-api/tests tests/contract -q -rs` | 374 pass trên `5cec97b`, có cấp `VISIGN_CP2_REFERENCE_WEBM` cho parity. Dùng metadata wheel API 0.0.1 dựng từ mã repo |
+| `pytest tests/integration/test_prediction_pipeline.py -q -rs` (T064) | 4 pass trên `5cec97b`, gồm parity clip thật, đổi artifact fixture/pilot/full và cleanup |
+| Candidate ↔ baseline trên WebM thật | 12/12 tensor đạt `atol=1e-6, rtol=0`; `point_valid`, `masks` và `tensor_mask` khớp tuyệt đối |
+| Uvicorn loopback + artifact T036 tổng hợp | 6/6 HTTP 200 và request ID khớp. Payload sai trả 415. Hai WebM trống đen/trắng trả 422 `NO_PERSON_DETECTED`. Đây là smoke T049, chưa có số đo false accept của model VSL cho T089 |
+| Edge web trên candidate ở `c875ae5` | 6/6 HTTP 200, web p95 5,87 giây. SC-002 chưa đạt |
+| Production | Chưa có URL/worker production để đo |
+
+Candidate chờ P1/P2 review. T065 giữ mở.
