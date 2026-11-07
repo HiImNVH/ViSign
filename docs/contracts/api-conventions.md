@@ -2,7 +2,7 @@
 
 | Trường | Giá trị |
 |---|---|
-| Phiên bản quy ước | `api-conventions-v1.0.0` |
+| Phiên bản quy ước | `api-conventions-v1.0.1` (làm rõ câu chữ, không đổi API; xem mục 5) |
 | Trạng thái | `FROZEN` phía owner P2/Tín ngày 2026-11-07; P5/Hiển (consumer) xác nhận `PENDING` |
 | Đầu vào | Lead handoff [fe-be-api-convention.md](../team/fe-be-api-convention.md) (P1/Huy, `377ac98`) |
 | Nguồn chân lý | [`openapi.yaml`](../../specs/001-vsl-recognition-mvp/contracts/openapi.yaml), `info.version = 0.0.1`, namespace `/api/v1` |
@@ -27,10 +27,14 @@ thay đổi sau đây phải đi qua quy trình ở mục 4.
   enum trạng thái lowercase; error code UPPER_SNAKE_CASE bất biến; hậu tố `Ms` cho mili giây.
 - Required + nullable luôn có mặt (có thể `null`); optional (`timingsMs`, `qualityHints`) bị bỏ khi
   vắng, không bao giờ `null`, cấm field lạ và không chứa frame/landmark.
-- Mọi lỗi dùng `ErrorEnvelope {code, message, requestId}`; FE hiển thị câu chữ theo `code`, không render
-  `message` của server. Status theo bảng mục 5 của lead handoff.
-- Mọi response có `X-Request-ID`; server tạo UUID khi thiếu/sai. CORS chỉ origin cấu hình, không `*`,
-  không credential.
+- Mọi lỗi của API dùng `ErrorEnvelope {code, message, requestId}`; FE hiển thị câu chữ theo `code`, không
+  render `message` của server. Status theo bảng mục 5 của lead handoff.
+- Mọi response của API có `X-Request-ID`; server tạo UUID khi thiếu/sai. CORS chỉ origin cấu hình, không `*`,
+  không credential — `CORS_ALLOW_CREDENTIALS=true` làm service từ chối khởi động.
+- **Ngoại lệ preflight CORS:** response cho `OPTIONS` preflight do lớp CORS trả trước middleware request, nên
+  không có `X-Request-ID`; preflight từ origin không được phép nhận `400` text thường, không phải
+  `ErrorEnvelope` và không phải `403`. Trình duyệt không cho mã FE đọc response này; FE xử lý như lỗi mạng/CORS
+  theo `docs/team/frontend-http-status-placeholders.md`.
 - Clip `video/webm` VP8/VP9, ≤ 10,485,760 byte, 300–6000 ms đo bằng PTS phía server.
 
 ## 3. Điểm lệch phát hiện khi đóng băng
@@ -48,3 +52,10 @@ thay đổi sau đây phải đi qua quy trình ở mục 4.
 2. Cập nhật Python domain và `inference-api.ts` trong cùng commit; drift test phải xanh.
 3. Error code mới: FE thêm vào `ERROR_CODES` và câu chữ `vi.ts` trước hoặc cùng lúc (D3).
 4. Tăng `info.version` theo semver cho thay đổi tương thích khi lead yêu cầu phát hành.
+
+## 5. Lịch sử thay đổi
+
+| Phiên bản | Ngày | Thay đổi | Lý do |
+|---|---|---|---|
+| `v1.0.0` | 2026-11-07 | Đóng băng D1–D4 | T099 |
+| `v1.0.1` | 2026-11-07 | Ghi rõ ngoại lệ preflight CORS; nêu hậu quả của `CORS_ALLOW_CREDENTIALS=true` | Review P5 T020–T026: câu "mọi response có `X-Request-ID`/lỗi dùng envelope" chưa nói tới preflight; P1 đã chấp nhận hành vi này ở review T026 |

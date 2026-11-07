@@ -86,3 +86,10 @@ Review time: `2026-11-07T16:38:40+07:00` trên `origin/main` `d3afdff` (chứa `
 **Lead result**: `P1_VERIFIED`; `P5` (consumer) còn `PENDING`.
 
 **Reviewer note**: Chờ P5 xác nhận consumer (D2 timeout, D3 fallback, `inference-api.ts`).
+
+## Follow-up sau review P5 — câu chữ preflight (`2026-11-07T19:12+07:00`)
+
+- `docs/contracts/api-conventions.md` lên `api-conventions-v1.0.1`: "mọi response/mọi lỗi" giới hạn cho response
+  của API; thêm ngoại lệ preflight CORS (không `X-Request-ID`, origin lạ nhận `400` text thường, FE xử lý như lỗi
+  mạng/CORS) và ghi hậu quả của `CORS_ALLOW_CREDENTIALS=true`; thêm mục lịch sử thay đổi.
+- Không đổi `openapi.yaml`, Python domain hay `inference-api.ts`: drift test vẫn xanh trong gate API + contract.
