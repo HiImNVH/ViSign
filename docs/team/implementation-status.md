@@ -51,6 +51,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T074, T075 | P5 | Lỗi tương thích 404/405 + câu tiếng Việt riêng | `VERIFIED`, `[X]` (P1) |
 | T100–T104 (US6) | P5 | Bản dịch trực tiếp + lịch sử trình duyệt 24 giờ | `VERIFIED`, `[X]` (P1) |
 | T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
+| T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |

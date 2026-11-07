@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:browser": "playwright test",
     "test:smoke": "playwright test tests/browser/smoke.spec.ts",
-    "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:browser"
+    "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:browser",
+    "test:e2e": "playwright test -c playwright.e2e.config.ts"
   },
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"

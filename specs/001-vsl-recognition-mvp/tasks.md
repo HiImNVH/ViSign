@@ -156,7 +156,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 - [X] T029 [P] [US1] Viết model shape, packed-sequence, deterministic forward và class-subset tests dùng chung cho pilot/full tại `ai/tests/training/test_gru_classifier.py`
 - [X] T030 [P] [US1] Tạo deterministic fixture artifact và viết contract tests cho release `0.0.1`/API `v1`, chứng minh fixture/pilot/full dùng cùng accepted response schema, echo/generated `X-Request-ID`, non-negative optional timings và bounded quality hints tại `services/inference-api/tests/fixtures/model-artifacts/fixture/` và `services/inference-api/tests/contract/test_predictions_contract.py`
 - [ ] T031 [P] [US1] Viết component tests cho permission, recording và accepted result tại `apps/web/tests/recognition/recognition-flow.test.tsx`
-- [ ] T032 [P] [US1] Viết E2E happy path bằng Chromium fake-camera Y4M và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `tests/e2e/recognition-happy-path.spec.ts`
+- [ ] T032 [P] [US1] Viết E2E happy path bằng Chromium fake-camera Y4M và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `apps/web/tests/e2e/recognition-happy-path.spec.ts`
 
 ### Implementation for User Story 1
 
@@ -188,7 +188,7 @@ hiển thị đúng rejected/error state, không hiển thị một từ như k�
 - [X] T044 [P] [US2] Viết unit tests cho threshold boundary và accepted/rejected decision tại `services/inference-api/tests/unit/test_prediction_decision.py`
 - [X] T045 [P] [US2] Mở rộng contract tests cho 400, 413, 415, `CLIP_DECODE_FAILED`, `SERVICE_BUSY` với optional `Retry-After`, model-not-ready 503, `PREDICTION_FAILED` 500 không lộ exception, low-confidence HTTP 200 và `X-Request-ID` trên mọi response tại `services/inference-api/tests/contract/test_predictions_contract.py`
 - [X] T046 [P] [US2] Viết web tests cho denied permission, cancel, retry, rejected và service unavailable tại `apps/web/tests/recognition/recognition-errors.test.tsx`
-- [ ] T047 [P] [US2] Viết E2E permission-denied, corrupt clip, service-busy, low-confidence và retry flows bằng fake-camera/control fixture tại `tests/e2e/recognition-negative-paths.spec.ts`
+- [ ] T047 [P] [US2] Viết E2E permission-denied, corrupt clip, service-busy, low-confidence và retry flows bằng fake-camera/control fixture tại `apps/web/tests/e2e/recognition-negative-paths.spec.ts`
 
 ### Implementation for User Story 2
 
