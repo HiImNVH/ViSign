@@ -134,13 +134,26 @@ test('a rejected prediction never displays translation or resends the completed 
   render(<RecognitionHarness />);
   await capture();
   expect(api.predict).not.toHaveBeenCalled();
+  screen.getByRole('button', { name: 'Gửi nhận diện' }).focus();
   fireEvent.click(screen.getByRole('button', { name: 'Gửi nhận diện' }));
   await waitFor(() => expect(screen.getByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).toBeVisible());
+  const rejected = screen.getByRole('region', { name: 'Kết quả nhận diện' });
+  expect(rejected).toHaveAttribute('aria-live', 'polite');
+  expect(screen.getAllByRole('button', { name: 'Quay lại' })).toHaveLength(1);
+  expect(screen.getByRole('button', { name: 'Quay lại' })).toHaveFocus();
   expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Gửi nhận diện' })).not.toBeInTheDocument();
   expect(api.predict).toHaveBeenCalledTimes(1);
+  screen.getByRole('button', { name: 'Quay lại' }).focus();
   fireEvent.click(screen.getByRole('button', { name: 'Quay lại' }));
+  expect(FakeRecorder.instances).toHaveLength(2);
+  expect(screen.getByRole('button', { name: 'Kết thúc' })).toHaveFocus();
   expect(screen.queryByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).not.toBeInTheDocument();
+  expect(api.predict).toHaveBeenCalledTimes(1);
+  clock += 500;
+  fireEvent.click(screen.getByRole('button', { name: 'Kết thúc' }));
+  act(() => { FakeRecorder.instances[1]!.chunk(); FakeRecorder.instances[1]!.finish(); });
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled());
   expect(api.predict).toHaveBeenCalledTimes(1);
 });
 

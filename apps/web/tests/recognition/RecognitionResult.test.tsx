@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { expect, test, vi } from 'vitest';
 import { RecognitionResult } from '../../src/features/recognition/RecognitionResult';
 import { vi as copy } from '../../src/content/vi';
 import type { ModelInfo, PredictionResponse } from '../../src/types/inference-api';
@@ -55,10 +55,25 @@ test.each([
   expect(screen.getByText(`Độ tin cậy ${expected}`)).toBeVisible();
 });
 
+test('rejected result shows only safe guidance and explicitly starts a new recording', () => {
+  const retry = vi.fn();
+  render(<RecognitionResult result={{ ...accepted, accepted: false, text: 'Xin chào', classLabel: null, confidence: .95 }}
+    model={model} onRetry={retry} />);
+  const panel = screen.getByRole('region', { name: 'Kết quả nhận diện' });
+  expect(panel).toHaveAttribute('aria-live', 'polite');
+  expect(panel).toHaveAttribute('aria-atomic', 'true');
+  expect(panel).toHaveTextContent(copy.recognition.rejected);
+  expect(panel).not.toHaveTextContent('Xin chào');
+  expect(panel).not.toHaveTextContent('95%');
+  expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
+  expect(retry).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: 'Quay lại' }));
+  expect(retry).toHaveBeenCalledOnce();
+});
+
 test.each([
   [null, model],
   [accepted, null],
-  [{ ...accepted, accepted: false }, model],
   [{ ...accepted, text: '  ' }, model],
   [{ ...accepted, classLabel: null }, model],
   [{ ...accepted, classLabel: ' ' }, model],
@@ -67,7 +82,9 @@ test.each([
   [{ ...accepted, confidence: -.01 }, model],
   [{ ...accepted, confidence: 1.01 }, model],
   [{ ...accepted, modelVersion: 'different' }, model],
-])('invalid, stale or rejected result renders nothing: %j', (result, metadata) => {
+  [{ ...accepted, accepted: false, modelVersion: 'different' }, model],
+  [{ ...accepted, accepted: false }, null],
+])('invalid or stale result renders nothing: %j', (result, metadata) => {
   const { container } = render(<RecognitionResult result={result} model={metadata} />);
   expect(container).toBeEmptyDOMElement();
 });

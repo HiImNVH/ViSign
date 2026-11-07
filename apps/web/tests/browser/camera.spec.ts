@@ -137,7 +137,26 @@ test('T043 unavailable metadata blocks upload until explicit retry; rejected res
   await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
   await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
   await expect(page.getByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).toBeVisible();
+  const rejected = page.getByRole('region', { name: 'Kết quả nhận diện' });
+  await expect(rejected).toHaveAttribute('aria-live', 'polite');
+  await expect(page.getByRole('button', { name: 'Quay lại' })).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Quay lại' })).toBeFocused();
   await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
+  expect(uploads).toBe(1);
+  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
+    await page.setViewportSize(viewport);
+    const camera = (await page.locator('.camera-viewport').boundingBox())!;
+    const controls = (await page.locator('.capture-controls').boundingBox())!;
+    const panel = (await rejected.boundingBox())!;
+    expect(panel.y).toBeGreaterThanOrEqual(camera.y);
+    expect(panel.y + panel.height).toBeLessThanOrEqual(controls.y);
+    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  }
+  await page.getByRole('button', { name: 'Quay lại' }).press('Enter');
+  await expect(rejected).toHaveCount(0);
+  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
+  await expect(page.getByRole('button', { name: 'Kết thúc' })).toBeFocused();
   expect(uploads).toBe(1);
 });
 

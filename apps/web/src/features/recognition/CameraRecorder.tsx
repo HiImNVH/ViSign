@@ -18,14 +18,14 @@ function CameraViewport({ videoRef, view, children }: { videoRef: RefObject<HTML
   </div>;
 }
 
-function CameraControls({ controller, view }: { controller: RecognitionController; view: CameraView }) {
+function CameraControls({ controller, view, rejectedVisible }: { controller: RecognitionController; view: CameraView; rejectedVisible: boolean }) {
   const { state, model, enableCamera, startRecording, stopRecording, submit, cancel, reset } = controller;
   const pending = state.phase === 'submitting';
   const finished = state.phase === 'result';
   return <div className="capture-controls" role="group" aria-label="Điều khiển camera">
     {(view.phase === 'idle' || view.phase === 'error') && <button className="primary-button" onClick={enableCamera}>{view.phase === 'error' ? 'Thử lại' : 'Bật camera'}</button>}
     {view.phase === 'permission' && <button className="quiet-button" onClick={cancel}>Hủy yêu cầu</button>}
-    {(view.phase === 'preview' || view.phase === 'captured') && <button className="primary-button" onClick={startRecording}><span className="record-dot" aria-hidden="true" />{view.phase === 'captured' ? 'Quay lại' : 'Quay ký hiệu'}</button>}
+    {(view.phase === 'preview' || (view.phase === 'captured' && !rejectedVisible)) && <button className="primary-button" onClick={startRecording}><span className="record-dot" aria-hidden="true" />{view.phase === 'captured' ? 'Quay lại' : 'Quay ký hiệu'}</button>}
     {view.phase === 'captured' && !finished && <button className="primary-button submit-button" onClick={() => void submit()}
       disabled={model.status !== 'ready' || pending} aria-label={vi.recognition.send}>
       {pending ? vi.recognition.sending : <><span className="long-label">{vi.recognition.send}</span><span className="compact-label" aria-hidden="true">Gửi</span></>}
@@ -47,32 +47,36 @@ function CaptureFeedback({ view }: { view: CameraView }) {
 
 export function CameraRecorder({ controller }: { controller: RecognitionController }) {
   const { view, videoRef } = controller.camera;
-  const { state, model, reloadModelInfo } = controller;
+  const { state, model, reloadModelInfo, startRecording } = controller;
   const panel = useRef<HTMLElement>(null);
   const previousPhase = useRef(view.phase);
+  const previousRecognitionPhase = useRef(state.phase);
   const currentResult = view.phase === 'captured' && state.phase === 'result' && model.status === 'ready'
     ? state.result : null;
+  const rejectedVisible = currentResult !== null && !currentResult.accepted && model.status === 'ready'
+    && currentResult.modelVersion === model.info.modelVersion;
   useLayoutEffect(() => {
     const focused = document.activeElement;
-    if (previousPhase.current !== view.phase && !document.querySelector('dialog[open]')
+    if ((previousPhase.current !== view.phase || previousRecognitionPhase.current !== state.phase)
+      && !document.querySelector('dialog[open]')
       && (!focused || focused === document.body || !focused.isConnected)) {
-      panel.current?.querySelector<HTMLButtonElement>('.capture-controls button:not([disabled])')?.focus();
+      panel.current?.querySelector<HTMLButtonElement>('.translation-retry, .capture-controls button:not([disabled])')?.focus();
     }
     previousPhase.current = view.phase;
-  }, [view.phase]);
+    previousRecognitionPhase.current = state.phase;
+  }, [view.phase, state.phase]);
   return <section ref={panel} className="camera-workspace" aria-label="Nhận diện ký hiệu bằng camera" aria-describedby="camera-privacy">
     <CameraViewport videoRef={videoRef} view={view}>
       <CaptureFeedback view={view} />
       <div className="camera-dock">
-        <RecognitionResult result={currentResult} model={model.status === 'ready' ? model.info : null} />
+        <RecognitionResult result={currentResult} model={model.status === 'ready' ? model.info : null} onRetry={startRecording} />
         {view.phase === 'captured' && <div className="recognition-feedback" aria-live="polite">
           {model.status === 'loading' && <p>{vi.recognition.modelLoading}</p>}
           {model.status === 'unavailable' && <><p>{vi.recognition.modelUnavailable}</p>
             <button className="quiet-button model-retry" onClick={reloadModelInfo}>{vi.recognition.reloadModel}</button></>}
           {state.phase === 'error' && 'source' in state && state.source === 'api' && <p role="alert">{vi.recognition.submitError}</p>}
-          {state.phase === 'result' && !state.result.accepted && <p>{vi.recognition.rejected}</p>}
         </div>}
-        <CameraControls controller={controller} view={view} />
+        <CameraControls controller={controller} view={view} rejectedVisible={rejectedVisible} />
       </div>
     </CameraViewport>
     <p id="camera-privacy" className="sr-only">{vi.privacy}</p>

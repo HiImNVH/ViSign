@@ -1,4 +1,4 @@
-// T042: accepted prediction presentation. T043 will wire the API model and camera into this view.
+// T042/T051: accepted translation and rejected-result retry presentation.
 import { vi } from '../../content/vi';
 import type { ModelInfo, PredictionResponse } from '../../types/inference-api';
 
@@ -7,12 +7,21 @@ export type RecognitionResultModel = Pick<ModelInfo, 'modelVersion' | 'artifactK
 interface RecognitionResultProps {
   result: PredictionResponse | null;
   model: RecognitionResultModel | null;
+  onRetry?: () => void;
 }
 
-export function RecognitionResult({ result, model }: RecognitionResultProps) {
+export function RecognitionResult({ result, model, onRetry }: RecognitionResultProps) {
   // Metadata must match the prediction, including after an artifact swap or refresh.
-  if (!result || !model || result.accepted !== true || result.modelVersion !== model.modelVersion
-    || !result.text.trim() || !result.classLabel?.trim()
+  if (!result || !model || result.modelVersion !== model.modelVersion) return null;
+
+  // Rejected predictions cannot display a translation, regardless of returned text/confidence.
+  if (!result.accepted) return <section className="translation-panel translation-rejected"
+    aria-label="Kết quả nhận diện" aria-live="polite" aria-atomic="true">
+    <p className="translation-rejected-message">{vi.recognition.rejected}</p>
+    {onRetry && <button type="button" className="quiet-button translation-retry" onClick={onRetry}>Quay lại</button>}
+  </section>;
+
+  if (!result.text.trim() || !result.classLabel?.trim()
     || !Number.isFinite(result.confidence) || result.confidence < 0 || result.confidence > 1) return null;
 
   const notReady = !model.demoReady || model.artifactKind !== 'full';
