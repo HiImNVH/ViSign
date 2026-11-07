@@ -142,3 +142,20 @@ API dùng `prepare_detectors` qua pool một bộ dự phòng ở thread nền (
 A/B 38 clip người thật × 2 vòng: 76/76 cặp cùng đầu ra; extract p50 2.861 → 2.589 ms; processing giảm trung vị
 194 ms khi request có khoảng nghỉ, không lợi khi request dồn liên tục; RAM đỉnh +157 MiB; p95 processing 3.259 ms nên
 SC-002 vẫn chưa đạt. Chi tiết: [evidence P2](T065-p2-tin-prepared-detectors-smoke.md).
+
+## Đo lấy mẫu trước khi chuyển RGB — P2/Tín
+
+Đo `2026-11-08` trên `7739c66`, CPU Windows. Bản thử giữ frame YUV khi giải mã, chọn tối đa 64 frame theo PTS bằng
+`select_frame_indices`, rồi mới chuyển RGB và thu nhỏ đúng như `video_decoder.py`; các bước kiểm PTS, 6 s, 900 frame,
+4K giữ nguyên. 32 clip người thật (6 clip dài hơn 6 s bị từ chối như decoder hiện tại), mỗi clip đo 5 lần mỗi cách,
+đảo thứ tự; mọi clip trên 64 frame (trung vị 126, tối đa 154).
+
+| Cỡ clip | Decode hiện tại p50 / p95 | Lấy mẫu trước p50 / p95 | Giảm p50 | Bộ nhớ frame (trung vị) |
+|---|---:|---:|---:|---:|
+| 360×640 | 134 / 165 ms | 125 / 157 ms | 11 ms | 83 → 87 MB |
+| 480×640 (bằng số điểm ảnh 640×480 web xin) | 170 / 205 ms | 154 / 182 ms | 16 ms | 111 → 115 MB |
+| 720×1280 (camera bỏ qua ràng buộc 640×480) | 511 / 596 ms | 433 / 503 ms | 78 ms | 83 → 219 MB |
+
+Ảnh RGB của frame được chọn giống hệt nhau ở 32/32 clip mỗi cỡ. Kết luận: ở độ phân giải web gửi lên, cách này chỉ
+giảm khoảng 16 ms (khoảng 0,5% của ~3 s xử lý); với video lớn giảm 78 ms nhưng tốn gấp 2,6 lần bộ nhớ vì phải giữ
+frame YUV chưa thu nhỏ. Không đề xuất làm; chi phí chính vẫn là MediaPipe trên 64 frame.

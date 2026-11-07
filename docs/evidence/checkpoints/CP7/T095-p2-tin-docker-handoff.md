@@ -87,3 +87,17 @@ trình duyệt thật (Hiển), toàn bộ phần AWS. Việc AWS cần lead quy
 Đã deploy origin EC2 bằng CloudFormation (`visign-storage`, `visign-origin`), image `3b29d4a2cec1` từ ECR và artifact
 fixture từ S3; smoke 14/14 qua `http://52.65.207.133`. CloudFront bị AWS chặn (tài khoản cần xác minh qua Support).
 Chi tiết: [deployment-report.md](../../../deployment-report.md). T095 giữ `[ ]` chờ CloudFront HTTPS và Tín review.
+
+## Review bản vá libEGL — P2/Tín
+
+Review `2026-11-08` trên `fe17fad` (bản vá ở `f9232cd`). Đọc ELF trong wheel
+`mediapipe-1.1.1-py3-none-manylinux_2_28_x86_64.whl`: `mediapipe/tasks/c/libmediapipe.so` bắt buộc nạp `libEGL.so.1`,
+`libGLESv2.so.2` và các thư viện glibc (`libm`, `libpthread`, `libdl`, `librt`, `libc`). Image
+`python:3.12.15-slim-bookworm` chỉ có glibc; `libegl1` và `libgles2` cung cấp đúng hai thư viện còn thiếu, nên bản vá
+vừa cần vừa đủ cho phần phụ thuộc trực tiếp. Khớp smoke runtime của P1 sau bản vá (MediaPipe chạy, 422
+`NO_PERSON_DETECTED`, bộ detector tạo sẵn hoạt động).
+
+Không build lại image trên máy P2 vì Docker Desktop không khởi động được (ổ C: còn khoảng 5 GB). Đồng ý thêm job CI
+build image và smoke `/predictions` để lỗi thiếu thư viện hệ thống lộ sớm.
+
+**Reviewer result**: `P2_VERIFIED` bản vá `libegl1 libgles2`.

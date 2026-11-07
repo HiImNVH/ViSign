@@ -42,23 +42,23 @@
 | `T065 / CP5 review` | `DONE` | review trong `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md` | `P2_VERIFIED` ứng viên `fd2656f`: A/B 76 cặp clip thật cùng đầu ra, p95 qua API 3.484 → 3.221 ms; đề nghị P3 thêm unit test nhánh song song | P2/Tín là reviewer |
 | `T092 / CP4` | `DONE` | `tests/security/`, `scripts/security_audit.py`, `api/security_headers.py`, `docs/security-report.md` | `P1_VERIFIED`, `[X]` (Huy `b23c10f`); rate limit 429 chờ lead chọn WAF ở biên hay limiter trong API | P1/Huy |
 | `T095 / CP7 benchmark` | `REVIEW` | `services/inference-api/scripts/benchmark_serving_memory.py`, `docs/evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md` | RAM đỉnh 480–600 MB/clip trên Windows: EC2 1 GB không an toàn, đề xuất ≥ 2 GB; chờ Huy quyết instance, đo lại trên Linux | P1/Huy, P3/Cường |
-| `T095 / CP7 Docker` | `HANDOFF` → P1/Huy | `infra/aws/docker/`, `infra/aws/nginx/`, `infra/aws/compose.*.yml`, lock torch CPU | Build qua mọi bước, chưa smoke vì ổ C: máy build hết chỗ; Huy build/smoke rồi làm AWS khi chốt tài khoản và instance (`CP7/T095-p2-tin-docker-handoff.md`) | P1/Huy |
-| `T065 / CP5 API` | `REVIEW` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`): 76 cặp clip thật cùng đầu ra; giảm 194 ms/request khi có khoảng nghỉ, không lợi khi request dồn; RAM +157 MiB; SC-002 vẫn chưa đạt (p95 3,26 s) | P3/Cường, P1/Huy |
+| `T095 / CP7 Docker` | `HANDOFF` → P1/Huy | `infra/aws/docker/`, `infra/aws/nginx/`, `infra/aws/compose.*.yml`, lock torch CPU | Huy build/smoke local (`P1_PARTIAL`), vá thiếu `libEGL` (`f9232cd`, P2 review `P2_VERIFIED` qua ELF của wheel MediaPipe) và đang deploy EC2 (`2182f85`) (`CP7/T095-p2-tin-docker-handoff.md`) | P1/Huy |
+| `T065 / CP5 API` | `P1_VERIFIED` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`), Huy verify `f9232cd`; giảm 194 ms/request khi có khoảng nghỉ; lấy mẫu trước khi chuyển RGB chỉ giảm 16 ms ở cỡ web nên không đề xuất; SC-002 chờ số đo production | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T065` phần API (CP5) |
-| Proposed commit | `CP5 T065(api): prewarm single-use detector sets off the request path` |
-| Exact staged paths | 15 path: `detector_pool.py` (mới), `feature_extraction.py`, `gru_predictor.py`, `predictor.py`, `predictor_registry.py`, `main.py`, `config.py`; 4 file unit test, 1 file integration test; evidence P2 và evidence T065 của P3; README này |
-| Pre-commit sync | `PASS` — `0 0` trên `e5d1f26` (sau khi pull T065 test của P3 và 4 commit web/tài liệu của P5) |
-| Gate commands | Có `serving` và clip thật: 439 passed, 0 skipped; như CI 371 passed, 3 skipped và security + integration 44 passed, 2 skipped; Ruff, format, mypy 61 file; 14/14 mutation; A/B 76 cặp clip thật |
-| Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` |
-| Local commit | `a214a3c` |
-| Pre-push sync | `PASS` — `0 1` trên `e5d1f26` |
-| Push status | `PUSHED` `e5d1f26..a214a3c`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) |
+| Task/checkpoint | `T065` đo lấy mẫu trước khi chuyển RGB (CP5), `T095` review bản vá libEGL (CP7) |
+| Proposed commit | `CP5-CP7 T065,T095(verify): measure RGB-first sampling, review EGL fix` |
+| Exact staged paths | 3 path: evidence T065 của P3, evidence T095 bàn giao Docker, README này |
+| Pre-commit sync | `PASS` — `0 0` trên `fe17fad` (sau khi pull deploy EC2 của P1, admin UI của P5, smoke pilot của P3) |
+| Gate commands | Chỉ đổi tài liệu; số đo: 32 clip × 3 cỡ × 5 lần, ảnh chọn ra giống hệt 32/32; ELF `libmediapipe.so` |
+| Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p3-cuong-smoke.md`, `docs/evidence/checkpoints/CP7/T095-p2-tin-docker-handoff.md` |
+| Local commit | `PENDING` |
+| Pre-push sync | `PENDING` |
+| Push status | `PENDING` |
 
 ## Commit ledger
 
