@@ -9,10 +9,10 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P5 Hiển` review CORS mặc định |
 | Candidate commit | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `fb563545e33accbbf82bb83ad9373e5eb85e8add` — [fb56354](https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add) |
 | Ngày/giờ | `2026-11-07T14:24:49+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15, pydantic-settings 2 |
-| Status | `PASS` local; chờ integration window để push |
+| Status | `PASS` local và CI; chờ reviewer verify |
 
 ## 2. Phạm vi thay đổi
 
@@ -46,6 +46,7 @@
   stash/pull/apply lần hai, so nội dung không lệch; gate chạy lại lúc `2026-11-07T14:29:15+07:00`: 73 passed,
   Ruff/format/mypy đạt.
 - `git rev-list --left-right --count origin/main...HEAD`: `0 0` tại `38cc955`.
+- Pre-push: `git pull --rebase origin main` không có commit mới (`0 2`); push `38cc955..b248ec7`.
 
 ## 4. Smoke test
 
@@ -63,8 +64,8 @@
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | `PENDING` | Bổ sung sau push |
-| GitHub Actions | `PENDING` — workflow `quality` chạy sau push | Ghi run URL sau push |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add` | Pushed 2026-11-07T14:30:16+07:00 |
+| GitHub Actions | `https://github.com/HiImNVH/ViSign/actions/runs/42351545729` | Run trên `b248ec7` (chứa `fb56354`): api, ai, web, hygiene đều `success` |
 | API/cloud | `NOT_RUN` | Chưa có endpoint |
 
 ## 6. Rủi ro, rollback và handoff
@@ -73,13 +74,13 @@
   hằng số chung khi API gọi pipeline (T037/T049).
 - Rollback: `git revert` riêng commit này; domain T019–T021 không phụ thuộc module mới.
 - Việc người kế tiếp cần làm: Huy verify; Hiển xác nhận CORS origin mặc định.
-- Blocker: integration window của P2 đang `CLOSED`.
+- Blocker: không có. Push khi window `CLOSED` theo yêu cầu owner; không có commit remote chen giữa.
 
 ## 7. Xác nhận
 
 - [x] Owner đã chạy lại gate sau lần đồng bộ cuối.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary bị stage.
-- [ ] Full SHA và link đã được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
 **Reviewer result**: `PENDING`

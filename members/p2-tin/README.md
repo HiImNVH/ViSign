@@ -20,7 +20,7 @@
 | `T001-T007 / CP1` | `P1_VERIFIED` | monorepo dirs, root/API/AI pyproject + `uv.lock`, web Vite/lint/test config, `.gitignore` | Huy đã tái lập gate; chờ Cường (AI) và Hiển (web) review | P3/Cường, P5/Hiển |
 | `T086 / CP1 review` | `TODO` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | Verify member frame của Huy từ `origin/main` | P2/Tín là reviewer |
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
-| `T022-T023 / CP2` | `DOING` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Gate local PASS; chờ integration window | P1/Huy, P5/Hiển (CORS) |
+| `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
 | `T099 / CP2` | `TODO` | API convention, OpenAPI và client types | Lead đã gửi `docs/team/fe-be-api-convention.md`; xác nhận D1–D4 cùng Hiển rồi đóng băng | P5/Hiển và P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
@@ -35,9 +35,9 @@
 | Pre-commit sync | `PASS` — stash/pull/apply qua `38cc955`; gate chạy lại; `origin/main...HEAD` = `0 0` lúc 2026-11-07T14:29+07:00 |
 | Gate commands | pytest RED→GREEN (73 passed, `-W error`), `uv sync --locked`, Ruff check + format check, `python -m mypy` — khớp job `api` của `quality.yml` |
 | Smoke evidence | `docs/evidence/checkpoints/CP2/T022-T023-p2-tin-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` — chờ P1 mở lại integration window |
+| Local commit | `fb563545e33accbbf82bb83ad9373e5eb85e8add` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 2`), SHA không đổi |
+| Push status | `PUSHED` lúc 2026-11-07T14:30:16+07:00 theo yêu cầu owner khi window `CLOSED` — [commit](https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) |
 
 ## Commit ledger
 
@@ -47,8 +47,8 @@
 | `CP1/T001-T007` | Assign setup toolchain | `CP1 T001-T007(spec): assign setup toolchain to P2 Tin` | `abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4` | [commit](https://github.com/HiImNVH/ViSign/commit/abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4) | Docs check | P1/Huy | `PUSHED` |
 | `CP1/T001-T007` | Implement monorepo toolchain | `CP1 T001-T007(setup): scaffold monorepo toolchain` | `84958a34c44bc5e1d7e655cae6b6ed85e07d0c08` | [commit](https://github.com/HiImNVH/ViSign/commit/84958a34c44bc5e1d7e655cae6b6ed85e07d0c08) | Owner + P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
 | `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` | [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) | 44 passed, Ruff, mypy; P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
-| `CP2/T022-T023` | Runtime settings và structured logging | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` | `PENDING` | `PENDING` | 73 passed, Ruff, format, mypy | P1/Huy, P5/Hiển | `LOCAL-DRAFT` |
-| `CP2/T014-T016 review` | P2 API-boundary review cho pipeline của P3 | `CP2 T014-T016(api): record P2 serving boundary review` | `PENDING` | `PENDING` | 15 passed/5 skipped, probe 7 clip | P3/Cường | `LOCAL-DRAFT` |
+| `CP2/T022-T023` | Runtime settings và structured logging | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` | `fb563545e33accbbf82bb83ad9373e5eb85e8add` | [commit](https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add) | 73 passed, Ruff, format, mypy; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P1/Huy, P5/Hiển | `PUSHED` |
+| `CP2/T014-T016 review` | P2 API-boundary review cho pipeline của P3 | `CP2 T014-T016(api): record P2 serving boundary review` | `b248ec78b25f77973f48f1b7cda94290b3f5c1df` | [commit](https://github.com/HiImNVH/ViSign/commit/b248ec78b25f77973f48f1b7cda94290b3f5c1df) | 15 passed/5 skipped, probe 7 clip; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P3/Cường | `PUSHED` |
 
 ## Handoff
 
