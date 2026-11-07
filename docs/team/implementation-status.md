@@ -27,11 +27,11 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T099 FE–BE API convention | P2 → P1 lead, P5 consumer | `VERIFIED`, `[X]` |
 | T024–T025 temporary clip | P2 → P1 | `VERIFIED`, `[X]` |
 | T021 error catalog, T023 logging | P2 → P1, P5 | `VERIFIED`, `[X]` |
-| T019 model metadata | P2 → P1, P3 | P1_VERIFIED; chờ P3 xác nhận metadata/`demoReady` (T059) |
+| T019 model metadata | P2 → P1, P3 | `VERIFIED`, `[X]` — P3 xác nhận (`989533e`); T059 ghi `demoReady` theo gate full là việc tiếp theo |
 | T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng; P5 kiểm lại độc lập trên `bb40476` (179 passed, 1 skipped) và ghi `P5_VERIFIED` trong evidence CP2 |
 | T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
 | T017 batch extraction CLI | P3 → P2, P1 | `VERIFIED`, `[X]` — P2 verify test batch; P3 verify fix `--help` của P1 (`d258baf`) |
-| T013 registry 10 meaning P0 | P4 → P3, P1 | Hoàn thành local trên máy P4, **chưa push** |
+| T009–T013 dataset entities/schema/validator/registry | P4 → P3, P1 | Snapshot P4 review `CHANGES_REQUESTED` (P3): Ruff/mypy lỗi, T010 chưa nối `sampleId/rawPath` sang T017; inventory 27 clip, decode 24/27; **chưa push** |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
 | T040 typed API client | P5 → P2 | P2_VERIFIED phần contract; endpoint thật đã có (T038/T060) — P5 tích hợp và kiểm lại |
 
@@ -42,7 +42,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T029, T033 | P3 | GRU classifier đóng gói + test | Chờ P1/P2 |
 | T034, T035 | P3 | Loader giữ thứ tự lớp; preset pilot/full | `VERIFIED`, `[X]` (P1) |
 | T036 | P3 | CLI train + xuất artifact | P1_VERIFIED; chờ P2 xác nhận artifact nạp qua registry T037 |
-| T030, T037, T038 | P2 | Loader/registry/fixture predictor, adapter trích đặc trưng, `POST /api/v1/predictions` | Chờ P1/P3 |
+| T030, T037, T038 | P2 | Loader/registry/fixture predictor, adapter trích đặc trưng, `POST /api/v1/predictions` | **Parity offline ↔ API 6/6 WebM có người PASS** (atol 1e-6, P3 `1b14f1e`); còn factory GRU cho pilot/full (P2); P1 review endpoint |
 | T044, T048 | P2 | Luật quyết định theo ngưỡng confidence | Chờ P1 |
 | T055, T060 | P2 | `GET /api/v1/health`, `GET /api/v1/model-info` | Chờ P1/P5 |
 
