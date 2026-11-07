@@ -166,6 +166,23 @@ frame/landmark và không được persist. Lỗi dùng `ErrorEnvelope` riêng t
 | `message` | string | yes | Thông báo tiếng Việt cho người dùng ViSign |
 | `requestId` | UUID | yes | Dùng đối chiếu log |
 
+## TranslationHistoryEntry
+
+Bản dịch đã chấp nhận, **chỉ lưu trên trình duyệt** (FR-035); server không nhận hay lưu đối tượng này.
+
+| Field | Type | Required | Validation |
+|------|------|----------|------------|
+| `requestId` | UUID | yes | Lấy từ `PredictionResponse`; khoá chống trùng |
+| `text` | string | yes | Chữ hiển thị tiếng Việt của kết quả `accepted` |
+| `confidence` | number | yes | Trong [0,1] |
+| `modelVersion` | string | yes | Model đã xử lý request |
+| `createdAt` | datetime | yes | ISO 8601 UTC, thời điểm client nhận kết quả |
+| `expiresAt` | datetime | yes | `createdAt` + 24 giờ; mục quá hạn bị xoá khi mở/cập nhật lịch sử |
+
+Bộ nhớ lưu một object `{schemaVersion: 1, entries: [...]}` dưới một khoá duy nhất; dữ liệu sai schema bị
+bỏ qua và ghi đè. Không lưu `classLabel`, frame, landmark hay video. Lưu thất bại (bị chặn, đầy) không làm
+hỏng luồng nhận diện.
+
 ## TrainingRun
 
 Trạng thái một lần preflight/train/evaluate nội bộ; không phải prediction history của người dùng.

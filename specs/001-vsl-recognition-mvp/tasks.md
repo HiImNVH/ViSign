@@ -27,7 +27,7 @@ CP0; application code chỉ được đưa sang từ legacy theo checkpoint nh�
 | **P2** | **Tín** | Backend, API, security, cloud, tích hợp predictor và CP1 toolchain | T001–T007, T019–T026, T030, T037–T038, T044–T045, T048–T050, T055, T060, T064, T066, T072–T073, T078–T080, T092, T095–T096, T099 |
 | **P3** | **Cường** | MediaPipe pipeline, training, evaluation và cost benchmark | T014–T017, T029, T033–T036, T054, T057–T059, T062, T065, T083, T089, T094 |
 | **P4** | **Quang** | Data crawler, data analysis, manifest và split | T008–T013, T018, T056, T061, T076–T077, T098 |
-| **P5** | **Hiển** | UX/UI, frontend và frontend quality evidence | T027–T028, T031, T039–T043, T046, T051–T053, T063, T074–T075, T081–T082, T088, T090 |
+| **P5** | **Hiển** | UX/UI, frontend và frontend quality evidence | T027–T028, T031, T039–T043, T046, T051–T053, T063, T074–T075, T081–T082, T088, T090, T100–T104 |
 
 **Quy ước ownership**:
 
@@ -325,6 +325,25 @@ workflow và production smoke/rollback mà không cần hỏi người viết co
 **Checkpoint**: CP7 chỉ đóng khi CI/security/cost/cloud pass; CP8 chỉ đóng khi rubric matrix không còn
 tiêu chí thiếu owner/artifact và demo production + local rollback rehearsal đều đạt. CP2 không được
 đóng trước T098–T099; hai task này chờ input quy ước chính thức từ lead.
+
+---
+
+## Phase 11: User Story 6 - Bản dịch trực tiếp và lịch sử 24 giờ (Priority: P2)
+
+**Goal**: Nối các kết quả `accepted` thành dòng bản dịch trực tiếp và lưu lịch sử bản dịch trên trình
+duyệt ít nhất 24 giờ (FR-034–FR-036, SC-016). Lead duyệt 2026-11-07. Không đổi API, không lưu server.
+
+**Independent Test**: Fixture predictor: 2 `accepted` + 1 `rejected` → dòng bản dịch có đúng 2 chữ; tải lại
+trang vẫn còn lịch sử; giả lập +24 giờ thì mục cũ bị xoá; bộ nhớ trình duyệt bị chặn vẫn nhận diện được.
+
+- [ ] T100 [P] [US6] Viết unit tests cho translation history store: lưu đúng 5 field, TTL 24 giờ bằng đồng hồ giả lập, bỏ dữ liệu sai schema, chống trùng `requestId`, `localStorage` ném lỗi/đầy, xoá toàn bộ tại `apps/web/tests/recognition/translationHistory.test.ts`
+- [ ] T101 [US6] Cài translation history store chỉ dùng `localStorage`, khoá có `schemaVersion`, tự xoá mục quá hạn khi đọc/ghi và không bao giờ lưu frame/landmark/video tại `apps/web/src/features/recognition/translationHistory.ts`
+- [ ] T102 [P] [US6] Viết component tests: dòng bản dịch chỉ nối kết quả `accepted` theo thứ tự, rejected/error không nối, nút xoá, thông báo lưu cục bộ và trạng thái lịch sử không khả dụng tại `apps/web/tests/recognition/transcript-history.test.tsx`
+- [ ] T103 [US6] Cài dòng bản dịch trực tiếp và panel lịch sử 24 giờ (thời điểm, độ tin cậy, `modelVersion`, nút xoá, `aria-live`, câu chữ trong `apps/web/src/content/vi.ts`) và nối vào `apps/web/src/App.tsx` tại `apps/web/src/features/recognition/TranscriptPanel.tsx` và `apps/web/src/features/recognition/HistoryPanel.tsx`
+- [ ] T104 [US6] Viết E2E fake-camera: 2 accepted + 1 rejected, reload giữ lịch sử, giả lập +24 giờ xoá mục cũ, xác nhận network không gửi lịch sử và storage không chứa video/landmark tại `apps/web/tests/browser/transcript-history.spec.ts`
+
+**Checkpoint**: US6 chạy độc lập với fixture; không thay đổi API contract, không ảnh hưởng `demoReady`.
+Reviewer: P1/Huy (spec, E2E) và P2/Tín (privacy: không có lịch sử gửi lên server).
 
 ---
 

@@ -20,6 +20,7 @@
 | `T004/T006 / CP1` | `P5_VERIFIED` | web Vite/lint/test config do Tín tạo | Evidence `docs/evidence/checkpoints/CP1/T004-T006-p5-hien-review.md` | P1/Huy |
 | `T020/T022/T026 / CP2 review` | `P5_VERIFIED` | API prediction validation, CORS settings và FastAPI middleware của P2 | Fix đã kiểm lại; evidence `docs/evidence/checkpoints/CP2/T020-T021-T022-T026-p5-hien-review.md`; task đã `[X]` | P2/Tín, P1/Huy |
 | `T040 / CP2` | `REVIEW` | typed API client và model-info | Client đã có transport test; chờ review P2 và tích hợp endpoint | P2/Tín |
+| `T100-T104 / US6` | `TODO` | `apps/web/src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx}`, tests | Lead duyệt 2026-11-07 (FR-034–FR-036): bản dịch trực tiếp + lịch sử trình duyệt ≥24 giờ; làm sau T040/T043 | P1/Huy, P2/Tín |
 | `T039 / CP3` | `PUSHED` | `apps/web/src/features/recognition/`, camera UI/tests | Chờ review Tín/Huy; API/model chưa tích hợp | P2/Tín, P1/Huy |
 | `T051-T053 / CP4` | `PLANNED` | error/retry/placeholders và integration | Chờ contract foundation | P2/Tín và P1/Huy |
 

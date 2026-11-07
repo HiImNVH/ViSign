@@ -38,6 +38,12 @@
   Thuốc, Xin chào, Chờ (đợi), Sao chép chuyển sang giai đoạn mở rộng. File raw đặt tên
   `<VÙNG>_<NGHĨA>_<số thứ tự video>.mp4`.
 
+- Q: Người dùng cần xem bản dịch trực tiếp và xem lại bản dịch đã có trong ít nhất bao lâu? → A: Lead
+  2026-11-07 đưa vào MVP: (1) **bản dịch trực tiếp** ghép các kết quả `accepted` liên tiếp thành một dòng
+  văn bản trong phiên (chỉ ghép từ, không suy diễn ngữ pháp, không nhận diện câu liên tục); (2) **lịch sử
+  bản dịch** lưu **chỉ trên trình duyệt** ít nhất 24 giờ rồi tự xoá, gồm chữ hiển thị, thời điểm, độ tin
+  cậy và `modelVersion`; không lưu video, frame, landmark và không lưu trên server.
+
 ### Session 2026-10-24
 
 - Q: Bảng `user` trong database cần đại diện cho đối tượng nào? → A: Chỉ thành viên nội bộ; MVP không có tài khoản người dùng cuối, lịch sử nhận diện hoặc database runtime. Sau khi đánh giá, phạm vi database được bỏ và chỉ cập nhật API contract.
@@ -160,6 +166,31 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
 4. **Given** phần thuyết trình và phản biện, **When** hỏi về giá trị, dữ liệu, mô hình, chi phí, giới hạn
    hoặc khả năng mở rộng, **Then** nhóm trả lời bằng số liệu và bằng chứng đã lưu trong repository.
 
+### User Story 6 - Bản dịch trực tiếp và lịch sử 24 giờ (Priority: P2)
+
+Người dùng thấy các ý nghĩa vừa được chấp nhận nối thành một dòng văn bản đang hiển thị, và có thể xem
+lại các bản dịch đã có trên cùng thiết bị trong ít nhất 24 giờ mà không cần tài khoản.
+
+**Why this priority**: Giúp người nghe theo dõi chuỗi ý nghĩa trong một lượt giao tiếp và xem lại sau đó,
+nhưng không thay đổi luồng nhận diện từng ký hiệu của US1/US2.
+
+**Independent Test**: Với fixture predictor, nhận diện hai ký hiệu `accepted` và một lần `rejected`, kiểm
+tra dòng bản dịch chỉ chứa hai chữ đã chấp nhận; tải lại trang thấy lịch sử còn; giả lập đồng hồ +24 giờ
+thì mục cũ bị xoá.
+
+**Acceptance Scenarios**:
+
+1. **Given** hai lần nhận diện được chấp nhận liên tiếp, **When** kết quả trả về, **Then** dòng bản dịch
+   trực tiếp hiển thị hai chữ theo đúng thứ tự, kết quả bị từ chối không được nối vào.
+2. **Given** đã có bản dịch, **When** người dùng tải lại trang trong vòng 24 giờ, **Then** lịch sử vẫn
+   hiển thị chữ, thời điểm, độ tin cậy và phiên bản model.
+3. **Given** một mục lịch sử đã quá 24 giờ, **When** ứng dụng mở hoặc cập nhật lịch sử, **Then** mục đó bị
+   xoá khỏi bộ nhớ trình duyệt.
+4. **Given** người dùng chọn "Xoá lịch sử", **When** xác nhận, **Then** toàn bộ lịch sử và dòng bản dịch
+   trong phiên bị xoá ngay.
+5. **Given** trình duyệt chặn bộ nhớ cục bộ, **When** nhận diện, **Then** bản dịch trực tiếp vẫn hoạt động
+   và ứng dụng thông báo lịch sử không khả dụng thay vì lỗi.
+
 ### Edge Cases
 
 - Camera bị từ chối quyền, bị thiết bị khác chiếm dụng hoặc mất kết nối giữa lần ghi.
@@ -217,8 +248,9 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   được trình bày là bằng chứng unseen-signer.
 - **FR-016**: Bản MVP MUST đạt Macro-F1 tối thiểu 80% và recall của từng ý nghĩa tối thiểu 65% trên
   tập kiểm thử tách theo FR-015 để được chấp nhận cho demo.
-- **FR-017**: Đăng nhập, lịch sử nhận diện, chuyển văn bản thành giọng nói, chuyển văn bản thành ký
-  hiệu và nhận diện chuỗi câu MUST nằm ngoài phạm vi MVP này.
+- **FR-017**: Đăng nhập, lịch sử nhận diện **lưu trên server** hoặc đồng bộ giữa thiết bị, chuyển văn bản
+  thành giọng nói, chuyển văn bản thành ký hiệu và nhận diện chuỗi câu MUST nằm ngoài phạm vi MVP này.
+  Bản dịch trực tiếp và lịch sử cục bộ 24 giờ theo FR-034–FR-036 là ngoại lệ đã được lead duyệt.
 - **FR-018**: Hệ thống MUST cho phép thay thế `fixture`, `pilot` và `full` model artifact qua cùng
   predictor/API contract. Fixture và pilot MUST công bố đúng tập ý nghĩa đang hỗ trợ, MUST hiển thị là
   bản tích hợp nội bộ và MUST NOT được đánh dấu `demoReady=true`; chỉ full model đủ 10 ý nghĩa và đạt
@@ -262,6 +294,14 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
 - **FR-033**: Trước khi đóng data/API foundation, nhóm MUST tiếp nhận và đóng băng bộ quy ước do lead
   cung cấp cho tên/chuẩn hóa file dữ liệu và FE-BE API; manifest validator, OpenAPI và client types
   MUST cùng tham chiếu một phiên bản quy ước, không tự đặt các biến thể riêng.
+- **FR-034**: Giao diện MUST hiển thị bản dịch trực tiếp bằng cách nối chữ hiển thị của các kết quả
+  `accepted` trong phiên theo thứ tự thời gian; kết quả `rejected` và lỗi MUST NOT được nối. Đây chỉ là
+  ghép từ, MUST NOT trình bày như dịch câu có ngữ pháp.
+- **FR-035**: Lịch sử bản dịch MUST chỉ lưu trên trình duyệt của người dùng, giữ mỗi mục **ít nhất 24 giờ**
+  rồi tự xoá khi quá hạn, chỉ gồm `text`, thời điểm, `confidence`, `modelVersion` và `requestId`; MUST NOT
+  lưu video, frame, landmark hoặc gửi lịch sử lên server.
+- **FR-036**: Giao diện MUST cho biết lịch sử được lưu trên thiết bị này trong 24 giờ, cung cấp nút xoá toàn
+  bộ lịch sử, và MUST tiếp tục hoạt động khi bộ nhớ trình duyệt bị chặn hoặc đầy.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -275,6 +315,8 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   độ tin cậy, trạng thái chấp nhận và mã lỗi nếu có; video không được lưu mặc định.
 - **Phiên bản mô hình**: Bản nhận diện có định danh, phiên bản dữ liệu, danh sách lớp, ngưỡng chấp
   nhận, chỉ số đánh giá và ngày tạo.
+- **Bản dịch đã lưu**: Một kết quả được chấp nhận lưu trên trình duyệt gồm chữ hiển thị, thời điểm,
+  độ tin cậy, phiên bản model và request ID; tự hết hạn sau 24 giờ, không chứa video hay landmark.
 
 ## Success Criteria *(mandatory)*
 
@@ -311,6 +353,9 @@ báo cáo, chạy smoke test trên URL production và xác minh mỗi nhóm đi�
   accessibility/usability và đóng góp có bằng chứng của cả 5 thành viên.
 - **SC-015**: Sau khi lead bàn giao quy ước, 100% file dữ liệu audit được kiểm bằng cùng naming/
   normalization rules và 100% FE-BE contract tests/client fields khớp service contract đã đóng băng.
+- **SC-016**: 100% kết quả `accepted` trong phiên xuất hiện đúng thứ tự trong bản dịch trực tiếp; lịch sử
+  còn sau khi tải lại trang trong 24 giờ, mục quá 24 giờ bị xoá, và kiểm tra bộ nhớ trình duyệt/network
+  không tìm thấy video, landmark hoặc lịch sử gửi lên server.
 ## Assumptions
 
 - MVP nhận diện từng ký hiệu riêng lẻ, không diễn giải ngữ pháp hoặc chuỗi câu.

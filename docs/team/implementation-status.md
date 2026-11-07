@@ -59,6 +59,9 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
 - Hạ tầng: hoàn thiện bản local trước. Kế hoạch AWS: `ap-southeast-2`, một EC2 + Elastic IP, ECR, S3,
   CloudFront, GitHub OIDC + SSM; chưa tạo tài nguyên.
 - `HealthResponse.modelVersion` optional + nullable theo OpenAPI.
+- **US6 mới (FR-034–FR-036, SC-016, T100–T104, P5)**: bản dịch trực tiếp nối các kết quả `accepted` và lịch sử
+  bản dịch lưu **chỉ trên trình duyệt** ít nhất 24 giờ; không lưu video/landmark, không lưu server, API không đổi.
+  FR-017 sửa để chỉ loại lịch sử lưu server/đồng bộ thiết bị.
 
 ### Rủi ro đang theo dõi
 
@@ -88,7 +91,7 @@ lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4
 | P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | Endpoint T038/T060 xong; chờ review; parity offline ↔ API khi có clip thật |
 | P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Gửi clip đại diện cho schema review; tối ưu latency decode; xác nhận T019 metadata |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | ACTIVE | Push T013; xác nhận vùng `O`/variant rồi đóng băng T098 |
-| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | Tích hợp T040 với endpoint thật; review T055/T060 |
+| P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | Tích hợp T040 với endpoint thật; review T055/T060; sau đó US6 T100–T104 |
 
 ## External reference only
 

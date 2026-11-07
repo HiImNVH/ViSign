@@ -33,6 +33,7 @@
 | `T020/T022/T026/T039 closure, T017 review` | `DONE` | evidence tương ứng | 4 task `[X]`; T017 `CHANGES_REQUESTED` thấp | P2/Tín, P3/Cường, P5/Hiển |
 | `T017 --help fix` | `PUSHED` | `ai/src/visign_ai/landmarks/extract_manifest.py`, test | Sửa theo yêu cầu lead; chờ P3 review | P3/Cường |
 | `T034-T036 / CP3 review` | `DONE` | evidence T034–T036 | T034/T035 `[X]`; T036 chờ P2; rủi ro số video/lớp | P3/Cường |
+| `US6 spec / FR-034–FR-036` | `PUSHED` | spec, data-model, tasks T100–T104 | Lead duyệt bản dịch trực tiếp + lịch sử trình duyệt 24 giờ; reviewer E2E | P5/Hiển, P2/Tín |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 
