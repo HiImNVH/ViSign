@@ -62,3 +62,30 @@ file tạm, schema, detector, lấy mẫu, transform) khớp offline, chưa ch�
 - Rollback: `git revert` riêng commit này; T026/T024 không phụ thuộc adapter.
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P3/Cường · T037
+
+Review time `2026-11-07T21:02:49+07:00` trên `f1eb7ea9a693de00d7400545f7d39d0dedd13b59`.
+
+| Gate | Kết quả |
+|---|---|
+| Parity trên 6 WebM có người | 6/6 PASS. Cùng clip chạy offline và bytes qua temporary clip + FeatureExtractor. Tensor 32×234 khớp tại atol=1e-6, rtol=0; tensor mask và group mask khớp tuyệt đối; schema/status trùng; file tạm bị xóa |
+| Clip đen tổng hợp | 0 điểm landmark hợp lệ, pipeline hiện trả INSUFFICIENT_LANDMARKS |
+| T033/T036 bàn giao | Hai pilot và một full tổng hợp nạp metadata bằng API loader, nạp model.pt bằng weights_only=True vào GRU, class order khớp; forward ra 2/2/10 logits hữu hạn |
+| Registry pilot/full | BLOCKED ở factory GRU. Registry hiện chỉ đăng ký fixture và từ chối pilot/full theo fail-closed |
+
+### Quy tắc P3 chốt cho T049
+
+Sau khi clip đã giải mã và extractor chạy thành công, dùng point_valid trước chuẩn hóa hoặc pointValidRatios trong report:
+
+- Có bước tensor dùng được → chuyển sang inference.
+- Không có điểm hợp lệ nào của tay, mặt hoặc pose trong các frame đã trích → NO_PERSON_DETECTED (422). Nghĩa là hệ thống không phát hiện dấu hiệu người.
+- Có điểm hợp lệ nhưng không tạo được bước tensor có đủ vai và ít nhất một tay → INSUFFICIENT_LANDMARKS (422). Tránh suy ra vắng người chỉ vì thiếu hai vai hoặc mất tay.
+
+Lỗi decode, thời lượng hoặc cấu hình giữ mã riêng. T049 cần test clip trống, người có mặt nhưng thiếu landmark, và clip đủ landmark. Đây là quy tắc bàn giao, chưa có trong đường HTTP hiện tại.
+
+### Nối predictor
+
+Tín có thể dùng GRUClassifier T033 và bundle T036 gồm model.pt, feature_schema.json, model_info.json, training-report.json. Factory cần kiểm schema SHA, extractor version và labelBinding, load weights_only rồi áp đúng acceptanceThreshold qua decision rule. Artifact smoke chỉ để kiểm contract. Chưa có artifact pilot/full huấn luyện trên dữ liệu đã audit hoặc test dự đoán GRU qua HTTP.
+
+**Reviewer result** · `VERIFIED` cho feature adapter và parity T037; factory GRU và T049 vẫn mở.
