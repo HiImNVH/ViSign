@@ -9,7 +9,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` review metadata artifact (T019); `P5 Hiển` review response/error shape |
 | Candidate commit | `CP2 T019-T021(api): add model metadata, prediction and error domain` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` — [9b888a1](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) |
 | Ngày/giờ | `2026-11-07T14:05:00+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15, pydantic 2 |
 | Status | `PASS` local; remote verification pending |
@@ -40,6 +40,7 @@
 
 - `git fetch origin main`; `git rev-list --left-right --count origin/main...HEAD`: `0 0` tại
   `18a07aef641b424ddf4772249623b1bc04a4b926`.
+- Pre-push: `git pull --rebase origin main` không có commit mới (`0 1`); push `18a07ae..9b888a1`.
 
 ## 4. Smoke test
 
@@ -57,7 +58,7 @@
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | `PENDING` | Bổ sung sau push |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3` | Pushed 2026-11-07T14:05:47+07:00 |
 | GitHub Actions | `NOT_RUN` — workflow thuộc T091/CP7 | Local gate |
 | API/cloud | `NOT_RUN` — chưa có endpoint | `/api/v1/health` thuộc T026/T060 |
 | Data/model | `NOT_RUN` | Không có artifact trong candidate |
@@ -78,7 +79,7 @@
 
 - [x] Owner đã chạy lại gate sau lần đồng bộ cuối.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary bị stage.
-- [ ] Full SHA và link đã được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
 **Reviewer result**: `PENDING`

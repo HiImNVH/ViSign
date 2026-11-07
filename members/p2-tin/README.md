@@ -19,7 +19,7 @@
 |---|---|---|---|---|
 | `T001-T007 / CP1` | `REVIEW` | monorepo dirs, root/API/AI pyproject + `uv.lock`, web Vite/lint/test config, `.gitignore` | Đã push `84958a3`; chờ Cường (AI), Hiển (web), Huy verify từ `origin/main` | P1/Huy |
 | `T086 / CP1 review` | `TODO` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | Verify member frame của Huy từ `origin/main` | P2/Tín là reviewer |
-| `T019-T021 / CP2` | `DOING` | `services/inference-api/src/visign_api/domain/`, unit tests | Gate local PASS; chờ commit/push | P1/Huy, P3/Cường, P5/Hiển |
+| `T019-T021 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/domain/`, unit tests | Đã push `9b888a1`; chờ Huy/Cường/Hiển verify | P1/Huy, P3/Cường, P5/Hiển |
 | `T099 / CP2` | `BLOCKED` | API convention, OpenAPI và client types | Chờ lead gửi quy ước FE–BE API | P5/Hiển và P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
 
@@ -33,9 +33,9 @@
 | Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `18a07ae` lúc 2026-11-07T14:05+07:00 |
 | Gate commands | pytest RED→GREEN (44 passed), Ruff, `python -m mypy` cho `services/inference-api`; `git diff --cached --check` |
 | Smoke evidence | `docs/evidence/checkpoints/CP2/T019-T021-p2-tin-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` |
+| Local commit | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 1`), SHA không đổi |
+| Push status | `PUSHED` lúc 2026-11-07T14:05:47+07:00 — [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) |
 
 ## Commit ledger
 
@@ -44,7 +44,7 @@
 | `CP0/T086` | Independent CP0 verification | `CP0 T086(verify): record independent P2 verification` | `c77fd98264a6b22cff2a203de9380d5c3dd92f53` | [commit](https://github.com/HiImNVH/ViSign/commit/c77fd98264a6b22cff2a203de9380d5c3dd92f53) | 5/5 PASS | P1/Huy | `VERIFIED` |
 | `CP1/T001-T007` | Assign setup toolchain | `CP1 T001-T007(spec): assign setup toolchain to P2 Tin` | `abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4` | [commit](https://github.com/HiImNVH/ViSign/commit/abb465b65bdeffd0c28ea9bcb28dac7271bdb8a4) | Docs check | P1/Huy | `PUSHED` |
 | `CP1/T001-T007` | Implement monorepo toolchain | `CP1 T001-T007(setup): scaffold monorepo toolchain` | `84958a34c44bc5e1d7e655cae6b6ed85e07d0c08` | [commit](https://github.com/HiImNVH/ViSign/commit/84958a34c44bc5e1d7e655cae6b6ed85e07d0c08) | 10/10 PASS local | P1/Huy, P3/Cường, P5/Hiển | `PUSHED` |
-| `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `PENDING` | `PENDING` | 44 passed, Ruff, mypy | P1/Huy, P3/Cường, P5/Hiển | `LOCAL-DRAFT` |
+| `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` | [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) | 44 passed, Ruff, mypy | P1/Huy, P3/Cường, P5/Hiển | `PUSHED` |
 
 ## Handoff
 
