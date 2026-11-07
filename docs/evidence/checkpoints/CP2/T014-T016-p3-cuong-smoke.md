@@ -44,3 +44,36 @@ uv run --project ai --locked mypy ai/src
 Để chạy cả test browser và MediaPipe thật, đặt `VISIGN_BROWSER_FIXTURES` trỏ vào thư mục có `chrome-vp8.webm`, `chrome-vp9.webm`, `msedge-vp8.webm`, `msedge-vp9.webm` và `VISIGN_CP2_REFERENCE_WEBM` trỏ vào clip tham chiếu có người. Có thể chỉ định detector đã tải qua `VISIGN_MODEL_DIR`. Các tệp video và detector được giữ ngoài Git. Thiếu fixture, pytest báo skip các test tương ứng.
 
 Đóng CP2 còn cần T098/T099. Trước commit và push thực hiện quy trình đồng bộ và chạy lại gate theo [Git checkpoints](../../../team/git-checkpoints.md).
+
+## Independent review — P1/Huy
+
+Review time: `2026-11-07T14:23:43+07:00` trên `origin/main` chứa `865547e` (commit T014–T016; evidence chưa điền SHA).
+
+| Gate | Kết quả độc lập |
+|---|---|
+| Local Windows | `uv sync --locked`, Ruff, mypy (10 files): PASS; pytest 15 passed, 5 skipped (thiếu clip browser/tham chiếu và detector local) |
+| GitHub Actions Linux | [run 42351034900](https://github.com/HiImNVH/ViSign/actions/runs/42351034900) job `ai`: Ruff, mypy, 15 passed / 5 skipped — `success` |
+| Contract | Schema `visign-xy-32-v0.3-draft`, tensor `[32,234]`, giới hạn 10 MiB/300–6000 ms/VP8-VP9 khớp [ai-backend-contract.md](../../../team/ai-backend-contract.md) |
+| Real MediaPipe/parity | `NOT_RUN` bởi P1: chưa có clip đại diện; giữ `NOT_RUN` như owner |
+
+Ghi chú không chặn — cần xử lý trước khi đóng CP2/CP3:
+
+1. **Mã lỗi ngoài catalog API**: pipeline phát `INVALID_TIMESTAMPS`, `FEATURE_SCHEMA_MISMATCH`,
+   `EXTRACTOR_VERSION_MISMATCH`. Adapter T037 (Tín) phải ánh xạ tường minh: `INVALID_TIMESTAMPS` →
+   `CLIP_DECODE_FAILED` (422); hai mã schema/extractor → `MODEL_NOT_READY` (503) vì là lỗi cấu hình.
+   Cần test mapping, không để rơi vào 500.
+2. **Handedness**: MediaPipe gán `Left/Right` giả định ảnh đã lật kiểu selfie, còn pipeline giữ ảnh camera
+   gốc nên nhãn có thể ngược với tay thật của người ký. Train/serve nhất quán nên chưa sai, nhưng video
+   nguồn đã bị lật sẵn sẽ đảo trái/phải. Representative-clip review phải kiểm, và Quang ghi cờ
+   `mirrored` trong inventory khi nguồn đã lật.
+3. **Bộ nhớ decode**: mọi frame được giải mã sang RGB trước khi lấy mẫu 64 frame. Clip 6 s ở 60 fps,
+   640 px là khoảng 250 MB RAM; trần 900 frame khoảng 600 MB. Cần đo với giới hạn RAM Cloud Run (T095) hoặc
+   lấy mẫu theo PTS trước khi chuyển RGB.
+4. **Khởi tạo detector mỗi clip**: đúng yêu cầu reset tracking, nhưng đọc lại model và tạo 3 detector mỗi
+   request nằm trong p95 latency; số 1,8–2,1 s của Cường đã gồm phần này, cần đo lại trên máy Tín.
+5. **CLIP_TOO_SHORT** dùng khoảng PTS frame đầu→cuối nên ngắn hơn thời lượng thật một khoảng frame
+   (~33 ms ở 30 fps). FE ghi mặc định 5 s nên không ảnh hưởng thực tế; ghi lại để test biên khớp nhau.
+6. Evidence còn `PENDING` commit SHA; Cường điền `865547e` trong commit link evidence kế tiếp.
+
+**Reviewer result**: `P1_REVIEWED` — code/gate đạt; P2 review đường serving và representative-clip
+review schema vẫn `PENDING`. Schema giữ `DRAFT_PENDING_LEAD_REVIEW`.
