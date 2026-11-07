@@ -9,7 +9,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` review T003; `P5 Hiển` review T004/T006 |
 | Candidate commit | `CP1 T001-T007(setup): scaffold monorepo toolchain` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `84958a34c44bc5e1d7e655cae6b6ed85e07d0c08` — [84958a3](https://github.com/HiImNVH/ViSign/commit/84958a34c44bc5e1d7e655cae6b6ed85e07d0c08) |
 | Ngày/giờ | `2026-11-07T13:41:17+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15 (uv-managed), Node.js 24.18.0, npm 11.16.0 |
 | Status | `PASS` local; remote verification pending |
@@ -37,6 +37,7 @@
   --include-untracked`, `git pull --rebase`, `git stash apply` không conflict; chạy lại API/AI/web gate
   lúc `2026-11-07T13:43:10+07:00`, tất cả exit 0.
 - `git rev-list --left-right --count origin/main...HEAD`: `0 0`.
+- Pre-push: `git pull --rebase origin main` không có commit mới (`0 1`); push `7b3c073..84958a3`.
 
 ## 4. Smoke test
 
@@ -58,7 +59,7 @@
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | `PENDING` | Bổ sung full SHA sau push |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/84958a34c44bc5e1d7e655cae6b6ed85e07d0c08` | Pushed 2026-11-07T13:45:31+07:00 |
 | GitHub Actions | `NOT_RUN` — workflow thuộc T091/CP7 | CP1 dùng local gate |
 | Report trong repo | File evidence này | — |
 | API/cloud | `NOT_RUN` — chưa có endpoint ở CP1 | `/api/v1/health` thuộc CP2/T026 |
@@ -83,7 +84,7 @@
 
 - [x] Owner đã chạy lại gate sau lần rebase cuối.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary bị stage.
-- [ ] Full SHA và link đã được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
 **Reviewer result**: `PENDING`
