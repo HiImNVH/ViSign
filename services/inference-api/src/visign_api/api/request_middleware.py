@@ -1,5 +1,6 @@
 # services/inference-api/src/visign_api/api/request_middleware.py
-# Middleware gan X-Request-ID, ghi mot dong access log va doi loi bat ngo thanh 500 ben trong CORS (T026).
+# Middleware gan X-Request-ID va security header, ghi mot dong access log va doi loi bat ngo thanh 500 ben trong
+# CORS (T026, T092).
 import logging
 import time
 
@@ -8,6 +9,10 @@ from starlette.middleware.base import RequestResponseEndpoint
 
 from visign_api.api.error_handlers import respond_to_unexpected_error
 from visign_api.api.request_context import REQUEST_ID_HEADER, resolve_request_id
+from visign_api.api.security_headers import (
+    apply_security_headers,
+    served_documentation_pages,
+)
 from visign_api.observability import LOGGER_NAME
 
 MILLISECONDS_PER_SECOND = 1000
@@ -27,6 +32,9 @@ async def attach_request_context(
         # Bat o day thay vi de ServerErrorMiddleware xu ly, vi response tu lop ngoai cung khong co header CORS
         response = respond_to_unexpected_error(request, unexpected_error)
     response.headers[REQUEST_ID_HEADER] = request_id
+    apply_security_headers(
+        response.headers, request.url.path, served_documentation_pages(request.app)
+    )
     log_completed_request(request, response, started_at)
     return response
 

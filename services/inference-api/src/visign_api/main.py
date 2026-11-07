@@ -30,6 +30,9 @@ PACKAGE_NAME = "visign-api"
 CORS_ALLOWED_METHODS = ["GET", "POST"]
 CORS_ALLOWED_HEADERS = [REQUEST_ID_HEADER, "Content-Type"]
 CORS_EXPOSED_HEADERS = [REQUEST_ID_HEADER, RETRY_AFTER_HEADER]
+DOCS_URL = "/docs"
+REDOC_URL = "/redoc"
+OPENAPI_URL = "/openapi.json"
 
 Lifespan = Callable[[FastAPI], AbstractAsyncContextManager[None]]
 PredictorFactories = Mapping[ArtifactKind, PredictorFactory]
@@ -79,6 +82,13 @@ def build_lifespan(
     return lifespan
 
 
+def documentation_urls(runtime_settings: Settings) -> dict[str, str | None]:
+    # None tat han route cua FastAPI: /docs, /redoc, /openapi.json tra 404 ROUTE_NOT_FOUND
+    if not runtime_settings.api_docs_enabled:
+        return {"docs_url": None, "redoc_url": None, "openapi_url": None}
+    return {"docs_url": DOCS_URL, "redoc_url": REDOC_URL, "openapi_url": OPENAPI_URL}
+
+
 def create_app(
     runtime_settings: Settings | None = None,
     predictor_factories: PredictorFactories | None = None,
@@ -95,6 +105,7 @@ def create_app(
         title=SERVICE_TITLE,
         version=version(PACKAGE_NAME),
         lifespan=build_lifespan(active_settings, active_factories),
+        **documentation_urls(active_settings),
     )
     # Middleware them sau nam ngoai: CORS bao ngoai de moi response, ke ca 500, deu co header CORS
     service_app.add_middleware(BaseHTTPMiddleware, dispatch=attach_request_context)

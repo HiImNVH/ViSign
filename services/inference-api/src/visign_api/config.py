@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     feature_schema_version: str | None = None
     feature_schema_path: Path | None = None
     visign_model_dir: Path | None = None
+    # Swagger/ReDoc/openapi.json chi bat khi dev local (API_DOCS_ENABLED=true); production tat de khong lo
+    # be mat API thua (T092). Contract chinh thuc nam o specs/.../contracts/openapi.yaml
+    api_docs_enabled: bool = False
 
     @field_validator("cors_origins")
     @classmethod
