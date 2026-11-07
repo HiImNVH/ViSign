@@ -221,7 +221,7 @@ provenance và `demoReady` đúng gate.
 
 - [X] T057 [US3] Cài accuracy, Macro-F1, per-meaning precision/recall, confusion matrix, signer/sample counts và latency evaluation tại `ai/src/visign_ai/evaluation/metrics.py`
 - [X] T058 [US3] Cài evaluation CLI sinh JSON metrics, confusion-matrix image và split provenance (`video-held-out`/signer) tại `ai/src/visign_ai/evaluation/evaluate.py`
-- [ ] T059 [US3] Cài metadata writer cho mọi artifact và release gate chỉ chấp nhận full 10-meaning model đạt gate trên split FR-015 tại `ai/src/visign_ai/evaluation/release_gate.py`
+- [X] T059 [US3] Cài metadata writer cho mọi artifact và release gate chỉ chấp nhận full 10-meaning model đạt gate trên split FR-015 tại `ai/src/visign_ai/evaluation/release_gate.py`
 - [X] T060 [US3] Cài `GET /api/v1/health` và `GET /api/v1/model-info` công bố artifact kind, extractor/feature schema version, actual meanings và readiness tại `services/inference-api/src/visign_api/api/system.py`
 - [ ] T061 [P] [US3] Viết dataset card công bố nguồn, tính hợp pháp, chất lượng, độ đại diện, phương thức thu thập/xử lý, coverage và bias gaps từ manifest audit tại `docs/dataset-card.md`
 - [ ] T062 [P] [US3] Viết model card gồm lý do chọn GRU, protocol tái lập, artifact kind, supported meanings, accuracy, per-meaning precision/recall, Macro-F1, confusion matrix, latency, split FR-015/OOD result, bias, explainability limits, fallback status và safety disclaimer tại `docs/model-card.md`

@@ -41,3 +41,14 @@
 - Clip dọc 360×640 từ điện thoại; chưa thử webcam ngang hay clip ghi trực tiếp từ trình duyệt (T043/T032).
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Review `2026-11-07T22:16:40+07:00` trên `0f3c557` (theo uỷ quyền của Huy). Evidence nhất quán với review T037/T049 trước: parity
+offline ↔ API 32/32 clip trùng tuyệt đối, HTTP thật trả đúng 200/422, `X-Request-ID` khớp, không còn clip
+tạm, log chỉ có field allowlist; tương thích metadata T059. T037 đã `[X]`.
+
+**Rủi ro ghi nhận**: độ trễ trên máy đo **chưa đạt SC-002** (p95 ≤ 3 s) — cần tối ưu decode/extract (P3)
+và đo lại trên máy demo trước CP8.
+
+**Reviewer result**: `P1_VERIFIED`.
