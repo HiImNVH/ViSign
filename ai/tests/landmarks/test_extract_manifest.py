@@ -1,5 +1,6 @@
 # ai/tests/landmarks/test_extract_manifest.py — Test batch extraction T017.
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -183,3 +184,16 @@ def test_writes_npz_and_rerun_preserves_existing_artifact(
     assert len(pipeline_calls) == 1
     assert destination.read_bytes() == original
     assert not list(destination.parent.glob("*.tmp"))
+
+
+def test_help_runs_on_windows_default_console(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Console Windows mac dinh la cp1252; mo ta tieng Viet khong duoc lam --help crash
+    buffer = io.BytesIO()
+    console = io.TextIOWrapper(buffer, encoding="cp1252")
+    monkeypatch.setattr(sys, "stdout", console)
+    monkeypatch.setattr(sys, "argv", ["extract_manifest", "--help"])
+    with pytest.raises(SystemExit) as exit_info:
+        batch.main()
+    console.flush()
+    assert exit_info.value.code == 0
+    assert b"usage: extract_manifest" in buffer.getvalue()

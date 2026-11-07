@@ -30,7 +30,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T019 model metadata | P2 → P1, P3 | P1_VERIFIED; chờ P3 xác nhận metadata/`demoReady` (T059) |
 | T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng |
 | T014–T016 shared pipeline | P3 → P1, P2 | Code đạt; schema `visign-xy-32-v0.3-draft` chờ representative-clip review (P3 gửi clip → P1 duyệt) |
-| T017 batch extraction CLI | P3 → P2, P1 | P2 `VERIFIED`; P1 `CHANGES_REQUESTED` thấp: `--help` crash trên console Windows `cp1252` |
+| T017 batch extraction CLI | P3 → P2, P1 | P2 `VERIFIED`; lỗi `--help` trên Windows đã được P1 sửa + test, chờ P3 review bản sửa |
 | T013 registry 10 meaning P0 | P4 → P3, P1 | Hoàn thành local trên máy P4, **chưa push** |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
 | T040 typed API client | P5 → P2 | P2_VERIFIED phần contract; tích hợp endpoint thật chờ T038/T060 |
@@ -67,7 +67,7 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 |---|---|---|---|---|
 | P1 | Huy | Spec Kit, integration queue, CI, verification, presentation | ACTIVE | Điều phối đóng CP2; review T017; duyệt schema khi có clip; T085/T087/T093 |
 | P2 | Tín | `services/inference-api/`, `infra/aws/`, security | ACTIVE | T020/T022/T026 xong; tiếp T038/T060 endpoint để mở E2E |
-| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Sửa `--help` T017; gửi clip đại diện; tối ưu latency decode; xác nhận T098 |
+| P3 | Cường | `ai/landmarks`, `ai/training`, `ai/evaluation` | ACTIVE | Review fix `--help` T017 của P1; gửi clip đại diện; tối ưu latency decode; xác nhận T098 |
 | P4 | Quang | `data/`, `ai/dataset`, dataset card | ACTIVE | Push T013; xác nhận vùng `O`/variant rồi đóng băng T098 |
 | P5 | Hiển | `apps/web/`, frontend tests/UX evidence | ACTIVE | T040 chờ review; tiếp CP3 khi có endpoint T038/T060 |
 

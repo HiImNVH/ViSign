@@ -110,3 +110,13 @@ Review time: `2026-11-07T19:16:21+07:00` trên `f00eefe` (gồm test `57311bf`, 
 **Reviewer result**: `CHANGES_REQUESTED` (P1, mức thấp) — cả nhóm dùng Windows nên `--help` phải chạy được.
 Đề xuất: đầu `main()` gọi `sys.stdout.reconfigure(errors="backslashreplace")` (hoặc `encoding="utf-8"`),
 và thêm test gọi `main(["--help"])` với stdout `cp1252`. Hành vi trích xuất đã được P2 và P1 xác nhận.
+
+## Fix `--help` — P1/Huy theo yêu cầu lead (`2026-11-07T19:26:00+07:00`)
+
+- RED: thêm `test_help_runs_on_windows_default_console` (stdout `cp1252`, `--help`) → fail `UnicodeEncodeError`.
+- Fix: `make_console_output_safe()` đầu `main()` đặt `errors="backslashreplace"` cho stdout/stderr; không
+  đổi logic trích xuất, mã lỗi hay JSON output (vốn ASCII).
+- GREEN: `pytest ai/tests -q` 39 passed, 5 skipped; Ruff, `ruff format --check`, mypy (15 files) PASS;
+  `--help` trên console Windows thật exit 0.
+
+**Reviewer result**: chờ P3/Cường (owner) review bản sửa; P1 không tự đóng T017 vì là người sửa.

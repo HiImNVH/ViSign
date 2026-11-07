@@ -154,7 +154,16 @@ def run_batch(
     }
 
 
+def make_console_output_safe() -> None:
+    # Console Windows mac dinh cp1252: ky tu tieng Viet trong --help/loi duoc thay bang escape, khong crash
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(errors="backslashreplace")
+
+
 def main() -> int:
+    make_console_output_safe()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--samples", type=Path, required=True)
     parser.add_argument("--dataset-root", type=Path, required=True)

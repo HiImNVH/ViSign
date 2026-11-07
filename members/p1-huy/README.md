@@ -31,6 +31,7 @@
 | `T024-T026, T037, T099 / CP2-CP3 review` | `DONE` | evidence T024-T025, T026, T037, T099 | P1_VERIFIED; `modelVersion` chốt theo OpenAPI; CI chặn thêm zip/7z/rar | P2/Tín |
 | `T099 closure / CP2` | `DONE` | `tasks.md` T099 `[X]`, evidence T099 | P1 lead + P5 consumer đủ | P2/Tín, P5/Hiển |
 | `T020/T022/T026/T039 closure, T017 review` | `DONE` | evidence tương ứng | 4 task `[X]`; T017 `CHANGES_REQUESTED` thấp | P2/Tín, P3/Cường, P5/Hiển |
+| `T017 --help fix` | `PUSHED` | `ai/src/visign_ai/landmarks/extract_manifest.py`, test | Sửa theo yêu cầu lead; chờ P3 review | P3/Cường |
 | `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 
