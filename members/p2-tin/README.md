@@ -18,7 +18,10 @@
 | Task/CP | Status | Planned canonical paths | Next action / Blocker | Reviewer |
 |---|---|---|---|---|
 | `T001-T007 / CP1` | `P1_VERIFIED` | monorepo dirs, root/API/AI pyproject + `uv.lock`, web Vite/lint/test config, `.gitignore` | Huy đã tái lập gate; chờ Cường (AI) và Hiển (web) review | P3/Cường, P5/Hiển |
-| `T086 / CP1 review` | `TODO` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | Verify member frame của Huy từ `origin/main` | P2/Tín là reviewer |
+| `T086 / CP1 review` | `DONE` | `docs/evidence/checkpoints/CP1/T086-p1-huy-member-frame-smoke.md` | `VERIFIED`; ghi chú P3 lệch khung sau `a8ea4c6` | P2/Tín là reviewer |
+| `T091 / CP7 review` | `DONE` | `docs/evidence/checkpoints/CP7/T091-p1-huy-quality-ci-smoke.md` | `P2_VERIFIED`; 4 ghi chú không chặn | P2/Tín là reviewer |
+| `T039 / CP3 review` | `DONE` | `docs/evidence/checkpoints/CP3/T039-p5-hien-smoke.md` | `CHANGES_REQUESTED`: test focus flaky làm đỏ CI; đề xuất `useLayoutEffect` (30/30 pass) | P2/Tín là reviewer |
+| `T004 / CP1 fix` | `REVIEW` | `apps/web/package.json`, lockfile | Sửa engines `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0` theo ghi chú của Hiển | P5/Hiển, P1/Huy |
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
@@ -30,12 +33,12 @@
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T037 / CP3` (micro-commit ánh xạ lỗi pipeline) |
-| Proposed commit | `CP3 T037(api): map pipeline error codes to stable API codes` |
-| Exact staged paths | `services/inference-api/src/visign_api/inference/{__init__,pipeline_errors}.py`, `services/inference-api/tests/unit/test_pipeline_error_mapping.py`, `members/p2-tin/README.md`, `docs/evidence/checkpoints/CP3/T037-p2-tin-pipeline-error-mapping-smoke.md` |
-| Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 1` (chỉ T099 local) lúc 2026-11-07T14:46+07:00 |
-| Gate commands | mapping RED→GREEN (15 passed, mutation fail), API+contract 103 passed `-W error`, Ruff/format/mypy |
-| Smoke evidence | `docs/evidence/checkpoints/CP3/T037-p2-tin-pipeline-error-mapping-smoke.md` |
+| Task/checkpoint | `T004 / CP1` (sửa engines) + review T039, T091, T086 |
+| Proposed commit | `CP1 T004(setup): align Node engines with dependency floor`; review: `CP3 T039(verify)`, `CP7 T091(verify)`, `CP1 T086(verify)` |
+| Exact staged paths | `apps/web/{package.json,package-lock.json}`, `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md`, `members/p2-tin/README.md`; review: `docs/evidence/checkpoints/{CP3/T039-p5-hien-smoke.md,CP7/T091-p1-huy-quality-ci-smoke.md,CP1/T086-p1-huy-member-frame-smoke.md}` |
+| Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `5b6a441` lúc 2026-11-07T14:55+07:00 |
+| Gate commands | semver range check, `npm ci`, lint, typecheck; review: Edge browser 21 passed, vitest flaky 13/15 → 30/30 với `useLayoutEffect` |
+| Smoke evidence | `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md` |
 | Local commit | `PENDING` |
 | Pre-push sync | `PENDING` |
 | Push status | `NOT_PUSHED` |
@@ -50,7 +53,7 @@
 | `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` | [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) | 44 passed, Ruff, mypy; P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
 | `CP2/T022-T023` | Runtime settings và structured logging | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` | `fb563545e33accbbf82bb83ad9373e5eb85e8add` | [commit](https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add) | 73 passed, Ruff, format, mypy; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P1/Huy, P5/Hiển | `PUSHED` |
 | `CP2/T014-T016 review` | P2 API-boundary review cho pipeline của P3 | `CP2 T014-T016(api): record P2 serving boundary review` | `b248ec78b25f77973f48f1b7cda94290b3f5c1df` | [commit](https://github.com/HiImNVH/ViSign/commit/b248ec78b25f77973f48f1b7cda94290b3f5c1df) | 15 passed/5 skipped, probe 7 clip; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P3/Cường | `PUSHED` |
-| `CP2/T099` | Đóng băng quy ước API v1 FE–BE | `CP2 T099(api): freeze FE-BE API v1 conventions with drift test` | `5add4005e572efcf327a64477051bfc6137e9b5bce` | `PENDING` | drift 15 passed, API 88 passed, web PASS | P5/Hiển, P1/Huy | `LOCAL-DRAFT` |
+| `CP2/T099` | Đóng băng quy ước API v1 FE–BE | `CP2 T099(api): freeze FE-BE API v1 conventions with drift test` | `5add4005e572efcd17b921fb144b9feea1b7189c` | `PENDING` | drift 15 passed, API 88 passed, web PASS | P5/Hiển, P1/Huy | `LOCAL-DRAFT` |
 | `CP3/T037 mapping` | Ánh xạ mã lỗi pipeline sang API | `CP3 T037(api): map pipeline error codes to stable API codes` | `PENDING` | `PENDING` | 15 passed, API+contract 103 passed | P3/Cường, P1/Huy | `LOCAL-DRAFT` |
 
 ## Handoff
