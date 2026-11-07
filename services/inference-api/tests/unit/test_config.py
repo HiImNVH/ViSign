@@ -26,6 +26,7 @@ def isolated_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
         "FEATURE_SCHEMA_VERSION",
         "FEATURE_SCHEMA_PATH",
         "VISIGN_MODEL_DIR",
+        "CORS_ALLOW_CREDENTIALS",
     ):
         monkeypatch.delenv(variable_name, raising=False)
 
@@ -137,3 +138,19 @@ def test_get_settings_returns_one_cached_instance() -> None:
     get_settings.cache_clear()
 
     assert get_settings() is get_settings()
+
+
+def test_credentialed_cors_cannot_be_enabled_in_code() -> None:
+    # Quy uoc API muc 6: MVP khong co cookie/dang nhap nen CORS khong bao gio gui credential
+    with pytest.raises(ValidationError):
+        Settings(cors_allow_credentials=True)
+
+
+def test_credentialed_cors_cannot_be_enabled_from_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Cau hinh sai phai lam app dung luc khoi dong thay vi bi bo qua am tham
+    monkeypatch.setenv("CORS_ALLOW_CREDENTIALS", "true")
+
+    with pytest.raises(ValidationError):
+        Settings()

@@ -89,3 +89,8 @@ Ghi chú không chặn:
 3. Router `/api/v1` chưa có endpoint; health/model-info thuộc T060, predictions thuộc T038.
 
 **Reviewer result**: `P1_VERIFIED`
+
+## Follow-up sau review P5 — CORS credential
+
+Nguồn giá trị `allow_credentials` của CORS middleware (`Settings.cors_allow_credentials`) nay có kiểu `Literal[False]`;
+chi tiết và kiểm thử tại follow-up trong `docs/evidence/checkpoints/CP2/T022-T023-p2-tin-smoke.md`.

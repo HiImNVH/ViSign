@@ -110,3 +110,13 @@ Ghi chú không chặn — xử lý ở task sau:
 **Reviewer result**: `P1_VERIFIED`; `P5` (CORS mặc định) còn `PENDING`.
 
 **Reviewer note**: Không cần sửa trước khi push; mục 1 phải có test trong T049.
+## Follow-up sau review P5 — CORS credential (`2026-11-07T19:10+07:00`)
+
+| Ghi chú P5 | Xử lý |
+|---|---|
+| `Settings(cors_allow_credentials=True)` vẫn được chấp nhận và middleware T026 dùng giá trị này, trái quy ước không credential | Đổi kiểu thành `Literal[False]`: đặt `True` trong code hoặc `CORS_ALLOW_CREDENTIALS=true` làm `Settings` lỗi ngay khi khởi động; middleware T026 không đổi vì luôn nhận `False` |
+
+- Test viết trước (code và biến môi trường) → 2 failed; sau khi sửa 16 passed.
+- Bắt hồi quy: trả kiểu về `bool` → 2 failed; khôi phục giống hệt.
+- Khởi động thật: `CORS_ALLOW_CREDENTIALS=true python -c "import visign_api.main"` → `literal_error`, app không chạy.
+- Toàn bộ API + contract `-W error`: 178 passed, 1 skipped; Ruff, format, mypy (38 files) đạt.

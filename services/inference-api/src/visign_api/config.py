@@ -2,6 +2,7 @@
 # Cau hinh runtime: artifact path, MIME allowlist, gioi han clip, timeout cho slot suy luan va CORS (T022).
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -49,7 +50,8 @@ class Settings(BaseSettings):
         default_factory=lambda: list(VITE_DEV_AND_PREVIEW_ORIGINS)
     )
     # MVP khong co cookie/dang nhap nen khong bao gio gui credential qua CORS
-    cors_allow_credentials: bool = False
+    # Kieu Literal[False]: cau hinh True (code hoac env) lam app dung luc khoi dong thay vi bat credential
+    cors_allow_credentials: Literal[False] = False
     # Nguon dac trung khi chua co artifact (parity, smoke); None de visign_ai dung mac dinh cua no.
     # Artifact pilot/full mang schema rieng va duoc kiem o predictor (T037)
     feature_schema_version: str | None = None
