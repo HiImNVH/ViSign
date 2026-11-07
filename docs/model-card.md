@@ -10,7 +10,7 @@ ViSign nhận diện một ký hiệu VSL trong một clip camera và trả về
 | Artifact | Phạm vi | Trạng thái |
 |---|---|---|
 | `fixture` | Fixture mẫu trong repo công bố **Cảm ơn, Sốt, Giấy tờ**. Phạm vi lấy từ metadata fixture được cấu hình. | Dùng để kiểm tích hợp. `demoReady=false`. |
-| `pilot` | Tối đa 3 nghĩa. Mục tiêu T083 là **Sốt, Cảm ơn** trên bản pilot đã audit. | Pilot nội bộ Giấy tờ / Nhận (`pilot-v2`) đã được đánh giá lại. Chờ chốt phạm vi T083. `demoReady=false`. |
+| `pilot` | Tối đa 3 nghĩa. Mục tiêu T083 là **Giấy tờ, Nhận** (lead chốt 2026-11-08). | Pilot nội bộ Giấy tờ / Nhận (`pilot-v2`) đã được đánh giá lại. Phạm vi T083 đã chốt. `demoReady=false`. |
 | `full` | 10 nghĩa P0 theo danh mục cập nhật ngày 07/11/2026. | Đã thử luồng với artifact tổng hợp 10 nghĩa. Chờ manifest full và đánh giá trước khi Huy duyệt phát hành. |
 
 **P0 hiện tại** · Giấy tờ (giấy), Đau bụng, Sốt, Nhận, Bạn, Cảm ơn, Giúp đỡ, Xin lỗi, Đau đầu, Không. [Đặc tả MVP](../specs/001-vsl-recognition-mvp/spec.md#clarifications) · [Metadata fixture mẫu](../services/inference-api/tests/fixtures/model-artifacts/fixture/model_info.json)

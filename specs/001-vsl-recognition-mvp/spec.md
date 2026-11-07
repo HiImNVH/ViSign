@@ -39,6 +39,9 @@
   `<VÙNG>_<NGHĨA>_<số thứ tự video>.mp4`.
 - Q: Pilot dùng cặp nghĩa nào khi "Chờ" đã ra khỏi P0? → A: **Sốt + Cảm ơn** (`SOT`, `CAM_ON`): khác nhóm
   y tế/giao tiếp nên dễ tách động tác, có trong fixture và trong bộ PTIT CC-BY-4.0 nếu cần bổ sung mẫu.
+  **Cập nhật 2026-11-08 (lead):** pilot đổi sang **Giấy tờ + Nhận** (`GIAY_TO`, `NHAN`) vì đây là bộ đã có
+  dữ liệu đã duyệt (15 clip, 4 lớp vùng); kết quả chỉ là bằng chứng pipeline smoke, không claim chất lượng.
+  Nguồn dữ liệu gồm cả video giáo dục công khai lẫn video nhóm tự quay: `sourceUri` MUST ghi đúng nguồn từng clip.
   Các nghĩa P0 có số nguồn ngang nhau nên chọn theo độ tách biệt.
 
 - Q: Người dùng cần xem bản dịch trực tiếp và xem lại bản dịch đã có trong ít nhất bao lâu? → A: Lead
@@ -130,7 +133,7 @@ pilot GRU và xem lại lịch sử hoặc liên kết W&B mà không đưa côn
 nhưng không được trở thành đường tắt bỏ qua audit dữ liệu hoặc quality gate của bản full.
 
 **Independent Test**: Bật công cụ bằng mã admin cục bộ, kiểm tra một clip, chạy preflight rồi train
-pilot trên bộ Sốt–Cảm ơn; xác nhận chỉ một job hoạt động, có trạng thái/báo cáo, và kết quả vẫn
+pilot trên bộ Giấy tờ–Nhận; xác nhận chỉ một job hoạt động, có trạng thái/báo cáo, và kết quả vẫn
 `demoReady=false`.
 
 **Acceptance Scenarios**:

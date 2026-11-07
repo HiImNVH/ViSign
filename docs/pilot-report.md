@@ -21,4 +21,4 @@ P3/Cường chạy lại đánh giá CPU từ gói Quang bàn giao ngày 2026-11
 | Schema digest | `6f1e32eeb8be9e6fbf3e13f7dded063ad9b4ea7ad387593ddfb658c66d92c389` |
 | Weights | `0c9a991bb95a90cac433470adf3f1640ac520461d9da86459243c5df7a27c252` |
 
-Phạm vi pilot theo [task T083](../specs/001-vsl-recognition-mvp/tasks.md) vẫn là Sốt / Cảm ơn. Huy cần chốt đổi phạm vi sang Giấy tờ / Nhận và xác nhận T076. T083 giữ mở đến khi có nghiệm thu T078–T082 cho luồng admin. Kết quả trên bốn mẫu test chỉ dùng làm bằng chứng pilot nội bộ.
+Huy đã chốt ngày 2026-11-08: phạm vi pilot [T083](../specs/001-vsl-recognition-mvp/tasks.md) là Giấy tờ / Nhận. T076 chờ P4 ghi đúng `sourceUri` từng clip (bộ dữ liệu gồm cả video giáo dục công khai và video tự quay; manifest hiện ghi cả 15 là `dataset:self-recorded`). T083 giữ mở đến khi có nghiệm thu T078–T082 cho luồng admin. Kết quả trên bốn mẫu test chỉ dùng làm bằng chứng pilot nội bộ.
