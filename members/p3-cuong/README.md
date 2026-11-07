@@ -20,8 +20,9 @@
 | `T003 / CP1` | `VERIFIED` | `ai/pyproject.toml` do Tín tạo | Ruff, mypy và 8 import đạt. Pytest 15 passed, 5 skipped. [Review độc lập](../../docs/evidence/checkpoints/CP1/T001-T007-p2-tin-smoke.md#independent-review--p3cường) | P3/Cường |
 | `T014-T016 / CP2` | `REVIEW` | decoder, extractor, transform, schema và tests | Đã push, gate cục bộ đạt. Chờ review clip đại diện và parity qua adapter T037 | P2/Tín và P1/Huy |
 | `T017 / CP2` | `VERIFIED` | CLI trích landmark từ danh sách sampleId/rawPath | D1–D4 đã xác nhận cùng Quang. CI xanh. Test tự động đã push ở 57311bf, 13 pass/1 skip local; P2 đã duyệt test batch; P3 review bản sửa --help bb40476, đạt trên cp1252 và UTF-8; T010 và duyệt schema là gate dữ liệu chính thức | P2/Tín và P1/Huy |
-| `T029, T033 / CP3` | `LOCAL-DRAFT` | Test GRU và classifier packed sequence | 9 test GRU đạt. T034 đã kiểm thử local; bước kế là T035 | P1/Huy, P2/Tín |
-| `T034 / CP3` | `LOCAL-DRAFT` | NPZ loader và batching theo class map | 12 test T034 đạt. Chờ review; bước kế là T035 | P1/Huy, P2/Tín |
+| `T029, T033 / CP3` | `LOCAL-DRAFT` | Test GRU và classifier packed sequence | 9 test GRU đạt. T034 đã push; T035 đã kiểm thử local | P1/Huy, P2/Tín |
+| `T034 / CP3` | `PUSHED` | NPZ loader và batching theo class map | 12 test T034 đạt; đã push 6912242, chờ review | P1/Huy, P2/Tín |
+| `T035 / CP3` | `LOCAL-DRAFT` | Cấu hình seed GRU cho pilot/full | Smoke cùng seed trên CPU đạt; bước kế là T036 | P1/Huy, P2/Tín |
 | `CP5` | `PLANNED` | training/evaluation/artifact reports | Chờ manifest Quang bàn giao | P4/Quang và P1/Huy |
 
 ## Commit gần nhất
@@ -46,6 +47,7 @@
 | `CP2/T017` | Batch extraction CLI | `CP2 T017(extractor): add batch landmark extraction CLI` | 4a5aa5295702197d9509302d4bcf07a1dcd0d154 | [Commit 4a5aa52](https://github.com/HiImNVH/ViSign/commit/4a5aa5295702197d9509302d4bcf07a1dcd0d154) | [PASS cục bộ](../../docs/evidence/checkpoints/CP2/T017-p3-cuong-smoke.md) | P2/Tín, P1/Huy | PUSHED · [CI bản sửa bc642c1](https://github.com/HiImNVH/ViSign/actions/runs/42364019259) đạt · VERIFIED · P2 review 57311bf, P3 review --help bb40476 |
 | `CP3/T029,T033` | GRU classifier and contract tests | `CP3 T029,T033(train): add packed GRU classifier and tests` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T029-T033-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 | `CP3/T034` | NPZ sequence loader and batching | `CP3 T034(train): load landmark sequences in class map order` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T034-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
+| `CP3/T035` | Seeded pilot/full GRU presets | `CP3 T035(train): add reproducible pilot and full GRU presets` | `PENDING` | `PENDING` | [PASS cục bộ](../../docs/evidence/checkpoints/CP3/T035-p3-cuong-smoke.md) | P1/Huy, P2/Tín | `LOCAL-DRAFT` |
 
 ## Handoff
 

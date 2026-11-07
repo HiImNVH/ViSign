@@ -1,0 +1,13 @@
+# Cau hinh thu nghiem pilot; class map chon tu manifest da audit.
+artifact_kind: pilot
+min_meanings: 1
+max_meanings: 3
+input_size: 234
+target_frame_count: 32
+seed: 42
+hidden_size: 64
+num_layers: 1
+batch_size: 16
+epochs: 30
+learning_rate: 0.001
+threshold_candidates: [0.5, 0.6, 0.7, 0.8, 0.9]
