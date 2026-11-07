@@ -220,9 +220,14 @@ Expected:
 
 - Public web and API use HTTPS; `/api/v1/health` reports the expected artifact/readiness.
 - Camera prediction, low-confidence rejection, invalid clip and unknown route work through production.
+- Stop/start the EC2 instance once and confirm its Elastic IP, CloudFront origin and public URL remain
+  unchanged before rerunning health/prediction smoke.
+- Repeated health/model-info calls and prediction/error requests are not served from cache; POST and
+  deliberately wrong methods reach the backend, preserving `404/405/307` and `X-Request-ID` behavior.
 - Admin routes are disabled; CloudFront origin access and IAM roles are restricted to the published design.
 - Logs contain request ID/status/latency/error code but no clip bytes, landmark, token or secret.
-- EC2/container CPU/RAM, one-worker concurrency, timeout/body limit and demo cost match `docs/cost-report.md`.
+- EC2/container CPU/RAM, one-worker concurrency, timeout/body limit, Elastic IP/public IPv4 charge and
+  demo cost match `docs/cost-report.md`.
 - GitHub Actions uses OIDC/SSM without static AWS keys or SSH; model access is limited to its S3 prefix.
 - Rolling back to the last smoke-tested ECR image digest and S3 object version restores health and prediction.
 

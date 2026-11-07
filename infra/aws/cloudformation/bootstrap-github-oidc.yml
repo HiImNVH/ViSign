@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Bootstrap GitHub Actions OIDC for ViSign. This stack creates no IAM user,
+  access key, compute, storage, or paid workload resource.
+
+Parameters:
+  GitHubOwner:
+    Type: String
+    Default: HiImNVH
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  GitHubRepository:
+    Type: String
+    Default: ViSign
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  GitHubBranch:
+    Type: String
+    Default: main
+    AllowedPattern: "^[A-Za-z0-9_./-]+$"
+  GitHubEnvironment:
+    Type: String
+    Default: production
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+
+Resources:
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      Tags:
+        - Key: Project
+          Value: ViSign
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ViSignGitHubDeployRole
+      Description: Temporary GitHub Actions deployment access for ViSign production.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: GitHubProductionOnly
+            Effect: Allow
+            Principal:
+              Federated: !Ref GitHubActionsOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+                "token.actions.githubusercontent.com:sub": !Sub >-
+                  repo:${GitHubOwner}/${GitHubRepository}:environment:${GitHubEnvironment}
+                "token.actions.githubusercontent.com:ref": !Sub "refs/heads/${GitHubBranch}"
+      Policies:
+        - PolicyName: ViSignArtifactDeployment
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: EcrLogin
+                Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: ViSignEcrImages
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:ListImages
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !Sub "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/visign-*"
+              - Sid: ViSignArtifactBuckets
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource: !Sub "arn:${AWS::Partition}:s3:::visign-*/*"
+              - Sid: ListViSignArtifactBuckets
+                Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:ListBucket
+                  - s3:ListBucketVersions
+                Resource: !Sub "arn:${AWS::Partition}:s3:::visign-*"
+        - PolicyName: ViSignRuntimeDeployment
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: UseAwsRunShellScript
+                Effect: Allow
+                Action:
+                  - ssm:SendCommand
+                Resource: !Sub "arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript"
+              - Sid: SendOnlyToViSignInstances
+                Effect: Allow
+                Action:
+                  - ssm:SendCommand
+                Resource: !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
+                Condition:
+                  StringEquals:
+                    "ssm:resourceTag/Project": ViSign
+                    "ssm:resourceTag/Environment": production
+              - Sid: ReadCommandOutcome
+                Effect: Allow
+                Action:
+                  - ssm:GetCommandInvocation
+                  - ssm:ListCommandInvocations
+                  - ssm:ListCommands
+                Resource: "*"
+              - Sid: ReadViSignStackOutputs
+                Effect: Allow
+                Action:
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:DescribeStacks
+                Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/visign-*/*"
+              - Sid: InvalidateViSignCloudFrontCache
+                Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                  - cloudfront:GetDistribution
+                  - cloudfront:GetInvalidation
+                Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/*"
+                Condition:
+                  StringEquals:
+                    "aws:ResourceTag/Project": ViSign
+      Tags:
+        - Key: Project
+          Value: ViSign
+        - Key: Environment
+          Value: production
+        - Key: ManagedBy
+          Value: CloudFormation
+
+Outputs:
+  GitHubDeployRoleArn:
+    Description: Save as GitHub production environment variable AWS_DEPLOY_ROLE_ARN.
+    Value: !GetAtt GitHubDeployRole.Arn
+  GitHubOidcProviderArn:
+    Description: GitHub Actions OIDC provider managed by this stack.
+    Value: !Ref GitHubActionsOidcProvider
+  TrustedSubject:
+    Description: Exact GitHub OIDC subject allowed to assume the role.
+    Value: !Sub "repo:${GitHubOwner}/${GitHubRepository}:environment:${GitHubEnvironment}"

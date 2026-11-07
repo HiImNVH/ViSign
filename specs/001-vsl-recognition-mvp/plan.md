@@ -57,7 +57,7 @@ unit; Playwright với fake-camera Y4M cho E2E; script đánh giá xuất confus
 recall từng lớp, negative/OOD false-accept report và latency từng stage
 
 **Target Platform**: Windows 11 cho local development; Chromium hiện đại có camera; production tại
-AWS region `ap-southeast-1` qua CloudFront HTTPS và một EC2 host chạy hai container `web`/`inference-api`;
+AWS region `ap-southeast-2` qua CloudFront HTTPS và một EC2 host chạy hai container `web`/`inference-api`;
 bản local smoke-tested được giữ làm rollback/demo fallback
 
 **Project Type**: Web application gồm frontend, inference API và pipeline AI ngoại tuyến
@@ -93,15 +93,19 @@ thay đổi OpenAPI `/api/v1`, và không có quyền tự nâng pilot thành mo
 
 **Cloud/CI**: GitHub Actions chạy lint, typecheck, unit, contract, integration và frontend build. Chỉ
 commit/tag đã vượt gate mới được đóng gói thành hai image ECR (`web`, `inference-api`) và deploy lên
-một EC2 host bằng AWS Systems Manager. CloudFront cung cấp một URL HTTPS chung; `/api/*` được reverse
-proxy đến API để giữ same-origin. Model artifact có version/hash nằm trong private S3 và được tải về
-volume chỉ đọc bằng EC2 instance role. GitHub Actions dùng OIDC để assume IAM role, không tạo access
-key dài hạn. Secret/config nhạy cảm nằm trong SSM Parameter Store `SecureString`; production tắt admin
-API. CloudWatch thu log/metric an toàn và AWS Budgets cảnh báo mức sử dụng credit.
+một EC2 host bằng AWS Systems Manager. EC2 được gắn Elastic IP để CloudFront origin không đổi khi
+instance stop/start. CloudFront cung cấp một URL HTTPS chung; behavior `/api/*` cho phép mọi HTTP
+method cần để backend tự trả contract `404/405`, tắt cache và forward body/query/header contract đến
+API, còn default behavior chỉ phục vụ static web có cache. Model artifact có version/hash nằm trong
+private S3 và được tải về volume chỉ đọc bằng EC2 instance role. GitHub Actions dùng OIDC để assume IAM
+role, không tạo access key dài hạn. Secret/config nhạy cảm nằm trong SSM Parameter Store `SecureString`;
+production tắt admin API. CloudWatch thu log/metric an toàn và AWS Budgets cảnh báo mức sử dụng credit.
 
 **AWS cost boundary**: Tài khoản giữ Free Plan, không nâng cấp Paid Plan nếu chưa có phê duyệt riêng.
-Hạ tầng dùng một EC2 instance, `max` một inference worker và chỉ bật trong cửa sổ tích hợp/demo; không
-thêm ALB, NAT Gateway, RDS, ECS/EKS hoặc multi-region. T094 phải ghi giá ước tính và ngưỡng cảnh báo;
+Hạ tầng dùng một EC2 instance, một Elastic IP, `max` một inference worker và chỉ bật trong cửa sổ
+tích hợp/demo; không thêm ALB, NAT Gateway, RDS, ECS/EKS hoặc multi-region. T094 phải tính cả phí
+public IPv4/Elastic IP, ghi giá ước tính, ngưỡng cảnh báo và đo xác nhận latency từ Việt Nam do Sydney
+xa hơn Singapore;
 T095 chỉ triển khai sau khi kiểm tra dịch vụ cần dùng được Free Plan/credit bao phủ. Artifact và evidence
 quan trọng phải có bản sao ngoài AWS trước khi credit hoặc thời hạn Free Plan kết thúc.
 

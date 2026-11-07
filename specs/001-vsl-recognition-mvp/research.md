@@ -273,15 +273,20 @@ một integration queue, mỗi lần chỉ một người pull/rebase, test, com
 
 ## 20. AWS single-host production cho production rubric
 
-**Decision**: Dùng CloudFront làm HTTPS/public entrypoint, một EC2 instance tại `ap-southeast-1` chạy
-hai container `web` và `inference-api`, ECR lưu image, private S3 lưu model artifact, SSM Parameter
-Store lưu cấu hình nhạy cảm, CloudWatch cho log/metric và AWS Budgets cho cảnh báo. GitHub Actions
-deploy bằng OIDC + Systems Manager, không dùng access key hoặc SSH. Admin API bị tắt production.
+**Decision**: Dùng CloudFront làm HTTPS/public entrypoint, một EC2 instance + Elastic IP tại
+`ap-southeast-2` (Sydney, theo region tài khoản hiện truy cập ổn định) chạy hai container `web` và `inference-api`, ECR lưu image, private S3 lưu model
+artifact, SSM Parameter Store lưu cấu hình nhạy cảm, CloudWatch cho log/metric và AWS Budgets cho cảnh
+báo. GitHub Actions deploy bằng OIDC + Systems Manager, không dùng access key hoặc SSH. Admin API bị
+tắt production. CloudFront default behavior cache static web; `/api/*` dùng cache policy disabled,
+cho phép đủ HTTP methods và forward request đến backend để giữ nguyên API/error contract.
 
 **Rationale**: Tài khoản hiện có AWS Free Plan/credit nhưng Google Cloud yêu cầu khoản thanh toán kích
 hoạt mà nhóm không thể đáp ứng. Single-host giảm chi phí nền so với Fargate + ALB, vẫn giữ ranh giới
 container web/API, public HTTPS, health/smoke, least privilege và rollback có thể kiểm chứng. CloudFront
-cho web và `/api/*` cùng origin công khai, tránh CORS và không cần mua domain trong MVP.
+cho web và `/api/*` cùng origin công khai, tránh CORS và không cần mua domain trong MVP. Elastic IP
+giữ origin ổn định qua stop/start; API behavior riêng ngăn health/model-info/prediction bị cache và
+cho phép backend trực tiếp quyết định `404/405/307` theo contract. Sydney có thể tăng network latency
+so với Singapore, nên chỉ được nghiệm thu khi benchmark từ máy demo vẫn đạt SC-002.
 
 **Alternatives considered**:
 
