@@ -36,7 +36,8 @@
 | `US6 spec / FR-034–FR-036` | `PUSHED` | spec, data-model, tasks T100–T104 | Lead duyệt bản dịch trực tiếp + lịch sử trình duyệt 24 giờ; reviewer E2E | P5/Hiển, P2/Tín |
 | `T030/T038/T044/T048/T055/T060 review` | `DONE` | evidence CP3–CP5 của P2 | Huy review endpoint: đạt; 6 task `[X]` | P2/Tín |
 | `Round review CP3–CP5` | `DONE` | 12 evidence P2/P3/P5 | Huy review: đạt; 14 task `[X]` | P2, P3, P5 |
-| `T087 / US5` | `TODO` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
+| `T069, T085, T087, T093 / US5` | `PUSHED` | `README.md`, `docs/team/judging-criteria-mapping.md`, `docs/innovation-feasibility.md`, `docs/community-impact.md` | Bản đầu do trợ lý soạn theo uỷ quyền; chờ P2/P5 review (không tự tick); T071/T063 còn PENDING | P2/Tín, P5/Hiển |
+| `T087 / US5 (cũ)` | `SUPERSEDED` | `docs/innovation-feasibility.md` | Thực hiện ở checkpoint được Huy mở | Thành viên liên quan |
 | `CP1 integration` | `VERIFIED` | `docs/team/implementation-status.md`, closure trong evidence T001–T007 | Đã chốt; T001–T008, T086 `[X]` | P2/P3/P5 |
 
 ## Commit đang chuẩn bị
