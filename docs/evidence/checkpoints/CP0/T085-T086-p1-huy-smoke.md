@@ -8,7 +8,7 @@
 | Task | `T085-T086` |
 | Owner | `P1 Huy` |
 | Reviewer | `P2 Tín` — review độc lập sau khi baseline có trên `origin/main` |
-| Commit | Pending first push |
+| Commit | `5102bbbbe7efcf327a64477051bfc6137e9b5bce` |
 | Ngày/giờ | `2026-11-07T13:02:13+07:00` |
 | Môi trường | Windows 11, PowerShell, Git, Spec Kit repository scripts |
 | Status | `PASS` |
@@ -35,7 +35,7 @@
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | Pending first push | Bổ sung full SHA/link bằng commit evidence kế tiếp |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/5102bbbbe7efcf327a64477051bfc6137e9b5bce` | CP0 baseline trên `origin/main` |
 | GitHub Actions | `NOT_RUN` — workflow được tạo ở CP7/T091 | CP0 dùng local gates |
 | Report trong repo | `docs/team/judging-criteria-mapping.md`; `docs/team/git-checkpoints.md` | Artifact CP0 |
 | API/cloud | `NOT_RUN` — chưa thuộc CP0 | Không có application source/deploy |
@@ -52,9 +52,9 @@
 
 - [x] Owner đã chạy gate trên candidate tree trước commit.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary trong candidate tree.
-- [ ] Full SHA và link sẽ được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
 **Reviewer result**: `PENDING`
 
-**Reviewer note**: Chờ baseline xuất hiện trên `origin/main`.
+**Reviewer note**: Baseline đã có trên `origin/main`; chờ P2 tái lập gate quan trọng.
