@@ -43,17 +43,20 @@ Cập nhật `2026-11-07T19:06:13+07:00` trên `origin/main` `9abd2f3`.
 | T034–T036 | P3 | Loader, preset pilot/full, CLI train + xuất artifact | `VERIFIED`, `[X]` (P1; P2 xác nhận artifact) |
 | T030, T037, T038 | P2 | Registry, adapter đặc trưng (parity 6/6), adapter GRU pilot/full, `POST /predictions` | `VERIFIED`, `[X]` |
 | T041–T043, T046, T052 | P5 | State machine, màn hình kết quả, nối camera ↔ API, test luồng lỗi, thông báo lỗi tiếng Việt | `VERIFIED`, `[X]` (P1) |
-| T065 | P3 | Benchmark latency/tài nguyên | P1_VERIFIED local; chờ production; **SC-002 trượt** (web p95 6,4 s, extract p50 4,6 s) |
+| T065 | P3 | Benchmark latency/tài nguyên | Đã khởi tạo detector song song (−13% p95) nhưng web p95 5,87 s — **SC-002 vẫn trượt**; chờ production |
 | T044, T045, T048–T050 | P2 | Luật ngưỡng, test lỗi, kiểm tra clip, cleanup | `VERIFIED`, `[X]` |
 | T066, T072, T073 | P2 | Audit privacy + dọn clip tạm; 404/405/307 theo contract | `VERIFIED`, `[X]` (P1) |
 | T064 | P2 | Pipeline clip đại diện + đổi artifact fixture/pilot/full | `VERIFIED`, `[X]` (P1) |
 | T053 | P5 | Timeout/cancel/reset | `VERIFIED`, `[X]` (P1) |
-| Follow-up P5 | P5 | Câu tiếng Việt riêng cho `ROUTE_NOT_FOUND`/`METHOD_NOT_ALLOWED` (hiện dùng fallback) | Mở |
+| T074, T075 | P5 | Lỗi tương thích 404/405 + câu tiếng Việt riêng | `VERIFIED`, `[X]` (P1) |
+| T100–T104 (US6) | P5 | Bản dịch trực tiếp + lịch sử trình duyệt 24 giờ | `VERIFIED`, `[X]` (P1) |
+| T092 | P2 | Audit bảo mật, header, tắt docs, quét secret/dependency | `VERIFIED`, `[X]` (P1) |
+| T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
 | T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; giữ `[ ]` chờ metric thật |
-| T083 | P3 | Pilot **Sốt–Cảm ơn** (`SOT`, `CAM_ON`) thay Sốt–Chờ (lead 07/11) | Mở — chờ dữ liệu, manifest và schema APPROVED |
+| T083 | P3 | Pilot **Sốt–Cảm ơn** (`SOT`, `CAM_ON`) | **BLOCKED 0 clip**: manifest ghi `licenseStatus=unknown` trái quyết định khai quyền mức bộ dữ liệu (P4 sửa); split trống; schema chưa APPROVED |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip

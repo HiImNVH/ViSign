@@ -44,3 +44,18 @@ Smoke dùng API mock và video fake-camera; chưa kiểm tra bằng webcam thậ
 - T074/T075: `src/services/inferenceApi.ts`, `src/content/vi.ts`, `src/features/recognition/RecognitionError.tsx`; `tests/inferenceApi.test.ts`, `tests/recognition/recognition-errors.test.tsx`.
 - T100–T104: `src/features/recognition/{translationHistory.ts,TranscriptPanel.tsx,HistoryPanel.tsx,useRecognition.ts}`, `src/App.tsx`, `src/styles.css`; unit/component `tests/recognition/{translationHistory,transcript-history}.test.ts(x)`, browser `tests/browser/transcript-history.spec.ts`.
 - P1/P2 review lại API contract, storage/privacy và transcript E2E. Không đánh dấu `specs/001-vsl-recognition-mvp/tasks.md` `[X]` hoặc `P1_VERIFIED` trước review; commit/push theo integration window.
+
+## Independent review — P1/Huy (T074, T075, T100–T104)
+
+Review `2026-11-08T00:37:34+07:00` trên `dc9e357` (P1 review theo uỷ quyền của Huy). Gate: web lint, typecheck, Vitest 165 passed / 4 skipped, build PASS; CI `quality.yml` xanh.
+
+- US6 `translationHistory.ts`: chỉ lưu đúng 5 field (FR-035), kiểm schema/kiểu/UUID/ISO khi đọc, tự xoá mục
+  ≥ 24 giờ, chống trùng `requestId`, dữ liệu sai bị bỏ; `localStorage` bị chặn/đầy → `available: false`, không
+  lỗi. Không có `fetch`/`sendBeacon` trong module lịch sử và panel.
+- `useRecognition.ts`: chỉ kết quả `accepted` mới được nối vào bản dịch và lưu; kết quả lệch `modelVersion` bị
+  bỏ và tải lại model-info, không tự gửi lại.
+- T074/T075: câu riêng `apiRouteNotFound`/`apiMethodNotAllowed` cho 404/405 (đóng follow-up review T072/T073);
+  `apiForbidden` chỉ dự phòng, không phải trạng thái MVP.
+- Playwright `transcript-history.spec.ts` theo owner; P1 không chạy lại browser (CI chưa có job Playwright).
+
+**Reviewer result**: `P1_VERIFIED` → T074, T075, T100–T104 `[X]`.

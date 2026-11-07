@@ -257,8 +257,8 @@ kiểm tra stable Vietnamese copy, không auto-resubmit và không lộ raw serv
 
 - [X] T072 [P] [US2] Viết backend contract tests cho `404 ROUTE_NOT_FOUND`, `405 METHOD_NOT_ALLOWED`, `307` giữ method/body/`Location`, `X-Request-ID`, cùng hành vi chưa bật `403`/`304` tại `services/inference-api/tests/contract/test_http_routing_contract.py`
 - [X] T073 [US2] Cài stable error catalog và exception handlers cho 404/405, giữ `Allow`/`Location`/`X-Request-ID`, document 404/405/307 và giữ health `Cache-Control: no-store` tại `services/inference-api/src/visign_api/domain/errors.py`, `services/inference-api/src/visign_api/main.py` và `contracts/openapi.yaml`
-- [ ] T074 [P] [US2] Viết frontend transport/component tests cho 404/405, canonical URL, không auto-resubmit và không render raw server text tại `apps/web/tests/services/inferenceApi.test.ts` và `apps/web/tests/recognition/recognition-errors.test.tsx`
-- [ ] T075 [US2] Thêm typed API compatibility errors và stable Vietnamese placeholders; reserve 403/304 nhưng không trình bày là trạng thái MVP đang hoạt động tại `apps/web/src/services/inferenceApi.ts`, `apps/web/src/content/vi.ts` và `apps/web/src/features/recognition/RecognitionError.tsx`
+- [X] T074 [P] [US2] Viết frontend transport/component tests cho 404/405, canonical URL, không auto-resubmit và không render raw server text tại `apps/web/tests/services/inferenceApi.test.ts` và `apps/web/tests/recognition/recognition-errors.test.tsx`
+- [X] T075 [US2] Thêm typed API compatibility errors và stable Vietnamese placeholders; reserve 403/304 nhưng không trình bày là trạng thái MVP đang hoạt động tại `apps/web/src/services/inferenceApi.ts`, `apps/web/src/content/vi.ts` và `apps/web/src/features/recognition/RecognitionError.tsx`
 
 **Checkpoint**: Backend và frontend cùng tuân theo `docs/team/backend-http-status-contract.md` và
 `docs/team/frontend-http-status-placeholders.md`; US1 prediction success flow không thay đổi.
@@ -316,7 +316,7 @@ workflow và production smoke/rollback mà không cần hỏi người viết co
 - [ ] T089 [P] [US5] Viết tests/report cho OOD, signer/lighting/angle edge cases, false accept, class imbalance/bias, stability và giải thích decision rule tại `ai/tests/evaluation/test_safety_robustness.py` và `docs/ai-safety-report.md`
 - [ ] T090 [P] [US5] Review cấu trúc module, dependency direction, coding conventions, duplication và khả năng mở rộng FE/BE/AI; ghi action/evidence tại `docs/architecture-quality-report.md`
 - [ ] T091 [US5] Cài GitHub Actions quality/deploy gates cho lint, typecheck, unit, contract, integration, web build và AWS deploy-after-pass bằng OIDC tại `.github/workflows/quality.yml` và `.github/workflows/deploy-aws.yml`
-- [ ] T092 [P] [US5] Chạy security/reliability audit gồm dependency/secret scan, upload abuse, CORS, headers, rate/resource boundaries, timeout, log privacy và recovery tại `tests/security/` và `docs/security-report.md`
+- [X] T092 [P] [US5] Chạy security/reliability audit gồm dependency/secret scan, upload abuse, CORS, headers, rate/resource boundaries, timeout, log privacy và recovery tại `tests/security/` và `docs/security-report.md`
 - [ ] T093 [P] [US5] Viết báo cáo tác động cộng đồng, nhóm hưởng lợi, accessibility/usability result, rủi ro gây hiểu nhầm và roadmap mở rộng có điều kiện tại `docs/community-impact.md`
 - [ ] T094 [P] [US5] Đo CPU/RAM/storage/network/cloud cost, so sánh ít nhất một phương án tối ưu và chốt budget/quality/latency trade-off tại `docs/cost-report.md`
 - [ ] T095 [US5] Đóng gói web/API thành image ECR theo commit SHA, deploy hai container lên một EC2 host có Elastic IP, nạp model version/hash từ private S3 và công bố CloudFront HTTPS URL bằng CloudFormation/Compose tái lập tại `infra/aws/`; cấu hình default static behavior và `/api/*` behavior cho đủ methods, `CachingDisabled`, body/query/contract headers cùng nguyên trạng status/`X-Request-ID`; ghi image digest, S3 version, SSM result, Elastic IP và URL tại `docs/deployment-report.md`
@@ -336,11 +336,11 @@ duyệt ít nhất 24 giờ (FR-034–FR-036, SC-016). Lead duyệt 2026-11-07. 
 **Independent Test**: Fixture predictor: 2 `accepted` + 1 `rejected` → dòng bản dịch có đúng 2 chữ; tải lại
 trang vẫn còn lịch sử; giả lập +24 giờ thì mục cũ bị xoá; bộ nhớ trình duyệt bị chặn vẫn nhận diện được.
 
-- [ ] T100 [P] [US6] Viết unit tests cho translation history store: lưu đúng 5 field, TTL 24 giờ bằng đồng hồ giả lập, bỏ dữ liệu sai schema, chống trùng `requestId`, `localStorage` ném lỗi/đầy, xoá toàn bộ tại `apps/web/tests/recognition/translationHistory.test.ts`
-- [ ] T101 [US6] Cài translation history store chỉ dùng `localStorage`, khoá có `schemaVersion`, tự xoá mục quá hạn khi đọc/ghi và không bao giờ lưu frame/landmark/video tại `apps/web/src/features/recognition/translationHistory.ts`
-- [ ] T102 [P] [US6] Viết component tests: dòng bản dịch chỉ nối kết quả `accepted` theo thứ tự, rejected/error không nối, nút xoá, thông báo lưu cục bộ và trạng thái lịch sử không khả dụng tại `apps/web/tests/recognition/transcript-history.test.tsx`
-- [ ] T103 [US6] Cài dòng bản dịch trực tiếp và panel lịch sử 24 giờ (thời điểm, độ tin cậy, `modelVersion`, nút xoá, `aria-live`, câu chữ trong `apps/web/src/content/vi.ts`) và nối vào `apps/web/src/App.tsx` tại `apps/web/src/features/recognition/TranscriptPanel.tsx` và `apps/web/src/features/recognition/HistoryPanel.tsx`
-- [ ] T104 [US6] Viết E2E fake-camera: 2 accepted + 1 rejected, reload giữ lịch sử, giả lập +24 giờ xoá mục cũ, xác nhận network không gửi lịch sử và storage không chứa video/landmark tại `apps/web/tests/browser/transcript-history.spec.ts`
+- [X] T100 [P] [US6] Viết unit tests cho translation history store: lưu đúng 5 field, TTL 24 giờ bằng đồng hồ giả lập, bỏ dữ liệu sai schema, chống trùng `requestId`, `localStorage` ném lỗi/đầy, xoá toàn bộ tại `apps/web/tests/recognition/translationHistory.test.ts`
+- [X] T101 [US6] Cài translation history store chỉ dùng `localStorage`, khoá có `schemaVersion`, tự xoá mục quá hạn khi đọc/ghi và không bao giờ lưu frame/landmark/video tại `apps/web/src/features/recognition/translationHistory.ts`
+- [X] T102 [P] [US6] Viết component tests: dòng bản dịch chỉ nối kết quả `accepted` theo thứ tự, rejected/error không nối, nút xoá, thông báo lưu cục bộ và trạng thái lịch sử không khả dụng tại `apps/web/tests/recognition/transcript-history.test.tsx`
+- [X] T103 [US6] Cài dòng bản dịch trực tiếp và panel lịch sử 24 giờ (thời điểm, độ tin cậy, `modelVersion`, nút xoá, `aria-live`, câu chữ trong `apps/web/src/content/vi.ts`) và nối vào `apps/web/src/App.tsx` tại `apps/web/src/features/recognition/TranscriptPanel.tsx` và `apps/web/src/features/recognition/HistoryPanel.tsx`
+- [X] T104 [US6] Viết E2E fake-camera: 2 accepted + 1 rejected, reload giữ lịch sử, giả lập +24 giờ xoá mục cũ, xác nhận network không gửi lịch sử và storage không chứa video/landmark tại `apps/web/tests/browser/transcript-history.spec.ts`
 
 **Checkpoint**: US6 chạy độc lập với fixture; không thay đổi API contract, không ảnh hưởng `demoReady`.
 Reviewer: P1/Huy (spec, E2E) và P2/Tín (privacy: không có lịch sử gửi lên server).

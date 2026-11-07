@@ -50,3 +50,13 @@ commit CP2/CP4 mới. Phần mã AI dùng cho phép đo giống nhau giữa hai 
 | Production | Chưa có URL/worker production để đo |
 
 Candidate chờ P1/P2 review. T065 giữ mở.
+
+## Independent review — P1/Huy (cập nhật sau `fd2656f`)
+
+Review `2026-11-08T00:37:34+07:00` trên `dc9e357` (P1 review theo uỷ quyền của Huy). AI 79 passed, 5 skipped; Ruff, mypy (29 file) PASS — đổi extractor không làm vỡ test parity/pipeline.
+
+Detector giờ khởi tạo song song trên worker riêng, p95 giảm ~13%, nhưng **vẫn tạo mới mỗi clip**; web p95
+5,87 s → SC-002 vẫn trượt. Bước kế tiếp đề xuất: giữ detector giữa các request (pool theo worker, reset tracking
+bằng timestamp mới) và lấy mẫu trước khi chuyển RGB; đo lại kèm parity.
+
+**Reviewer result**: T065 giữ `[ ]` (chưa đạt SC-002, chưa đo production).

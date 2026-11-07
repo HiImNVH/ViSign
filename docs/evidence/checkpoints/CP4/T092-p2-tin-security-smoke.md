@@ -55,3 +55,17 @@ theo client (429); cần lead chọn giữa rule ở biên (WAF) và limiter tro
 - P1: chốt hướng rate limit (mục 8 của báo cáo, rủi ro #1).
 
 **Reviewer result**: `PENDING`
+
+## Independent review — P1/Huy
+
+Review `2026-11-08T00:37:34+07:00` trên `dc9e357` (P1 review theo uỷ quyền của Huy).
+
+| Kiểm tra | Kết quả |
+|---|---|
+| `pytest tests/security` + API + contract + integration | 399 passed, 4 skipped |
+| Header trên app thật | `/api/v1/health`, `/docs`, `/openapi.json`, `/redoc`, route lạ: đều có `nosniff`, `X-Frame-Options: DENY`, CSP, `Referrer-Policy: no-referrer`, `no-store` |
+| Docs/OpenAPI production | Tắt mặc định → 404 |
+| `.secrets.baseline` | Chỉ gồm SHA-256 trong manifest và hai chuỗi giả `INTERNAL_SECRET` dùng để test log không lộ đường dẫn — không có secret thật |
+| Advisory chấp nhận | torch `PYSEC-2025-194` (TorchScript, API không dùng), 2 advisory setuptools build-time — có lý do, advisory mới làm audit FAIL |
+
+**Reviewer result**: `P1_VERIFIED` → T092 `[X]`.

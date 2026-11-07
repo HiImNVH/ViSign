@@ -177,8 +177,8 @@ Bản dịch đã chấp nhận, **chỉ lưu trên trình duyệt** (FR-035); s
 | `confidence` | number | yes | Trong [0,1] |
 | `modelVersion` | string | yes | Model đã xử lý request |
 | `createdAt` | datetime | yes | ISO 8601 UTC, thời điểm client nhận kết quả |
-| `expiresAt` | datetime | yes | `createdAt` + 24 giờ; mục quá hạn bị xoá khi mở/cập nhật lịch sử |
 
+Hạn dùng không lưu riêng: mục hết hạn khi `now - createdAt ≥ 24 giờ` và bị xoá khi mở/cập nhật lịch sử.
 Bộ nhớ lưu một object `{schemaVersion: 1, entries: [...]}` dưới một khoá duy nhất; dữ liệu sai schema bị
 bỏ qua và ghi đè. Không lưu `classLabel`, frame, landmark hay video. Lưu thất bại (bị chặn, đầy) không làm
 hỏng luồng nhận diện.
