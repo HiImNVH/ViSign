@@ -6,7 +6,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P5 Hiển` (người phát hiện), `P1 Huy` |
 | Candidate commit | `CP1 T004(setup): align Node engines with dependency floor` |
-| Commit | `PENDING` — bổ sung sau push |
+| Commit | `84478b28b99dfd180fb09e09e187a5b813160894` — [84478b2](https://github.com/HiImNVH/ViSign/commit/84478b28b99dfd180fb09e09e187a5b813160894); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) |
 | Ngày/giờ | `2026-11-07T14:55+07:00` |
 | Status | `PASS` local |
 

@@ -9,7 +9,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P5 Hiển` (consumer, xác nhận D1–D4 và `inference-api.ts`); `P1 Huy` (lead) |
 | Candidate commit | `CP2 T099(api): freeze FE-BE API v1 conventions with drift test` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `5add4005e572efcd17b921fb144b9feea1b7189c` — [5add400](https://github.com/HiImNVH/ViSign/commit/5add4005e572efcd17b921fb144b9feea1b7189c) |
 | Ngày/giờ | `2026-11-07T14:43:17+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15, Node.js 24.18.0 |
 | Status | `PASS` local; chờ push và xác nhận của P5 |
@@ -50,8 +50,8 @@
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | `PENDING` | Bổ sung sau push |
-| GitHub Actions | `PENDING` | Job `api` lần đầu chạy drift test |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/5add4005e572efcd17b921fb144b9feea1b7189c` | Pushed 2026-11-07T14:47:39+07:00 |
+| GitHub Actions | `https://github.com/HiImNVH/ViSign/actions/runs/42353287941` | Job `api` chạy drift test: success. Run trước [42352747056](https://github.com/HiImNVH/ViSign/actions/runs/42352747056) đỏ ở job Web do test flaky T039, không liên quan |
 | Bản đóng băng | `docs/contracts/api-conventions.md` | `api-conventions-v1.0.0` |
 
 ## 6. Rủi ro, rollback và handoff
@@ -68,7 +68,7 @@
 
 - [x] Owner đã chạy lại gate sau lần đồng bộ cuối.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary bị stage.
-- [ ] Full SHA và link đã được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
 
 **Reviewer result**: `PENDING`

@@ -25,8 +25,8 @@
 | `T019-T021 / CP2` | `P1_VERIFIED` | `services/inference-api/src/visign_api/domain/`, unit tests | Huy đã tái lập gate; chờ Cường (T019) và Hiển (T020/T021) review; `ruff format` nằm trong candidate T022–T023 | P3/Cường, P5/Hiển |
 | `T022-T023 / CP2` | `REVIEW` | `services/inference-api/src/visign_api/{config,observability}.py`, unit tests | Đã push `fb56354`; CI [run 42351545729](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) xanh; chờ Huy/Hiển verify | P1/Huy, P5/Hiển (CORS) |
 | `T014-T016 / CP2 review` | `DONE` | review ranh giới API trong `docs/evidence/checkpoints/CP2/T014-T016-p3-cuong-smoke.md` | Đã ghi `P2_VERIFIED`; chờ Cường xác nhận quy tắc `NO_PERSON_DETECTED` | P2/Tín là reviewer |
-| `T099 / CP2` | `DOING` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Owner chốt D1–D4; gate local PASS; chờ push và P5 xác nhận | P5/Hiển và P1/Huy |
-| `T037 / CP3` | `DOING` | `services/inference-api/src/visign_api/inference/` | Đã có ánh xạ lỗi pipeline; predictor/adapter chờ artifact và quy tắc `NO_PERSON_DETECTED` của P3 | P3/Cường, P1/Huy |
+| `T099 / CP2` | `REVIEW` | `docs/contracts/api-conventions.md`, OpenAPI, `apps/web/src/types/inference-api.ts`, `tests/contract/` | Đã push `5add400`; chờ P1 verify (lead) và P5 xác nhận consumer | P5/Hiển và P1/Huy |
+| `T037 / CP3` | `PAUSED` | `services/inference-api/src/visign_api/inference/` | Ánh xạ lỗi đã push; dừng CP3 theo chỉ đạo P1 (chốt CP1 → đóng CP2 → mở CP3) | P3/Cường, P1/Huy |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, Cloud Run | Chờ checkpoint tương ứng | P1/Huy |
 
 ## Commit đang chuẩn bị
@@ -39,9 +39,9 @@
 | Pre-commit sync | `PASS` — `origin/main...HEAD` = `0 0` tại `5b6a441` lúc 2026-11-07T14:55+07:00 |
 | Gate commands | semver range check, `npm ci`, lint, typecheck; review: Edge browser 21 passed, vitest flaky 13/15 → 30/30 với `useLayoutEffect` |
 | Smoke evidence | `docs/evidence/checkpoints/CP1/T004-p2-tin-node-engines-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `NOT_PUSHED` |
+| Local commit | `84478b28b99dfd180fb09e09e187a5b813160894`, `d81e5e3a4dc15f58294e4056af7c82020c4197be`, `d3d33e1a42271788476b4c9786bf8ba9f12affab`, `c09853594adcebb580a6953ed376c3044fbe89c0` |
+| Pre-push sync | `PASS` — `git pull --rebase` không có commit mới (`0 4`) |
+| Push status | `PUSHED` lúc 2026-11-07T14:55:40+07:00; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) |
 
 ## Commit ledger
 
@@ -53,8 +53,12 @@
 | `CP2/T019-T021` | API domain models | `CP2 T019-T021(api): add model metadata, prediction and error domain` | `9b888a182592a2739b665a287ec37a8a4aa9f8f3` | [commit](https://github.com/HiImNVH/ViSign/commit/9b888a182592a2739b665a287ec37a8a4aa9f8f3) | 44 passed, Ruff, mypy; P1 independent PASS | P3/Cường, P5/Hiển | `PARTIAL_VERIFIED` |
 | `CP2/T022-T023` | Runtime settings và structured logging | `CP2 T022-T023(api): add runtime settings and privacy-safe logging` | `fb563545e33accbbf82bb83ad9373e5eb85e8add` | [commit](https://github.com/HiImNVH/ViSign/commit/fb563545e33accbbf82bb83ad9373e5eb85e8add) | 73 passed, Ruff, format, mypy; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P1/Huy, P5/Hiển | `PUSHED` |
 | `CP2/T014-T016 review` | P2 API-boundary review cho pipeline của P3 | `CP2 T014-T016(api): record P2 serving boundary review` | `b248ec78b25f77973f48f1b7cda94290b3f5c1df` | [commit](https://github.com/HiImNVH/ViSign/commit/b248ec78b25f77973f48f1b7cda94290b3f5c1df) | 15 passed/5 skipped, probe 7 clip; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42351545729) | P3/Cường | `PUSHED` |
-| `CP2/T099` | Đóng băng quy ước API v1 FE–BE | `CP2 T099(api): freeze FE-BE API v1 conventions with drift test` | `5add4005e572efcd17b921fb144b9feea1b7189c` | `PENDING` | drift 15 passed, API 88 passed, web PASS | P5/Hiển, P1/Huy | `LOCAL-DRAFT` |
-| `CP3/T037 mapping` | Ánh xạ mã lỗi pipeline sang API | `CP3 T037(api): map pipeline error codes to stable API codes` | `PENDING` | `PENDING` | 15 passed, API+contract 103 passed | P3/Cường, P1/Huy | `LOCAL-DRAFT` |
+| `CP2/T099` | Đóng băng quy ước API v1 FE–BE | `CP2 T099(api): freeze FE-BE API v1 conventions with drift test` | `5add4005e572efcd17b921fb144b9feea1b7189c` | [commit](https://github.com/HiImNVH/ViSign/commit/5add4005e572efcd17b921fb144b9feea1b7189c) | drift 15 passed, API 88 passed, web PASS; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) | P5/Hiển, P1/Huy | `PUSHED` |
+| `CP3/T037 mapping` | Ánh xạ mã lỗi pipeline sang API | `CP3 T037(api): map pipeline error codes to stable API codes` | `5b6a441e1e4d5a030ec5fdfde7479d3e252073b0` | [commit](https://github.com/HiImNVH/ViSign/commit/5b6a441e1e4d5a030ec5fdfde7479d3e252073b0) | 103 passed; CI [đỏ do test flaky T039](https://github.com/HiImNVH/ViSign/actions/runs/42352747056), xanh ở [run sau](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) | P3/Cường, P1/Huy | `PUSHED` |
+| `CP1/T004 fix` | Khai báo đúng mức Node tối thiểu | `CP1 T004(setup): align Node engines with dependency floor` | `84478b28b99dfd180fb09e09e187a5b813160894` | [commit](https://github.com/HiImNVH/ViSign/commit/84478b28b99dfd180fb09e09e187a5b813160894) | semver, `npm ci`, lint, typecheck; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) | P5/Hiển, P1/Huy | `PUSHED` |
+| `CP3/T039 review` | Review camera UI của P5 | `CP3 T039(verify): request fix for flaky camera focus test` | `d81e5e3a4dc15f58294e4056af7c82020c4197be` | [commit](https://github.com/HiImNVH/ViSign/commit/d81e5e3a4dc15f58294e4056af7c82020c4197be) | Edge 21 passed; flaky 13/15 → 30/30 | P5/Hiển | `PUSHED` |
+| `CP7/T091 review` | Review quality workflow của P1 | `CP7 T091(verify): record P2 quality workflow review` | `d3d33e1a42271788476b4c9786bf8ba9f12affab` | [commit](https://github.com/HiImNVH/ViSign/commit/d3d33e1a42271788476b4c9786bf8ba9f12affab) | `P2_VERIFIED` | P1/Huy | `PUSHED` |
+| `CP1/T086 review` | Verify member frame của P1 | `CP1 T086(verify): record P2 member frame verification` | `c09853594adcebb580a6953ed376c3044fbe89c0` | [commit](https://github.com/HiImNVH/ViSign/commit/c09853594adcebb580a6953ed376c3044fbe89c0) | `VERIFIED`; P1 đề nghị chữ cuối `review`, commit đã push nên giữ nguyên | P1/Huy | `PUSHED` |
 
 ## Handoff
 

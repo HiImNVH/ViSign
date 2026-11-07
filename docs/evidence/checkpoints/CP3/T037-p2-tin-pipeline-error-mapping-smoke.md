@@ -9,7 +9,7 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P3 Cường` (danh sách mã pipeline, kế hoạch T017 mục 3); `P1 Huy` |
 | Candidate commit | `CP3 T037(api): map pipeline error codes to stable API codes` |
-| Commit | `PENDING` — bổ sung full SHA/link sau push |
+| Commit | `5b6a441e1e4d5a030ec5fdfde7479d3e252073b0` — [5b6a441](https://github.com/HiImNVH/ViSign/commit/5b6a441e1e4d5a030ec5fdfde7479d3e252073b0); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42353287941) (run riêng đỏ ở job Web do test flaky T039) |
 | Ngày/giờ | `2026-11-07T14:46:51+07:00` |
 | Môi trường | Windows 11, Git Bash, uv 0.13.7, CPython 3.12.15 |
 | Status | `PASS` local |
