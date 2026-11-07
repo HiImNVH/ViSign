@@ -1,0 +1,102 @@
+sampleId,classLabel,meaningId,signerId,recordingSessionId,sourceUri,licenseStatus,verificationStatus,rejectionReason,rawPath,landmarkPath,durationMs,frameCount,split
+dataset-p0_0fbb1223c838,GIAY_TO_HCM_1,GIAY_TO,,dataset-p0_0fbb1223c838,https://nnkh.thaiphong.net/v/giay61.mp4,approved,unverified,,videos/1. Giấy/HCM_Giấy_1.mp4,,4004,121,validation
+dataset-p0_432449c7ca25,GIAY_TO_HCM_1,GIAY_TO,S001,S001-R01,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HCM_Giấy_3.mp4,,2238,68,train
+dataset-p0_e55b268b3c70,GIAY_TO_HCM_1,GIAY_TO,,dataset-p0_e55b268b3c70,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HCM_Giấy_5.mp4,,3100,94,test
+dataset-p0_4daa8c56d5e1,GIAY_TO_HCM_1,GIAY_TO,,dataset-p0_4daa8c56d5e1,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HCM_Giấy_6.mp4,,3600,109,validation
+dataset-p0_d3b8f27eba8c,GIAY_TO_HCM_1,GIAY_TO,,dataset-p0_d3b8f27eba8c,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HCM_Giấy_7.mp4,,3067,93,train
+dataset-p0_bca8f959e7a2,GIAY_TO_HN_2,GIAY_TO,,dataset-p0_bca8f959e7a2,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HN_Giấy_10.mp4,,2967,90,train
+dataset-p0_de1b0a56cd54,GIAY_TO_HN_2,GIAY_TO,,dataset-p0_de1b0a56cd54,https://nnkh.thaiphong.net/v/giay61_mb.mp4,approved,unverified,,videos/1. Giấy/HN_Giấy_2.mp4,,3437,104,test
+dataset-p0_5dc01422eb12,GIAY_TO_HN_2,GIAY_TO,S001,S001-R01,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HN_Giấy_4.mp4,,2195,67,train
+dataset-p0_be603f396b48,GIAY_TO_HN_2,GIAY_TO,,dataset-p0_be603f396b48,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HN_Giấy_8.mp4,,3233,98,train
+dataset-p0_3815729f71d2,GIAY_TO_HN_2,GIAY_TO,,dataset-p0_3815729f71d2,dataset:self-recorded,approved,unverified,,videos/1. Giấy/HN_Giấy_9.mp4,,3033,92,validation
+dataset-p0_7f12b99c2c84,KHONG_HCM_1,KHONG,,dataset-p0_7f12b99c2c84,https://nnkh.thaiphong.net/,approved,unverified,,videos/10. Không/HCM_Không_1.mp4,,5567,168,validation
+dataset-p0_9f514cd9a219,KHONG_HCM_1,KHONG,,dataset-p0_9f514cd9a219,dataset:self-recorded,approved,unverified,,videos/10. Không/HCM_Không_4.mp4,,2967,90,train
+dataset-p0_c77461753a0f,KHONG_HCM_1,KHONG,,dataset-p0_c77461753a0f,dataset:self-recorded,approved,unverified,,videos/10. Không/HCM_Không_5.mp4,,3533,107,test
+dataset-p0_dd6f6701bdce,KHONG_HCM_1,KHONG,,dataset-p0_dd6f6701bdce,dataset:self-recorded,approved,unverified,,videos/10. Không/HCM_Không_6.mp4,,2667,81,train
+dataset-p0_cfd1f9606be0,KHONG_HCM_1,KHONG,,dataset-p0_cfd1f9606be0,dataset:self-recorded,approved,unverified,,videos/10. Không/HCM_Không_7.mp4,,3133,95,train
+dataset-p0_18d7646d201d,KHONG_HN_2,KHONG,,dataset-p0_18d7646d201d,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_10.mp4,,3167,96,validation
+dataset-p0_3f517fe46659,KHONG_HN_2,KHONG,,dataset-p0_3f517fe46659,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_11.mp4,,2300,70,train
+dataset-p0_0bc0e3bcc9a6,KHONG_HN_2,KHONG,,dataset-p0_0bc0e3bcc9a6,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_12.mp4,,1877,57,validation
+dataset-p0_8574568de831,KHONG_HN_2,KHONG,,dataset-p0_8574568de831,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_13.mp4,,2300,70,train
+dataset-p0_f74894890383,KHONG_HN_2,KHONG,,dataset-p0_f74894890383,https://nnkh.thaiphong.net/v/khong6_mb.mp4,approved,unverified,,videos/10. Không/HN_Không_2.mp4,,4673,47,test
+dataset-p0_139de5c0bd09,KHONG_HN_2,KHONG,,dataset-p0_139de5c0bd09,https://nnkh.thaiphong.net/v/khong6_mt.mp4,approved,unverified,,videos/10. Không/HN_Không_3.mp4,,5080,51,validation
+dataset-p0_9c8431c1554b,KHONG_HN_2,KHONG,,dataset-p0_9c8431c1554b,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_8.mp4,,3233,98,train
+dataset-p0_cad63ee05606,KHONG_HN_2,KHONG,,dataset-p0_cad63ee05606,dataset:self-recorded,approved,unverified,,videos/10. Không/HN_Không_9.mp4,,3133,95,test
+dataset-p0_0c88c7d6db8a,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_0c88c7d6db8a,https://nnkh.thaiphong.net/,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_1.mp4,,3203,97,validation
+dataset-p0_1342f5f3fa22,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_1342f5f3fa22,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_10.mp4,,3000,91,train
+dataset-p0_c72a07fb3994,DAU_BUNG_HCM_2,DAU_BUNG,,dataset-p0_c72a07fb3994,https://nnkh.thaiphong.net/,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_2.mp4,,3637,110,train
+dataset-p0_12f90d1b609f,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_12f90d1b609f,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_3.mp4,,2567,78,validation
+dataset-p0_46c4a2e70eb5,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_46c4a2e70eb5,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_4.mp4,,3067,93,train
+dataset-p0_51b414b438af,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_51b414b438af,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_5.mp4,,2633,80,train
+dataset-p0_fbbaecd2b80b,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_fbbaecd2b80b,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_6.mp4,,3533,107,test
+dataset-p0_c3577681a591,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_c3577681a591,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_7.mp4,,4533,137,train
+dataset-p0_d531a81c8c76,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_d531a81c8c76,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_8.mp4,,2900,88,test
+dataset-p0_040c092cdf73,DAU_BUNG_HCM_1,DAU_BUNG,,dataset-p0_040c092cdf73,dataset:self-recorded,approved,unverified,,videos/2. Đau bụng/HCM_Đau bụng_9.mp4,,2378,72,validation
+dataset-p0_651300d3744c,SOT_HCM_1,SOT,,dataset-p0_651300d3744c,https://nnkh.thaiphong.net/v/sot61.mp4,approved,unverified,,videos/3. Sốt/HCM_Sốt_1.mp4,,4504,136,test
+dataset-p0_97a760de2566,SOT_HCM_1,SOT,,dataset-p0_97a760de2566,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_10.mp4,,3366,102,train
+dataset-p0_63005f44351a,SOT_HCM_1,SOT,,dataset-p0_63005f44351a,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_11.mp4,,3400,103,train
+dataset-p0_e283202373b2,SOT_HCM_1,SOT,,dataset-p0_e283202373b2,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_12.mp4,,2733,83,train
+dataset-p0_1f34fa05dd0b,SOT_HCM_1,SOT,,dataset-p0_1f34fa05dd0b,https://nnkh.thaiphong.net/,approved,unverified,,videos/3. Sốt/HCM_Sốt_2.mp4,,3103,94,train
+dataset-p0_0b7c4de07a55,SOT_HCM_2,SOT,,dataset-p0_0b7c4de07a55,https://nnkh.thaiphong.net/,approved,unverified,,videos/3. Sốt/HCM_Sốt_3.mp4,,5880,148,validation
+dataset-p0_22d295983006,SOT_HCM_1,SOT,,dataset-p0_22d295983006,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_4.mp4,,2900,88,validation
+dataset-p0_e37103980154,SOT_HCM_1,SOT,,dataset-p0_e37103980154,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_5.mp4,,3633,110,train
+dataset-p0_f8a046571832,SOT_HCM_1,SOT,,dataset-p0_f8a046571832,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_6.mp4,,3500,106,test
+dataset-p0_624a9beafa02,SOT_HCM_1,SOT,,dataset-p0_624a9beafa02,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_7.mp4,,3526,106,train
+dataset-p0_4d7e2f7518fa,SOT_HCM_1,SOT,,dataset-p0_4d7e2f7518fa,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_8.mp4,,3666,111,validation
+dataset-p0_3c2a4055eb18,SOT_HCM_1,SOT,,dataset-p0_3c2a4055eb18,dataset:self-recorded,approved,unverified,,videos/3. Sốt/HCM_Sốt_9.mp4,,3666,111,validation
+dataset-p0_7673a142d12e,NHAN_HCM_1,NHAN,,dataset-p0_7673a142d12e,https://nnkh.thaiphong.net/v/nhan65.mp4,approved,unverified,,videos/4. Nhận/HCM_Nhận_1.mp4,,2803,85,validation
+dataset-p0_bc6b16276b48,NHAN_HCM_1,NHAN,S001,S001-R01,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HCM_Nhận_2.mp4,,2205,67,train
+dataset-p0_742b8309d5fa,NHAN_HCM_1,NHAN,,dataset-p0_742b8309d5fa,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HCM_Nhận_4.mp4,,2333,71,validation
+dataset-p0_c1f66a8172a3,NHAN_HCM_1,NHAN,,dataset-p0_c1f66a8172a3,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HCM_Nhận_5.mp4,,2633,80,test
+dataset-p0_a2c85eb4d777,NHAN_HCM_1,NHAN,,dataset-p0_a2c85eb4d777,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HCM_Nhận_6.mp4,,2633,80,train
+dataset-p0_8dd9fc808375,NHAN_HN_2,NHAN,,dataset-p0_8dd9fc808375,https://nnkh.thaiphong.net/,approved,unverified,,videos/4. Nhận/HN_Nhận_3.mp4,,5113,52,test
+dataset-p0_d687921b9427,NHAN_HN_2,NHAN,,dataset-p0_d687921b9427,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HN_Nhận_7.mp4,,2333,71,train
+dataset-p0_8f8abe89435e,NHAN_HN_2,NHAN,,dataset-p0_8f8abe89435e,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HN_Nhận_8.mp4,,2567,78,train
+dataset-p0_88c9d8672475,NHAN_HN_2,NHAN,,dataset-p0_88c9d8672475,dataset:self-recorded,approved,unverified,,videos/4. Nhận/HN_Nhận_9.mp4,,2833,86,validation
+dataset-p0_253ecb897a02,BAN_HCM_1,BAN,,dataset-p0_253ecb897a02,https://nnkh.thaiphong.net/,approved,unverified,,videos/5. Bạn/HCM_Bạn_1.mp4,,3303,100,validation
+dataset-p0_d567f8389027,BAN_HN_2,BAN,,dataset-p0_d567f8389027,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_10.mp4,,2833,86,test
+dataset-p0_6e6563428ce6,BAN_HN_2,BAN,,dataset-p0_6e6563428ce6,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_11.mp4,,2633,80,train
+dataset-p0_e35a6bf29749,BAN_HN_2,BAN,,dataset-p0_e35a6bf29749,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_12.mp4,,1933,59,test
+dataset-p0_a916942f2451,BAN_HN_2,BAN,,dataset-p0_a916942f2451,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_13.mp4,,1400,43,train
+dataset-p0_88a5dcb7e1e4,BAN_HN_2,BAN,,dataset-p0_88a5dcb7e1e4,https://nnkh.thaiphong.net/,approved,unverified,,videos/5. Bạn/HN_Bạn_2.mp4,,4267,129,train
+dataset-p0_74f4d1839735,BAN_HN_2,BAN,,dataset-p0_74f4d1839735,https://nnkh.thaiphong.net/,approved,unverified,,videos/5. Bạn/HN_Bạn_3.mp4,,4133,125,train
+dataset-p0_811351e41809,BAN_HN_2,BAN,,dataset-p0_811351e41809,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_4.mp4,,2967,90,train
+dataset-p0_29a6fe5aed52,BAN_HN_2,BAN,,dataset-p0_29a6fe5aed52,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_5.mp4,,3267,99,validation
+dataset-p0_8301491a09e6,BAN_HN_2,BAN,,dataset-p0_8301491a09e6,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_6.mp4,,2433,74,train
+dataset-p0_142c300cbd0a,BAN_HN_2,BAN,,dataset-p0_142c300cbd0a,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_7.mp4,,2500,76,validation
+dataset-p0_2c98c4d5a609,BAN_HN_2,BAN,,dataset-p0_2c98c4d5a609,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_8.mp4,,2600,79,validation
+dataset-p0_a82b64456f6f,BAN_HN_2,BAN,,dataset-p0_a82b64456f6f,dataset:self-recorded,approved,unverified,,videos/5. Bạn/HN_Bạn_9.mp4,,2833,86,train
+dataset-p0_332e49fa55e1,CAM_ON_HCM_1,CAM_ON,,dataset-p0_332e49fa55e1,https://nnkh.thaiphong.net/v/cam3_on7_mt.mp4,approved,unverified,,videos/6. Cảm ơn/HCM_Cảm ơn_2.mp4,,4773,48,validation
+dataset-p0_c2ffa2c08f0b,CAM_ON_HCM_1,CAM_ON,,dataset-p0_c2ffa2c08f0b,dataset:self-recorded,approved,unverified,,videos/6. Cảm ơn/HCM_Cảm ơn_4.mp4,,2067,63,train
+dataset-p0_504fb16fd5cd,CAM_ON_HN_2,CAM_ON,,dataset-p0_504fb16fd5cd,https://nnkh.thaiphong.net/v/cam3_on7.mp4,approved,unverified,,videos/6. Cảm ơn/HN_Cảm ơn_1.mp4,,3931,39,train
+dataset-p0_93d386165dcc,CAM_ON_HN_2,CAM_ON,,dataset-p0_93d386165dcc,https://nnkh.thaiphong.net/v/cam3_on7_mb.mp4,approved,unverified,,videos/6. Cảm ơn/HN_Cảm ơn_3.mp4,,3033,92,test
+dataset-p0_8c1c8e730a4f,CAM_ON_HN_2,CAM_ON,,dataset-p0_8c1c8e730a4f,dataset:self-recorded,approved,unverified,,videos/6. Cảm ơn/HN_Cảm ơn_5.mp4,,2733,83,validation
+dataset-p0_e359ad9142ee,CAM_ON_HN_2,CAM_ON,,dataset-p0_e359ad9142ee,dataset:self-recorded,approved,unverified,,videos/6. Cảm ơn/HN_Cảm ơn_6.mp4,,2366,72,train
+dataset-p0_bab08fe2f4c5,CAM_ON_HN_2,CAM_ON,,dataset-p0_bab08fe2f4c5,dataset:self-recorded,approved,unverified,,videos/6. Cảm ơn/HN_Cảm ơn_7.mp4,,2480,75,train
+dataset-p0_a908a50c0c6e,GIUP_DO_HCM_1,GIUP_DO,,dataset-p0_a908a50c0c6e,https://nnkh.thaiphong.net/v/giup1_do974_mn.mp4,approved,unverified,,videos/7. Giúp đỡ/HCM_Giúp đỡ_1.mp4,,3504,106,train
+dataset-p0_cfcf29219b91,GIUP_DO_HCM_1,GIUP_DO,,dataset-p0_cfcf29219b91,https://nnkh.thaiphong.net/v/giup1_do974_mt.mp4,approved,unverified,,videos/7. Giúp đỡ/HCM_Giúp đỡ_3.mp4,,3504,106,test
+dataset-p0_294ac1333d00,GIUP_DO_HCM_1,GIUP_DO,,dataset-p0_294ac1333d00,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HCM_Giúp đỡ_4.mp4,,2333,71,validation
+dataset-p0_41a7d3c6d030,GIUP_DO_HCM_1,GIUP_DO,,dataset-p0_41a7d3c6d030,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HCM_Giúp đỡ_5.mp4,,2567,78,validation
+dataset-p0_d30ee57ae815,GIUP_DO_HCM_1,GIUP_DO,,dataset-p0_d30ee57ae815,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HCM_Giúp đỡ_6.mp4,,2833,86,train
+dataset-p0_7825d7dda710,GIUP_DO_HN_2,GIUP_DO,,dataset-p0_7825d7dda710,https://nnkh.thaiphong.net/v/giup1_do974_mb.mp4,approved,unverified,,videos/7. Giúp đỡ/HN_Giúp đỡ_2.mp4,,2436,74,validation
+dataset-p0_9735e0db243e,GIUP_DO_HN_2,GIUP_DO,,dataset-p0_9735e0db243e,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HN_Giúp đỡ_7.mp4,,2433,74,train
+dataset-p0_f6499feb1b7b,GIUP_DO_HN_2,GIUP_DO,,dataset-p0_f6499feb1b7b,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HN_Giúp đỡ_8.mp4,,2367,72,test
+dataset-p0_60b3d1cd1ee8,GIUP_DO_HN_2,GIUP_DO,,dataset-p0_60b3d1cd1ee8,dataset:self-recorded,approved,unverified,,videos/7. Giúp đỡ/HN_Giúp đỡ_9.mp4,,2900,88,train
+dataset-p0_6bb77b115867,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_6bb77b115867,https://nnkh.thaiphong.net/v/xin_loi64.mp4,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_1.mp4,,3437,104,train
+dataset-p0_a800556c5ae9,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_a800556c5ae9,https://nnkh.thaiphong.net/,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_2.mp4,,5315,54,test
+dataset-p0_266f2e66cf9a,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_266f2e66cf9a,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_3.mp4,,3133,95,validation
+dataset-p0_b7d34eca7eb7,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_b7d34eca7eb7,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_4.mp4,,3300,100,train
+dataset-p0_8a04f641f02f,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_8a04f641f02f,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_5.mp4,,3000,91,train
+dataset-p0_fee036ce3066,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_fee036ce3066,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_6.mp4,,2933,89,test
+dataset-p0_a3f2bb325777,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_a3f2bb325777,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_7.mp4,,2866,87,train
+dataset-p0_618aa00476da,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_618aa00476da,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_8.mp4,,2700,82,train
+dataset-p0_1634d368ecc6,XIN_LOI_HN_1,XIN_LOI,,dataset-p0_1634d368ecc6,dataset:self-recorded,approved,unverified,,videos/8. Xin lỗi/HN_Xin lỗi_9.mp4,,2800,85,validation
+dataset-p0_6baa80a0a760,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_6baa80a0a760,https://nnkh.thaiphong.net/,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_1.mp4,,5080,128,train
+dataset-p0_563ced3d2937,DAU_DAU_HCM_2,DAU_DAU,,dataset-p0_563ced3d2937,https://nnkh.thaiphong.net/,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_2.mp4,,5467,165,train
+dataset-p0_f53902c09040,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_f53902c09040,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_3.mp4,,3033,92,test
+dataset-p0_9f6327d7d9a7,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_9f6327d7d9a7,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_4.mp4,,3467,105,train
+dataset-p0_3260ddfe7a4d,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_3260ddfe7a4d,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_5.mp4,,3333,101,validation
+dataset-p0_c810ec2f1584,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_c810ec2f1584,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_6.mp4,,3133,95,train
+dataset-p0_52ffa24db1f8,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_52ffa24db1f8,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_7.mp4,,3266,99,validation
+dataset-p0_d3073dadefa5,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_d3073dadefa5,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_8.mp4,,2933,89,test
+dataset-p0_bf9ba38b1b33,DAU_DAU_HCM_1,DAU_DAU,,dataset-p0_bf9ba38b1b33,dataset:self-recorded,approved,unverified,,videos/9. Đau đầu/HCM_Đau đầu_9.mp4,,2233,68,train

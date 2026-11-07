@@ -1,0 +1,3 @@
+# Canonical CSV/JSON metadata must keep LF on Windows checkout.
+*.csv text eol=lf
+*.json text eol=lf

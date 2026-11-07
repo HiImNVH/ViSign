@@ -1,0 +1,756 @@
+{
+  "valid": true,
+  "inputSha256": "abe9186c0288384c4d03baad1ebf4bb6b50e6b858f472596214e7198425e86af",
+  "inputKind": "manifest",
+  "inputRowCount": 15,
+  "acceptedForCoverageCount": 15,
+  "errors": [],
+  "coverage": {
+    "total": {
+      "sampleCount": 15,
+      "sourceVideoCount": 13,
+      "knownSignerCount": 1,
+      "missingSignerCount": 12,
+      "splitCounts": {
+        "test": 4,
+        "train": 7,
+        "validation": 4
+      }
+    },
+    "byMeaning": {
+      "GIAY_TO": {
+        "sampleCount": 8,
+        "sourceVideoCount": 7,
+        "knownSignerCount": 1,
+        "missingSignerCount": 6,
+        "splitCounts": {
+          "test": 2,
+          "train": 4,
+          "validation": 2
+        }
+      },
+      "DAU_BUNG": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "SOT": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "NHAN": {
+        "sampleCount": 7,
+        "sourceVideoCount": 7,
+        "knownSignerCount": 1,
+        "missingSignerCount": 6,
+        "splitCounts": {
+          "test": 2,
+          "train": 3,
+          "validation": 2
+        }
+      },
+      "BAN": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "CAM_ON": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "GIUP_DO": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "XIN_LOI": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "DAU_DAU": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      },
+      "KHONG": {
+        "sampleCount": 0,
+        "sourceVideoCount": 0,
+        "knownSignerCount": 0,
+        "missingSignerCount": 0,
+        "splitCounts": {}
+      }
+    },
+    "byClass": {
+      "GIAY_TO_HCM_1": {
+        "sampleCount": 4,
+        "sourceVideoCount": 4,
+        "knownSignerCount": 1,
+        "missingSignerCount": 3,
+        "splitCounts": {
+          "test": 1,
+          "train": 2,
+          "validation": 1
+        }
+      },
+      "GIAY_TO_HN_2": {
+        "sampleCount": 4,
+        "sourceVideoCount": 4,
+        "knownSignerCount": 1,
+        "missingSignerCount": 3,
+        "splitCounts": {
+          "test": 1,
+          "train": 2,
+          "validation": 1
+        }
+      },
+      "NHAN_HCM_1": {
+        "sampleCount": 4,
+        "sourceVideoCount": 4,
+        "knownSignerCount": 1,
+        "missingSignerCount": 3,
+        "splitCounts": {
+          "test": 1,
+          "train": 2,
+          "validation": 1
+        }
+      },
+      "NHAN_HN_2": {
+        "sampleCount": 3,
+        "sourceVideoCount": 3,
+        "knownSignerCount": 0,
+        "missingSignerCount": 3,
+        "splitCounts": {
+          "test": 1,
+          "train": 1,
+          "validation": 1
+        }
+      }
+    },
+    "licenseCounts": {
+      "approved": 15
+    },
+    "verificationCounts": {
+      "verified": 15
+    },
+    "releaseExcludedCount": 0
+  },
+  "pendingMetadataCounts": {},
+  "hashAudit": "PASSED",
+  "hashAuditDetails": {
+    "checked": 15,
+    "passed": 15,
+    "failed": 0,
+    "method": "SHA-256 prefix in sampleId; full digest duplicate detection"
+  },
+  "errorCounts": {},
+  "labelAndLicenseApprovedCount": 15,
+  "labelAndLicenseApprovedMeaningCoverage": {
+    "GIAY_TO": {
+      "total": 8,
+      "current": {
+        "train": 4,
+        "validation": 2,
+        "test": 2
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 8,
+        "validation": 3,
+        "test": 1
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "DAU_BUNG": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "SOT": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "NHAN": {
+      "total": 7,
+      "current": {
+        "train": 3,
+        "validation": 2,
+        "test": 2
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 9,
+        "validation": 3,
+        "test": 1
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "BAN": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "CAM_ON": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "GIUP_DO": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "XIN_LOI": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "DAU_DAU": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "KHONG": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    }
+  },
+  "releaseEligible": false,
+  "modelDemoReady": false,
+  "trainingEligible": true,
+  "trainingMode": "pilot",
+  "fullTrainingTarget": {
+    "meanings": 10,
+    "total": 200,
+    "perMeaningSplit": {
+      "train": 12,
+      "validation": 5,
+      "test": 3
+    }
+  },
+  "meaningSplitCoverage": {
+    "GIAY_TO": {
+      "total": 8,
+      "current": {
+        "train": 4,
+        "validation": 2,
+        "test": 2
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 8,
+        "validation": 3,
+        "test": 1
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "DAU_BUNG": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "SOT": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "NHAN": {
+      "total": 7,
+      "current": {
+        "train": 3,
+        "validation": 2,
+        "test": 2
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 9,
+        "validation": 3,
+        "test": 1
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "BAN": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "CAM_ON": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "GIUP_DO": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "XIN_LOI": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "DAU_DAU": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    },
+    "KHONG": {
+      "total": 0,
+      "current": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "target": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "missing": {
+        "train": 12,
+        "validation": 5,
+        "test": 3
+      },
+      "excess": {
+        "train": 0,
+        "validation": 0,
+        "test": 0
+      },
+      "unassigned": 0
+    }
+  },
+  "collectionPlan": {
+    "currentBySplit": {
+      "train": 7,
+      "validation": 4,
+      "test": 4
+    },
+    "missingBySplit": {
+      "train": 113,
+      "validation": 46,
+      "test": 26
+    },
+    "excessBySplit": {
+      "train": 0,
+      "validation": 0,
+      "test": 0
+    },
+    "classSplitRequirements": [],
+    "notes": [
+      "Class requirements overlap meaning deficits; never add both totals",
+      "Current counts include unverified rows; they are not approved sample counts",
+      "Independent groups count original recording sessions, not signers",
+      "New samples must preserve recording-session isolation and meaning quotas"
+    ]
+  },
+  "releaseCheckScope": "manifest-metadata-and-per-class-splits",
+  "fullQualityGateEvaluated": false,
+  "schemaApprovalChecked": false,
+  "classSplitCoverage": {
+    "GIAY_TO_HCM_1": {
+      "splitCounts": {
+        "train": 2,
+        "test": 1,
+        "validation": 1
+      },
+      "missingSplits": [],
+      "sampleCount": 4,
+      "potentialIndependentGroupCount": 4,
+      "minimumAdditionalIndependentGroups": 0,
+      "knownSignerCount": 1,
+      "missingSignerCount": 3,
+      "reassignmentAloneRuledOut": false,
+      "reason": "check signer/session grouping and quotas before assigning splits"
+    },
+    "GIAY_TO_HN_2": {
+      "splitCounts": {
+        "validation": 1,
+        "train": 2,
+        "test": 1
+      },
+      "missingSplits": [],
+      "sampleCount": 4,
+      "potentialIndependentGroupCount": 4,
+      "minimumAdditionalIndependentGroups": 0,
+      "knownSignerCount": 1,
+      "missingSignerCount": 3,
+      "reassignmentAloneRuledOut": false,
+      "reason": "check signer/session grouping and quotas before assigning splits"
+    },
+    "NHAN_HCM_1": {
+      "splitCounts": {
+        "train": 2,
+        "test": 1,
+        "validation": 1
+      },
+      "missingSplits": [],
+      "sampleCount": 4,
+      "potentialIndependentGroupCount": 4,
+      "minimumAdditionalIndependentGroups": 0,
+      "knownSignerCount": 1,
+      "missingSignerCount": 3,
+      "reassignmentAloneRuledOut": false,
+      "reason": "check signer/session grouping and quotas before assigning splits"
+    },
+    "NHAN_HN_2": {
+      "splitCounts": {
+        "test": 1,
+        "validation": 1,
+        "train": 1
+      },
+      "missingSplits": [],
+      "sampleCount": 3,
+      "potentialIndependentGroupCount": 3,
+      "minimumAdditionalIndependentGroups": 0,
+      "knownSignerCount": 0,
+      "missingSignerCount": 3,
+      "reassignmentAloneRuledOut": false,
+      "reason": "check signer/session grouping and quotas before assigning splits"
+    }
+  },
+  "splitEvidence": "video-held-out",
+  "notes": [
+    "Coverage counts are metadata, not specialist verification or training sufficiency",
+    "No unseen-signer claim; split evidence reflects source-video isolation only",
+    "Approved public educational sources may omit sourceUri; see dataset card"
+  ]
+}

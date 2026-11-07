@@ -1,0 +1,32 @@
+{
+  "pilotSourceStatus": "all 15 explicitly confirmed self-recorded by user",
+  "pilotHashAudit": {
+    "checked": 15,
+    "passed": 15,
+    "failed": 0,
+    "method": "SHA-256 prefix in sampleId; full digest duplicate detection"
+  },
+  "draftManifestSha256": "ab93a3328daf364e9429650ff8efc180f331d213c870e9558e1ee86ad7df7488",
+  "draftSamples": 101,
+  "draftSelfRecorded": 76,
+  "draftPublicSource": 25,
+  "draftMissingSource": 0,
+  "draftStatusCounts": {
+    "unverified": 101
+  },
+  "draftHashAudit": {
+    "checked": 101,
+    "passed": 101,
+    "failed": 0,
+    "method": "SHA-256 prefix in sampleId; full digest duplicate detection"
+  },
+  "draftFullTrainingEligible": false,
+  "draftFullTrainingErrors": {
+    "CLASS_INACTIVE": 101,
+    "CLASS_NOT_VERIFIED": 19,
+    "MEANING_SPLIT_QUOTA": 10,
+    "MISSING_CLASS_SPLITS": 5
+  },
+  "sourceVerificationMethod": "sampleId-keyed inventory evidence plus source-v5 user-confirmation changes; no exact-video-URL or new license assertion for homepage origins",
+  "demoReady": false
+}

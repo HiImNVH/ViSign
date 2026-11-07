@@ -1,0 +1,11 @@
+meaningId,displayText,category,priority,active
+GIAY_TO,Giấy tờ (giấy),administrative,P0,true
+DAU_BUNG,Đau bụng,medical,P0,true
+SOT,Sốt,medical,P0,true
+NHAN,Nhận,basic,P0,true
+BAN,Bạn,basic,P0,true
+CAM_ON,Cảm ơn,basic,P0,true
+GIUP_DO,Giúp đỡ,basic,P0,true
+XIN_LOI,Xin lỗi,basic,P0,true
+DAU_DAU,Đau đầu,medical,P0,true
+KHONG,Không,basic,P0,true

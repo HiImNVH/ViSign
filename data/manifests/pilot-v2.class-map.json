@@ -1,0 +1,18 @@
+{
+  "GIAY_TO_HCM_1": {
+    "meaningId": "GIAY_TO",
+    "displayText": "Giấy tờ (giấy)"
+  },
+  "GIAY_TO_HN_2": {
+    "meaningId": "GIAY_TO",
+    "displayText": "Giấy tờ (giấy)"
+  },
+  "NHAN_HCM_1": {
+    "meaningId": "NHAN",
+    "displayText": "Nhận"
+  },
+  "NHAN_HN_2": {
+    "meaningId": "NHAN",
+    "displayText": "Nhận"
+  }
+}

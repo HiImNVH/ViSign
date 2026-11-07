@@ -1,0 +1,79 @@
+{
+  "accuracy": 0.25,
+  "macroF1": 0.3333333333333333,
+  "perMeaningPrecision": {
+    "GIAY_TO": 0.0,
+    "NHAN": 1.0
+  },
+  "perMeaningRecall": {
+    "GIAY_TO": 0.0,
+    "NHAN": 0.5
+  },
+  "testSampleCounts": {
+    "GIAY_TO": 2,
+    "NHAN": 2
+  },
+  "testSignerCount": 0,
+  "testSamplesWithoutSigner": 4,
+  "meanings": [
+    "GIAY_TO",
+    "NHAN"
+  ],
+  "confusionMatrixColumns": [
+    "GIAY_TO",
+    "NHAN",
+    "__REJECTED__"
+  ],
+  "confusionMatrix": [
+    [
+      0,
+      0,
+      2
+    ],
+    [
+      1,
+      1,
+      0
+    ]
+  ],
+  "latencyMs": {
+    "p50": 1.97199999820441,
+    "p95": 2.3601750006491784
+  },
+  "artifactKind": "pilot",
+  "modelVersion": "t083-pilot-v2-approved",
+  "datasetVersion": "pilot-v2",
+  "featureSchemaVersion": "visign-xy-32-v0.3-draft",
+  "extractorVersion": "tasks-hand-pose-face-1.1.1-24d9ff64192c8dc3",
+  "acceptanceThreshold": 0.5,
+  "evaluatedAt": "2026-11-07T19:12:39.941351+00:00",
+  "manifestSha256": "0a6b1402d3e8cbcdccface08a58c5550f581c82efb1f791b96d8bb24b7260d92",
+  "weightsSha256": "0c9a991bb95a90cac433470adf3f1640ac520461d9da86459243c5df7a27c252",
+  "schemaSha256": "6f1e32eeb8be9e6fbf3e13f7dded063ad9b4ea7ad387593ddfb658c66d92c389",
+  "splitAudit": {
+    "mode": "video-held-out",
+    "sampleCounts": {
+      "train": 7,
+      "test": 4,
+      "validation": 4
+    },
+    "sessionCount": 13,
+    "passed": true,
+    "groupedBy": "recordingSessionId",
+    "testSessionCount": 4,
+    "knownSignerCounts": {
+      "train": 1,
+      "test": 0,
+      "validation": 0
+    },
+    "samplesWithoutSigner": {
+      "train": 4,
+      "test": 4,
+      "validation": 4
+    },
+    "signerOverlapCount": 0
+  },
+  "device": "cpu",
+  "latencyScope": "GRU forward, softmax and top-class selection per test tensor",
+  "demoReady": false
+}

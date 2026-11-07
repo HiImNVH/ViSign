@@ -1,0 +1,5 @@
+classLabel,meaningId,region,variantName,verified,active
+GIAY_TO_HCM_1,GIAY_TO,HCM,1,true,true
+GIAY_TO_HN_2,GIAY_TO,HN,2,true,true
+NHAN_HCM_1,NHAN,HCM,1,true,true
+NHAN_HN_2,NHAN,HN,2,true,true

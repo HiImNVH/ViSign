@@ -1,0 +1,24 @@
+{
+  "sourceDatasetVersion": "pilot-v1",
+  "featureDatasetVersion": "pilot-v2",
+  "sourceManifest": "data/manifests/pilot-v1.csv",
+  "featureManifest": "data/manifests/pilot-v2.csv",
+  "classCatalog": "data/manifests/pilot-classes-v1.csv",
+  "classMap": "data/manifests/pilot-v2.class-map.json",
+  "sourceManifestSha256": "abe9186c0288384c4d03baad1ebf4bb6b50e6b858f472596214e7198425e86af",
+  "featureManifestSha256": "0a6b1402d3e8cbcdccface08a58c5550f581c82efb1f791b96d8bb24b7260d92",
+  "rawDatasetRoot": "provided locally by reviewer; rawPath relative to this root",
+  "featureRoot": "provided locally by reviewer; landmarkPath relative to this root",
+  "sampleCounts": {
+    "train": 7,
+    "validation": 4,
+    "test": 4
+  },
+  "pilotSources": "15 owner-confirmed self-recordings",
+  "sourceEvidence": "docs/evidence/dataset/t076-t083-handoff/pilot-source-confirmation.json",
+  "modelDemoReady": false,
+  "wandbRunId": "kbj3bpvu",
+  "wandbMode": "offline",
+  "binariesInGit": false,
+  "note": "Training/evaluation reports are the existing run evidence verified by P3 on main; this data PR does not retrain or alter weights."
+}

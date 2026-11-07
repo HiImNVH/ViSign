@@ -1,0 +1,20 @@
+{
+  "python": "3.12.12",
+  "datasetSuite": {
+    "passed": 89,
+    "subtestsPassed": 61,
+    "failed": 0,
+    "durationSeconds": 9.3
+  },
+  "allAiSuiteOnCurrentMain": {
+    "passed": 176,
+    "subtestsPassed": 61,
+    "skipped": 5,
+    "failed": 0,
+    "durationSeconds": 27.7
+  },
+  "skipReason": "external browser/reference WebM fixtures not configured",
+  "ruff": "PASS for dataset source/tests",
+  "mypy": "PASS for 19 dataset source/test files",
+  "mainTrainingAndLandmarkSourcesUsed": true
+}
