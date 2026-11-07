@@ -258,6 +258,7 @@ def test_predictor_maps_trained_output_to_class_label(t036_artifact: Path) -> No
         decodeMs=10,
         extractMs=900,
         ptsSpanMs=1000.0,
+        detectedAnyLandmark=True,
     )
 
     class FixedExtractor:

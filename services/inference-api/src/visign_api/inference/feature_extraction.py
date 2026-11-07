@@ -59,6 +59,8 @@ class ExtractedFeatures:
     extractMs: int
     # Khoang PTS frame dau-cuoi da giai ma, de kiem thoi luong ma khong tin so client gui
     ptsSpanMs: float
+    # Co it nhat mot diem tay/mat/pose hop le truoc chuan hoa (quy tac P3 cho NO_PERSON_DETECTED); chi la co
+    detectedAnyLandmark: bool
 
 
 class FeatureExtractor:
@@ -120,6 +122,9 @@ def build_extracted_features(pipeline_result: Mapping[str, Any]) -> ExtractedFea
         decodeMs=round(stage_timings["decode"]),
         extractMs=round(stage_timings["total"] - stage_timings["decode"]),
         ptsSpanMs=float(pipeline_report["ptsSpanMs"]),
+        detectedAnyLandmark=bool(
+            np.asarray(pipeline_result["point_valid"], dtype=bool).any()
+        ),
     )
 
 

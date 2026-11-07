@@ -50,6 +50,7 @@ def build_pipeline_result(**overrides: Any) -> dict[str, Any]:
         "tensor": np.zeros((TARGET_FRAME_COUNT, LANDMARK_COUNT * 3), dtype=np.float32),
         "tensor_mask": np.ones((TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
         "masks": group_mask,
+        "point_valid": np.ones((SAMPLED_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
         "coords": np.full(
             (SAMPLED_FRAME_COUNT, LANDMARK_COUNT, 2), 0.5, dtype=np.float32
         ),
@@ -132,6 +133,26 @@ def test_features_keep_tensor_mask_and_quality_hints_only(tmp_path: Path) -> Non
     assert extracted.qualityHints.frameCount == 46
     assert (extracted.decodeMs, extracted.extractMs) == (24, 2556)
     assert extracted.ptsSpanMs == pytest.approx(1466.0)
+    assert extracted.detectedAnyLandmark is True
+
+
+@pytest.mark.parametrize(
+    ("valid_point_count", "expected_flag"), [(0, False), (1, True)]
+)
+def test_any_valid_point_before_normalization_sets_the_person_flag(
+    tmp_path: Path, valid_point_count: int, expected_flag: bool
+) -> None:
+    # Quy tac P3: chi xet point_valid truoc chuan hoa; mot diem le cung du la co nguoi.
+    # Adapter chi giu co, khong giu mang diem
+    point_valid: NDArray[np.bool_] = np.zeros(
+        (SAMPLED_FRAME_COUNT, LANDMARK_COUNT), dtype=bool
+    )
+    point_valid.flat[:valid_point_count] = True
+    pipeline = RecordingPipeline(build_pipeline_result(point_valid=point_valid))
+
+    extracted = build_extractor(pipeline).extract(tmp_path / "clip.webm")
+
+    assert extracted.detectedAnyLandmark is expected_flag
 
 
 def test_raw_landmarks_never_leave_the_adapter(tmp_path: Path) -> None:
@@ -149,6 +170,7 @@ def test_raw_landmarks_never_leave_the_adapter(tmp_path: Path) -> None:
         "decodeMs",
         "extractMs",
         "ptsSpanMs",
+        "detectedAnyLandmark",
     }
 
 

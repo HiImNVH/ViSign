@@ -27,7 +27,7 @@
 | Body | `Content-Length` > `MAX_CLIP_BYTES` + 64 KiB (phần bao multipart) → từ chối trước khi đọc body; chunked bị cắt khi vượt; clip > `MAX_CLIP_BYTES` → 413 như T038 | 413 `CLIP_TOO_LARGE`; header hỏng → 400 |
 | Probe giải mã | `VideoDecoder` dùng chung: có stream video, VP8/VP9, PTS tăng, ≤ 900 frame, ≤ 4K | 415/422/400 qua bảng ánh xạ T037 |
 | Thời lượng | Decoder chặn cứng 300–6000 ms; API thêm cửa sổ `MIN/MAX_DURATION_MS` trên PTS đã giải mã (trước đây cấu hình chưa có hiệu lực) | 422 `CLIP_TOO_SHORT`/`CLIP_TOO_LONG` |
-| Người/landmark | `inputStatus = HAS_USABLE_FRAMES` (cùng quy tắc CLI T017) mới phân lớp; không phát hiện gì (không nhóm nào ở frame nguồn, không điểm hợp lệ trong tensor) → không có người; còn lại → thiếu landmark; trạng thái lạ coi là không dùng được | 422 `NO_PERSON_DETECTED`/`INSUFFICIENT_LANDMARKS` |
+| Người/landmark | `inputStatus = HAS_USABLE_FRAMES` (cùng quy tắc CLI T017) mới phân lớp; không có điểm tay/mặt/pose nào hợp lệ trong `point_valid` trước chuẩn hóa → không có người; có điểm nhưng không đủ vai + tay → thiếu landmark; trạng thái lạ coi là không dùng được (quy tắc P3, xem mục Đồng bộ) | 422 `NO_PERSON_DETECTED`/`INSUFFICIENT_LANDMARKS` |
 
 Fixture không giải mã video nên chỉ chịu các kiểm tra trước slot (MIME, byte, chữ ký). Không thuộc phạm vi: body
 multipart hỏng đang trả `{"detail": ...}` thay vì `ErrorEnvelope` (T050, commit kế tiếp); 404/405 (T072/T073).
@@ -46,10 +46,22 @@ multipart hỏng đang trả `{"detail": ...}` thay vì `ErrorEnvelope` (T050, c
 | Toàn bộ API + contract | Extra `serving`: 311 passed, 1 skipped. Môi trường như CI: 298 passed, 2 skipped. Ruff, format, mypy 51 files |
 | Live uvicorn (artifact pilot T036, `Origin: http://localhost:5173`) | Clip VP8 không người: trước T049 trả "Cảm ơn" `accepted=true`, nay **422 `NO_PERSON_DETECTED`**; MIME `video/mp4` → 415; byte MP4 gắn nhãn `video/webm` → 415; mọi lỗi có `access-control-allow-origin` và `requestId` khớp header. Socket thô khai `Content-Length: 10 GiB`, chỉ gửi header + 5 byte → `413` sau 14 ms, có `x-request-id`. 0 file `visign_clip_*` còn lại |
 
+## Đồng bộ quy tắc P3 (commit tiếp theo)
+
+P3 chốt quy tắc T049 lúc `21:02` trong `CP3/T037-p2-tin-serving-feature-smoke.md`, cùng lúc bản đầu được commit. Bản đầu
+suy "không có người" từ `groupMask`/`tensorMask` sau chuẩn hóa, nên người lọt khung mà thiếu vai (không chuẩn hóa được)
+có thể bị báo nhầm `NO_PERSON_DETECTED`. Commit `CP4 T049(api): use pre-normalization points for no-person rule`:
+
+- `ExtractedFeatures.detectedAnyLandmark` = `point_valid.any()` của pipeline (chỉ giữ cờ, không giữ mảng điểm).
+- Test theo ba ca P3 yêu cầu: clip trống → `NO_PERSON_DETECTED`; có điểm (kể cả chỉ một điểm, thiếu vai/tay) →
+  `INSUFFICIENT_LANDMARKS`; đủ landmark → phân lớp. Mask đủ mà cờ `false` vẫn là không có người.
+- 4/4 mutation bị bắt (quy tắc mask cũ, `.all()` thay `.any()`, cờ luôn `true`, không bao giờ trả `NO_PERSON_DETECTED`).
+- Toàn bộ API + contract (extra `serving`) 345 passed, 1 skipped; live: clip VP8 không người vẫn 422 `NO_PERSON_DETECTED`.
+
 ## Handoff
 
-- Cường: xác nhận quy tắc phân biệt `NO_PERSON_DETECTED` với `INSUFFICIENT_LANDMARKS` (dựa trên `groupMask`/`tensorMask`
-  của pipeline) và việc API dùng `ptsSpanMs` của report làm thời lượng.
+- Cường: xác nhận bản đã áp quy tắc P3 (cờ `point_valid` trước chuẩn hóa) và việc API dùng `ptsSpanMs` của report
+  làm thời lượng.
 - Hiển: không có mã lỗi mới; FE nhận 415/413/422 theo catalog hiện có.
 - Huy: nên đưa clip không người vào kịch bản E2E/T064 làm ca âm tính.
 

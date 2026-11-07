@@ -48,6 +48,7 @@ def extracted_features(**overrides: Any) -> ExtractedFeatures:
         "decodeMs": 20,
         "extractMs": 1500,
         "ptsSpanMs": 1500.0,
+        "detectedAnyLandmark": True,
     }
     feature_fields.update(overrides)
     return ExtractedFeatures(**feature_fields)
@@ -170,29 +171,38 @@ def test_person_without_usable_frames_has_insufficient_landmarks() -> None:
         )
 
 
-def test_partial_points_without_full_groups_still_mean_a_person() -> None:
-    partial_points: NDArray[np.bool_] = np.zeros(
-        (TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool
-    )
-    partial_points[:, 50] = True
-
+def test_points_without_shoulders_or_full_groups_still_mean_a_person() -> None:
+    # Quy tac P3 (T037 handoff): co diem hop le truoc chuan hoa thi co nguoi, du thieu vai nen
+    # khong tao duoc nhom/tensor nao; khong suy ra vang nguoi chi vi thieu hai vai hoac mat tay
     with pytest.raises(InsufficientLandmarksException):
         ensure_landmarks_sufficient(
             extracted_features(
                 inputStatus="INSUFFICIENT_LANDMARKS",
                 groupMask=np.zeros((SOURCE_FRAME_COUNT, 4), dtype=bool),
-                tensorMask=partial_points,
+                tensorMask=np.zeros((TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
+                detectedAnyLandmark=True,
             )
         )
 
 
-def test_nothing_detected_means_no_person() -> None:
+def test_no_valid_point_before_normalization_means_no_person() -> None:
     with pytest.raises(NoPersonDetectedException):
         ensure_landmarks_sufficient(
             extracted_features(
                 inputStatus="INSUFFICIENT_LANDMARKS",
                 groupMask=np.zeros((SOURCE_FRAME_COUNT, 4), dtype=bool),
                 tensorMask=np.zeros((TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
+                detectedAnyLandmark=False,
+            )
+        )
+
+
+def test_masks_alone_do_not_prove_a_person() -> None:
+    # Co lay tu point_valid, khong suy tu mask sau chuan hoa: P3 chot nguon cho NO_PERSON_DETECTED
+    with pytest.raises(NoPersonDetectedException):
+        ensure_landmarks_sufficient(
+            extracted_features(
+                inputStatus="INSUFFICIENT_LANDMARKS", detectedAnyLandmark=False
             )
         )
 

@@ -93,9 +93,8 @@ def ensure_landmarks_sufficient(extracted_features: ExtractedFeatures) -> None:
     # Chi phan lop khi pipeline bao co frame dung duoc; trang thai la cung coi la khong dung duoc
     if extracted_features.inputStatus == USABLE_INPUT_STATUS:
         return
-    has_any_detection = bool(
-        extracted_features.groupMask.any() or extracted_features.tensorMask.any()
-    )
-    if not has_any_detection:
+    # Quy tac P3: khong diem nao hop le truoc chuan hoa moi la khong co nguoi; con lai la thieu landmark,
+    # khong suy ra vang nguoi chi vi thieu hai vai hoac mat tay
+    if not extracted_features.detectedAnyLandmark:
         raise NoPersonDetectedException()
     raise InsufficientLandmarksException()

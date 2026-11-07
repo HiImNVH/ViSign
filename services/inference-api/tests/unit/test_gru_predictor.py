@@ -85,6 +85,7 @@ def extracted_features() -> ExtractedFeatures:
         decodeMs=21,
         extractMs=1480,
         ptsSpanMs=1500.0,
+        detectedAnyLandmark=True,
     )
 
 
@@ -194,6 +195,7 @@ NO_DETECTION = {
     "inputStatus": "INSUFFICIENT_LANDMARKS",
     "groupMask": np.zeros((TARGET_FRAME_COUNT, 4), dtype=bool),
     "tensorMask": np.zeros((TARGET_FRAME_COUNT, LANDMARK_COUNT), dtype=bool),
+    "detectedAnyLandmark": False,
 }
 
 
