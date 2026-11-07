@@ -56,9 +56,9 @@
 | Pre-commit sync | `PASS` — `0 0` trên `e5d1f26` (sau khi pull T065 test của P3 và 4 commit web/tài liệu của P5) |
 | Gate commands | Có `serving` và clip thật: 439 passed, 0 skipped; như CI 371 passed, 3 skipped và security + integration 44 passed, 2 skipped; Ruff, format, mypy 61 file; 14/14 mutation; A/B 76 cặp clip thật |
 | Smoke evidence | `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` |
-| Local commit | `PENDING` |
-| Pre-push sync | `PENDING` |
-| Push status | `PENDING` |
+| Local commit | `a214a3c` |
+| Pre-push sync | `PASS` — `0 1` trên `e5d1f26` |
+| Push status | `PUSHED` `e5d1f26..a214a3c`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) |
 
 ## Commit ledger
 
@@ -107,6 +107,7 @@
 | `CP4/T092` | Audit bảo mật, security header, tắt docs, lệnh audit cho BGK | `CP4 T092(security): add security audit, headers and docs lockdown` | `2561c7d4c5bace5c7c7db00e632382b15d752344` | [commit](https://github.com/HiImNVH/ViSign/commit/2561c7d4c5bace5c7c7db00e632382b15d752344) | 25 test, 14 mutation; audit 5/5; live uvicorn; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42396068969) | P1/Huy | `VERIFIED` |
 | `CP5/T065 review` | Review ứng viên khởi tạo detector song song của P3 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | A/B 76 cặp clip thật, probe lỗi worker, 40 integration với clip thật; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P3/Cường | `PUSHED` |
 | `CP7/T095 Docker` | Đóng gói Docker/Compose local, bàn giao P1 | `CP5-CP7 T065,T095(cloud): record detector review and hand off Docker` | `02cb36a9a350d01826cea033639b3f47f1317197` | [commit](https://github.com/HiImNVH/ViSign/commit/02cb36a9a350d01826cea033639b3f47f1317197) | Image web OK, image API tới unpack; `compose config`; 417 passed; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42403346511) | P1/Huy | `HANDOFF` |
+| `CP5/T065 API` | Pool bộ detector tạo sẵn ở thread nền, đóng ngoài đường găng | `CP5 T065(api): prewarm single-use detector sets off the request path` | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` | [commit](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b) | 16 unit + 3 integration, 14 mutation; 439 passed với clip thật; A/B 76 cặp; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) | P1/Huy, P3/Cường | `PUSHED` |
 
 ## Handoff
 

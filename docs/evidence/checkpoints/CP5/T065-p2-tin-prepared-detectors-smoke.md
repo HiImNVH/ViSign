@@ -6,9 +6,9 @@
 | Owner | `P2 Tín` |
 | Reviewer | `P1 Huy`; `P3 Cường` (hợp đồng bộ detector dùng một lần) |
 | Candidate commit | `CP5 T065(api): prewarm single-use detector sets off the request path` |
-| Commit | `PENDING` |
+| Commit | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` — [a214a3c](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) |
 | Ngày/giờ | `2026-11-08T02:25+07:00` |
-| Status | `PASS` local; chờ CI |
+| Status | `PASS` local và CI |
 
 ## Phạm vi
 
