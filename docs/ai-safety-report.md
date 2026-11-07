@@ -1,0 +1,53 @@
+# T089 · Đánh giá độ bền và từ chối
+
+## Phạm vi đã kiểm
+
+Smoke trên Windows dùng Uvicorn, detector thật và GRU T036 huấn luyện từ tensor
+tổng hợp. Hai WebM trống đen/trắng đều trả `422 NO_PERSON_DETECTED`. Sáu clip
+review có người đi qua pipeline và đều trả HTTP 200. Chưa có nhãn đã audit cho
+lượt này nên không tính sáu clip vào mẫu số false accept hoặc độ chính xác VSL.
+[Bằng chứng HTTP](evidence/checkpoints/CP5/T065-p3-cuong-smoke.md)
+
+API kiểm đầu vào và landmark trước GRU. Khi có tensor đủ điều kiện, GRU chọn
+lớp có softmax cao nhất. Nếu confidence đạt hoặc bằng ngưỡng của artifact và
+lớp có chữ hiển thị, API chấp nhận. Kết quả dưới ngưỡng bị từ chối. Softmax
+cần được kiểm nghiệm trên ký hiệu ngoài phạm vi trước khi diễn giải độ tin cậy.
+[Luật quyết định](../services/inference-api/src/visign_api/inference/prediction_decision.py)
+
+## Chạy với artifact đã đánh giá
+
+1. Cố định artifact, model version, class map và threshold đã chọn trên validation.
+   Giữ video test và probe OOD độc lập với train/validation. Lấy ký hiệu ngoài
+   danh mục, cử chỉ không phải VSL và clip không có người. Với mẫu trong danh mục,
+   audit nhãn và phủ người ký mới, các mức ánh sáng và góc camera. Giữ biến thể
+   của cùng video nguồn trong cùng nhóm khi chia dữ liệu.
+2. Chạy qua endpoint thật. Ghi một dòng cho mỗi lượt. Đặt `expectedMeaning` trống
+   cho OOD đã xác minh, ghi loại ở `oodKind` và để cột đó trống với mẫu trong
+   danh mục. Với response accepted, tra `classLabel` qua class map
+   và ghi `predictedMeaning`. Ghi `rejected` cho quyết định từ chối có chủ đích,
+   gồm `NO_PERSON_DETECTED` và `INSUFFICIENT_LANDMARKS`. Ghi `error` cho timeout,
+   lỗi hạ tầng, response bất nhất và lỗi kỹ thuật khác. Giữ nguyên probe ID và
+   điều kiện giữa các lượt lặp cùng input. Dùng nhóm người ký ẩn danh và cột
+   metadata theo đúng header bên dưới, tránh lưu tên, clip, landmark hoặc signer ID.
+3. Chạy scorer và đọc số mẫu cùng tỷ lệ từng nhóm. False accept là số OOD
+   được chấp nhận chia cho số OOD có quyết định. Lỗi được đếm riêng và tỷ lệ là
+   `null` nếu chưa có quyết định. Tỷ lệ đúng theo nghĩa tính trên toàn bộ lượt
+   có nhãn, kể cả lượt lỗi/từ chối. Lượt lặp có lỗi được ghi `incomplete`.
+   Báo coverage theo nghĩa, người ký, ánh sáng và góc. Mẫu ít hoặc mất cân
+   bằng giới hạn kết luận về bias và độ ổn định.
+
+```text
+probeId,modelVersion,expectedMeaning,predictedMeaning,outcome,oodKind,signerGroup,lighting,angle
+```
+
+```powershell
+uv run --locked --project ai python -m visign_ai.evaluation.robustness --probes PATH/probes.csv --output PATH/robustness.json
+uv run --locked --project ai pytest ai/tests/evaluation/test_safety_robustness.py -q
+```
+
+## Còn thiếu để nghiệm thu
+
+T089 chờ artifact VSL thật, probe đã audit và bằng chứng qua UI cho các nhóm
+điều kiện. Cần báo cáo false accept theo loại OOD, số clip và người ký theo
+nhóm, tỷ lệ đúng theo nghĩa, lỗi kỹ thuật và độ ổn định qua lặp. Các test scorer
+dùng dữ liệu mô phỏng để kiểm công thức và quy tắc xử lý lỗi.
