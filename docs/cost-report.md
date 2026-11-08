@@ -70,3 +70,45 @@ Theo [báo cáo triển khai T095](deployment-report.md) tại `2182f85`, origin
 | Pilot Giấy tờ / Nhận trong Docker | 1,4–2,3 s/clip trên 4 clip, RAM 890 MiB | Smoke local của Huy |
 
 t3.small đang chạy origin với fixture. Số đo pilot local cho thấy cần giữ dư địa RAM cho detector tạo sẵn. Phần cần đo tiếp là CPU credit, RAM đỉnh và p95 web khi EC2 phục vụ artifact thật qua HTTPS. [Đối chứng T065 của Tín](evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md) · [Trạng thái pilot](team/implementation-status.md)
+
+## Chi phí và tài nguyên thực tế sau deploy (T094, 2026-11-08)
+
+Giá on-demand Sydney lấy từ AWS Pricing API ngày 2026-11-08: **t3.small 0,0264 USD/giờ** (2 vCPU, 2 GiB),
+**c7i-flex.large 0,1107 USD/giờ** (2 vCPU, 4 GiB), gp3 **0,096 USD/GB-tháng**; IPv4 công khai 0,005 USD/giờ.
+
+| Hạng mục | Thực tế | Chi phí |
+|---|---|---|
+| EC2 | t3.small thường ngày; c7i-flex.large trong ngày demo | 0,63 / 2,66 USD mỗi ngày chạy 24 giờ |
+| EBS gp3 30 GB | Đĩa dùng ~21% (6,3 GB) | 2,88 USD/tháng (~0,10 USD/ngày) |
+| Elastic IP / IPv4 | 1 địa chỉ | 0,12 USD/ngày |
+| ECR | Image API ~665 MB nén, web ~26–60 MB; giữ 5 image mỗi repo | < 0,4 USD/tháng |
+| S3 | Artifact ~250 KB + compose | không đáng kể |
+| Mạng | Mỗi ký hiệu upload ~0,5–0,6 MB (vào AWS miễn phí); phản hồi < 1 KB | không đáng kể |
+| CloudFront | Chưa bật (chờ xác minh tài khoản) | 0 |
+
+Một ngày demo trên c7i-flex.large ≈ **2,9 USD**; một tháng t3.small chạy liên tục ≈ **22,9 USD** (EC2 + IPv4) +
+2,9 USD đĩa. Credit Free Plan 100 USD; Budget cảnh báo 5/20/50 USD.
+
+### So sánh cấu hình (số đo cùng 4 clip pilot, cùng artifact)
+
+| Cấu hình | Xử lý trên server | Round-trip từ VN | Thông lượng bão hoà | RAM API đỉnh | Chi phí |
+|---|---|---|---|---|---|
+| Docker local (i7-12700H) | 1,2–2,0 s | 1,2–2,0 s | ~30–36 ký hiệu/phút | 929 MiB (8 client, sau sửa) | 0 |
+| AWS t3.small | 4,0–4,7 s | 5,5–6,3 s | chưa đo tải | ~1 GiB / 2 GiB máy | 0,63 USD/ngày |
+| AWS c7i-flex.large | 2,5–3,4 s | 3,9–5,4 s | ~19 ký hiệu/phút | ~0,9 GiB / 4 GiB máy | 2,66 USD/ngày |
+
+### Phương án tối ưu đã đánh giá
+
+| Phương án | Kết quả | Trạng thái |
+|---|---|---|
+| Sửa rò rỉ RAM `MALLOC_ARENA_MAX=2` | RAM đỉnh 1.523 → 929 MiB, 0 lần chạm trần, thông lượng không đổi — cho phép giữ giới hạn 1,5 GiB, **đủ chạy trên t3.small 2 GiB** | Đã đo, đã áp dụng |
+| Đổi t3.small → c7i-flex.large | Xử lý nhanh ~35%, chi phí ×4,2 | Đã đo; chỉ bật ngày demo |
+| Trình duyệt trích landmark, gửi tensor thay video | Server chỉ chạy GRU (< 5 ms), bỏ upload video → ước lượng < 1 s/ký hiệu và nhiều người dùng/instance hơn | Ước lượng, chưa làm (M2) |
+| Chuyển region Singapore | Giảm độ trễ mạng từ VN; giá EC2 tương đương | Ước lượng, chưa làm |
+
+### Quyết định
+
+Chất lượng model chưa đạt cổng phát hành nên không chi thêm cho hạ tầng lớn hơn. Demo chính chạy **local** (đạt
+≤ 3 s, 0 USD); bản AWS dùng **c7i-flex.large chỉ trong ngày demo** rồi dừng hoặc xoá stack `visign-origin`; khi cần
+chạy dài ngày dùng **t3.small** (đủ RAM sau khi sửa rò rỉ, chấp nhận 5,5–6,3 s). Hướng đầu tư tiếp theo cho độ trễ là gửi
+landmark từ trình duyệt, không phải máy lớn hơn.
