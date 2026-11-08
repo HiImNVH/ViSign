@@ -1,7 +1,7 @@
 // T063 (cap nhat cho dich truc tiep T106): ban phim, focus, thong bao trang thai va axe WCAG A/AA.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { installPresenceStub, setScene, signOnce, startLive } from '../browser/liveHelpers';
+import { installCameraPermissionDeniedStub, installPresenceStub, setScene, signOnce, startLive } from '../browser/liveHelpers';
 
 const model = {
   modelVersion: 'pilot-v1', artifactKind: 'pilot', datasetVersion: 'sample',
@@ -48,7 +48,8 @@ test('T063 keyboard starts, pauses, resumes and stops live translation with stat
   await expect(page.getByRole('button', { name: 'Bật camera' })).toBeFocused();
 });
 
-test('T063 camera region describes privacy and passes axe in off, help and permission error', async ({ page, context }) => {
+test('T063 camera region describes privacy and passes axe in off, help and permission error', async ({ page }) => {
+  await installCameraPermissionDeniedStub(page);
   await page.goto('/');
   const region = page.getByRole('region', { name: 'Dịch ký hiệu trực tiếp bằng camera' });
   await expect(region).toHaveAttribute('aria-describedby', 'camera-privacy');
@@ -62,9 +63,6 @@ test('T063 camera region describes privacy and passes axe in off, help and permi
   await expect(dialog.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Hướng dẫn' })).toBeFocused();
-  await context.clearPermissions();
-  const cdp = await context.newCDPSession(page);
-  await cdp.send('Browser.setPermission', { permission: { name: 'camera' }, setting: 'denied', origin: 'http://127.0.0.1:4173' });
   await page.getByRole('button', { name: 'Bật camera' }).click();
   await expect(page.getByRole('alert')).toContainText('Chưa có quyền sử dụng camera');
   await expect(page.getByRole('button', { name: 'Thử lại' })).toBeFocused();

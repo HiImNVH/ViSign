@@ -61,7 +61,7 @@ function load(now: number): HistoryLoad {
         entries.push(project(item));
       }
     }
-    entries.sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+    entries.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
     if (entries.length !== parsed.entries.length || JSON.stringify(entries) !== JSON.stringify(parsed.entries)) {
       if (entries.length) storage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries }));
       else storage.removeItem(HISTORY_STORAGE_KEY);
@@ -84,7 +84,7 @@ export function appendTranslationHistory(entry: TranslationHistoryEntry, now = D
   if (!validEntry(entry, now) || previous.entries.some(item => item.requestId === entry.requestId))
     return { entries: previous.entries, available: previous.available };
   const entries = [...previous.entries, project(entry)]
-    .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
   try {
     window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries }));
     return { entries, available: true };
@@ -96,4 +96,17 @@ export function appendTranslationHistory(entry: TranslationHistoryEntry, now = D
 export function clearTranslationHistory(): boolean {
   try { window.localStorage.removeItem(HISTORY_STORAGE_KEY); return true; }
   catch { return false; }
+}
+
+export function removeTranslationHistoryEntry(requestId: string): HistoryRead {
+  const previous = load(Date.now());
+  if (!previous.readable) return { entries: previous.entries, available: false };
+  const entries = previous.entries.filter(entry => entry.requestId !== requestId);
+  try {
+    if (entries.length) window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ schemaVersion: 1, entries }));
+    else window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+    return { entries, available: true };
+  } catch {
+    return { entries: previous.entries, available: false };
+  }
 }

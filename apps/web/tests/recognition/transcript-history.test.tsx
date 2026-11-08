@@ -40,7 +40,7 @@ let originalClose: typeof HTMLDialogElement.prototype.close;
 
 function Harness() {
   const ctrl = useRecognition(api);
-  return <><HistoryPanel history={ctrl.history} refreshHistory={ctrl.refreshHistory} clearHistory={ctrl.clearHistory} />
+  return <><HistoryPanel history={ctrl.history} refreshHistory={ctrl.refreshHistory} clearHistory={ctrl.clearHistory} removeHistoryEntry={ctrl.removeHistoryEntry} />
     <CameraRecorder controller={ctrl} /></>;
 }
 
@@ -118,9 +118,9 @@ test('accepted results build chronological aria-live transcript; rejection leave
   expect(JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)!).entries).toHaveLength(2);
   fireEvent.click(screen.getByRole('button', { name: 'Lịch sử' }));
   const dialog = within(screen.getByRole('dialog', { name: 'Lịch sử bản dịch' }));
-  expect(dialog.getByText('Chỉ lưu trên thiết bị này trong 24 giờ. Không gửi lịch sử lên máy chủ.')).toBeInTheDocument();
-  expect(dialog.getByText(/chưa phải câu dịch có ngữ pháp/)).toBeInTheDocument();
-  expect(dialog.getAllByText('Độ tin cậy:', { exact: false })).toHaveLength(2);
+  expect(dialog.queryByText(/Chỉ lưu trên thiết bị/)).not.toBeInTheDocument();
+  expect(dialog.queryByText(/chưa phải câu dịch có ngữ pháp/)).not.toBeInTheDocument();
+  expect(dialog.queryByText('Độ tin cậy:', { exact: false })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Xoá toàn bộ lịch sử' }));
   fireEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
   expect(screen.queryByRole('region', { name: 'Bản dịch trực tiếp' })).not.toBeInTheDocument();

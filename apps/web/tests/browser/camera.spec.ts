@@ -33,6 +33,75 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
 });
 
+test('live status stays visible in the upper-left corner of the camera', async ({ page }) => {
+  await page.goto('/');
+  const badge = page.locator('.status-badge');
+  await expect(badge).toBeVisible();
+
+  const [badgeBox, cameraBox] = await Promise.all([
+    badge.boundingBox(), page.locator('.camera-viewport').boundingBox(),
+  ]);
+  if (!badgeBox || !cameraBox) throw new Error('Missing status badge or camera viewport');
+  expect(badgeBox.x).toBeGreaterThanOrEqual(cameraBox.x);
+  expect(badgeBox.y).toBeGreaterThanOrEqual(cameraBox.y);
+  expect(badgeBox.x + badgeBox.width).toBeLessThan(cameraBox.x + cameraBox.width / 2);
+});
+
+test('person, face and hands indicators stay at the top of the camera', async ({ page }) => {
+  await page.goto('/');
+  await startLive(page, 'partial');
+
+  const chips = page.getByRole('list', { name: 'Trạng thái phát hiện' });
+  const badge = page.locator('.status-badge');
+  await expect(chips).toBeVisible();
+
+  for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 640 }]) {
+    await page.setViewportSize(size);
+    const [chipsBox, badgeBox, cameraBox] = await Promise.all([
+      chips.boundingBox(), badge.boundingBox(), page.locator('.camera-viewport').boundingBox(),
+    ]);
+    if (!chipsBox || !badgeBox || !cameraBox) throw new Error('Missing presence indicators or camera viewport');
+    expect(chipsBox.y).toBeGreaterThanOrEqual(cameraBox.y);
+    expect(chipsBox.y).toBeLessThan(cameraBox.y + cameraBox.height / 2);
+    if (size.width <= 480) expect(chipsBox.y).toBeGreaterThan(badgeBox.y + badgeBox.height);
+    else expect(chipsBox.x).toBeGreaterThan(badgeBox.x + badgeBox.width);
+  }
+});
+
+test('live instruction is centered directly below the presence indicators', async ({ page }) => {
+  await page.goto('/');
+  await startLive(page, 'partial');
+
+  const chips = page.getByRole('list', { name: 'Trạng thái phát hiện' });
+  const hint = page.locator('.live-hint');
+  for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 640 }]) {
+    await page.setViewportSize(size);
+    const [chipsBox, hintBox, cameraBox] = await Promise.all([
+      chips.boundingBox(), hint.boundingBox(), page.locator('.camera-viewport').boundingBox(),
+    ]);
+    if (!chipsBox || !hintBox || !cameraBox) throw new Error('Missing camera guidance');
+    expect(hintBox.y).toBeGreaterThanOrEqual(chipsBox.y + chipsBox.height - 1);
+    expect(Math.abs(hintBox.x + hintBox.width / 2 - cameraBox.x - cameraBox.width / 2)).toBeLessThan(2);
+  }
+});
+
+test('pause, resume and camera-off controls use accessible icon buttons', async ({ page }) => {
+  await page.goto('/');
+  await startLive(page);
+
+  const pause = page.getByRole('button', { name: 'Tạm dừng' });
+  const stop = page.getByRole('button', { name: 'Tắt camera' });
+  await expect(pause.locator('svg')).toBeVisible();
+  await expect(stop.locator('svg')).toBeVisible();
+  await expect(pause).toHaveAttribute('title', 'Tạm dừng');
+  await expect(stop).toHaveAttribute('title', 'Tắt camera');
+  await pause.click();
+
+  const resume = page.getByRole('button', { name: 'Tiếp tục' });
+  await expect(resume.locator('svg')).toBeVisible();
+  await expect(resume).toHaveAttribute('title', 'Tiếp tục');
+});
+
 test('signs are recorded as real WebM, uploaded automatically and joined into the transcript', async ({ page }) => {
   const bodies: number[] = [];
   const words = ['Nhận', 'Giấy tờ (giấy)'];
@@ -50,7 +119,7 @@ test('signs are recorded as real WebM, uploaded automatically and joined into th
   await startLive(page);
   await signOnce(page);
   await expect(page.getByRole('status')).toHaveText('Đã dịch');
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Nhận');
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveText('Nhận');
   await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
   await signOnce(page);
   await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toContainText('Nhận Giấy tờ (giấy)');
@@ -172,10 +241,13 @@ test('help supports Escape, focus restoration and reduced motion', async ({ page
   await expect(help).toHaveCSS('transition-duration', '0s');
 });
 
-test('denied camera permission shows a recoverable error', async ({ page, context }) => {
-  await context.clearPermissions();
-  const cdp = await context.newCDPSession(page);
-  await cdp.send('Browser.setPermission', { permission: { name: 'camera' }, setting: 'denied', origin: 'http://127.0.0.1:4173' });
+test('denied camera permission shows a recoverable error', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+      configurable: true,
+      value: () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError')),
+    });
+  });
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Lỗi');

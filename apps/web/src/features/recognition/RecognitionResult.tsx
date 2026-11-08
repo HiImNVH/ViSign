@@ -27,22 +27,7 @@ export function RecognitionResult({ result, model, onRetry, retryRef }: Recognit
   if (!result.text.trim() || !result.classLabel?.trim()
     || !Number.isFinite(result.confidence) || result.confidence < 0 || result.confidence > 1) return null;
 
-  const notReady = !model.demoReady || model.artifactKind !== 'full';
-  // FR-005: hiển thị chữ tiếng Việt, chỉ dùng mã nghĩa khi artifact cũ không khai chữ hiển thị
-  const meanings = model.meanings.map(meaning => model.meaningDisplayTexts?.[meaning]?.trim() || meaning).join(', ');
-
   return <section className="translation-panel" aria-label="Văn bản dịch" aria-live="polite" aria-atomic="true">
     <p className="translation-text">{result.text.trim()}</p>
-    <p className="translation-confidence">{vi.recognition.confidence} {(result.confidence * 100).toFixed(0)}%</p>
-    <p className="translation-notice">
-      <span className="full-disclaimer">{vi.disclaimer}</span>
-      <span className="short-disclaimer">{vi.recognition.shortDisclaimer}</span>
-    </p>
-    {notReady && <>
-      <p className="translation-model-warning" role="note">{vi.recognition.modelNotReady[model.artifactKind]}</p>
-      <p className="translation-coverage" title={meanings || vi.recognition.noMeanings}>
-        {meanings ? `${vi.recognition.meanings}: ${meanings}` : vi.recognition.noMeanings}
-      </p>
-    </>}
   </section>;
 }

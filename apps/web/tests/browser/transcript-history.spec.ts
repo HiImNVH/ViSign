@@ -80,18 +80,18 @@ test('T104 two accepted clips form a transcript; rejected clip is excluded; hist
     expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight
       && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload();
   await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Lịch sử' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
-  await expect(dialog).toContainText('Xin chào');
-  await expect(dialog).toContainText('Cảm ơn');
-  await expect(dialog.locator('li')).toHaveCount(2);
-  await expect(dialog).toContainText('Chỉ lưu trên thiết bị này trong 24 giờ');
-  await dialog.getByRole('button', { name: 'Xoá toàn bộ lịch sử' }).click();
-  await expect(dialog).toContainText('Xác nhận');
-  await dialog.getByRole('button', { name: 'Xác nhận xoá' }).click();
-  await expect(dialog).toContainText('Chưa có bản dịch được lưu.');
+  const history = page.getByRole('complementary', { name: 'Lịch sử bản dịch' });
+  await expect(history).toContainText('Xin chào');
+  await expect(history).toContainText('Cảm ơn');
+  await expect(history.locator('li')).toHaveCount(2);
+  await expect(history.locator('.history-disclosure')).toHaveCount(0);
+  await history.getByRole('button', { name: 'Xoá toàn bộ lịch sử' }).click();
+  await expect(history).toContainText('Xác nhận');
+  await history.getByRole('button', { name: 'Xác nhận xoá' }).click();
+  await expect(history).toContainText('Chưa có bản dịch được lưu.');
   expect(await page.evaluate(key => localStorage.getItem(key), historyKey)).toBeNull();
   expect(mock.uploads).toBe(3);
   expect(mock.postUrls).toHaveLength(3);
@@ -101,6 +101,7 @@ test('T104 stored metadata expires on reload at 24 hours', async ({ page }) => {
   const mock = mockPredictions(page);
   await mock.register();
   await page.clock.install({ time: new Date('2026-11-08T00:00:00.000Z') });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await recordAndSubmit(page, true);
   await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toContainText('Xin chào');
@@ -111,16 +112,15 @@ test('T104 stored metadata expires on reload at 24 hours', async ({ page }) => {
   await page.clock.setSystemTime(new Date(Date.parse(createdAt) + 24 * 60 * 60 * 1000));
   await page.reload();
   expect(await page.evaluate(key => localStorage.getItem(key), historyKey)).toBeNull();
-  await page.getByRole('button', { name: 'Lịch sử' }).click();
-  await expect(page.getByRole('dialog', { name: 'Lịch sử bản dịch' })).toContainText('Chưa có bản dịch được lưu.');
+  await expect(page.getByRole('complementary', { name: 'Lịch sử bản dịch' })).toContainText('Chưa có bản dịch được lưu.');
   expect(mock.uploads).toBe(1);
   expect(mock.postUrls).toHaveLength(1);
 });
 
 test('FE-T090-02 another tab refreshes open history on append and on clear', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Lịch sử' }).click();
-  const history = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
+  const history = page.getByRole('complementary', { name: 'Lịch sử bản dịch' });
   await expect(history).toContainText('Chưa có bản dịch được lưu.');
   const other = await context.newPage();
   await other.goto('/');
@@ -136,6 +136,7 @@ test('FE-T090-02 another tab refreshes open history on append and on clear', asy
 });
 
 test('FE-T090-05 1200 valid entries stay stored while history renders 50 at a time', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(key => {
     const entries = Array.from({ length: 1200 }, (_, n) => ({
       requestId: `123e4567-e89b-42d3-a456-${(n + 1).toString(16).padStart(12, '0')}`,
@@ -144,8 +145,7 @@ test('FE-T090-05 1200 valid entries stay stored while history renders 50 at a ti
     localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, entries }));
   }, historyKey);
   await page.goto('/');
-  await page.getByRole('button', { name: 'Lịch sử' }).click();
-  const history = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
+  const history = page.getByRole('complementary', { name: 'Lịch sử bản dịch' });
   await expect(history.locator('li')).toHaveCount(50);
   await expect(history).toContainText('Ký hiệu 1199');
   await expect(history).not.toContainText('Ký hiệu 0 ');
@@ -154,7 +154,7 @@ test('FE-T090-05 1200 valid entries stay stored while history renders 50 at a ti
   const evidence = await page.evaluate(key => {
     const raw = localStorage.getItem(key)!;
     return { entries: JSON.parse(raw).entries.length, bytes: new Blob([raw]).size,
-      rendered: document.querySelectorAll('.history-entries li').length };
+      rendered: document.querySelectorAll('.history-sidebar .history-entries li').length };
   }, historyKey);
   expect(evidence.entries).toBe(1200);
   expect(evidence.rendered).toBe(100);

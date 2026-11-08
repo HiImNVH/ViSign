@@ -1,6 +1,6 @@
 // apps/web/src/App.tsx - Bo cuc trang camera va thong tin thu nghiem.
+import { useEffect } from 'react';
 import { CameraHelp } from './components/CameraHelp';
-import { vi } from './content/vi';
 import { LiveCamera } from './features/live/LiveCamera';
 import { useLiveRecognition } from './features/live/useLiveRecognition';
 import { HistoryPanel } from './features/recognition/HistoryPanel';
@@ -8,13 +8,36 @@ import './styles.css';
 
 export function App() {
   const recognition = useLiveRecognition();
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== ' ' && event.key !== 'Escape') return;
+      const target = event.target;
+      if (target instanceof HTMLElement && (target.isContentEditable
+        || ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'SUMMARY'].includes(target.tagName))) return;
+      if (document.querySelector('dialog[open]')) return;
+      if (event.key === ' ') {
+        event.preventDefault();
+        if (recognition.liveStatus === 'off' || recognition.liveStatus === 'error') void recognition.start();
+        else if (recognition.paused) recognition.resume();
+        else if (recognition.liveStatus !== 'starting') recognition.pause();
+      } else if (recognition.liveStatus !== 'off') {
+        event.preventDefault();
+        recognition.stop();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [recognition.liveStatus, recognition.paused, recognition.start, recognition.resume, recognition.pause, recognition.stop]);
   return (
     <main className="app-shell">
-      <header className="app-header"><div className="brand"><h1>ViSign</h1><span>{vi.title}</span></div>
-        <div className="header-actions"><span className="trial-label">Bản thử nghiệm</span>
-          <HistoryPanel history={recognition.history} refreshHistory={recognition.refreshHistory}
-            clearHistory={recognition.clearHistory} /><CameraHelp /></div></header>
-      <LiveCamera live={recognition} />
+      <header className="app-header"><div className="brand"><h1>V<span className="brand-i">i</span>S<span className="brand-i">i</span>gn</h1></div>
+        <div className="header-actions"><CameraHelp /></div></header>
+      <div className="recognition-layout">
+        <LiveCamera live={recognition} />
+        <HistoryPanel variant="sidebar" history={recognition.history} refreshHistory={recognition.refreshHistory}
+          clearHistory={recognition.clearHistory} removeHistoryEntry={recognition.removeHistoryEntry} />
+      </div>
+      <footer className="app-footer">© 2026 ViSign · 5HVT | Hackathon · Bản thử nghiệm</footer>
     </main>
   );
 }

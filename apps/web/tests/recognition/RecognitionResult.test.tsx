@@ -13,46 +13,24 @@ const model: ModelInfo = {
   extractorVersion: 'e1', meanings: ['Xin chào', 'Cảm ơn'], acceptanceThreshold: .7,
   macroF1: .9, perMeaningRecall: {}, evaluatedAt: null, demoReady: true,
 };
+const pilotModel: ModelInfo = { ...model, artifactKind: 'pilot', demoReady: false };
 
-test('accepted result renders Vietnamese translation, confidence and full disclaimer', () => {
+test('accepted result displays only the translated word', () => {
   render(<RecognitionResult result={accepted} model={model} />);
   const panel = screen.getByRole('region', { name: 'Văn bản dịch' });
   expect(panel).toHaveAttribute('aria-live', 'polite');
   expect(panel).toHaveAttribute('aria-atomic', 'true');
-  expect(panel).toHaveTextContent('Xin chào');
-  expect(panel).toHaveTextContent('Độ tin cậy 92%');
-  expect(panel).toHaveTextContent(copy.disclaimer);
-  expect(screen.queryByText(/chưa sẵn sàng.*demo/i)).not.toBeInTheDocument();
+  expect(panel).toHaveTextContent(/^Xin chào$/);
+  expect(panel.querySelectorAll('p')).toHaveLength(1);
+  expect(panel).not.toHaveTextContent('Độ tin cậy');
+  expect(panel).not.toHaveTextContent(copy.disclaimer);
 });
 
-test.each([
-  ['fixture', 'Tích hợp nội bộ', ['Xin chào']],
-  ['pilot', 'Thí điểm giới hạn', ['Xin chào', 'Cảm ơn']],
-  ['full', 'chưa đạt điều kiện demo', ['Xin chào']],
-] as const)('model kind %s with demoReady=false visibly discloses scope', (artifactKind, expectedNotice, meanings) => {
-  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind, demoReady: false, meanings: [...meanings] }} />);
-  expect(screen.getByRole('note')).toHaveTextContent(expectedNotice);
-  expect(screen.getByRole('note')).toHaveTextContent('demo');
-  expect(screen.getByText(new RegExp(`^Ý nghĩa hỗ trợ: ${meanings.join('.*')}$`))).toBeVisible();
-  expect(screen.getByText(copy.disclaimer)).toBeVisible();
-});
-
-test('model with no supported meanings makes limitation explicit', () => {
-  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'fixture', demoReady: false, meanings: [] }} />);
-  expect(screen.getByText(/Chưa công bố ý nghĩa hỗ trợ/)).toBeVisible();
-});
-
-test('pilot cannot be presented as demo-ready even with inconsistent metadata', () => {
-  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'pilot', demoReady: true }} />);
-  expect(screen.getByRole('note')).toHaveTextContent('Thí điểm giới hạn');
-  expect(screen.getByText(/^Ý nghĩa hỗ trợ:/)).toBeVisible();
-});
-
-test.each([
-  [0, '0%'], [1, '100%'], [.925, '93%'],
-] as const)('accepted confidence %s formats as %s', (confidence, expected) => {
-  render(<RecognitionResult result={{ ...accepted, confidence }} model={model} />);
-  expect(screen.getByText(`Độ tin cậy ${expected}`)).toBeVisible();
+test('accepted result stays word-only when model metadata is not demo-ready', () => {
+  render(<RecognitionResult result={accepted} model={pilotModel} />);
+  const panel = screen.getByRole('region', { name: 'Văn bản dịch' });
+  expect(panel).toHaveTextContent(/^Xin chào$/);
+  expect(panel.querySelectorAll('p')).toHaveLength(1);
 });
 
 test('rejected result shows only safe guidance and explicitly starts a new recording', () => {
@@ -89,11 +67,15 @@ test.each([
   expect(container).toBeEmptyDOMElement();
 });
 
-test('rerender clears stale result and removes outdated model warning', () => {
-  const rendered = render(<RecognitionResult result={accepted} model={{ ...model, demoReady: false, artifactKind: 'pilot' }} />);
-  expect(screen.getByRole('note')).toBeVisible();
+test('rerender keeps accepted result word-only and clears it for rejected results', () => {
+  const rendered = render(<RecognitionResult result={accepted} model={pilotModel} />);
+  const panel = screen.getByRole('region', { name: 'Văn bản dịch' });
+  expect(panel).toHaveTextContent(/^Xin chào$/);
+  expect(panel.querySelectorAll('p')).toHaveLength(1);
+  expect(screen.queryByRole('note')).not.toBeInTheDocument();
   rendered.rerender(<RecognitionResult result={accepted} model={model} />);
   expect(screen.queryByRole('note')).not.toBeInTheDocument();
+  expect(screen.getByRole('region', { name: 'Văn bản dịch' })).toHaveTextContent(/^Xin chào$/);
   rendered.rerender(<RecognitionResult result={{ ...accepted, accepted: false }} model={model} />);
   expect(screen.queryByRole('region', { name: 'Văn bản dịch' })).not.toBeInTheDocument();
 });

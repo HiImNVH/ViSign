@@ -26,6 +26,16 @@ export async function installPresenceStub(page: Page, scene: Scene = 'none') {
   }, scene);
 }
 
+/** Reproduce a denied camera permission without depending on Chromium's fake-device permission UI. */
+export async function installCameraPermissionDeniedStub(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+      configurable: true,
+      value: () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError')),
+    });
+  });
+}
+
 export async function setScene(page: Page, scene: Scene) {
   await page.evaluate(value => { window.__visignScene = value; }, scene);
 }

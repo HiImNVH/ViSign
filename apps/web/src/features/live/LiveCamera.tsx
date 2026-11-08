@@ -41,15 +41,21 @@ export function LiveCamera({ live }: { live: LiveRecognition }) {
     <div className={`camera-viewport ${view.phase !== 'idle' && view.phase !== 'error' ? 'camera-active' : ''}`}
       data-live-status={liveStatus}>
       <video ref={camera.videoRef} autoPlay muted playsInline aria-label={vi.preview} />
-      {!active && liveStatus !== 'error' && <div className="camera-placeholder"><span className="camera-glyph" aria-hidden="true" />
+      {!active && liveStatus !== 'error' && <div className="camera-placeholder"><div className="camera-guide" aria-hidden="true">
+        <svg className="camera-illustration" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 18l4-6h12l4 6h8a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6V24a6 6 0 0 1 6-6z" />
+          <circle cx="32" cy="35" r="11" /><path d="M46 26h2" />
+        </svg></div>
         <p>Khuôn mặt và hai tay<br />trong khung hình</p></div>}
       <span className={`status-badge live-${liveStatus}`} role="status" aria-atomic="true">
         <span aria-hidden="true" />{vi.live.status[liveStatus]}
       </span>
-      <TranscriptPanel entries={transcript} />
-      <div className="camera-dock">
+      <div className="camera-guidance">
         {active && <PresenceChips live={live} />}
-        <p className="live-hint">{vi.live.hint[liveStatus]}</p>
+        {liveStatus !== 'off' && <p className="live-hint">{vi.live.hint[liveStatus]}</p>}
+      </div>
+      <div className="sr-only"><TranscriptPanel entries={transcript} /></div>
+      <div className="camera-dock">
         {view.phase === 'error' && <RecognitionError type="camera" error={view.error} />}
         {live.detectorError && view.phase !== 'error' && <div className="capture-feedback error-feedback" role="alert">
           <h3>{vi.live.detectorFailed[0]}</h3><p>{vi.live.detectorFailed[1]}</p></div>}
@@ -65,9 +71,25 @@ export function LiveCamera({ live }: { live: LiveRecognition }) {
             onClick={() => { if (liveStatus === 'error') live.stop(); void live.start(); }}>
             {liveStatus === 'error' ? vi.live.retry : vi.live.start}</button>}
           {active && (paused
-            ? <button ref={primary} className="primary-button" onClick={live.resume}>{vi.live.resume}</button>
-            : <button ref={primary} className="quiet-button" onClick={live.pause}>{vi.live.pause}</button>)}
-          {(active || liveStatus === 'starting') && <button className="quiet-button camera-off" onClick={live.stop}>{vi.live.stop}</button>}
+            ? <button ref={primary} type="button" className="quiet-button icon-button" aria-label={vi.live.resume}
+              title={vi.live.resume} onClick={live.resume}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M8 5.5v13l10-6.5z" fill="currentColor" />
+              </svg>
+            </button>
+            : <button ref={primary} type="button" className="quiet-button icon-button" aria-label={vi.live.pause}
+              title={vi.live.pause} onClick={live.pause}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M8 5v14M16 5v14" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+              </svg>
+            </button>)}
+          {(active || liveStatus === 'starting') && <button type="button" className="quiet-button icon-button camera-off-button"
+            aria-label={vi.live.stop} title={vi.live.stop} onClick={live.stop}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="3.5" y="7.5" width="11" height="9" rx="2" fill="none" stroke="currentColor" strokeWidth="1.9" />
+              <path d="m14.5 10 5-3v10l-5-3M3 3l18 18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>}
         </div>
       </div>
     </div>

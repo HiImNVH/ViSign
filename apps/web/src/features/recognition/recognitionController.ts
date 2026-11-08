@@ -35,6 +35,7 @@ export interface HistoryController {
   history: HistoryRead;
   refreshHistory: () => void;
   clearHistory: () => boolean;
+  removeHistoryEntry: (requestId: string) => boolean;
 }
 
 export type RecognitionController = CameraController & HistoryController;

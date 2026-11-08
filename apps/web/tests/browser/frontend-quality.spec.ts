@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
-import { installPresenceStub, signOnce, startLive } from './liveHelpers';
+import { installCameraPermissionDeniedStub, installPresenceStub, signOnce, startLive } from './liveHelpers';
 
 test.beforeEach(async ({ page }) => { await installPresenceStub(page); });
 
@@ -83,16 +83,14 @@ test('T088 accepted flow: overlays, 10 meanings and camera controls fit responsi
   await page.setViewportSize(initial);
 });
 
-test('T088 permission denial and populated history pass axe after state changes', async ({ page, context }, info) => {
+test('T088 permission denial and populated history pass axe after state changes', async ({ page }, info) => {
   await page.addInitScript(() => localStorage.setItem('visign.translation-history.v1', JSON.stringify({
     schemaVersion: 1,
     entries: [{ requestId: '123e4567-e89b-42d3-a456-426614174000',
       text: 'Xin chào', confidence: .93, modelVersion: 'pilot-v1', createdAt: new Date().toISOString() }],
   })));
-  await context.clearPermissions();
-  const cdp = await context.newCDPSession(page);
-  await cdp.send('Browser.setPermission', { permission: { name: 'camera' }, setting: 'denied',
-    origin: 'http://127.0.0.1:4173' });
+  await installCameraPermissionDeniedStub(page);
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: model }));
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera' }).click();
   await expect(page.getByRole('alert')).toContainText('Chưa có quyền sử dụng camera');
@@ -100,14 +98,15 @@ test('T088 permission denial and populated history pass axe after state changes'
   const denial = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(denial.violations).toEqual([]);
   await saveEvidence(page, `permission-${info.project.name}`);
-  await page.getByRole('button', { name: 'Lịch sử' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
-  await expect(dialog).toContainText('Xin chào');
-  const historyAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-  expect(historyAudit.violations).toEqual([]);
-  await saveEvidence(page, `history-${info.project.name}`);
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('button', { name: 'Lịch sử' })).toBeFocused();
+  if (info.project.name === 'desktop') {
+    const history = page.getByRole('complementary', { name: 'Lịch sử bản dịch' });
+    await expect(history).toContainText('Xin chào');
+    const historyAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    expect(historyAudit.violations).toEqual([]);
+    await saveEvidence(page, `history-${info.project.name}`);
+  } else {
+    await expect(page.locator('.history-sidebar')).toBeHidden();
+  }
 });
 
 test('T088 submission busy and recoverable API error pass axe', async ({ page }, info) => {

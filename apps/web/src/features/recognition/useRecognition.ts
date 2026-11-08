@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCameraCapture } from './useCameraCapture';
 import { createInferenceApi, InferenceApiError } from '../../services/inferenceApi';
 import type { PredictionState, RecognitionState, ModelStatus, RecognitionController } from './recognitionController';
-import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory,
+import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory, removeTranslationHistoryEntry,
   HISTORY_STORAGE_KEY, type TranslationHistoryEntry } from './translationHistory';
 
 export type RecognitionApi = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
@@ -125,6 +125,13 @@ export function useRecognition(api?: Api): RecognitionController {
     setHistory({ entries: [], available: true });
     return true;
   }, [clearPrediction]);
+  const removeHistoryEntry = useCallback((requestId: string) => {
+    const result = removeTranslationHistoryEntry(requestId);
+    setHistory(result);
+    if (!result.available) return false;
+    setTranscript(previous => previous.filter(entry => entry.requestId !== requestId));
+    return true;
+  }, []);
 
   useEffect(() => {
     const onStorage = (event: StorageEvent) => {
@@ -214,6 +221,6 @@ export function useRecognition(api?: Api): RecognitionController {
   return {
     state, model, camera: { view: camera.view, videoRef: camera.videoRef }, enableCamera, startRecording, stopRecording,
     submit, cancel, reset, reloadModelInfo, compatibilityError,
-    transcript, history, refreshHistory, clearHistory,
+    transcript, history, refreshHistory, clearHistory, removeHistoryEntry,
   };
 }
