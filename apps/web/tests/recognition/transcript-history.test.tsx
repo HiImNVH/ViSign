@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
+import { CameraRecorder } from './ManualRecorder';
 import { HistoryPanel } from '../../src/features/recognition/HistoryPanel';
 import { TranscriptPanel, TRANSCRIPT_WINDOW_SIZE } from '../../src/features/recognition/TranscriptPanel';
 import { useRecognition } from '../../src/features/recognition/useRecognition';

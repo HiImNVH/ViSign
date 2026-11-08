@@ -1,5 +1,6 @@
-// apps/web/tests/e2e/helpers.ts - Tien ich E2E: quay clip that bang camera gia va dinh tuyen toi backend that.
-import { expect, type Page, type Request } from '@playwright/test';
+// apps/web/tests/e2e/helpers.ts - Tien ich E2E: dich truc tiep voi camera gia (WebM that) va backend FastAPI that.
+import { type Page, type Request } from '@playwright/test';
+import { installPresenceStub, signOnce, startLive } from '../browser/liveHelpers';
 
 /** Chuyen moi request /api/v1/* toi mot backend FastAPI that; response la response that, khong gia lap. */
 export async function useBackend(page: Page, port: number): Promise<void> {
@@ -10,14 +11,13 @@ export async function useBackend(page: Page, port: number): Promise<void> {
   });
 }
 
-export async function captureClip(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Bật camera' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(800);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+/** Dich truc tiep: gia lap nguoi dang ky hieu (stub phat hien), camera gia ghi WebM that va tu gui. */
+export async function signLive(page: Page, first = true): Promise<void> {
+  if (first) await startLive(page);
+  await signOnce(page);
 }
+
+export { installPresenceStub };
 
 export function collectPredictionPosts(page: Page): Request[] {
   const posts: Request[] = [];

@@ -3,6 +3,9 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { installPresenceStub, signOnce, startLive } from './liveHelpers';
+
+test.beforeEach(async ({ page }) => { await installPresenceStub(page); });
 
 const model = {
   modelVersion: 'pilot-v1', artifactKind: 'pilot', datasetVersion: 'sample',
@@ -23,12 +26,8 @@ async function saveEvidence(page: Page, name: string) {
 }
 
 async function recordClip(page: Page) {
-  await page.getByRole('button', { name: 'Bật camera' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+  await startLive(page);
+  await signOnce(page);
 }
 
 async function assertCameraLayout(page: Page) {
@@ -70,9 +69,8 @@ test('T088 accepted flow: overlays, 10 meanings and camera controls fit responsi
   });
   await page.goto('/');
   await recordClip(page);
-  expect(uploads).toBe(0);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
   await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
   await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toContainText('Xin chào');
   expect(uploads).toBe(1);
   const initial = page.viewportSize()!;
@@ -121,13 +119,12 @@ test('T088 submission busy and recoverable API error pass axe', async ({ page },
   });
   await page.goto('/');
   await recordClip(page);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đang nhận diện…');
+  await expect(page.getByRole('status')).toHaveText('Đang dịch');
   const pendingAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(pendingAudit.violations).toEqual([]);
   release();
   await expect(page.getByRole('alert')).toContainText('Dịch vụ đang bận');
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
+  await expect(page.getByRole('status')).toHaveText('Lỗi');
   const errorAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(errorAudit.violations).toEqual([]);
   await saveEvidence(page, `api-error-${info.project.name}`);

@@ -6,7 +6,8 @@ import type { PredictionState, RecognitionState, ModelStatus, RecognitionControl
 import { appendTranslationHistory, clearTranslationHistory, readTranslationHistory,
   HISTORY_STORAGE_KEY, type TranslationHistoryEntry } from './translationHistory';
 
-type Api = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
+export type RecognitionApi = Pick<ReturnType<typeof createInferenceApi>, 'modelInfo' | 'predict'>;
+type Api = RecognitionApi;
 
 type CapturedPrediction = { captureId: number; view: PredictionState };
 

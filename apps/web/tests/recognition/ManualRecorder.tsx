@@ -1,11 +1,12 @@
-// apps/web/src/features/recognition/CameraRecorder.tsx - Giao dien xem truoc va dieu khien mot doan quay.
+// apps/web/tests/recognition/ManualRecorder.tsx - Bo dieu khien thu cong CHI DUNG TRONG TEST: lai useRecognition qua cac nut
+// cu (Quay/Ket thuc/Gui) de giu kiem thu muc hook sau khi giao dien chuyen sang dich truc tiep (T106).
 import { useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
-import { vi } from '../../content/vi';
-import { type CameraView } from './cameraSession';
-import { RecognitionError } from './RecognitionError';
-import { RecognitionResult } from './RecognitionResult';
-import { TranscriptPanel } from './TranscriptPanel';
-import type { CameraController } from './recognitionController';
+import { vi } from '../../src/content/vi';
+import { type CameraView } from '../../src/features/recognition/cameraSession';
+import { RecognitionError } from '../../src/features/recognition/RecognitionError';
+import { RecognitionResult } from '../../src/features/recognition/RecognitionResult';
+import { TranscriptPanel } from '../../src/features/recognition/TranscriptPanel';
+import type { CameraController } from '../../src/features/recognition/recognitionController';
 
 type FocusRefs = {
   primary: RefObject<HTMLButtonElement | null>;

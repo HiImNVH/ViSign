@@ -345,6 +345,15 @@ trang vẫn còn lịch sử; giả lập +24 giờ thì mục cũ bị xoá; b�
 **Checkpoint**: US6 chạy độc lập với fixture; không thay đổi API contract, không ảnh hưởng `demoReady`.
 Reviewer: P1/Huy (spec, E2E) và P2/Tín (privacy: không có lịch sử gửi lên server).
 
+### Dịch trực tiếp liên tục (lead quyết định 2026-11-08, FR-004 sửa)
+
+**Owner**: P1/Huy (tiếp quản một phần việc của P3) · **Reviewer**: P5/Hiển (FE), P2/Tín (CSP/privacy)
+
+- [ ] T105 [US6] Phát hiện người/mặt/tay trên trình duyệt bằng `@mediapipe/tasks-vision` 1.1.1 (hand + pose lite, WASM và model phục vụ cùng origin, SHA-256 cố định) và bộ cắt đoạn tự động theo chuyển động tay tại `apps/web/src/features/live/presenceDetector.ts`, `liveSegmenter.ts`, `apps/web/scripts/prepare-mediapipe.mjs`; CSP thêm `'wasm-unsafe-eval'`
+- [ ] T106 [US6] Luồng dịch trực tiếp: tự ghi, tự gửi `/api/v1/predictions`, nối bản dịch, 11 trạng thái, Tạm dừng/Tiếp tục/Tắt camera, tự tạm dừng khi ẩn tab, giữ kết quả cuối đến ký hiệu kế tiếp tại `apps/web/src/features/live/useLiveRecognition.ts`, `LiveCamera.tsx`; bỏ giao diện quay thủ công
+- [ ] T107 [P] [US6] Kiểm thử: unit bộ cắt đoạn, component luồng live (MediaRecorder/API/detector giả), Playwright camera giả với stub phát hiện (WebM thật, 3 viewport, axe), test MediaPipe thật nạp được, E2E 3 backend FastAPI thật tại `apps/web/tests/live/`, `tests/browser/`, `tests/accessibility/`, `tests/e2e/`
+- [ ] T108 [US6] Smoke dịch trực tiếp trên bản deploy (HTTPS, webcam thật, CSP thật), đo thời gian từ khi tay dừng tới khi hiện chữ và ghi vào `docs/deployment-report.md`
+
 ---
 
 ## M1 Candidates — Không thuộc MVP commitment

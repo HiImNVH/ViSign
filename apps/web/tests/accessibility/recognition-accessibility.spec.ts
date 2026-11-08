@@ -1,5 +1,7 @@
+// T063 (cap nhat cho dich truc tiep T106): ban phim, focus, thong bao trang thai va axe WCAG A/AA.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { installPresenceStub, setScene, signOnce, startLive } from '../browser/liveHelpers';
 
 const model = {
   modelVersion: 'pilot-v1', artifactKind: 'pilot', datasetVersion: 'sample',
@@ -7,158 +9,55 @@ const model = {
   meanings: ['Xin chào'], acceptanceThreshold: .7,
   macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false,
 };
+const audit = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
 
-// Observe the real MediaRecorder rather than replacing it with a fake encoder.
-// Tests stop only after it has produced data and the minimum clip duration has elapsed.
-async function observeRecorder(page: Page) {
-  await page.addInitScript(() => {
-    type Probe = { startedAt: number; bytes: number; state: string; errorName: string | null };
-    const scope = window as typeof window & { __visignRecorderProbe?: Probe };
-    const nativeStart = MediaRecorder.prototype.start;
-    MediaRecorder.prototype.start = function (timeslice?: number) {
-      const probe: Probe = { startedAt: performance.now(), bytes: 0, state: 'starting', errorName: null };
-      scope.__visignRecorderProbe = probe;
-      this.addEventListener('start', () => { probe.state = this.state; }, { once: true });
-      this.addEventListener('dataavailable', event => { probe.bytes += event.data.size; });
-      this.addEventListener('error', event => {
-        probe.errorName = 'error' in event && event.error instanceof Error ? event.error.name : 'UnknownError';
-      }, { once: true });
-      return nativeStart.call(this, timeslice);
-    };
-  });
-}
-
-async function waitForEncodedClip(page: Page) {
-  await expect.poll(() => page.evaluate(() => {
-    const scope = window as typeof window & { __visignRecorderProbe?: {
-      startedAt: number; bytes: number; state: string; errorName: string | null;
-    } };
-    const probe = scope.__visignRecorderProbe;
-    if (!probe) return 'recorder-not-started';
-    if (probe.errorName) return `recorder-error:${probe.errorName}`;
-    if (probe.bytes > 0 && probe.state === 'recording' && performance.now() - probe.startedAt >= 400) return 'ready';
-    return `waiting:${probe.state}:${probe.bytes}bytes`;
-  }), { message: 'Native MediaRecorder must encode a nonempty chunk before stopping', timeout: 4000 }).toBe('ready');
-}
-
-test('T063 keyboard can control capture and gets submission status without an automatic upload', async ({ page }) => {
-  await observeRecorder(page);
-  let uploads = 0;
-  let finishRequest!: () => void;
+test.beforeEach(async ({ page }) => {
+  await installPresenceStub(page);
   await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: model }));
-  await page.route('**/api/v1/predictions', async route => {
-    uploads++;
-    await new Promise<void>(resolve => { finishRequest = resolve; });
-    await route.fulfill({ status: 200, json: { requestId: '123e4567-e89b-42d3-a456-426614174000',
-      text: 'Xin chào', classLabel: 'XIN_CHAO', confidence: .95,
-      accepted: true, modelVersion: model.modelVersion, processingTimeMs: 10 } });
-  });
+});
+
+test('T063 keyboard starts, pauses, resumes and stops live translation with status announcements', async ({ page }) => {
+  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
+    requestId: '123e4567-e89b-42d3-a456-426614174000', text: 'Xin chào', classLabel: 'XIN_CHAO',
+    confidence: .95, accepted: true, modelVersion: model.modelVersion, processingTimeMs: 10 } }));
   await page.goto('/');
+  const status = page.getByRole('status');
+  await expect(status).toHaveAttribute('aria-atomic', 'true');
+  await expect(status).toHaveText('Đang tắt');
   await page.getByRole('button', { name: 'Bật camera' }).focus();
   await page.keyboard.press('Shift+Tab');
   await expect(page.getByRole('button', { name: 'Hướng dẫn' })).toBeFocused();
-  await page.keyboard.press('Shift+Tab');
-  await expect(page.getByRole('button', { name: 'Lịch sử' })).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Hướng dẫn' })).toBeFocused();
-  await page.keyboard.press('Tab');
-  const enable = page.getByRole('button', { name: 'Bật camera' });
-  await expect(enable).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Bật camera' })).toBeFocused();
   await page.keyboard.press('Space');
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await expect(page.getByLabel('Hình ảnh xem trước từ camera')).toBeVisible();
-  const record = page.getByRole('button', { name: 'Quay ký hiệu' });
-  await expect(record).toBeFocused();
+  await expect(status).not.toHaveText(/Đang tắt|Đang khởi động/, { timeout: 30_000 });
+  await setScene(page, 'ready');
+  await expect(status).toHaveText('Sẵn sàng');
+  await expect(page.getByRole('button', { name: 'Tạm dừng' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-  const stop = page.getByRole('button', { name: 'Kết thúc' });
-  await expect(stop).toBeFocused();
-  await waitForEncodedClip(page);
-  await page.keyboard.press('Space');
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
-  const focusedControl = page.locator('.capture-controls button:focus');
-  await expect(focusedControl).toHaveCount(1);
-  await expect(focusedControl).toBeEnabled();
-  expect(uploads).toBe(0);
-  await page.keyboard.press(await page.getByRole('button', { name: 'Hủy đoạn quay' }).evaluate(
-    button => button === document.activeElement) ? 'Shift+Tab' : 'Tab');
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeFocused();
+  await expect(status).toHaveText('Tạm dừng');
+  await expect(page.getByRole('button', { name: 'Tiếp tục' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect.poll(() => uploads).toBe(1);
-  await expect(page.getByRole('status')).toHaveText('Đang nhận diện…');
-  finishRequest();
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
-  expect(uploads).toBe(1);
+  await signOnce(page);
+  await expect(status).toHaveText('Đã dịch');
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveAttribute('aria-live', 'polite');
+  await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' }).locator('[aria-live="polite"]')).toHaveText('Xin chào');
+  await page.getByRole('button', { name: 'Tắt camera' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(status).toHaveText('Đang tắt');
+  await expect(page.getByRole('button', { name: 'Bật camera' })).toBeFocused();
 });
 
-test('T063 metadata reconnect restores keyboard focus when retry disappears', async ({ page }) => {
-  await observeRecorder(page);
-  let metadataCalls = 0;
-  await page.route('**/api/v1/model-info', route => {
-    metadataCalls++;
-    return metadataCalls === 1
-      ? route.fulfill({ status: 503, json: { code: 'MODEL_NOT_READY', message: 'private', requestId: 'x' } })
-      : route.fulfill({ status: 200, json: model });
-  });
+test('T063 camera region describes privacy and passes axe in off, help and permission error', async ({ page, context }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Bật camera' }).click();
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await waitForEncodedClip(page);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('button', { name: 'Thử kết nối lại' })).toBeVisible();
-  await page.getByRole('button', { name: 'Thử kết nối lại' }).click();
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Quay lại' })).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeFocused();
-});
-
-test('T063 history confirmation, cancellation and clearing keep focus inside dialog', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('visign.translation-history.v1', JSON.stringify({
-    schemaVersion: 1,
-    entries: [{ requestId: '123e4567-e89b-42d3-a456-426614174000', text: 'Xin chào',
-      confidence: .95, modelVersion: 'pilot-v1', createdAt: new Date().toISOString() }],
-  })));
-  await page.goto('/');
-  const trigger = page.getByRole('button', { name: 'Lịch sử' });
-  await trigger.focus();
-  await page.keyboard.press('Enter');
-  const dialog = page.getByRole('dialog', { name: 'Lịch sử bản dịch' });
-  await expect(dialog).toBeVisible();
-  const clear = dialog.getByRole('button', { name: 'Xoá toàn bộ lịch sử' });
-  await clear.focus();
-  await page.keyboard.press('Enter');
-  const confirm = dialog.getByRole('button', { name: 'Xác nhận xoá' });
-  await expect(confirm).toBeFocused();
-  await page.keyboard.press('Tab');
-  const keep = dialog.getByRole('button', { name: 'Giữ lại' });
-  await expect(keep).toBeFocused();
-  await page.keyboard.press('Enter');
-  await expect(clear).toBeFocused();
-  await page.keyboard.press('Enter');
-  await expect(confirm).toBeFocused();
-  await page.keyboard.press('Enter');
-  await expect(dialog).toContainText('Chưa có bản dịch được lưu.');
-  await expect(dialog.getByRole('button', { name: 'Đóng lịch sử' })).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(dialog).not.toBeVisible();
-  await expect(trigger).toBeFocused();
-});
-
-test('T063 exposes camera guidance and passes WCAG axe checks in idle, help and permission error', async ({ page, context }) => {
-  await page.goto('/');
-  await expect(page.getByRole('region', { name: 'Nhận diện ký hiệu bằng camera' }))
-    .toHaveAttribute('aria-describedby', 'camera-privacy');
-  await expect(page.getByLabel('Hình ảnh xem trước từ camera')).toHaveAttribute('autoplay', '');
-  const idleAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-  expect(idleAudit.violations).toEqual([]);
+  const region = page.getByRole('region', { name: 'Dịch ký hiệu trực tiếp bằng camera' });
+  await expect(region).toHaveAttribute('aria-describedby', 'camera-privacy');
+  await expect(page.locator('#camera-privacy')).toContainText('tự ghi từng đoạn ký hiệu');
+  expect((await audit(page)).violations).toEqual([]);
   await page.getByRole('button', { name: 'Hướng dẫn' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Quay một ký hiệu rõ ràng' });
-  await expect(dialog).toBeVisible();
+  const dialog = page.getByRole('dialog', { name: 'Dịch ký hiệu trực tiếp' });
   await expect(dialog.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
-  const dialogAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-  expect(dialogAudit.violations).toEqual([]);
+  expect((await audit(page)).violations).toEqual([]);
   await page.keyboard.press('Tab');
   await expect(dialog.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
   await page.keyboard.press('Escape');
@@ -169,39 +68,43 @@ test('T063 exposes camera guidance and passes WCAG axe checks in idle, help and 
   await page.getByRole('button', { name: 'Bật camera' }).click();
   await expect(page.getByRole('alert')).toContainText('Chưa có quyền sử dụng camera');
   await expect(page.getByRole('button', { name: 'Thử lại' })).toBeFocused();
+  expect((await audit(page)).violations).toEqual([]);
+});
+
+test('T063 waiting, ready and partial-presence states pass axe and expose detection chips', async ({ page }) => {
+  await page.goto('/');
+  await startLive(page, 'partial');
+  await expect(page.getByRole('status')).toHaveText('Chưa thấy đủ mặt và tay');
+  const chips = page.getByRole('list', { name: 'Trạng thái phát hiện' });
+  await expect(chips).toContainText('Người: có');
+  await expect(chips).toContainText('Tay: chưa có');
+  expect((await audit(page)).violations).toEqual([]);
+  await setScene(page, 'ready');
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng');
+  expect((await audit(page)).violations).toEqual([]);
 });
 
 for (const accepted of [true, false]) {
-  test(`T063 ${accepted ? 'accepted' : 'rejected'} results remain accessible and announced`, async ({ page }) => {
-    await observeRecorder(page);
-    await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: model }));
+  test(`T063 ${accepted ? 'accepted' : 'rejected'} live results are announced and pass axe`, async ({ page }) => {
     await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
       requestId: '123e4567-e89b-42d3-a456-426614174000', text: accepted ? 'Xin chào' : 'Không nhận diện được',
       classLabel: accepted ? 'XIN_CHAO' : null, confidence: accepted ? .95 : .2,
-      accepted, modelVersion: model.modelVersion, processingTimeMs: 10,
-    } }));
+      accepted, modelVersion: model.modelVersion, processingTimeMs: 10 } }));
     await page.goto('/');
-    await page.getByRole('button', { name: 'Bật camera' }).click();
-    await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-    await waitForEncodedClip(page);
-    await page.getByRole('button', { name: 'Kết thúc' }).click();
-    await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+    await startLive(page);
+    await signOnce(page);
     const result = page.getByRole('region', { name: accepted ? 'Văn bản dịch' : 'Kết quả nhận diện' });
     await expect(result).toBeVisible();
+    await expect(page.getByRole('status')).toHaveText(accepted ? 'Đã dịch' : 'Không nhận diện được');
     await expect(result).toHaveAttribute('aria-live', 'polite');
-    await expect(result).toContainText(accepted ? 'Xin chào' : 'Chưa nhận diện được ký hiệu');
-    const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-    expect(audit.violations).toEqual([]);
-    if (!accepted) {
-      const retry = result.getByRole('button', { name: 'Quay lại' });
-      await expect(retry).toBeFocused();
-      await retry.press('Enter');
-      await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-    }
+    // The last result stays readable after the status returns to listening.
+    await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
+    await expect(result).toBeVisible();
+    expect((await audit(page)).violations).toEqual([]);
   });
 }
 
-test('T063 focused camera control outline fits inside a compact landscape viewport', async ({ page }) => {
+test('T063 focused control outline fits inside a compact landscape viewport', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 180 });
   await page.goto('/');
   const button = page.getByRole('button', { name: 'Bật camera' });

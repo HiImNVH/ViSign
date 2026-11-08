@@ -41,7 +41,31 @@ export const predictionErrors = {
 export const vi = {
   title: 'Ngôn ngữ ký hiệu Việt Nam',
   preview: 'Hình ảnh xem trước từ camera',
-  privacy: 'Không ghi âm. Chỉ quay khi bạn chủ động chọn. Đoạn quay chỉ được gửi đến dịch vụ nhận diện khi bạn bấm Gửi nhận diện.',
+  privacy: 'Không ghi âm. Khi camera bật, ViSign tự ghi từng đoạn ký hiệu ngắn lúc thấy mặt và tay của bạn, gửi đến dịch vụ nhận diện rồi xoá ngay sau khi có kết quả. Bấm Tạm dừng hoặc Tắt camera bất cứ lúc nào.',
+  live: {
+    status: {
+      off: 'Đang tắt', starting: 'Đang khởi động', noPerson: 'Không phát hiện người',
+      partial: 'Chưa thấy đủ mặt và tay', ready: 'Sẵn sàng', recording: 'Đang ghi ký hiệu',
+      translating: 'Đang dịch', translated: 'Đã dịch', rejected: 'Không nhận diện được',
+      paused: 'Tạm dừng', error: 'Lỗi',
+    },
+    hint: {
+      off: 'Bật camera để dịch trực tiếp. ViSign tự ghi và gửi từng ký hiệu ngắn, xoá ngay sau khi dịch.',
+      starting: 'Đang mở camera và nạp bộ phát hiện…',
+      noPerson: 'Ngồi vào giữa khung hình, cách camera khoảng một sải tay.',
+      partial: 'Đưa khuôn mặt và ít nhất một bàn tay vào khung hình.',
+      ready: 'Bắt đầu ký hiệu. ViSign tự ghi khi tay chuyển động và tự dịch khi tay dừng.',
+      recording: 'Đang ghi… dừng tay để kết thúc ký hiệu.',
+      translating: 'Đang gửi đoạn vừa ghi để dịch…',
+      translated: 'Đã thêm vào bản dịch. Tiếp tục ký hiệu tiếp theo.',
+      rejected: 'Chưa nhận ra ký hiệu. Thử lại chậm và rõ hơn.',
+      paused: 'Đã tạm dừng, không ghi hình. Bấm Tiếp tục để dịch tiếp.',
+      error: 'Đã có lỗi. Xem hướng dẫn bên dưới rồi thử lại.',
+    },
+    parts: { person: 'Người', face: 'Mặt', hands: 'Tay', label: 'Trạng thái phát hiện' },
+    start: 'Bật camera', stop: 'Tắt camera', pause: 'Tạm dừng', resume: 'Tiếp tục', retry: 'Thử lại',
+    detectorFailed: ['Không nạp được bộ phát hiện', 'Tải lại trang bằng Chrome hoặc Edge bản mới rồi thử lại.'],
+  },
   disclaimer: 'ViSign là công cụ hỗ trợ thử nghiệm. Kết quả có thể không chính xác và không thay thế phiên dịch viên chuyên nghiệp trong tình huống quan trọng.',
   transcript: {
     title: 'Bản dịch trực tiếp',

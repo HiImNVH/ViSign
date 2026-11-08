@@ -2,7 +2,7 @@
 import { StrictMode } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
+import { CameraRecorder } from './ManualRecorder';
 import { useCameraCapture } from '../../src/features/recognition/useCameraCapture';
 
 function CameraRecorderHarness() {

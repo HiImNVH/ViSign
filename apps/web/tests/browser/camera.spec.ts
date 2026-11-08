@@ -1,387 +1,161 @@
-// apps/web/tests/browser/camera.spec.ts - Kiem tra camera gia va luong nhan dien chu dong.
+// apps/web/tests/browser/camera.spec.ts - Dich truc tiep (T105-T106) voi camera gia va WebM that.
+// Bo phat hien nguoi/mat/tay duoc thay bang stub (liveHelpers); MediaRecorder, upload multipart va giao dien la that.
 import { expect, test, type Page } from '@playwright/test';
-
-async function expectInCameraLayout(page: Page) {
-  const camera = await page.locator('.camera-viewport').boundingBox();
-  const actions = await page.getByRole('group', { name: 'Điều khiển camera' }).boundingBox();
-  if (!camera || !actions) throw new Error('Missing camera layout');
-  expect(camera.width).toBeGreaterThan((page.viewportSize()?.width ?? 0) * .90);
-  expect(camera.height).toBeGreaterThan((page.viewportSize()?.height ?? 0) * .70);
-  expect(actions.y).toBeGreaterThanOrEqual(camera.y);
-  expect(actions.y + actions.height).toBeLessThanOrEqual(camera.y + camera.height);
-  expect(actions.x).toBeGreaterThanOrEqual(camera.x);
-  expect(actions.x + actions.width).toBeLessThanOrEqual(camera.x + camera.width);
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  await expect(page.getByText('Chưa có bản dịch.')).toHaveCount(0);
-  await expect(page.getByText('Một ký hiệu, một lần quay.')).toHaveCount(0);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
-}
-
-test('explicitly records and discards a real WebM clip, then releases camera', async ({ page }, testInfo) => {
-  const outbound: string[] = [];
-  const runtimeErrors: string[] = [];
-  page.on('pageerror', error => runtimeErrors.push(error.message));
-  page.on('request', request => { if (request.method() !== 'GET') outbound.push(request.url()); });
-  await page.goto('/');
-  await expectInCameraLayout(page);
-  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await expectInCameraLayout(page);
-  const preview = page.getByLabel('Hình ảnh xem trước từ camera');
-  await expect.poll(() => preview.evaluate(video => (video as HTMLVideoElement).videoWidth)).toBeGreaterThan(0);
-  await expect.poll(() => preview.evaluate(video => (video as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
-  const track = await preview.evaluateHandle(video => ((video as HTMLVideoElement).srcObject as MediaStream).getVideoTracks()[0]!);
-  await expect(page.getByRole('button', { name: 'Kết thúc', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeVisible();
-  await expectInCameraLayout(page);
-  await page.screenshot({ path: testInfo.outputPath('camera-captured.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Hủy đoạn quay', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
-  await page.getByRole('button', { name: 'Hủy đoạn quay', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Tắt camera', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera chưa bật');
-  await expectInCameraLayout(page);
-  expect(await track.evaluate(track => track.readyState)).toBe('ended');
-  expect(await preview.evaluate(video => (video as HTMLVideoElement).srcObject)).toBeNull();
-  expect(outbound).toEqual([]);
-  expect(runtimeErrors).toEqual([]);
-});
+import { installPresenceStub, setScene, signOnce, startLive } from './liveHelpers';
 
 const metadata = {
   modelVersion: 'pilot-v1', artifactKind: 'pilot', datasetVersion: 'sample',
-  featureSchemaVersion: 'schema-v1', extractorVersion: 'extract-v1', meanings: ['Xin chào'],
-  acceptanceThreshold: .7, macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false,
+  featureSchemaVersion: 'schema-v1', extractorVersion: 'extract-v1',
+  meanings: ['GIAY_TO', 'NHAN'], acceptanceThreshold: .5,
+  macroF1: null, perMeaningRecall: null, evaluatedAt: null, demoReady: false,
 };
+const reply = (text: string, accepted = true) => ({
+  requestId: crypto.randomUUID(), text: accepted ? text : 'Không nhận diện được', classLabel: accepted ? 'NHAN_HCM_1' : null,
+  confidence: accepted ? .82 : .3, accepted, modelVersion: metadata.modelVersion, processingTimeMs: 20,
+});
 
-async function captureClip(page: Page) {
-  await page.getByRole('button', { name: 'Bật camera' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+async function expectInCameraLayout(page: Page) {
+  const camera = await page.locator('.camera-viewport').boundingBox();
+  const actions = await page.getByRole('group', { name: 'Điều khiển dịch trực tiếp' }).boundingBox();
+  if (!camera || !actions) throw new Error('Missing camera layout');
+  expect(actions.y).toBeGreaterThanOrEqual(camera.y);
+  expect(actions.y + actions.height).toBeLessThanOrEqual(camera.y + camera.height + 1);
+  expect(actions.x).toBeGreaterThanOrEqual(camera.x);
+  expect(actions.x + actions.width).toBeLessThanOrEqual(camera.x + camera.width + 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  for (const button of await page.locator('.capture-controls button:visible').all()) {
+    expect((await button.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
 }
 
-test('T040 live backend accepts an explicitly submitted camera WebM and reports fixture scope', async ({ page }) => {
-  test.skip(!process.env.VISIGN_LIVE_API_URL, 'Requires real Uvicorn and a preview build with VITE_API_BASE_URL set');
-  const apiUrl = process.env.VISIGN_LIVE_API_URL!;
-  const posts: string[] = [];
-  const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
-  page.on('request', request => {
-    if (request.method() === 'POST' && request.url().startsWith(apiUrl)) posts.push(request.url());
-  });
-  await page.goto('/');
-  await captureClip(page);
-  expect(posts).toHaveLength(0);
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  const result = page.getByRole('region', { name: 'Văn bản dịch' });
-  await expect(result).toContainText('Cảm ơn');
-  await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
-  expect(posts).toEqual([`${apiUrl}/api/v1/predictions`]);
-  expect(errors).toEqual([]);
-});
-
-for (const artifactKind of ['fixture', 'pilot', 'full'] as const) {
-  test(`T043 uploads the captured WebM explicitly using one endpoint for ${artifactKind}`, async ({ page }) => {
-    const info = { ...metadata, artifactKind, modelVersion: `${artifactKind}-v1`, demoReady: artifactKind === 'full' };
-    let uploads = 0;
-    await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: info }));
-    await page.route('**/api/v1/predictions', async route => {
-      uploads += 1;
-      expect(route.request().method()).toBe('POST');
-      expect(route.request().postDataBuffer()?.length ?? 0).toBeGreaterThan(100);
-      expect(route.request().headers()['content-type']).toContain('multipart/form-data');
-      await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào',
-        classLabel: 'XIN_CHAO', confidence: .93, accepted: true, modelVersion: info.modelVersion,
-        processingTimeMs: 10 } });
-    });
-    await page.goto('/');
-    await captureClip(page);
-    expect(uploads).toBe(0);
-    await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-    const result = page.getByRole('region', { name: 'Văn bản dịch' });
-    await expect(result).toContainText('Xin chào');
-    await expect(result).toContainText('Độ tin cậy 93%');
-    expect(uploads).toBe(1);
-    if (artifactKind === 'full') await expect(result.getByRole('note')).toHaveCount(0);
-    else await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
-    for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
-      await page.setViewportSize(viewport);
-      const camera = (await page.locator('.camera-viewport').boundingBox())!;
-      const controls = (await page.locator('.capture-controls').boundingBox())!;
-      const translation = (await result.boundingBox())!;
-      expect(translation.y).toBeGreaterThanOrEqual(camera.y);
-      expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
-      expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
-      expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    }
-    await page.getByRole('button', { name: 'Quay lại' }).click();
-    await expect(result).toHaveCount(0);
-    expect(uploads).toBe(1);
-  });
-}
-
-test('T043 unavailable metadata blocks upload until explicit retry; rejected response is not translated', async ({ page }) => {
-  let metadataCalls = 0;
-  let uploads = 0;
-  await page.route('**/api/v1/model-info', route => {
-    metadataCalls += 1;
-    return metadataCalls === 1 ? route.fulfill({ status: 503, json: { code: 'MODEL_NOT_READY', message: 'private', requestId: 'x' } })
-      : route.fulfill({ status: 200, json: metadata });
-  });
-  await page.route('**/api/v1/predictions', route => {
-    uploads += 1;
-    return route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), accepted: false,
-      text: 'Không nhận diện được', classLabel: null, confidence: .2, modelVersion: metadata.modelVersion,
-      processingTimeMs: 40 } });
-  });
-  await page.goto('/');
-  await captureClip(page);
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeDisabled();
-  await expect(page.getByText('Chưa kết nối được dịch vụ nhận diện. Bạn vẫn có thể quay ký hiệu.')).toBeVisible();
-  expect(uploads).toBe(0);
-  await page.getByRole('button', { name: 'Thử kết nối lại' }).click();
-  await expect(page.getByRole('button', { name: 'Gửi nhận diện' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect(page.getByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).toBeVisible();
-  const rejected = page.getByRole('region', { name: 'Kết quả nhận diện' });
-  await expect(rejected).toHaveAttribute('aria-live', 'polite');
-  await expect(page.getByRole('button', { name: 'Quay lại' })).toHaveCount(1);
-  await expect(page.getByRole('button', { name: 'Quay lại' })).toBeFocused();
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  expect(uploads).toBe(1);
-  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
-    await page.setViewportSize(viewport);
-    const camera = (await page.locator('.camera-viewport').boundingBox())!;
-    const controls = (await page.locator('.capture-controls').boundingBox())!;
-    const panel = (await rejected.boundingBox())!;
-    expect(panel.y).toBeGreaterThanOrEqual(camera.y);
-    expect(panel.y + panel.height).toBeLessThanOrEqual(controls.y);
-    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
-  }
-  await page.getByRole('button', { name: 'Quay lại' }).press('Enter');
-  await expect(rejected).toHaveCount(0);
-  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-  await expect(page.getByRole('button', { name: 'Kết thúc' })).toBeFocused();
-  expect(uploads).toBe(1);
-});
-
-test('T043 model mismatch discards prediction and refreshes metadata without another upload', async ({ page }) => {
-  let uploads = 0;
-  let metadataCalls = 0;
-  await page.route('**/api/v1/model-info', route => {
-    metadataCalls += 1;
-    return route.fulfill({ status: 200, json: metadata });
-  });
-  await page.route('**/api/v1/predictions', route => {
-    uploads += 1;
-    return route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), accepted: true,
-      text: 'Kết quả cũ', classLabel: 'XIN_CHAO', confidence: .95, modelVersion: 'other-version',
-      processingTimeMs: 50 } });
-  });
-  await page.goto('/');
-  await captureClip(page);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect(page.getByRole('alert')).toContainText('Chưa nhận được kết quả nhận diện hợp lệ.');
-  await expect.poll(() => metadataCalls).toBe(2);
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  expect(uploads).toBe(1);
-});
-
-test('T052 service-busy error stays safe and usable at compact viewport, then retries explicitly', async ({ page }) => {
-  let uploads = 0;
+test.beforeEach(async ({ page }) => {
+  await installPresenceStub(page);
   await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
+});
+
+test('signs are recorded as real WebM, uploaded automatically and joined into the transcript', async ({ page }) => {
+  const bodies: number[] = [];
+  const words = ['Nhận', 'Giấy tờ (giấy)'];
   await page.route('**/api/v1/predictions', route => {
-    uploads++;
-    return uploads === 1
-      ? route.fulfill({ status: 503, headers: { 'Retry-After': '3' },
-        json: { code: 'SERVICE_BUSY', message: 'SECRET traceback /internal/server.py', requestId: 'secret-id' } })
-      : route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào', classLabel: 'XIN_CHAO',
-        confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 15 } });
+    const request = route.request();
+    expect(request.headers()['content-type']).toContain('multipart/form-data');
+    const body = request.postDataBuffer() ?? Buffer.alloc(0);
+    expect(body.includes(Buffer.from('name="clip"'))).toBe(true);
+    expect(body.includes(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]))).toBe(true); // EBML/WebM
+    bodies.push(body.length);
+    return route.fulfill({ status: 200, json: reply(words[bodies.length - 1] ?? 'Nhận') });
   });
   await page.goto('/');
-  await captureClip(page);
-  const submit = page.getByRole('button', { name: 'Gửi nhận diện' });
-  await submit.click();
-  const alert = page.getByRole('alert');
-  await expect(alert).toContainText('Dịch vụ đang bận.');
-  await expect(alert).not.toContainText('SECRET');
-  await expect(alert).not.toContainText('secret-id');
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  expect(uploads).toBe(1);
-  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
-    await page.setViewportSize(viewport);
-    const camera = (await page.locator('.camera-viewport').boundingBox())!;
-    const controls = (await page.locator('.capture-controls').boundingBox())!;
-    const message = (await alert.boundingBox())!;
-    expect(message.y).toBeGreaterThanOrEqual(camera.y);
-    expect(message.y + message.height).toBeLessThanOrEqual(controls.y);
-    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
-  }
-  await submit.focus();
-  await submit.press('Enter');
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
-  await expect(alert).toHaveCount(0);
-  expect(uploads).toBe(2);
-});
-
-test('T053 prediction timeout restores an explicit retry without automatic reupload', async ({ page }) => {
-  let uploads = 0;
-  let releaseFirst!: () => void;
-  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
-  await page.route('**/api/v1/predictions', async route => {
-    uploads++;
-    if (uploads === 1) {
-      await new Promise<void>(resolve => { releaseFirst = resolve; });
-      await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Stale', classLabel: 'STALE',
-        confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
-      return;
-    }
-    await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Xin chào', classLabel: 'XIN_CHAO',
-      confidence: .93, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } });
-  });
-  await page.goto('/');
-  await captureClip(page);
-  await page.clock.install();
-  const submit = page.locator('.submit-button');
-  await expect(submit).toHaveAccessibleName('Gửi nhận diện');
-  await submit.click();
-  await expect.poll(() => uploads).toBe(1);
-  await expect(submit).toBeDisabled();
-  await expect(submit).toHaveAccessibleName('Đang nhận diện…');
-  await page.clock.fastForward(15001);
-  await expect(page.getByRole('alert')).toContainText('Dịch vụ phản hồi quá lâu.');
-  await expect(submit).toBeEnabled();
-  await expect(submit).toHaveAccessibleName('Gửi nhận diện');
-  expect(uploads).toBe(1);
-  releaseFirst();
-  await submit.click();
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Xin chào');
-  expect(uploads).toBe(2);
-});
-
-test('T053 cancel and reset during upload release the camera and ignore old requests', async ({ page }) => {
-  let uploads = 0;
-  const release: Array<() => void> = [];
-  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
-  await page.route('**/api/v1/predictions', async route => {
-    uploads++;
-    await new Promise<void>(resolve => { release.push(resolve); });
-    await route.fulfill({ status: 200, json: { requestId: crypto.randomUUID(), text: 'Stale', classLabel: 'STALE',
-      confidence: 1, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 10 } }).catch(() => {});
-  });
-  await page.goto('/');
-  await captureClip(page);
-  const video = page.getByLabel('Hình ảnh xem trước từ camera');
-  const track = await video.evaluateHandle(element => ((element as HTMLVideoElement).srcObject as MediaStream).getVideoTracks()[0]!);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect.poll(() => uploads).toBe(1);
-  await page.getByRole('button', { name: 'Hủy đoạn quay' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  release[0]!();
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  await expect.poll(() => uploads).toBe(2);
+  await expect(page.getByRole('status')).toHaveText('Đang tắt');
+  await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText('Đã dịch');
+  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Nhận');
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
+  await signOnce(page);
+  await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toContainText('Nhận Giấy tờ (giấy)');
+  expect(bodies).toHaveLength(2);
+  expect(Math.min(...bodies)).toBeGreaterThan(1000);
   await page.getByRole('button', { name: 'Tắt camera' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera chưa bật');
-  release[1]!();
-  expect(await track.evaluate(value => value.readyState)).toBe('ended');
-  expect(await video.evaluate(value => (value as HTMLVideoElement).srcObject)).toBeNull();
-  await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toHaveCount(0);
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByRole('status')).toHaveText('Đang tắt');
+  await expect(page.getByRole('button', { name: 'Bật camera' })).toBeFocused();
 });
 
-test('an open help dialog keeps focus when the camera disconnects', async ({ page }) => {
+test('no person, partial presence and stillness never record or upload', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/api/v1/predictions', route => { uploads++; return route.abort(); });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Hướng dẫn', exact: true }).click();
-  await page.locator('video').evaluate(video => {
-    ((video as HTMLVideoElement).srcObject as MediaStream).getVideoTracks()[0]!.dispatchEvent(new Event('ended'));
-  });
-  await expect(page.getByRole('alert')).toContainText('Camera đã mất kết nối');
-  await expect(page.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('button', { name: 'Hướng dẫn', exact: true })).toBeFocused();
-  await expect(page.getByRole('alert')).toContainText('Camera đã mất kết nối');
+  await startLive(page, 'none');
+  await expect(page.getByRole('status')).toHaveText('Không phát hiện người');
+  await setScene(page, 'partial');
+  await expect(page.getByRole('status')).toHaveText('Chưa thấy đủ mặt và tay');
+  await expect(page.getByRole('list', { name: 'Trạng thái phát hiện' })).toContainText('Mặt: chưa có');
+  await setScene(page, 'ready');
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng');
+  await page.waitForTimeout(1500);
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng');
+  expect(uploads).toBe(0);
   await expectInCameraLayout(page);
 });
 
-test('accepted presentation and controls fit a zoom-sized viewport', async ({ page }) => {
-  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: metadata }));
-  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
-    requestId: crypto.randomUUID(), text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
-    confidence: .92, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 12,
-  } }));
+test('a rejected sign is announced without changing the transcript', async ({ page }) => {
+  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: reply('', false) }));
   await page.goto('/');
-  await captureClip(page);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  for (const viewport of [page.viewportSize()!, { width: 320, height: 180 }]) {
-    await page.setViewportSize(viewport);
-    await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Độ tin cậy 92%');
-    const camera = (await page.locator('.camera-viewport').boundingBox())!;
-    const controls = (await page.locator('.capture-controls').boundingBox())!;
-    const translation = (await page.locator('.translation-panel').boundingBox())!;
-    expect(translation.y).toBeGreaterThanOrEqual(camera.y);
-    expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
-    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
-    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  }
+  await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText('Không nhận diện được');
+  await expect(page.getByRole('region', { name: 'Kết quả nhận diện' })).toContainText('Chưa nhận diện được ký hiệu');
+  await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toHaveCount(0);
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
 });
 
-test('T042 pilot warning, meanings and disclaimer fit inside camera with controls', async ({ page }) => {
-  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 200, json: { ...metadata, meanings: ['Giấy tờ', 'Xin chào'] } }));
-  await page.route('**/api/v1/predictions', route => route.fulfill({ status: 200, json: {
-    requestId: crypto.randomUUID(), text: 'Giấy tờ (giấy)', classLabel: 'GIAY_TO_HCM_1',
-    confidence: .92, accepted: true, modelVersion: metadata.modelVersion, processingTimeMs: 12,
-  } }));
+test('a busy service shows safe guidance, then resumes listening without resending', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/api/v1/predictions', route => {
+    uploads++;
+    return route.fulfill({ status: 503, headers: { 'Retry-After': '2' },
+      json: { code: 'SERVICE_BUSY', message: 'internal detail', requestId: crypto.randomUUID() } });
+  });
+  await page.setViewportSize({ width: 320, height: 640 });
   await page.goto('/');
-  await captureClip(page);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
-  for (const viewport of [page.viewportSize()!, { width: 375, height: 667 }, { width: 320, height: 180 }]) {
-    await page.setViewportSize(viewport);
-    const result = page.getByRole('region', { name: 'Văn bản dịch' });
-    await expect(result).toContainText('Giấy tờ (giấy)');
-    await expect(result).toContainText('Độ tin cậy 92%');
-    await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
-    await expect(result.locator('.translation-coverage')).toContainText('Giấy tờ, Xin chào');
-    await expect(result.locator('.translation-notice')).toBeVisible();
-    const camera = (await page.locator('.camera-viewport').boundingBox())!;
-    const controls = (await page.locator('.capture-controls').boundingBox())!;
-    const translation = (await result.boundingBox())!;
-    expect(translation.y).toBeGreaterThanOrEqual(camera.y);
-    expect(translation.y + translation.height).toBeLessThanOrEqual(controls.y);
-    expect(controls.y + controls.height).toBeLessThanOrEqual(camera.y + camera.height);
-    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  }
+  await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText('Lỗi');
+  await expect(page.getByRole('alert')).toContainText('Dịch vụ đang bận');
+  await expect(page.getByText('internal detail')).toHaveCount(0);
+  await expectInCameraLayout(page);
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 6000 });
+  expect(uploads).toBe(1);
 });
 
-test('automatic recording stop preserves focus on a surviving control', async ({ page }) => {
+test('a prediction timeout is reported once and the stale answer is ignored', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/api/v1/predictions', async route => {
+    uploads++;
+    await new Promise(resolve => setTimeout(resolve, 20_000));
+    await route.fulfill({ status: 200, json: reply('Stale') }).catch(() => {});
+  });
+  await page.clock.install();
   await page.goto('/');
-  await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
-  await page.getByRole('button', { name: 'Quay ký hiệu', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-  const cameraOff = page.getByRole('button', { name: 'Tắt camera', exact: true });
-  await cameraOff.focus();
-  await expect(cameraOff).toBeFocused();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong', { timeout: 8000 });
-  await expect(cameraOff).toBeFocused();
+  await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText('Đang dịch');
+  await page.clock.fastForward(15_001);
+  await expect(page.getByRole('alert')).toContainText('Dịch vụ phản hồi quá lâu.');
+  expect(uploads).toBe(1);
+  await expect(page.getByRole('region', { name: 'Bản dịch trực tiếp' })).toHaveCount(0);
+});
+
+test('model metadata outage keeps the camera listening but never records', async ({ page }) => {
+  let uploads = 0;
+  await page.unroute('**/api/v1/model-info');
+  await page.route('**/api/v1/model-info', route => route.fulfill({ status: 503,
+    json: { code: 'MODEL_NOT_READY', message: 'private', requestId: crypto.randomUUID() } }));
+  await page.route('**/api/v1/predictions', route => { uploads++; return route.abort(); });
+  await page.goto('/');
+  await startLive(page, 'ready');
+  await page.evaluate(() => { window.__visignSignUntil = performance.now() + 1500; });
+  await page.waitForTimeout(1800);
+  await expect(page.getByRole('button', { name: 'Thử kết nối lại' })).toBeVisible();
+  expect(uploads).toBe(0);
+});
+
+test('pause and resume work from the keyboard and pausing blocks recording', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/api/v1/predictions', route => { uploads++; return route.fulfill({ status: 200, json: reply('Nhận') }); });
+  await page.goto('/');
+  await startLive(page);
+  const pause = page.getByRole('button', { name: 'Tạm dừng' });
+  await pause.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('status')).toHaveText('Tạm dừng');
+  await page.evaluate(() => { window.__visignSignUntil = performance.now() + 1200; });
+  await page.waitForTimeout(1500);
+  expect(uploads).toBe(0);
+  await page.getByRole('button', { name: 'Tiếp tục' }).press('Space');
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText('Đã dịch');
+  expect(uploads).toBe(1);
 });
 
 test('help supports Escape, focus restoration and reduced motion', async ({ page }) => {
@@ -389,15 +163,13 @@ test('help supports Escape, focus restoration and reduced motion', async ({ page
   await page.goto('/');
   const help = page.getByRole('button', { name: 'Hướng dẫn', exact: true });
   await help.click();
-  const dialog = page.getByRole('dialog', { name: 'Quay một ký hiệu rõ ràng' });
+  const dialog = page.getByRole('dialog', { name: 'Dịch ký hiệu trực tiếp' });
   await expect(dialog).toBeVisible();
-  const close = page.getByRole('button', { name: 'Đóng hướng dẫn' });
-  await expect(close).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Đóng hướng dẫn' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(help).toBeFocused();
   await expect(help).toHaveCSS('transition-duration', '0s');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('denied camera permission shows a recoverable error', async ({ page, context }) => {
@@ -406,7 +178,20 @@ test('denied camera permission shows a recoverable error', async ({ page, contex
   await cdp.send('Browser.setPermission', { permission: { name: 'camera' }, setting: 'denied', origin: 'http://127.0.0.1:4173' });
   await page.goto('/');
   await page.getByRole('button', { name: 'Bật camera', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Lỗi');
   await expect(page.getByRole('alert')).toContainText('Chưa có quyền sử dụng camera');
   await expect(page.getByRole('button', { name: 'Thử lại', exact: true })).toBeFocused();
   await expectInCameraLayout(page);
+});
+
+test('T040 live backend translates an automatically captured WebM', async ({ page }) => {
+  test.skip(!process.env.VISIGN_LIVE_API_URL, 'Requires real Uvicorn and a preview build with VITE_API_BASE_URL set');
+  await page.unroute('**/api/v1/model-info');
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText(/Đã dịch|Không nhận diện được|Lỗi/, { timeout: 30_000 });
+  expect(errors).toEqual([]);
 });

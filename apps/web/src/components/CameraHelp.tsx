@@ -16,14 +16,14 @@ export function CameraHelp() {
           dialog.current?.querySelector<HTMLButtonElement>('button')?.focus();
         }
       }}>
-      <div className="dialog-heading"><h2 id="help-title">Quay một ký hiệu rõ ràng</h2>
+      <div className="dialog-heading"><h2 id="help-title">Dịch ký hiệu trực tiếp</h2>
         <button className="quiet-button" onClick={() => dialog.current?.close()} aria-label="Đóng hướng dẫn">Đóng</button></div>
       <ol className="help-steps">
         <li><strong>Chuẩn bị khung hình</strong><p>Chọn nơi đủ sáng. Để khuôn mặt, phần thân trên và hai tay trong khung.</p></li>
-        <li><strong>Bật camera khi sẵn sàng</strong><p>Cho phép camera trong trình duyệt. Bật camera chỉ mở hình xem trước.</p></li>
-        <li><strong>Quay một ký hiệu</strong><p>Chọn Quay ký hiệu, thực hiện động tác rồi chọn Kết thúc. Đoạn quay tự dừng sau {captureLimits.maximumCaptureMs / 1000} giây.</p></li>
-        <li><strong>Gửi khi sẵn sàng</strong><p>Chọn Gửi nhận diện để gửi đoạn quay tới dịch vụ. Nếu không muốn gửi, bạn có thể hủy đoạn quay.</p></li>
-        <li><strong>Chủ động hủy hoặc tắt</strong><p>Hủy đoạn quay để bỏ clip và tiếp tục xem trước. Tắt camera để giải phóng thiết bị.</p></li>
+        <li><strong>Bật camera</strong><p>Cho phép camera trong trình duyệt. Khi thấy đủ người, mặt và tay, trạng thái chuyển sang Sẵn sàng.</p></li>
+        <li><strong>Ký hiệu tự nhiên</strong><p>ViSign tự ghi khi tay bắt đầu chuyển động và tự dừng khi tay đứng yên khoảng một giây. Mỗi ký hiệu tối đa {captureLimits.maximumCaptureMs / 1000} giây.</p></li>
+        <li><strong>Đọc bản dịch</strong><p>Kết quả được nối vào bản dịch trực tiếp. Dừng một nhịp giữa các ký hiệu để ViSign tách đúng.</p></li>
+        <li><strong>Tạm dừng hoặc tắt</strong><p>Tạm dừng để ngừng ghi mà vẫn giữ camera; Tắt camera để giải phóng thiết bị.</p></li>
       </ol>
       <p className="privacy-note">{vi.privacy}</p><p className="disclaimer">{vi.disclaimer}</p>
     </dialog>

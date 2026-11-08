@@ -26,6 +26,12 @@
 
 ### Session 2026-11-08
 
+- Q: Người dùng có phải bấm quay/kết thúc/gửi cho từng ký hiệu không? → A: **Không — dịch trực tiếp.** Bật camera là
+  luôn theo dõi; trình duyệt dùng MediaPipe (WASM, cùng origin) chỉ để phát hiện người, mặt và tay rồi tự cắt từng ký
+  hiệu (bắt đầu khi tay chuyển động, kết thúc khi tay đứng yên), tự gửi đoạn WebM tới `/api/v1/predictions` như cũ và
+  nối kết quả vào bản dịch trực tiếp. Bỏ chế độ quay thủ công. 11 trạng thái: Đang tắt, Đang khởi động, Không phát hiện
+  người, Chưa thấy đủ mặt và tay, Sẵn sàng, Đang ghi ký hiệu, Đang dịch, Đã dịch, Không nhận diện được, Tạm dừng, Lỗi.
+  Backend, contract và model không đổi.
 - Q: Có kiểm thử usability với ≥ 10 người thuộc nhóm mục tiêu (T071) không? → A: **Không.** Lead bỏ T071 vì
   sản phẩm là bản trình chiếu chấm điểm, chưa có người dùng thật. Mọi tài liệu MUST NOT nêu kết quả usability;
   bằng chứng trải nghiệm chỉ gồm audit accessibility (T063), audit FE/UX (T088) và kiểm webcam thật của nhóm.
@@ -230,7 +236,10 @@ thì mục cũ bị xoá.
 - **FR-003**: Sản phẩm MVP MUST nhận đầu vào dự đoán trực tiếp từ camera. Video có sẵn MUST chỉ đi
   qua pipeline dữ liệu để huấn luyện và đánh giá; giao diện người dùng tải video lên để dự đoán nằm
   ngoài phạm vi phát hành đầu tiên.
-- **FR-004**: Người dùng MUST có thể chủ động bắt đầu, kết thúc, gửi hoặc hủy một lần nhận diện.
+- **FR-004** (sửa 2026-11-08): Bật camera là đồng ý dịch trực tiếp: hệ thống MUST chỉ tự ghi khi phát hiện người,
+  mặt và ít nhất một bàn tay, MUST tự kết thúc và tự gửi từng đoạn ký hiệu, MUST hiển thị trạng thái hiện tại và cho
+  người dùng Tạm dừng/Tiếp tục hoặc Tắt camera bất cứ lúc nào; chuyển tab MUST tự tạm dừng. Giao diện MUST nói rõ
+  việc tự ghi/tự gửi và việc xoá đoạn sau khi dịch. Đoạn quá ngắn (< 0,5 s chuyển động) MUST bị bỏ, không gửi.
 - **FR-005**: Hệ thống MUST ánh xạ mọi lớp ký hiệu được hỗ trợ về đúng nội dung tiếng Việt; mã lớp và
   vùng miền không được hiển thị như kết quả chính cho người dùng.
 - **FR-006**: Hệ thống MUST ưu tiên biến thể TP.HCM và MAY hỗ trợ biến thể vùng khác khi động tác khác
@@ -336,7 +345,7 @@ thì mục cũ bị xoá.
 
 - **SC-001**: Ít nhất 90% người thử nghiệm có thể hoàn thành một lần nhận diện hợp lệ mà không cần
   người phát triển hướng dẫn trực tiếp.
-- **SC-002**: Sau khi người dùng kết thúc và gửi ký hiệu, 95% lần thử hợp lệ hiển thị kết quả hoặc lỗi
+- **SC-002**: Sau khi một đoạn ký hiệu kết thúc (tay dừng) và được tự gửi, 95% lần thử hợp lệ hiển thị kết quả hoặc lỗi
   có thể xử lý trong không quá 3 giây trên môi trường demo đã công bố.
 - **SC-003**: 100% lần thử không đạt decision rule đã công bố hiển thị “Không nhận diện được” thay vì
   một từ được khẳng định chắc chắn; báo cáo MUST nêu rõ rule, threshold và tập đánh giá đã dùng.

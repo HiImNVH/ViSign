@@ -1,19 +1,17 @@
-// apps/web/tests/e2e/recognition-happy-path.spec.ts - T032: camera gia -> WebM that -> FastAPI fixture that.
+// apps/web/tests/e2e/recognition-happy-path.spec.ts - T032 (dich truc tiep): camera gia -> WebM that -> FastAPI that.
 import { expect, test } from '@playwright/test';
 import { BACKENDS } from '../../playwright.e2e.config';
-import { captureClip, collectPageErrors, collectPredictionPosts, useBackend } from './helpers';
+import { collectPageErrors, collectPredictionPosts, installPresenceStub, signLive, useBackend } from './helpers';
 
-test('T032 happy path: one explicit upload of a real camera WebM returns the fixture translation', async ({ page }) => {
+test('T032 happy path: each live sign uploads one real camera WebM and joins the fixture translation', async ({ page }) => {
   const errors = collectPageErrors(page);
   const posts = collectPredictionPosts(page);
+  await installPresenceStub(page);
   await useBackend(page, BACKENDS.accepted);
   await page.goto('/');
 
-  await captureClip(page);
-  expect(posts).toHaveLength(0); // quay xong chua tu dong gui
-
   const responsePromise = page.waitForResponse(response => response.url().endsWith('/api/v1/predictions'));
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await signLive(page);
   const response = await responsePromise;
 
   // Response that tu FastAPI: request ID header trung voi body, khong co landmark/frame
@@ -23,7 +21,6 @@ test('T032 happy path: one explicit upload of a real camera WebM returns the fix
   expect(response.headers()['x-request-id']).toBe(body.requestId);
   expect(Object.keys(body)).not.toContain('landmarks');
 
-  // Request la multipart chua clip WebM do MediaRecorder tao
   expect(posts).toHaveLength(1);
   const [upload] = posts;
   if (!upload) throw new Error('Expected one prediction upload');
@@ -35,5 +32,11 @@ test('T032 happy path: one explicit upload of a real camera WebM returns the fix
   await expect(result).toContainText('Cảm ơn');
   await expect(result.getByRole('note')).toContainText('chưa sẵn sàng demo');
   await expect(page.locator('.transcript-text')).toHaveText('Cảm ơn');
+
+  // Ky hieu tiep theo khong can bam gi them
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 5000 });
+  await signLive(page, false);
+  await expect(page.locator('.transcript-text')).toHaveText('Cảm ơn Cảm ơn');
+  expect(posts).toHaveLength(2);
   expect(errors).toEqual([]);
 });

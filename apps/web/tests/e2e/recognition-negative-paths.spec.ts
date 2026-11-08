@@ -1,7 +1,9 @@
 // apps/web/tests/e2e/recognition-negative-paths.spec.ts - T047: cac luong loi voi camera gia va backend that.
 import { expect, test } from '@playwright/test';
 import { BACKENDS, E2E_WEB_PORT } from '../../playwright.e2e.config';
-import { captureClip, collectPageErrors, collectPredictionPosts, corruptMultipart, useBackend } from './helpers';
+import { collectPageErrors, collectPredictionPosts, corruptMultipart, installPresenceStub, signLive, useBackend } from './helpers';
+
+test.beforeEach(async ({ page }) => { await installPresenceStub(page); });
 
 test('T047 denied camera permission shows recoverable guidance and never uploads', async ({ page, context }) => {
   const posts = collectPredictionPosts(page);
@@ -22,18 +24,18 @@ test('T047 low-confidence fixture is rejected, not translated, and not added to 
   const errors = collectPageErrors(page);
   await useBackend(page, BACKENDS.lowConfidence);
   await page.goto('/');
-  await captureClip(page);
   const responsePromise = page.waitForResponse(response => response.url().endsWith('/api/v1/predictions'));
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await signLive(page);
   const body = await (await responsePromise).json();
   expect(body.accepted).toBe(false);
   expect(body.classLabel).toBeNull();
   await expect(page.getByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Không nhận diện được');
   await expect(page.locator('.transcript-text')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test('T047 corrupt clip gets a stable Vietnamese error from the real API, then an explicit retry succeeds', async ({ page }) => {
+test('T047 corrupt clip gets a stable Vietnamese error from the real API, then an next live sign succeeds', async ({ page }) => {
   const posts = collectPredictionPosts(page);
   await useBackend(page, BACKENDS.accepted);
   let corruptOnce = true;
@@ -49,10 +51,8 @@ test('T047 corrupt clip gets a stable Vietnamese error from the real API, then a
     });
   });
   await page.goto('/');
-  await captureClip(page);
-
   const first = page.waitForResponse(response => response.url().endsWith('/api/v1/predictions'));
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await signLive(page);
   const firstResponse = await first;
   expect([415, 422]).toContain(firstResponse.status());
   const envelope = await firstResponse.json();
@@ -61,14 +61,17 @@ test('T047 corrupt clip gets a stable Vietnamese error from the real API, then a
   await expect(alert).not.toContainText(envelope.message); // khong render message tho cua server
   await expect(alert).not.toContainText(envelope.code);
 
+  // Khong tu gui lai doan loi; ky hieu ke tiep la mot doan moi
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 6000 });
+  expect(posts).toHaveLength(1);
   const second = page.waitForResponse(response => response.url().endsWith('/api/v1/predictions'));
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click(); // chi gui lai khi nguoi dung chu dong
+  await signLive(page, false);
   expect((await second).status()).toBe(200);
   await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Cảm ơn');
   expect(posts).toHaveLength(2);
 });
 
-test('T047 service busy (control response) offers an explicit retry that reaches the real backend', async ({ page }) => {
+test('T047 service busy (control response) recovers on the next live sign against the real backend', async ({ page }) => {
   // FastAPI fixture xu ly qua nhanh de tao tranh chap that; 503 SERVICE_BUSY la phan hoi dieu khien theo contract.
   await useBackend(page, BACKENDS.accepted);
   let busyOnce = true;
@@ -86,12 +89,12 @@ test('T047 service busy (control response) offers an explicit retry that reaches
     return route.continue({ url: target.toString() });
   });
   await page.goto('/');
-  await captureClip(page);
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await signLive(page);
   await expect(page.getByRole('alert')).toContainText('Dịch vụ đang bận');
   await expect(page.getByRole('alert')).not.toContainText('raw server text');
+  await expect(page.getByRole('status')).toHaveText('Sẵn sàng', { timeout: 6000 });
   const retried = page.waitForResponse(response => response.url().endsWith('/api/v1/predictions'));
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  await signLive(page, false);
   expect((await retried).status()).toBe(200);
   await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Cảm ơn');
 });
@@ -102,7 +105,9 @@ test('T047 degraded backend (no artifact) blocks upload and shows recoverable gu
   const modelInfo = page.waitForResponse(response => response.url().endsWith('/api/v1/model-info'));
   await page.goto('/');
   expect((await modelInfo).status()).toBe(503);
-  await captureClip(page);
-  await expect(page.getByText('Chưa kết nối được dịch vụ nhận diện. Bạn vẫn có thể quay ký hiệu.')).toBeVisible();
+  await page.getByRole('button', { name: 'Bật camera' }).click();
+  await expect(page.getByRole('button', { name: 'Thử kết nối lại' })).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => { window.__visignScene = 'ready'; window.__visignSignUntil = performance.now() + 1500; });
+  await page.waitForTimeout(2000);
   expect(posts).toHaveLength(0);
 });

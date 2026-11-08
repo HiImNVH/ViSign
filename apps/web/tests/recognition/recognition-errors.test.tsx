@@ -1,7 +1,7 @@
 // CP4 T046: negative recognition flows across the real hook and camera UI.
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
+import { CameraRecorder } from './ManualRecorder';
 import { useRecognition } from '../../src/features/recognition/useRecognition';
 import { InferenceApiError, createInferenceApi } from '../../src/services/inferenceApi';
 import type { ModelInfo, PredictionResponse } from '../../src/types/inference-api';

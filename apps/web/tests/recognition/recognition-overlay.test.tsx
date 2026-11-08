@@ -1,7 +1,7 @@
 // Regression for the production camera component (no obsolete overlay).
 import { render, screen } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { CameraRecorder } from '../../src/features/recognition/CameraRecorder';
+import { CameraRecorder } from './ManualRecorder';
 import type { CameraView } from '../../src/features/recognition/cameraSession';
 
 const clip = new Blob(['test-only'], { type: 'video/webm' });

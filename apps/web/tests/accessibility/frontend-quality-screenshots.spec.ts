@@ -2,6 +2,7 @@
 // Chi chay khi dat VISIGN_CAPTURE_SCREENSHOTS=<thu muc dich>; lan chay thuong bo qua de khong ghi file.
 import { resolve } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { installPresenceStub, signOnce, startLive } from '../browser/liveHelpers';
 
 const outDir = process.env.VISIGN_CAPTURE_SCREENSHOTS;
 const metadata = {
@@ -28,24 +29,20 @@ async function setup(page: Page, accepted: boolean | 'busy') {
 }
 
 async function record(page: Page) {
-  await page.getByRole('button', { name: 'Bật camera' }).click();
-  await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  await page.getByRole('button', { name: 'Quay ký hiệu' }).click();
-  await page.waitForTimeout(600);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
+  await startLive(page);
+  await signOnce(page);
 }
 
 test.describe('T088 frontend quality screenshots', () => {
   test.skip(!outDir, 'Đặt VISIGN_CAPTURE_SCREENSHOTS để chụp ảnh audit');
+  test.beforeEach(async ({ page }) => { await installPresenceStub(page); });
 
   test('luồng accepted + lịch sử', async ({ page }) => {
     await setup(page, true);
     await page.goto('/');
     await snap(page, '1-idle');
     await record(page);
-    await snap(page, '2-captured');
-    await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+    await snap(page, '2-recording');
     await expect(page.getByRole('region', { name: 'Văn bản dịch' })).toContainText('Cảm ơn');
     await snap(page, '3-accepted');
     await page.getByRole('button', { name: 'Lịch sử', exact: true }).click();
@@ -57,7 +54,6 @@ test.describe('T088 frontend quality screenshots', () => {
     await setup(page, false);
     await page.goto('/');
     await record(page);
-    await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
     await expect(page.getByText('Chưa nhận diện được ký hiệu. Hãy quay một ký hiệu mới.')).toBeVisible();
     await snap(page, '5-rejected');
   });
@@ -66,7 +62,6 @@ test.describe('T088 frontend quality screenshots', () => {
     await setup(page, 'busy');
     await page.goto('/');
     await record(page);
-    await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
     await expect(page.getByRole('alert')).toContainText('Dịch vụ đang bận');
     await snap(page, '6-busy');
   });

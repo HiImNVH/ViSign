@@ -1,4 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
+import { installPresenceStub, signOnce, startLive } from './liveHelpers';
+
+test.beforeEach(async ({ page }) => { await installPresenceStub(page); });
 
 const historyKey = 'visign.translation-history.v1';
 const model = {
@@ -9,16 +12,9 @@ const model = {
 };
 
 async function recordAndSubmit(page: Page, first = false) {
-  if (first) {
-    await page.getByRole('button', { name: 'Bật camera' }).click();
-    await expect(page.getByRole('status')).toHaveText('Camera sẵn sàng');
-  }
-  await page.getByRole('button', { name: first ? 'Quay ký hiệu' : 'Quay lại' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đang quay ký hiệu');
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Kết thúc' }).click();
-  await expect(page.getByRole('status')).toHaveText('Đã quay xong');
-  await page.getByRole('button', { name: 'Gửi nhận diện' }).click();
+  if (first) await startLive(page);
+  await signOnce(page);
+  await expect(page.getByRole('status')).toHaveText(/Đã dịch|Không nhận diện được/);
 }
 
 function mockPredictions(page: Page) {
