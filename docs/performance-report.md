@@ -103,3 +103,17 @@ Nhận xét:
   không dùng cho tải thật; production cần CloudFront/ALB.
 - RAM container API đạt 1,35 GiB / giới hạn 1,5 GiB khi tải cao (tính cả page cache của container); cần nâng giới hạn
   hoặc theo dõi khi tăng worker.
+
+## Rò rỉ RAM và cách sửa (T113, 2026-11-08)
+
+Đo RAM thật (`anon` trong cgroup, không tính page cache) của container API, artifact pilot, clip 470–620 KB:
+
+- Trước khi sửa, 8 client trong 40 s: anon **1.523 MiB** trên giới hạn 1.536 MiB, chạm trần **4.260** lần
+  (`memory.events max`); hết tải RAM không giảm. Chạy riêng với giới hạn 4 GiB, request tuần tự: 441 → 1.249 (12 req) →
+  1.692 (36) → 1.921 MiB (72) — tăng liên tục.
+- A/B 36 request: `MALLOC_ARENA_MAX=2` → 826 MiB; tắt detector prewarm → 1.076 MiB; cả hai → 533 MiB. Nguyên nhân
+  chính là arena glibc riêng cho mỗi luồng (worker + detector song song) làm phân mảnh bộ nhớ.
+- 108 request: `MALLOC_ARENA_MAX=2` + prewarm ổn định **789 → 806 → 814 MiB** trong **182 s**; tắt prewarm ổn định
+  ~530 MiB nhưng chậm hơn 24% (226 s). Chọn giữ prewarm.
+- Sửa: `ENV MALLOC_ARENA_MAX=2` trong `infra/aws/docker/inference-api.Dockerfile`. Đo lại 8 client: anon đỉnh
+  **929 MiB**, **0** lần chạm trần; thông lượng không đổi (~26–29 ký hiệu/phút). Giữ `mem_limit: 1536m` (dư ~600 MiB).

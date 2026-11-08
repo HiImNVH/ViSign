@@ -53,10 +53,13 @@ RUN apt-get update \
     && useradd --system --uid 10001 --no-create-home --shell /usr/sbin/nologin visign
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
+# MALLOC_ARENA_MAX=2 (T113): moi luong (worker + detector song song) giu arena glibc rieng lam RAM tang dan toi tran
+# 1,5 GiB sau vai chuc request; gioi han 2 arena giu RAM on dinh ~0,8 GiB (do 108 request, docs/performance-report.md)
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HOME=/tmp \
+    MALLOC_ARENA_MAX=2 \
     VISIGN_MODEL_DIR=/app/ai/models
 WORKDIR /app
 USER 10001:10001
