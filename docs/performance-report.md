@@ -74,3 +74,32 @@ uv run --locked --project ai python -m visign_ai.evaluation.benchmark_inference 
 **Production chưa đo.** Repo hiện có bằng chứng chuẩn bị triển khai AWS, chưa có URL production và PID worker đã xác nhận cho lượt đo T065. [Trạng thái AWS T096](evidence/checkpoints/CP7/T096-aws-access-bootstrap.md)
 
 Tham chiếu [smoke 32 clip của Tín](evidence/checkpoints/CP3/T037-p2-tin-real-clip-smoke.md) và [benchmark RAM T095](evidence/checkpoints/CP7/T095-p2-tin-serving-ram-benchmark.md). Các phép đo đó dùng môi trường hoặc tập clip khác.
+
+## Kiểm tải đồng thời (2026-11-08, P1)
+
+`services/inference-api/scripts/load_test_predictions.py`: N client gửi liên tục 4 clip WebM có người (chuyển từ bộ
+test pilot, 640×480, 470–620 KB) trong 30 giây mỗi mức; artifact `t083-pilot-v2-approved`; một uvicorn worker, **một
+slot suy luận**, chờ slot quá hạn trả `503 SERVICE_BUSY` (thiết kế MVP).
+
+| Môi trường | Client | Request | 200 | 503 | Khác | Ký hiệu thành công/phút | p50 / p95 (s) |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Docker local (i7-12700H) | 1 | 19 | 19 | 0 | 0 | 36,2 | 1,69 / 1,95 |
+| | 2 | 19 | 18 | 1 | 0 | 32,0 | 3,48 / 5,71 |
+| | 3 | 27 | 17 | 10 | 0 | 30,4 | 3,86 / 5,75 |
+| | 4 | 35 | 16 | 19 | 0 | 28,0 | 4,55 / 6,83 |
+| | 8 | 74 | 15 | 59 | 0 | 27,7 | 4,79 / 5,63 |
+| AWS c7i-flex.large qua Quick Tunnel (từ VN tới Sydney) | 1 | 8 | 8 | 0 | 0 | 14,4 | 3,92 / 5,36 |
+| | 2 | 11 | 11 | 0 | 0 | 19,5 | 6,08 / 7,35 |
+| | 4 | 25 | 11 | 14 | 0 | 19,0 | 6,61 / 8,97 |
+| | 8 | 16 | 2 | 6 | 8 | 1,8 | 5,41 / 8,96 |
+
+Nhận xét:
+
+- Thông lượng bão hoà ở **~30–36 ký hiệu/phút (local)** và **~19 ký hiệu/phút (AWS)**: đúng giới hạn một slot, quyết
+  định bởi thời gian trích landmark MediaPipe (local ~1,4–2,0 s, c7i ~2,5–3,4 s mỗi clip); GRU < 5 ms.
+- Vượt mức bão hoà hệ thống **từ chối nhanh bằng 503 + `Retry-After`** thay vì xếp hàng vô hạn; API không khởi động lại,
+  không OOM (`RestartCount=0`, `OOMKilled=false`), log API chỉ có 200/503.
+- Ở 8 client trên AWS, 8 lỗi "khác" xảy ra ở tầng Quick Tunnel/mạng (API không ghi nhận các request đó) — Quick Tunnel
+  không dùng cho tải thật; production cần CloudFront/ALB.
+- RAM container API đạt 1,35 GiB / giới hạn 1,5 GiB khi tải cao (tính cả page cache của container); cần nâng giới hạn
+  hoặc theo dõi khi tăng worker.
