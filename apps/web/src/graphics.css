@@ -1,0 +1,65 @@
+/* Visual treatment only: preserve all existing layout, type and control geometry. */
+.app-shell {
+  background: url('/images/page-waves.svg') center bottom / 100% 140px no-repeat,
+    linear-gradient(125deg, #fbfdfc, #f5faf8 68%, #f9fcfb);
+}
+.app-shell .camera-viewport {
+  background: url('/images/corner-waves.svg') center / 100% 100% no-repeat,
+    radial-gradient(ellipse at 55% 32%, #fff 15%, #fbfdfc 52%, #edf7f2 100%);
+  box-shadow: inset 0 0 0 1px #cee5da, inset 0 0 0 5px #ffffff70,
+    0 8px 24px #175a3f0b, 0 1px 3px #175a3f08;
+}
+.app-shell .camera-active { background: #e9f1ed; }
+.app-shell .status-badge {
+  border-color: #cfe4d9;
+  background: #fffffff2;
+  box-shadow: 0 3px 10px #15644410, inset 0 1px #fff;
+}
+.app-shell .live-off > span { background: #168447; }
+.app-shell .primary-button {
+  background: linear-gradient(135deg, #09865e, #006b4b);
+  box-shadow: inset 0 1px #ffffff36, 0 4px 10px #006b4b28;
+}
+.app-shell .quiet-button {
+  background: linear-gradient(135deg, #f3faf6, #eaf4ef);
+  box-shadow: inset 0 0 0 1px #cee2d8, 0 2px 4px #0c503b06;
+}
+.app-shell .header-actions > .quiet-button {
+  background: linear-gradient(145deg, #fff, #f7fcf9);
+  box-shadow: inset 0 0 0 1px #d0e4da, 0 2px 5px #145c4210;
+}
+.app-shell .camera-off-button {
+  background: linear-gradient(135deg, #fff7f5, #fbefed);
+  box-shadow: inset 0 0 0 1px #efdcd7;
+}
+.app-shell .capture-controls {
+  background: #fffffff2;
+  box-shadow: 0 0 0 1px #d8e7df, 0 5px 16px #14583f12;
+}
+.app-shell .presence-chips li { background: #ffffffeb; }
+.app-shell .presence-chips .chip-on { background: #e0f3e9; }
+.app-shell .live-hint { border-color: #d9e9e0; box-shadow: 0 2px 8px #174f3a08; }
+.app-shell .history-sidebar {
+  border-color: #cee4d9;
+  background: linear-gradient(155deg, #fff 35%, #f7fcf9);
+  box-shadow: inset 0 1px #fff, 0 8px 24px #175a3f0b, 0 1px 3px #175a3f08;
+}
+.app-shell .history-count { background: #dff1e7; color: #086445; box-shadow: inset 0 1px #ffffff8c; }
+.app-shell .history-entries li { border-color: #e0ece5; }
+.app-shell .history-entry-highlighted .history-entry-button {
+  background: linear-gradient(110deg, #e0f3e9, #eaf7f0);
+  box-shadow: inset 3px 0 #078554, inset 0 0 0 1px #ffffff80;
+}
+.app-shell .history-sidebar .history-entry-button time { color: #526d62; }
+.app-shell .history-empty { background: #f2f9f5; border-color: #d5e7dd; }
+.app-shell .history-actions { border-color: #d9e9e0; }
+.app-shell .history-content { scrollbar-color: #a8c1b5 #f1f7f4; }
+.app-shell .history-content::-webkit-scrollbar { background: #f1f7f4; }
+.app-shell .history-content::-webkit-scrollbar-thumb { background: #a8c1b5; border-radius: 10px; }
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .primary-button:hover { background: linear-gradient(135deg, #087451, #005c40); }
+  .app-shell .quiet-button:hover { background: #e1f0e7; }
+  .app-shell .camera-off-button:hover { background: #f7e6e1; }
+  .app-shell .history-entry-button:hover { background: #f0f8f3; }
+  .app-shell .history-entry-highlighted .history-entry-button:hover { background: #daf0e3; }
+}

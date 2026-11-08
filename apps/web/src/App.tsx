@@ -5,6 +5,7 @@ import { LiveCamera } from './features/live/LiveCamera';
 import { useLiveRecognition } from './features/live/useLiveRecognition';
 import { HistoryPanel } from './features/recognition/HistoryPanel';
 import './styles.css';
+import './graphics.css';
 
 export function App() {
   const recognition = useLiveRecognition();

@@ -86,3 +86,18 @@ test('backend text is shown as inert text, without executing HTML', () => {
   expect(screen.getByText(input)).toBeVisible();
   expect(container.querySelector('img')).toBeNull();
 });
+
+test('accepted result stays word-only with Vietnamese meaning display metadata', () => {
+  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'pilot', demoReady: false,
+    meanings: ['GIAY_TO', 'NHAN'], meaningDisplayTexts: { GIAY_TO: 'Giấy tờ (giấy)', NHAN: 'Nhận' } }} />);
+  expect(screen.getByRole('region', { name: 'Văn bản dịch' })).toHaveTextContent(/^Xin chào$/);
+  expect(screen.queryByText(/Ý nghĩa hỗ trợ/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/GIAY_TO/)).not.toBeInTheDocument();
+});
+
+test('accepted result stays word-only when older metadata lacks a meaning display text', () => {
+  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'pilot', demoReady: false,
+    meanings: ['GIAY_TO', 'NHAN'], meaningDisplayTexts: { NHAN: 'Nhận' } }} />);
+  expect(screen.getByRole('region', { name: 'Văn bản dịch' })).toHaveTextContent(/^Xin chào$/);
+  expect(screen.queryByText(/GIAY_TO|Ý nghĩa hỗ trợ/)).not.toBeInTheDocument();
+});
