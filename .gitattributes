@@ -1,0 +1,5 @@
+# Dockerfile, nginx va script shell phai giu LF tren moi may (heredoc trong Dockerfile hong neu la CRLF)
+*.Dockerfile text eol=lf
+Dockerfile text eol=lf
+*.sh text eol=lf
+infra/aws/nginx/*.conf text eol=lf
