@@ -292,9 +292,9 @@ test bảo mật/cleanup/concurrency và không ảnh hưởng public `/api/v1`.
 - [X] T079 [US4] Chuẩn hóa opt-in admin config, sanitized errors, temporary inspect lifecycle và worker/job locking tại `services/inference-api/src/visign_api/api/admin.py`, `services/inference-api/src/visign_api/api/pilot.py` và `services/inference-api/src/visign_api/config.py`
 - [X] T080 [US4] Đồng bộ response models và endpoint behavior với `specs/001-vsl-recognition-mvp/contracts/admin-tools.md` tại `services/inference-api/src/visign_api/api/admin.py` và `services/inference-api/src/visign_api/api/pilot.py`
 - [X] T081 [P] [US4] Viết frontend tests cho token form, inspect, preflight, train, active-job conflict, history và W&B online/offline tại `apps/web/tests/admin/admin-training.test.tsx`
-- [ ] T082 [US4] Tích hợp route `/admin/train-model`, typed admin client và stable Vietnamese states tại `apps/web/src/features/admin/AdminTraining.tsx`, `apps/web/src/features/admin/PilotPanel.tsx` và `apps/web/src/services/adminApi.ts`
-- [ ] T083 [US4] Chạy pilot Giấy tờ–Nhận (`GIAY_TO`, `NHAN`; lead đổi từ Sốt–Cảm ơn ngày 2026-11-08) từ bản bàn giao đã audit và ghi dataset/run ID, sample counts, metrics, W&B evidence cùng `demoReady=false` tại `docs/pilot-report.md`
-- [ ] T084 [US4] Review ranh giới user/admin, secret handling, retention và release-claim checklist; ghi quyết định nghiệm thu tại `docs/admin-acceptance.md`
+- [X] T082 [US4] Tích hợp route `/admin/train-model`, typed admin client và stable Vietnamese states tại `apps/web/src/features/admin/AdminTraining.tsx`, `apps/web/src/features/admin/PilotPanel.tsx` và `apps/web/src/services/adminApi.ts`
+- [X] T083 [US4] Chạy pilot Giấy tờ–Nhận (`GIAY_TO`, `NHAN`; lead đổi từ Sốt–Cảm ơn ngày 2026-11-08) từ bản bàn giao đã audit và ghi dataset/run ID, sample counts, metrics, W&B evidence cùng `demoReady=false` tại `docs/pilot-report.md`
+- [X] T084 [US4] Review ranh giới user/admin, secret handling, retention và release-claim checklist; ghi quyết định nghiệm thu tại `docs/admin-acceptance.md`
 
 **Checkpoint**: Công cụ admin có thể tích hợp ở checkpoint riêng; không chặn user MVP và không được dùng để bỏ qua
 T077/full release gate.
@@ -498,7 +498,7 @@ Sinh theo quy trình `speckit-converge` sau khi đồng bộ spec/plan/research/
 | C5 | partial | MEDIUM | FR-027, SC-002 | Kiểm tải: RAM container API 1,35 GiB / giới hạn 1,5 GiB ở 8 client; chưa có cảnh báo/ngưỡng |
 
 - [ ] T109 [P] [US1] Hiển thị chữ tiếng Việt (không phải mã nghĩa) trong "Ý nghĩa hỗ trợ": bổ sung `displayTextMap` (hoặc tương đương) vào `GET /api/v1/model-info` trong `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`, `services/inference-api/src/visign_api/api/system.py` và dùng ở `apps/web/src/features/recognition/RecognitionResult.tsx`; test contract + component (C1, FR-005) — Owner P2 + P5
-- [ ] T110 [US4] Cung cấp runner pilot `ai/src/visign_ai/pilot.py` với `build_pilot_runner()` theo giao diện `PilotRunner` để `/api/admin/pilot/prepare` và `train` chạy được (gọi `create_splits`, trích landmark, `training.train` có `group_weights`), test trên dữ liệu tổng hợp; mở khoá nghiệm thu T082/T083 (C2) — Owner P3
+- [X] T110 [US4] Cung cấp runner pilot `ai/src/visign_ai/pilot.py` với `build_pilot_runner()` theo giao diện `PilotRunner` để `/api/admin/pilot/prepare` và `train` chạy được (gọi `create_splits`, trích landmark, `training.train` có `group_weights`), test trên dữ liệu tổng hợp; mở khoá nghiệm thu T082/T083 (C2) — Owner P3
 - [ ] T111 [P] [US4] Đặt `MAX_ADMIN_CLIP_BYTES` trong `apps/web/src/services/adminApi.ts` bằng giới hạn contract 10 MiB + 64 KiB và test file vượt giới hạn bị chặn phía client (C3) — Owner P5
 - [ ] T112 [P] [US4] Nhận scheme `Bearer` không phân biệt hoa/thường trong `services/inference-api/src/visign_api/api/admin.py`, giữ so sánh token hằng thời gian; thêm test contract (C4) — Owner P2
 - [ ] T113 [US5] Đặt ngưỡng RAM cho container API dựa trên kiểm tải (`services/inference-api/scripts/load_test_predictions.py`): đo lại với artifact full, chỉnh `mem_limit` trong `infra/aws/compose.production.yml` hoặc giới hạn cache, ghi kết quả vào `docs/performance-report.md` (C5) — Owner P2

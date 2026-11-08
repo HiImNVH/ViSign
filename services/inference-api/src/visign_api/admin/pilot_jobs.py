@@ -252,7 +252,9 @@ class PilotJobManager:
         service_logger.error("Job pilot that bai", exc_info=job_error)
         message = (
             INPUT_ERROR_MESSAGE
+            # Runner cua goi AI khong import duoc API: danh dau loi dau vao bang thuoc tinh
             if isinstance(job_error, PilotInputError)
+            or getattr(job_error, "is_pilot_input_error", False) is True
             else FAILURE_MESSAGE
         )
         self._update(run_id, phase="failed", error=message)

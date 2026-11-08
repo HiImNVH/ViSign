@@ -1,7 +1,7 @@
 # ViSign · Nghiệm thu ranh giới user/admin, secret, retention và release claim (T084)
 
 **Ngày**: 2026-11-08 · **Người review**: P1/Huy · **Kết luận**: `PARTIAL` — ranh giới public đạt trên bản đang chạy;
-nghiệm thu admin chờ backend T078–T080 (P2).
+phần admin đã nghiệm thu 2026-11-08 (mục 5).
 
 ## 1. Ranh giới user/admin
 
@@ -50,6 +50,12 @@ Trước khi trình bày hoặc chia sẻ URL, kiểm đủ các mục sau:
 ## 5. Quyết định
 
 - Ranh giới public, secret và retention của bản đang chạy: **chấp nhận**.
-- Phần admin: **chưa nghiệm thu** — mở lại khi P2 bàn giao T078–T080 (kiểm 404 khi tắt, 401 sai token, 409 job đồng
-  thời, giới hạn byte/thời gian của inspect, dọn file tạm ở mọi nhánh) và P5 chạy T082 với backend thật.
-- T084 giữ `[ ]` cho tới khi hoàn tất phần admin.
+- Phần admin: **chấp nhận** (2026-11-08, sau T078–T080 và runner pilot T110). Kiểm trong Docker image HEAD, root chỉ
+  đọc, `cap_drop ALL`: tắt → 404; thiếu/sai token → 401 (token không xuất hiện trong log); inspect trả ZIP landmark,
+  không video, file > 10 MiB → 413, file giả → 415; hai job cùng lúc → 409 `ADMIN_JOB_ACTIVE`; `/tmp` không còn thư mục
+  inspect; **pilot thật** (bàn giao 15 video Giấy tờ/Nhận của P4): `prepare` trích 15/15 trong ~31 s → `ready`, `train`
+  30 epoch có trọng số nhóm → `complete`, accuracy 0,25 / Macro-F1 0,33, `demoReady=false`; mỗi run một thư mục riêng.
+  Giao diện `/admin/train-model` (T082) với backend thật: sai mã → thông báo 401 tiếng Việt, đúng mã → hiện job thật
+  (15/15 clip, schema v0.3), không lỗi trang. Admin không bật trên bản deploy công khai.
+- Còn theo dõi: T111 (FE còn ghi "tối đa 100 MiB" trong khi contract 10 MiB), T112 (scheme `Bearer` phân biệt hoa/thường).
+- T084: **đạt**, tick `[X]`.

@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T11:30:00+07:00` trên `origin/main` `3d48495` (79/112 task).
+Cập nhật `2026-11-08T12:00:00+07:00` trên `origin/main` (83/112 task).
 
 ### Checkpoint
 
@@ -65,15 +65,15 @@ Cập nhật `2026-11-08T11:30:00+07:00` trên `origin/main` `3d48495` (79/112 t
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
 | T062 | P3 | Model card `docs/model-card.md` | P1_VERIFIED cấu trúc; đã ghi metric pilot nội bộ, chờ review cập nhật và đánh giá full |
-| T081, T082 | P5 | Giao diện admin `/admin/train-model` (`a498da5`, `c0d598f`) | T081 `VERIFIED`, `[X]`; T082 P1_VERIFIED phần FE, giữ `[ ]` chờ backend T078–T080 (P2) và chốt body 202 + tên trường multipart trong contract |
+| T081, T082 | P5 | Giao diện admin `/admin/train-model` (`a498da5`, `c0d598f`) | `VERIFIED`, `[X]`: T082 smoke với backend admin thật (job thật 15/15 clip) |
 | T091 | P1 | CI quality gate | Thêm job `docker` (build 2 image, nạp 3 detector MediaPipe trong container chỉ đọc, smoke Compose 14/14 qua nginx), xanh trên `bed64a9`; OIDC deploy bị SCP Free Plan chặn. Chờ P2 review |
-| T084 | P1 | Nghiệm thu ranh giới user/admin, secret, retention | [admin-acceptance.md](../admin-acceptance.md): public/secret/retention đạt trên EC2 (0 clip còn trong `/tmp`, admin API 404); phần admin chờ T078–T080 |
+| T084 | P1 | Nghiệm thu ranh giới user/admin, secret, retention | `VERIFIED`, `[X]`: public + admin đạt ([admin-acceptance.md](../admin-acceptance.md)) |
 | T078–T080 | P2 | Admin API opt-in (`70f2601`) | `VERIFIED`, `[X]` (P1): 404 khi tắt, 401, 409, cleanup, inspect ZIP trong Docker; runner pilot P3 còn thiếu (prepare 503) |
 | T018, T056 | P4 | Split theo video + regression leakage | `VERIFIED`, `[X]` (P1 tích hợp theo allowlist); T098 `CHANGES_REQUESTED` nhỏ (cho phép trống `sourceUri`) |
 | T105–T108 | P1 (tiếp quản một phần P3) | **Dịch trực tiếp**: MediaPipe trên trình duyệt phát hiện người/mặt/tay, tự cắt và tự gửi từng ký hiệu, 11 trạng thái (`de14b19`) | Code + test xong (unit 191, Playwright 75, E2E 6/6, CI xanh), đã deploy AWS `d7637107d8be`; **chờ P5 review** (code P1 viết) và T108 smoke webcam thật |
 | T036 (bổ sung) | P1 (tiếp quản một phần P3) | Trọng số nhóm điểm tay 0,7 / mặt 0,2 / vai 0,1 trong đầu vào GRU (`f6d61a2`), mặc định ở `pilot-gru.yaml`/`p0-gru.yaml`; artifact lưu `feature_scale`, API nạp được cả model cũ | AI 188, API 408 test đạt, CI xanh; train lại pilot: test 25% / Macro-F1 0,33 như cũ (4 clip không đủ đo); **chờ P3 review** |
-| T109–T113 | P2, P3, P5 | Convergence 2026-11-08 (Spec Kit): T109 hiện chữ tiếng Việt thay mã nghĩa ở "Ý nghĩa hỗ trợ" (FR-005, P2+P5); **T110 runner pilot `visign_ai.pilot` (P3, đang chặn T082/T083)**; T111 giới hạn file admin 10 MiB (P5); T112 `Bearer` không phân biệt hoa/thường (P2); T113 ngưỡng RAM API sau kiểm tải (P2) | Mới, chưa bắt đầu |
-| T083 | P3 | Pilot nội bộ | P3 đã chạy lại pilot Giấy tờ / Nhận, 15 clip, accuracy 25%, macro-F1 0,3333, demoReady=false. **Huy đã chốt phạm vi Giấy tờ / Nhận (2026-11-08).** P1 nạp artifact `t083-pilot-v2-approved` vào Docker API: `modelReady`, 4 clip test → 200 (2 chấp nhận đúng nghĩa, 2 từ chối), 1,4–2,3 s/clip, RAM 890 MiB. Còn chờ T076 (sửa `sourceUri`) và T078–T082. [Báo cáo](../pilot-report.md) |
+| T109–T113 | P2, P3, P5 | Convergence 2026-11-08 (Spec Kit): T109 hiện chữ tiếng Việt thay mã nghĩa ở "Ý nghĩa hỗ trợ" (FR-005, P2+P5); ~~T110 runner pilot~~ **xong** (`[X]`, P1 tiếp quản P3); T111 giới hạn file admin 10 MiB (P5); T112 `Bearer` không phân biệt hoa/thường (P2); T113 ngưỡng RAM API sau kiểm tải (P2) | Mới, chưa bắt đầu |
+| T083 | P3 → P1 | Pilot Giấy tờ / Nhận | `VERIFIED`, `[X]`: chạy hết luồng admin thật (prepare 15/15 → train → complete), accuracy 0,25 / Macro-F1 0,33, `demoReady=false` |
 
 Bản tự train (lead chốt 2026-11-07, sau khi khảo sát dataset/model công khai không phủ đủ 10 từ P0 và phần
 lớn thiếu license): pilot thật cần T013 manifest + T098 đóng băng (P4), schema APPROVED sau review clip

@@ -9,6 +9,7 @@ import os
 import random
 import re
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
@@ -112,7 +113,9 @@ def threshold_sweep(
 
 
 def fit(
-    inputs: TrainingInputs, args: argparse.Namespace
+    inputs: TrainingInputs,
+    args: argparse.Namespace,
+    on_epoch: Callable[[int, int], None] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     config = inputs.config
     seed = config["seed"]
@@ -154,6 +157,8 @@ def fit(
                 "validationLoss": validation_loss,
             }
         )
+        if on_epoch is not None:
+            on_epoch(epoch, config["epochs"])
         if validation_loss < best_loss:
             best_loss, best_epoch = validation_loss, epoch
             best_state = {
@@ -213,7 +218,9 @@ def publish(
         staging.rename(output)
 
 
-def train(args: argparse.Namespace) -> None:
+def train(
+    args: argparse.Namespace, on_epoch: Callable[[int, int], None] | None = None
+) -> None:
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*-v[1-9][0-9]*", args.dataset_version):
         raise ValueError("dataset-version must match <manifest>-v<positive integer>")
     if not args.model_version.strip():
@@ -222,7 +229,7 @@ def train(args: argparse.Namespace) -> None:
     if output.exists() or output.is_symlink():
         raise FileExistsError(f"Output exists: {output}")
     inputs = prepare_inputs(args)
-    checkpoint, report = fit(inputs, args)
+    checkpoint, report = fit(inputs, args, on_epoch)
     metadata = build_model_metadata(
         {
             **checkpoint["labelBinding"],

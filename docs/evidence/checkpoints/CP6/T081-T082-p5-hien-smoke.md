@@ -77,3 +77,12 @@ trong khi FE đọc `TrainingRun` từ body; tên trường multipart (`video`) 
 
 **Reviewer result**: T081 `P1_VERIFIED`, tick `[X]`. T082 `P1_VERIFIED` phần FE; giữ `[ ]` đến khi smoke với backend
 T078–T080 thật.
+
+## Independent review — P1/Huy, smoke với backend thật (2026-11-08)
+
+Backend admin thật (T078–T080 + runner pilot T110) trong Docker, web image HEAD qua nginx `/admin/train-model`:
+sai mã → "Mã admin không đúng hoặc đã hết hiệu lực (401)"; đúng mã → panel hiện job thật `ready`, dữ liệu `pilot-v1`,
+schema `visign-xy-32-v0.3-draft`, 15/15 clip, nút Bắt đầu train/Xem lịch sử; không có lỗi trang. Luồng
+prepare → train → complete qua API cho accuracy 0,25 / Macro-F1 0,33. Còn lại T111 (giới hạn file 100 MiB ở FE).
+
+**Reviewer result**: T082 `P1_VERIFIED`, tick `[X]`.
