@@ -50,3 +50,14 @@ readiness vẫn do artifact metadata/release gate.
 
 Cho tới khi OIDC được mở khóa, không tạo `deploy-aws.yml` dùng access-key secrets. Manual deployment
 phải ghi cùng bộ evidence và giữ T091/T096 mở.
+
+## Trạng thái thực tế 2026-11-08 (tạm thời, chưa thỏa đủ contract)
+
+| Mục contract | Thực tế | Còn thiếu |
+|---|---|---|
+| CloudFront HTTPS | Bị chặn: tài khoản cần AWS Support xác minh. HTTPS tạm qua Cloudflare Quick Tunnel (`cloudflared` trên EC2, không mở cổng; URL đổi khi khởi động lại) | Bật `EnableCloudFront=true` trên stack `visign-origin` khi được duyệt |
+| EC2 + Elastic IP + ECR + S3 + SSM, không SSH | Đạt: CloudFormation `visign-storage`, `visign-origin`; IAM role chỉ kéo `visign/*` và đọc S3 `artifacts/`, `deploy/` | — |
+| Image theo commit SHA, artifact theo version | Đạt: tag 12 ký tự SHA, ECR tag bất biến; S3 có versioning | — |
+| Deploy qua CI bằng OIDC | Bị chặn bởi SCP Free Plan; deploy thủ công bằng phiên `aws login` tạm thời + SSM | Mở OIDC (cần quyết định billing) |
+| Security headers, admin tắt, không lưu video | Đạt trên EC2 (`docs/admin-acceptance.md`) | HSTS khi có CloudFront (T096) |
+| CI chặn lỗi image trước deploy | Job `docker`: build 2 image, nạp MediaPipe trong container chỉ đọc, smoke 14/14 | — |

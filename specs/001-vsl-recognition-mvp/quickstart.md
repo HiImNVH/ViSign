@@ -171,9 +171,12 @@ npm run dev --prefix apps/web
 
 Expected:
 
-- The web app requests camera permission.
-- The user can start, stop, cancel and submit one isolated sign.
-- A successful result displays Vietnamese text and confidence.
+- The web app requests camera permission (Chrome/Edge; `npm run dev` first prepares MediaPipe WASM/models in
+  `apps/web/public/mediapipe/`).
+- Live translation (2026-11-08): with face and hands in frame the status reaches **Sẵn sàng**; a sign is recorded
+  automatically while the hands move and sent when they stay still ~0.7 s — no record/stop/send buttons. The user
+  can **Tạm dừng/Tiếp tục** or **Tắt camera**; hiding the tab pauses.
+- A successful result displays Vietnamese text and confidence and is appended to the live transcript.
 - A rejected result displays “Không nhận diện được”.
 - The disclaimer is visible near the result.
 
@@ -190,8 +193,11 @@ Expected:
 
 - Unit, contract and integration suites pass.
 - E2E covers camera permission accepted, denied, low-confidence result, service unavailable and a
-  successful recognition using a Y4M fake-camera fixture rather than an HTTP-only mock.
-- The successful E2E result appears within 3 seconds after submission in the documented demo setup.
+  successful recognition using Chromium's fake camera (real WebM upload) with a presence-detector stub for live
+  segmentation, plus one test that loads the real browser MediaPipe; E2E runs against three real FastAPI backends
+  (`npm run test:e2e --prefix apps/web`).
+- The successful result appears within 3 seconds after the hands stop in the documented demo setup (local Docker
+  1.2–2.0 s measured; AWS Sydney 3.9–5.4 s does not yet meet it).
 
 ## Scenario 7: Verify a commit/push checkpoint
 
@@ -215,6 +221,10 @@ Expected:
 ## Scenario 8: Verify AWS production
 
 Use the deployed URLs recorded in `docs/deployment-report.md`.
+
+Current interim state (2026-11-08): HTTPS is a Cloudflare Quick Tunnel to the EC2 origin until AWS verifies the account
+for CloudFront; deployment is manual (`aws login` + SSM `deploy.sh`) because OIDC is blocked. Checks that name
+CloudFront or OIDC below stay open until those blockers are removed.
 
 Expected:
 

@@ -156,7 +156,7 @@ thực hiện trước khi đóng Phase 2; không renumber T001–T097.
 - [X] T029 [P] [US1] Viết model shape, packed-sequence, deterministic forward và class-subset tests dùng chung cho pilot/full tại `ai/tests/training/test_gru_classifier.py`
 - [X] T030 [P] [US1] Tạo deterministic fixture artifact và viết contract tests cho release `0.0.1`/API `v1`, chứng minh fixture/pilot/full dùng cùng accepted response schema, echo/generated `X-Request-ID`, non-negative optional timings và bounded quality hints tại `services/inference-api/tests/fixtures/model-artifacts/fixture/` và `services/inference-api/tests/contract/test_predictions_contract.py`
 - [X] T031 [P] [US1] Viết component tests cho permission, recording và accepted result tại `apps/web/tests/recognition/recognition-flow.test.tsx`
-- [ ] T032 [P] [US1] Viết E2E happy path bằng Chromium fake-camera Y4M và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `apps/web/tests/e2e/recognition-happy-path.spec.ts`
+- [ ] T032 [P] [US1] Viết E2E happy path bằng camera giả Chromium (WebM thật; từ 2026-11-08 kèm stub phát hiện người cho luồng dịch trực tiếp) và fixture predictor, không thay camera flow bằng HTTP-only mock, tại `apps/web/tests/e2e/recognition-happy-path.spec.ts`
 
 ### Implementation for User Story 1
 
@@ -481,3 +481,24 @@ Quang:    T013 pilot subset -> T018, tiếp tục hoàn thiện full manifest
   test và yêu cầu frontend hiện trạng coi đây là phần cần nghiệm thu.
 - Local work có thể song song nhưng push lên `main` phải tuần tự; không branch vai trò và không force-push.
 - Release `0.0.1`, API namespace `v1`; feature schema v0.3 là version độc lập.
+
+---
+
+## Phase 12: Convergence (2026-11-08)
+
+Sinh theo quy trình `speckit-converge` sau khi đồng bộ spec/plan/research/contracts/quickstart với thực tế
+2026-11-08. Chỉ liệt kê khoảng trống chưa có task nào phủ; task cũ giữ nguyên.
+
+| Finding | Loại | Mức | Nguồn | Bằng chứng |
+|---|---|---|---|---|
+| C1 | contradicts | MEDIUM | FR-005 | `RecognitionResult.tsx` hiện "Ý nghĩa hỗ trợ: GIAY_TO, NHAN" — mã nghĩa thay vì chữ tiếng Việt |
+| C2 | missing | HIGH | US4, T082–T083 | Không có `ai/src/visign_ai/pilot.py`; `/api/admin/pilot/prepare` và `train` luôn trả 503 |
+| C3 | partial | LOW | contracts/admin-tools.md | `adminApi.ts` cho chọn file tới 100 MiB, contract giới hạn 10 MiB + 64 KiB |
+| C4 | partial | LOW | contracts/admin-tools.md | `admin.py` chỉ nhận `Bearer` đúng hoa/thường; RFC 7235 coi scheme không phân biệt |
+| C5 | partial | MEDIUM | FR-027, SC-002 | Kiểm tải: RAM container API 1,35 GiB / giới hạn 1,5 GiB ở 8 client; chưa có cảnh báo/ngưỡng |
+
+- [ ] T109 [P] [US1] Hiển thị chữ tiếng Việt (không phải mã nghĩa) trong "Ý nghĩa hỗ trợ": bổ sung `displayTextMap` (hoặc tương đương) vào `GET /api/v1/model-info` trong `specs/001-vsl-recognition-mvp/contracts/openapi.yaml`, `services/inference-api/src/visign_api/api/system.py` và dùng ở `apps/web/src/features/recognition/RecognitionResult.tsx`; test contract + component (C1, FR-005) — Owner P2 + P5
+- [ ] T110 [US4] Cung cấp runner pilot `ai/src/visign_ai/pilot.py` với `build_pilot_runner()` theo giao diện `PilotRunner` để `/api/admin/pilot/prepare` và `train` chạy được (gọi `create_splits`, trích landmark, `training.train` có `group_weights`), test trên dữ liệu tổng hợp; mở khoá nghiệm thu T082/T083 (C2) — Owner P3
+- [ ] T111 [P] [US4] Đặt `MAX_ADMIN_CLIP_BYTES` trong `apps/web/src/services/adminApi.ts` bằng giới hạn contract 10 MiB + 64 KiB và test file vượt giới hạn bị chặn phía client (C3) — Owner P5
+- [ ] T112 [P] [US4] Nhận scheme `Bearer` không phân biệt hoa/thường trong `services/inference-api/src/visign_api/api/admin.py`, giữ so sánh token hằng thời gian; thêm test contract (C4) — Owner P2
+- [ ] T113 [US5] Đặt ngưỡng RAM cho container API dựa trên kiểm tải (`services/inference-api/scripts/load_test_predictions.py`): đo lại với artifact full, chỉnh `mem_limit` trong `infra/aws/compose.production.yml` hoặc giới hạn cache, ghi kết quả vào `docs/performance-report.md` (C5) — Owner P2

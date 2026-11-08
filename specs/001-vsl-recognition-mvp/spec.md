@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-19
 
-**Status**: Ready for planning
+**Status**: In implementation — đồng bộ với thực tế 2026-11-08 (dịch trực tiếp, trọng số nhóm điểm, pilot Giấy tờ/Nhận, AWS tạm qua tunnel)
 
 **Release Version**: `0.0.1`
 
@@ -80,9 +80,12 @@ Một người dùng thực hiện một ký hiệu riêng lẻ trước camera.
 
 **Acceptance Scenarios**:
 
-1. **Given** người dùng đã cho phép sử dụng nguồn hình ảnh và chọn bắt đầu, **When** người dùng thực
-   hiện một ký hiệu hợp lệ rồi kết thúc, **Then** hệ thống hiển thị ý nghĩa tiếng Việt, độ tin cậy và
-   trạng thái đã nhận diện.
+1. **Given** người dùng đã bật camera và hệ thống ở trạng thái **Sẵn sàng** (thấy người, mặt và tay), **When**
+   người dùng thực hiện một ký hiệu hợp lệ rồi dừng tay, **Then** hệ thống tự ghi, tự gửi đoạn đó và hiển thị ý
+   nghĩa tiếng Việt, độ tin cậy, trạng thái đã nhận diện, đồng thời nối vào bản dịch trực tiếp (FR-004 sửa
+   2026-11-08).
+1a. **Given** camera đang bật, **When** không có người hoặc chưa thấy đủ mặt và tay, **Then** hệ thống hiển thị
+   "Không phát hiện người" hoặc "Chưa thấy đủ mặt và tay" kèm gợi ý và không ghi, không gửi đoạn nào.
 2. **Given** hai biến thể vùng miền khác nhau cùng mang một ý nghĩa, **When** mỗi biến thể được nhận
    diện, **Then** cả hai lần đều hiển thị cùng một nội dung tiếng Việt.
 3. **Given** người dùng từ chối quyền camera hoặc nguồn hình ảnh không thể đọc, **When** bắt đầu nhận
@@ -344,7 +347,8 @@ thì mục cũ bị xoá.
 ### Measurable Outcomes
 
 - **SC-001**: Ít nhất 90% người thử nghiệm có thể hoàn thành một lần nhận diện hợp lệ mà không cần
-  người phát triển hướng dẫn trực tiếp.
+  người phát triển hướng dẫn trực tiếp. *(Tạm ngừng đo 2026-11-08: lead bỏ kiểm thử người dùng T071; không công bố
+  kết quả cho tiêu chí này trong bản trình chiếu.)*
 - **SC-002**: Sau khi một đoạn ký hiệu kết thúc (tay dừng) và được tự gửi, 95% lần thử hợp lệ hiển thị kết quả hoặc lỗi
   có thể xử lý trong không quá 3 giây trên môi trường demo đã công bố.
 - **SC-003**: 100% lần thử không đạt decision rule đã công bố hiển thị “Không nhận diện được” thay vì
@@ -371,7 +375,7 @@ thì mục cũ bị xoá.
 - **SC-013**: Một thành viên khác có thể tái lập dataset audit, model evaluation và báo cáo benchmark
   từ hướng dẫn đã công bố mà không cần sửa mã nguồn thủ công.
 - **SC-014**: Báo cáo cuối ghi CPU/RAM/latency/chi phí cho luồng demo, tác động cộng đồng, kết quả
-  accessibility/usability và đóng góp có bằng chứng của cả 5 thành viên.
+  accessibility (usability không đo — T071 đã bỏ) và đóng góp có bằng chứng của cả 5 thành viên.
 - **SC-015**: Sau khi lead bàn giao quy ước, 100% file dữ liệu audit được kiểm bằng cùng naming/
   normalization rules và 100% FE-BE contract tests/client fields khớp service contract đã đóng băng.
 - **SC-016**: 100% kết quả `accepted` trong phiên xuất hiện đúng thứ tự trong bản dịch trực tiếp; lịch sử

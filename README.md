@@ -38,12 +38,12 @@ Chi tiết CP0–CP8 nằm trong `docs/team/git-checkpoints.md`.
 ## Cấu trúc module
 
 ```text
-apps/web/                 React + TypeScript + Vite: camera, kết quả, lỗi tiếng Việt, bản dịch/lịch sử 24 giờ
+apps/web/                 React + TypeScript + Vite: dịch trực tiếp (MediaPipe trên trình duyệt phát hiện người/mặt/tay, tự cắt và gửi ký hiệu), kết quả, lỗi tiếng Việt, bản dịch/lịch sử 24 giờ
 services/inference-api/   FastAPI /api/v1: health, model-info, predictions; registry fixture/pilot/full
 ai/                       Pipeline dùng chung: decode WebM → MediaPipe → tensor 32×234 → GRU; train/eval/gate
 data/                     README dữ liệu và manifest (raw video luôn nằm ngoài Git)
 tests/                    contract, integration, security xuyên module
-infra/aws/                Kế hoạch triển khai AWS (chưa có workload production)
+infra/aws/                Docker/Compose/nginx, CloudFormation (storage, origin), script smoke
 docs/                     model card, báo cáo hiệu năng/chi phí/bảo mật/an toàn AI, evidence checkpoint
 specs/001-vsl-recognition-mvp/  spec, plan, data-model, contracts, tasks (nguồn sự thật)
 ```
@@ -108,9 +108,10 @@ Audit bảo mật đầy đủ: `python scripts/security_audit.py` (`docs/securi
 
 ## Cloud
 
-Kế hoạch AWS (`ap-southeast-2`, EC2 + CloudFront + ECR + S3, deploy bằng GitHub OIDC) nằm tại
-`infra/aws/` và `specs/001-vsl-recognition-mvp/contracts/deployment.md`. Hiện **chưa có URL production**:
-OIDC bị AWS Free Plan chặn (evidence T096); tạo tài nguyên cần lead duyệt phạm vi/chi phí.
+Đã deploy trên AWS `ap-southeast-2` bằng CloudFormation (`infra/aws/cloudformation/`): ECR + S3 private + EC2
+(IAM role, SSM, không SSH) + Elastic IP, hai container `web`/`inference-api`. CloudFront đang chờ AWS xác minh tài
+khoản nên HTTPS tạm qua Cloudflare Quick Tunnel; OIDC bị SCP Free Plan chặn nên deploy thủ công qua SSM. Trạng
+thái, URL và số đo: `docs/deployment-report.md`; contract đích: `specs/001-vsl-recognition-mvp/contracts/deployment.md`.
 
 ## Giới hạn MVP
 

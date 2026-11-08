@@ -1,13 +1,15 @@
 # Implementation Plan: ViSign VSL Recognition MVP
 
-**Branch**: `001-vsl-recognition-mvp` | **Date**: 2026-10-19 | **Updated**: 2026-11-07 (AWS deployment) | **Spec**: [spec.md](spec.md)
+**Branch**: `001-vsl-recognition-mvp` | **Date**: 2026-10-19 | **Updated**: 2026-11-08 (dịch trực tiếp, trọng số nhóm điểm, trạng thái AWS thực tế) | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `specs/001-vsl-recognition-mvp/spec.md`
 
 ## Summary
 
-ViSign MVP nhận diện một trong 10 ý nghĩa VSL P0 từ một đoạn camera do người dùng chủ động bắt đầu và
-kết thúc, sau đó trả chữ tiếng Việt, độ tin cậy và trạng thái chấp nhận. Video raw material chỉ dùng
+ViSign MVP **dịch trực tiếp** từng ký hiệu VSL P0 từ camera: bật camera là luôn theo dõi; trình duyệt dùng
+MediaPipe (WASM) chỉ để phát hiện người, mặt và tay rồi tự cắt từng đoạn ký hiệu theo chuyển động tay; mỗi đoạn được
+tự gửi lên API, trả chữ tiếng Việt, độ tin cậy và trạng thái chấp nhận, nối vào bản dịch trực tiếp (cập nhật
+2026-11-08, FR-004 sửa; trước đó người dùng bấm quay/kết thúc/gửi). Video raw material chỉ dùng
 cho huấn luyện và đánh giá. Pipeline trích xuất landmark bàn tay, tư thế và khuôn mặt bằng MediaPipe,
 chuẩn hóa chuỗi và phân loại bằng GRU. Một web app React gửi đoạn camera ngắn đến FastAPI; API xử lý
 tạm thời trong bộ nhớ/thư mục tạm, trả kết quả rồi xóa đầu vào.
@@ -46,19 +48,23 @@ trước khi Huy xác nhận integration queue và người thực hiện chạy
 
 **Language/Version**: Python 3.12 cho AI/API; TypeScript với Node.js `^22.22.2 || ^24.15.0 || >=26.0.0` cho web (theo `apps/web/package.json`)
 
-**Primary Dependencies**: MediaPipe Tasks Holistic Landmarker, PyAV decoder behind a `VideoDecoder`
-boundary, PyTorch GRU, FastAPI/Pydantic, React + Vite
+**Primary Dependencies**: MediaPipe Tasks 1.1.1 (Hand/Pose/Face Landmarker chạy song song theo nhóm; module
+`holistic_extractor.py`), PyAV decoder behind a `VideoDecoder` boundary, PyTorch GRU (trọng số nhóm điểm tay 0,7 /
+mặt 0,2 / vai 0,1 trong `modelConfig.feature_scale`), FastAPI/Pydantic, React 19 + Vite, `@mediapipe/tasks-vision`
+1.1.1 trên trình duyệt (hand + pose lite, chỉ để phát hiện người/mặt/tay và cắt đoạn)
 
 **Storage**: File-based cho MVP: CSV manifest, JSON label map/model metadata, model artifact; không có
 cơ sở dữ liệu và không lưu video dự đoán của người dùng
 
 **Testing**: pytest + FastAPI TestClient cho Python; golden clip→tensor parity tests; Vitest cho web
-unit; Playwright với fake-camera Y4M cho E2E; script đánh giá xuất confusion matrix, macro-F1,
+unit; Playwright với camera giả Chromium (WebM thật) + stub phát hiện người cho luồng live, một test nạp MediaPipe
+thật, axe WCAG A/AA và E2E với 3 backend FastAPI thật; script đánh giá xuất confusion matrix, macro-F1,
 recall từng lớp, negative/OOD false-accept report và latency từng stage
 
 **Target Platform**: Windows 11 cho local development; Chromium hiện đại có camera; production tại
-AWS region `ap-southeast-2` qua CloudFront HTTPS và một EC2 host chạy hai container `web`/`inference-api`;
-bản local smoke-tested được giữ làm rollback/demo fallback
+AWS region `ap-southeast-2` trên một EC2 host chạy hai container `web`/`inference-api`. Thiết kế đích là CloudFront
+HTTPS; thực tế 2026-11-08 dùng Cloudflare Quick Tunnel làm HTTPS tạm vì tài khoản chưa được AWS xác minh để tạo
+CloudFront. Bản Docker local (`http://127.0.0.1:8080`) là demo chính (1,2–2,0 s/ký hiệu) và fallback
 
 **Project Type**: Web application gồm frontend, inference API và pipeline AI ngoại tuyến
 
@@ -72,7 +78,9 @@ camera preview phản hồi liên tục; API chỉ xử lý một yêu cầu d�
 người dùng; Macro-F1 ≥80%; recall mỗi ý nghĩa ≥65%; cloud budget hữu hạn; admin routes tắt trên
 production; không commit secret/raw video/model binary
 
-**Scale/Scope**: Một nhóm 5 thành viên, một máy demo, 10 ý nghĩa P0, khoảng 10–20 lớp nếu có biến thể.
+**Scale/Scope**: Một nhóm 5 thành viên, một máy demo, 10 ý nghĩa P0, khoảng 10–20 lớp nếu có biến thể. Đo tải
+2026-11-08 (một slot suy luận): local ~30–36 ký hiệu/phút, AWS c7i-flex.large ~19 ký hiệu/phút, quá tải trả 503
+(`docs/performance-report.md`).
 Mức 20–30 mẫu được duyệt mỗi lớp là planning floor cho pilot, không phải quality gate; full track chỉ
 mở khi coverage theo meaning × video gốc và video-held-out split (FR-015) đủ để đánh giá trung thực.
 
@@ -107,6 +115,14 @@ Tín đã nhận quyền team member của project `Rubber Ducking` qua AWS Sett
 chặn OIDC, Tín MAY dùng phiên Console/CloudShell của chính mình cho integration thủ công có evidence;
 MUST NOT tạo/chia sẻ access key dài hạn. Đường thủ công không đóng T091/T096. Retry OIDC hoặc activate
 Advanced Features/Paid Plan cần quyết định riêng của owner vì thay đổi quyền, spend limit và billing risk.
+
+**AWS deployment checkpoint 2026-11-08** (thực tế, `docs/deployment-report.md`): Huy deploy thủ công bằng
+`aws login` (phiên tạm, không access key) + CloudFormation: `visign-storage` (ECR `visign/inference-api`, `visign/web`,
+S3 artifact private) và `visign-origin` (EC2 IMDSv2, IAM role chỉ kéo image/đọc S3, SSM, không SSH, Elastic IP). Tạo
+CloudFront bị chặn "account must be verified" → chờ AWS Support; HTTPS tạm qua Cloudflare Quick Tunnel (container
+`cloudflared`, không mở cổng). Đổi phiên bản bằng `release.env` + `/opt/visign/deploy.sh` qua SSM. Ngày demo dùng
+`c7i-flex.large`, tắt sau demo. Hai stack rỗng `visign-app`, `visign-github-oidc` đã xoá. Budget
+`visign-monthly-credit-guard` cảnh báo 5/20/50 USD. OIDC vẫn bị SCP chặn nên deploy-after-pass qua CI chưa có.
 
 **AWS cost boundary**: Tài khoản giữ Free Plan, không nâng cấp Paid Plan nếu chưa có phê duyệt riêng.
 Hạ tầng dùng một EC2 instance, một Elastic IP, `max` một inference worker và chỉ bật trong cửa sổ
@@ -172,7 +188,9 @@ chỉ trở thành cam kết khi đã được ánh xạ vào task `T*` hoặc �
 - DVC/MLflow hoặc TensorBoard cho versioning/experiment tracking nâng cao.
 - BiGRU+attention, TCN; Transformer/ST-GCN chỉ khi quy mô dữ liệu tăng đáng kể.
 - ONNX Runtime chỉ khi benchmark PyTorch không đạt latency gate và parity test đạt.
-- Browser MediaPipe overlay, client-side landmark extraction và endpoint landmark JSON.
+- Client-side landmark extraction đầy đủ (gồm mặt) và endpoint landmark JSON: hướng giảm độ trễ/tăng thông lượng
+  lớn nhất, cần chứng minh parity với Python. (MediaPipe trên trình duyệt để **phát hiện người/mặt/tay** đã được nâng
+  thành cam kết T105 ngày 2026-11-08.)
 - Tailwind/shadcn, consent-based data collection và mở rộng thêm 20 meaning.
 
 M1/M2 không được thêm vào sprint chỉ vì xuất hiện trong plan. Huy phải ghi trigger, owner, acceptance
@@ -181,11 +199,16 @@ evidence và ảnh hưởng scope trước khi đổi trạng thái thành task 
 ## Luồng dữ liệu M0
 
 ```text
-Camera WebM
+Trình duyệt (dịch trực tiếp, T105-T106)
+  -> MediaPipe tasks-vision (hand + pose lite): người? mặt? tay? chuyển động tay?
+  -> tự bắt đầu ghi khi đủ người/mặt/tay và tay chuyển động; dừng khi tay đứng yên ~0,7 s
+  -> bỏ đoạn < 0,5 s chuyển động; cắt cứng 4,5 s
+Camera WebM (tự gửi)
   -> upload limits + temporary file
   -> VideoDecoder (container/codec probe, frame PTS)
   -> HolisticExtractor (pinned extractorVersion)
   -> SequenceTransform (featureSchemaVersion)
+  -> GRU input x feature_scale (trọng số nhóm tay 0,7 / mặt 0,2 / vai 0,1, lưu trong artifact)
   -> Predictor (fixture | pilot | full)
   -> decision rule
   -> PredictionResponse

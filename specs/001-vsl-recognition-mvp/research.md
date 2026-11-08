@@ -17,6 +17,9 @@ camera mà không giữ toàn bộ file lớn trong bộ nhớ.
 
 **Source**: [FastAPI request files](https://fastapi.tiangolo.com/tutorial/request-files/)
 
+**Cập nhật 2026-11-08 (lead)**: thay bằng **dịch trực tiếp** — xem mục 21. Vẫn gửi từng đoạn WebM qua
+`multipart/form-data` như trên; chỉ việc bắt đầu/kết thúc đoạn chuyển từ người dùng sang bộ phát hiện trên trình duyệt.
+
 ## 2. Trích xuất đặc trưng
 
 **Decision**: Dùng MediaPipe Tasks Holistic Landmarker trong chế độ video cho raw material và đoạn
@@ -32,6 +35,11 @@ toàn thân. Cùng một bộ trích xuất cho huấn luyện và suy luận gi
 - Trộn nhiều landmark extractor: loại để giữ một ranh giới preprocessing duy nhất.
 
 **Source**: [MediaPipe Holistic Landmarker](https://ai.google.dev/edge/api/mediapipe/python/mp/tasks/vision/HolisticLandmarker)
+
+**Thực hiện**: bản cài đặt dùng ba task riêng Hand/Pose/Face Landmarker của MediaPipe Tasks 1.1.1 chạy song song
+theo nhóm (cùng đầu ra landmark tay/pose/mặt), schema v0.3 APPROVED: 78 điểm (42 tay, 6 pose 11–16, 30 mặt).
+**Cập nhật 2026-11-08 (lead)**: đầu vào GRU nhân hệ số theo nhóm để tổng đóng góp tay : mặt : vai = 0,7 : 0,2 : 0,1
+(tay quyết định từ, mặt biểu cảm, vai làm neo vị trí); hệ số lưu trong artifact (`feature_scale`).
 
 ## 3. Mô hình chuỗi
 
@@ -301,7 +309,32 @@ so với Singapore, nên chỉ được nghiệm thu khi benchmark từ máy dem
   contract WebM tối đa 10 MiB.
 - EKS/Kubernetes: loại vì vượt nhu cầu và tăng chi phí/vận hành.
 
+**Trạng thái thực tế 2026-11-08**: EC2 + Elastic IP + ECR + S3 + SSM đã chạy bằng CloudFormation; CloudFront bị
+chặn tới khi AWS xác minh tài khoản nên HTTPS tạm qua Cloudflare Quick Tunnel; OIDC bị SCP Free Plan chặn nên deploy
+thủ công bằng `aws login` + SSM. Đo từ Việt Nam: 3,9–5,4 s/ký hiệu trên c7i-flex.large (local 1,2–2,0 s) — Sydney
+chưa đạt SC-002; Singapore là lựa chọn khi cần giảm độ trễ mạng.
+
 **Primary references**:
 
 - AWS Free Tier plans: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html
 - App Runner availability change: https://docs.aws.amazon.com/apprunner/latest/dg/apprunner-availability-change.html
+
+## 21. Dịch trực tiếp với phát hiện người trên trình duyệt (2026-11-08)
+
+**Decision**: Bật camera là luôn theo dõi. `@mediapipe/tasks-vision` 1.1.1 (Hand Landmarker + Pose Landmarker lite,
+WASM và model phục vụ cùng origin, SHA-256 cố định) chạy ~10 khung/giây trên trình duyệt chỉ để biết có người, mặt
+(mũi + hai mắt từ pose) và tay, và đo chuyển động tay. Bộ cắt đoạn bắt đầu ghi khi đủ người/mặt/tay và chuyển động
+≥ ngưỡng, kết thúc khi tay đứng yên 0,7 s hoặc rời khung, bỏ đoạn có < 0,5 s chuyển động, cắt cứng 4,5 s; đoạn được tự
+gửi `/api/v1/predictions` như cũ. 11 trạng thái hiển thị; Tạm dừng/Tắt camera; ẩn tab tự tạm dừng.
+
+**Rationale**: Người dùng không phải bấm cho từng ký hiệu (đúng tinh thần "dịch trực tiếp"); server chỉ nhận đoạn có
+người nên giảm request rác; backend, contract và model không đổi nên rủi ro thấp; cùng phiên bản MediaPipe với Python.
+
+**Alternatives considered**:
+
+- Gửi đoạn cố định mỗi 2 giây: loại vì lệch nhịp ký hiệu và tốn tài nguyên server khi không có người.
+- Trích đủ landmark trên trình duyệt và gửi tensor: nhanh nhất nhưng phải đổi API và chứng minh parity — để M2.
+- Giữ chế độ bấm thủ công song song: loại theo quyết định lead, giảm mã và test.
+
+**Trade-offs**: tải ~20 MB WASM/model lần đầu; CSP thêm `'wasm-unsafe-eval'`; ngưỡng chuyển động đặt theo ước lượng,
+cần chỉnh bằng webcam/người ký thật (T108).
