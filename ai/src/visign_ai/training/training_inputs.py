@@ -18,6 +18,7 @@ from visign_ai.landmarks.sequence_transform import load_schema
 
 from .augmentation import validate_augmentation
 from .group_weights import feature_scale, validate_group_weights
+from .tracking import validate_wandb
 
 SPLITS = ("train", "validation", "test")
 MANIFEST_FIELDS = {
@@ -107,6 +108,8 @@ def read_config(path: Path, schema: dict[str, Any]) -> dict[str, Any]:
     ):
         raise ValueError("threshold_candidates must be a nonempty list in (0, 1)")
     # Trong so nhom diem la tuy chon de giu tai lap cac artifact cu; neu co phai hop le voi schema
+    if config.get("wandb"):
+        config["wandb"] = validate_wandb(config["wandb"])
     if config.get("augmentation"):
         config["augmentation"] = validate_augmentation(config["augmentation"])
     if "group_weights" in config:

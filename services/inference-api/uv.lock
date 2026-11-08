@@ -1076,7 +1076,9 @@ requires-dist = [
     { name = "pyyaml", specifier = "==6.0.3" },
     { name = "scikit-learn", specifier = "==1.9.1" },
     { name = "torch", specifier = "==2.11.0" },
+    { name = "wandb", marker = "extra == 'tracking'", specifier = "==0.31.0" },
 ]
+provides-extras = ["tracking"]
 
 [package.metadata.requires-dev]
 dev = [

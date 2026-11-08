@@ -29,6 +29,7 @@ from .augmentation import AugmentedDataset
 from .group_weights import feature_scale
 from .gru_classifier import GRUClassifier
 from .sequence_dataset import SequenceDataset, collate_sequences
+from .tracking import start_tracking
 from .training_inputs import TrainingInputs, prepare_inputs
 
 
@@ -149,6 +150,20 @@ def fit(
     training = make_loader(inputs, args.feature_root, "train")
     validation = make_loader(inputs, args.feature_root, "validation")
     history = []
+    tracker = start_tracking(
+        config,
+        getattr(args, "model_version", "visign-train"),
+        {
+            **{key: value for key, value in config.items() if key != "wandb"},
+            "datasetVersion": getattr(args, "dataset_version", None),
+            "manifestSha256": inputs.manifest_sha256,
+            "classLabels": inputs.labels,
+            "trainSamples": sum(row["split"] == "train" for row in inputs.rows),
+            "validationSamples": sum(
+                row["split"] == "validation" for row in inputs.rows
+            ),
+        },
+    )
     best_loss = math.inf
     best_epoch = 0
     best_state: dict[str, Tensor] = {}
@@ -164,6 +179,8 @@ def fit(
         )
         if on_epoch is not None:
             on_epoch(epoch, config["epochs"])
+        if tracker is not None:
+            tracker.log_epoch(epoch, training_loss, validation_loss)
         if validation_loss < best_loss:
             best_loss, best_epoch = validation_loss, epoch
             best_state = {
@@ -201,7 +218,21 @@ def fit(
         "thresholdRule": "Maximize correct accepted minus incorrect accepted, then coverage, then lower threshold",
         "acceptanceThreshold": chosen["threshold"],
         "groupWeights": group_weights,
+        "wandbRunId": None,
+        "wandbMode": None,
+        "wandbUrl": None,
     }
+    if tracker is not None:
+        report.update(
+            tracker.finish(
+                {
+                    "bestEpoch": best_epoch,
+                    "bestValidationLoss": best_loss,
+                    "acceptanceThreshold": chosen["threshold"],
+                },
+                sweep,
+            )
+        )
     return checkpoint, report
 
 

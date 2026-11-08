@@ -23,6 +23,7 @@ from visign_ai.cli import make_console_output_safe
 from visign_ai.landmarks.sequence_transform import load_schema, schema_digest
 from visign_ai.training.gru_classifier import GRUClassifier
 from visign_ai.training.sequence_dataset import SequenceDataset
+from visign_ai.training.tracking import log_evaluation
 from visign_ai.training.training_inputs import MANIFEST_FIELDS, audit_rows, read_csv
 
 from .metrics import EvaluationMetrics, evaluate_metrics
@@ -225,6 +226,8 @@ def evaluate(args: argparse.Namespace) -> None:
         if output.exists() or output.is_symlink():
             raise FileExistsError(f"Output exists: {output}")
         staging.rename(output)
+    # Ghi metric test vao dung run W&B da train (neu co); loi W&B khong lam hong danh gia
+    log_evaluation(artifact, report, output / "confusion-matrix.png")
 
 
 def main() -> int:

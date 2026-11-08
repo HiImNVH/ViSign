@@ -271,9 +271,9 @@ class FilePilotRunner:
             epochs=len(training["history"]),
             accuracy=report.get("accuracy"),
             macroF1=report.get("macroF1"),
-            wandbRunId=None,
-            wandbMode=None,
-            wandbUrl=None,
+            wandbRunId=training.get("wandbRunId"),
+            wandbMode=training.get("wandbMode"),
+            wandbUrl=training.get("wandbUrl"),
         )
 
 
