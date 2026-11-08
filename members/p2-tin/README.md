@@ -46,7 +46,7 @@
 | `T065 / CP5 API` | `P1_VERIFIED` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`), Huy verify `f9232cd`; giảm 194 ms/request khi có khoảng nghỉ; lấy mẫu trước khi chuyển RGB chỉ giảm 16 ms ở cỡ web nên không đề xuất; SC-002 chờ số đo production | P3/Cường, P1/Huy |
 | `T078-T080 / CP6` | `REVIEW` | `services/inference-api/src/visign_api/{api/admin.py,api/pilot.py,admin/}`, `contracts/admin-tools.md`, `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` | API admin opt-in: 404 khi tắt, 401, inspect ZIP một lượt có timeout và dọn file, pilot một job và lịch sử; 30 test, 15/15 mutation; `prepare`/`train` chờ runner `visign_ai.pilot` của P3 | P1/Huy, P5/Hiển, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
-| `T036 / CP5 aug2` | `REVIEW` (ngoài scope P2) | `ai/configs/p0-gru.yaml`, `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` | Bật augmentation aug2 cho train full: loss valid 1,57 → 0,97, accuracy test 43,2%, macro-F1 0,46 trên split local 10:3:2, một seed; vẫn trượt cổng phát hành. Chờ P3/P1 review và chạy nhiều seed | P3/Cường, P1/Huy |
+| `T036 / CP5 aug2` | `REVIEW` (ngoài scope P2) | `ai/configs/p0-gru.yaml`, `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` | Bật augmentation aug2 cho train full: loss valid 1,57 → 0,97, accuracy test 43,2%, macro-F1 0,46 trên split local 10:3:2, một seed; vẫn trượt cổng phát hành. Đã push `a083c02` (CI success); backend local nạp được artifact. Chờ P3/P1 review và chạy nhiều seed | P3/Cường, P1/Huy |
 
 ## Commit đang chuẩn bị
 
@@ -55,12 +55,12 @@
 | Task/checkpoint | `T036` (CP5), ngoài scope P2 theo quyết định của Tín |
 | Proposed commit | `CP5 T036(train): enable aug2 landmark augmentation in full P0 config` |
 | Exact staged paths | 3 path: `ai/configs/p0-gru.yaml`, `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md`, README này |
-| Pre-commit sync | Điền sau commit |
-| Gate commands | Ruff; mypy 60 file; pytest AI 176 passed, 6 skipped, 35 failed có sẵn (CSV CRLF trên Windows, không liên quan); train lại bằng config mới trên `eed694d` cho weights giống hệt aug2 |
+| Pre-commit sync | `1 0`: remote có `58bcb28` (chỉ sửa web) nhưng commit local đã được tạo; rebase rồi kiểm lại config và Ruff |
+| Gate commands | Ruff; mypy 60 file; pytest AI 176 passed, 6 skipped, 35 failed có sẵn (CSV CRLF trên Windows, không liên quan); train lại bằng config mới trên `eed694d` cho weights giống hệt aug2; backend local nạp artifact, 5/5 HTTP 200 |
 | Smoke evidence | `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` |
-| Local commit | Điền sau commit |
-| Pre-push sync | Điền sau commit |
-| Push status | Điền sau push |
+| Local commit | `a083c02` |
+| Pre-push sync | `PASS` — `0 1` trên `58bcb28` |
+| Push status | `PUSHED` `58bcb28..a083c02`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42447292058) |
 
 ## Commit ledger
 
@@ -112,6 +112,7 @@
 | `CP5/T065 API` | Pool bộ detector tạo sẵn ở thread nền, đóng ngoài đường găng | `CP5 T065(api): prewarm single-use detector sets off the request path` | `a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b` | [commit](https://github.com/HiImNVH/ViSign/commit/a214a3c80d354ddcacaa1f4ed223bcf34ed0ec4b) | 16 unit + 3 integration, 14 mutation; 439 passed với clip thật; A/B 76 cặp; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42406197930) | P1/Huy, P3/Cường | `VERIFIED` |
 | `CP5-CP7/T065,T095 verify` | Đo lấy mẫu trước khi chuyển RGB; review bản vá libEGL của P1 | `CP5-CP7 T065,T095(verify): measure RGB-first sampling, review EGL fix` | `c73c8b3174076dd6d08e8aba34865288549b2cab` | [commit](https://github.com/HiImNVH/ViSign/commit/c73c8b3174076dd6d08e8aba34865288549b2cab) | 32 clip × 3 cỡ, 32/32 giống hệt; ELF `libmediapipe.so`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42413030409) | P3/Cường, P1/Huy | `PUSHED` |
 | `CP6/T078-T080` | API công cụ admin nội bộ: inspect, pilot một job, lịch sử | `CP6 T078-T080(api): add opt-in admin inspect and single-job pilot API` | `70f2601972ddab16685d6a84c3b1a6bad1ba2332` | [commit](https://github.com/HiImNVH/ViSign/commit/70f2601972ddab16685d6a84c3b1a6bad1ba2332) | 30 test, 15/15 mutation; live uvicorn với pipeline thật; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42417975667) | P1/Huy, P5/Hiển, P3/Cường | `PUSHED` |
+| `CP5/T036 aug2` | Bật augmentation aug2 cho train full (ngoài scope P2, theo quyết định của Tín) | `CP5 T036(train): enable aug2 landmark augmentation in full P0 config` | `a083c02db74a3a17f15a8a1ce9ce1cea1e3bd6dd` | [commit](https://github.com/HiImNVH/ViSign/commit/a083c02db74a3a17f15a8a1ce9ce1cea1e3bd6dd) | Ruff, mypy 60 file; train lại cho weights giống hệt; backend local nạp được, 5/5 HTTP 200; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42447292058) | P3/Cường, P1/Huy | `PUSHED` |
 
 ## Handoff
 

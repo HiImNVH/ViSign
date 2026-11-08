@@ -8,7 +8,7 @@
 | Task | `T036` (train, owner P3 Cường) |
 | Owner | `P2 Tín`. Thay đổi nằm ngoài scope của P2 (`train` thuộc P3), làm theo quyết định của Tín; cần P3/P1 review |
 | Reviewer | `P3 Cường`, `P1 Huy` |
-| Commit | Điền sau push |
+| Commit | `a083c02db74a3a17f15a8a1ce9ce1cea1e3bd6dd` — [a083c02](https://github.com/HiImNVH/ViSign/commit/a083c02db74a3a17f15a8a1ce9ce1cea1e3bd6dd); CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42447292058) |
 | Ngày/giờ | `2026-11-08T11:31+07:00` |
 | Môi trường | Windows 11, Intel i5-8350U (4 nhân/8 luồng), Python 3.12.15 (`ai/.venv`), torch 2.11.0+cpu, MediaPipe 1.1.1, CPU |
 | Status | `PASS` cho tái lập và gate liên quan. Model vẫn trượt cổng phát hành (`demoReady=false`) |
@@ -44,6 +44,7 @@
 | 2 | Unit | `python -m pytest ai/tests -q -rs` | Test liên quan đạt | 176 passed, 6 skipped, 35 failed. Cả 35 nằm trong `ai/tests/dataset/`: Windows checkout CRLF (`core.autocrlf=true`) nên validator từ chối `data/manifests/*.csv`. Bỏ thay đổi này ra vẫn đúng 35 failed. Test train/augmentation đạt | `PASS` cho thay đổi; lỗi môi trường có sẵn |
 | 3 | Tái lập | Train rồi evaluate bằng `ai/configs/p0-gru.yaml` đã sửa trên `eed694d` | Giống hệt lần aug2 trên `fa10302` | Weights cùng SHA-256 `9db78452…114cb5`; lịch sử loss, ngưỡng 0,5, metric test và confusion matrix giống hệt | `PASS` |
 | 4 | Phạm vi augmentation, dữ liệu riêng tư | Đọc `make_loader` và `evaluate.py`; kiểm path đã stage | Validation/test không bị biến đổi; không commit raw/npz/pt/manifest | Chỉ split `train` được bọc `AugmentedDataset`; evaluate dùng `SequenceDataset` gốc; chỉ stage YAML, evidence này và member README | `PASS` |
+| 5 | Backend nạp artifact aug2 | Uvicorn local `127.0.0.1:8000` với `MODEL_ARTIFACT_PATH` trỏ tới artifact aug2; gửi 5 clip test (mỗi nghĩa 1 clip, chuyển sang WebM VP8 640×360, 30 fps) tới `/api/v1/predictions`, xoá WebM tạm sau khi gửi | Nạp được `feature_scale`; trả kết quả đúng contract | `/health` `modelReady=true`, `/model-info` `full`, ngưỡng 0,5, `demoReady=false`. 5/5 HTTP 200: Đau đầu, Bạn, Giấy tờ đúng (96%, 67%, 77%); Cảm ơn bị nhận nhầm thành Nhận (77%); Không bị từ chối (38%). Xử lý 3,0–4,0 s/clip trên CPU này | `PASS` |
 
 ### Kết quả train trên cùng split (seed 42, hidden 128, 60 epoch)
 
@@ -63,8 +64,8 @@ Cổng phát hành (macro-F1 ≥ 0,80, recall mỗi nghĩa ≥ 0,65): cả bốn
 
 | Loại | Link/path bền vững | Ghi chú |
 |---|---|---|
-| Commit diff | Điền sau push | |
-| GitHub Actions | Điền sau push | |
+| Commit diff | `https://github.com/HiImNVH/ViSign/commit/a083c02db74a3a17f15a8a1ce9ce1cea1e3bd6dd` | |
+| GitHub Actions | `https://github.com/HiImNVH/ViSign/actions/runs/42447292058` | `quality` success |
 | Report trong repo | `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` | File này |
 | W&B | 3 link trong bảng trên, project `ViSign` | Chỉ có config, metric, hash và ảnh confusion matrix; không có video, landmark, manifest hay model |
 | Data/model | `p0-local-v1`; manifest SHA-256 `3cc8ae84df600a5774b37201749965e12c77ebd81ed41cb8d92b38a4a5571ad1`; schema digest `6f1e32eeb8be9e6fbf3e13f7dded063ad9b4ea7ad387593ddfb658c66d92c389`; weights aug2 `9db78452ad82c119fbae540893c837360fe0b83fb818ea5f2245bbd885114cb5` | Artifact nằm ở `ai/artifacts/` (gitignored), không commit |
@@ -86,7 +87,8 @@ Cổng phát hành (macro-F1 ≥ 0,80, recall mỗi nghĩa ≥ 0,65): cả bốn
 
 ## 6. Xác nhận
 
-- [x] Owner đã chạy lại gate sau lần rebase cuối.
+- [x] Owner đã chạy lại gate sau lần rebase cuối. Kiểm đồng bộ trước commit ra `1 0` vì remote có `58bcb28` (chỉ
+  sửa web), nhưng commit local đã được tạo; đã rebase, kiểm lại config và Ruff, push ở `0 1`.
 - [x] Không có secret, raw video, landmark bulk hoặc model binary bị stage.
-- [ ] Full SHA và link đã được điền sau push.
+- [x] Full SHA và link đã được điền sau push.
 - [ ] Reviewer tái lập gate quan trọng và ghi kết quả bên dưới.
