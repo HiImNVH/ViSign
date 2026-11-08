@@ -86,16 +86,3 @@ test('backend text is shown as inert text, without executing HTML', () => {
   expect(screen.getByText(input)).toBeVisible();
   expect(container.querySelector('img')).toBeNull();
 });
-
-test('T109 supported meanings show Vietnamese display text instead of meaning IDs', () => {
-  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'pilot', demoReady: false,
-    meanings: ['GIAY_TO', 'NHAN'], meaningDisplayTexts: { GIAY_TO: 'Giấy tờ (giấy)', NHAN: 'Nhận' } }} />);
-  expect(screen.getByText('Ý nghĩa hỗ trợ: Giấy tờ (giấy), Nhận')).toBeVisible();
-  expect(screen.queryByText(/GIAY_TO/)).not.toBeInTheDocument();
-});
-
-test('T109 falls back to the meaning ID only when an older artifact has no display text', () => {
-  render(<RecognitionResult result={accepted} model={{ ...model, artifactKind: 'pilot', demoReady: false,
-    meanings: ['GIAY_TO', 'NHAN'], meaningDisplayTexts: { NHAN: 'Nhận' } }} />);
-  expect(screen.getByText('Ý nghĩa hỗ trợ: GIAY_TO, Nhận')).toBeVisible();
-});

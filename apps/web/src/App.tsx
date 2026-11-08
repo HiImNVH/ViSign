@@ -8,6 +8,7 @@ import './styles.css';
 
 export function App() {
   const recognition = useLiveRecognition();
+  const { liveStatus, paused, start, resume, pause, stop } = recognition;
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== ' ' && event.key !== 'Escape') return;
@@ -17,17 +18,17 @@ export function App() {
       if (document.querySelector('dialog[open]')) return;
       if (event.key === ' ') {
         event.preventDefault();
-        if (recognition.liveStatus === 'off' || recognition.liveStatus === 'error') void recognition.start();
-        else if (recognition.paused) recognition.resume();
-        else if (recognition.liveStatus !== 'starting') recognition.pause();
-      } else if (recognition.liveStatus !== 'off') {
+        if (liveStatus === 'off' || liveStatus === 'error') void start();
+        else if (paused) resume();
+        else if (liveStatus !== 'starting') pause();
+      } else if (liveStatus !== 'off') {
         event.preventDefault();
-        recognition.stop();
+        stop();
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [recognition.liveStatus, recognition.paused, recognition.start, recognition.resume, recognition.pause, recognition.stop]);
+  }, [liveStatus, paused, start, resume, pause, stop]);
   return (
     <main className="app-shell">
       <header className="app-header"><div className="brand"><h1>V<span className="brand-i">i</span>S<span className="brand-i">i</span>gn</h1></div>
