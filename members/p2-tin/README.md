@@ -11,7 +11,7 @@
 | Allowed commit scopes | `setup` (chỉ T001–T007), `api`, `backend`, `security`, `cloud` |
 | Current checkpoint | `CP1` |
 | Integration window | `CLOSED` sau push; P1 đang review |
-| Last updated | `2026-11-07` |
+| Last updated | `2026-11-08` |
 
 ## Current assignments
 
@@ -46,20 +46,21 @@
 | `T065 / CP5 API` | `P1_VERIFIED` | `services/inference-api/src/visign_api/inference/detector_pool.py`, `docs/evidence/checkpoints/CP5/T065-p2-tin-prepared-detectors-smoke.md` | Pool bộ detector tạo sẵn (`DETECTOR_PREWARM_ENABLED`), Huy verify `f9232cd`; giảm 194 ms/request khi có khoảng nghỉ; lấy mẫu trước khi chuyển RGB chỉ giảm 16 ms ở cỡ web nên không đề xuất; SC-002 chờ số đo production | P3/Cường, P1/Huy |
 | `T078-T080 / CP6` | `REVIEW` | `services/inference-api/src/visign_api/{api/admin.py,api/pilot.py,admin/}`, `contracts/admin-tools.md`, `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` | API admin opt-in: 404 khi tắt, 401, inspect ZIP một lượt có timeout và dọn file, pilot một job và lịch sử; 30 test, 15/15 mutation; `prepare`/`train` chờ runner `visign_ai.pilot` của P3 | P1/Huy, P5/Hiển, P3/Cường |
 | `CP3-CP7` | `PLANNED` | predictor, errors/security, admin API, AWS (EC2/ECR/S3/CloudFront) | Chờ checkpoint tương ứng | P1/Huy |
+| `T036 / CP5 aug2` | `REVIEW` (ngoài scope P2) | `ai/configs/p0-gru.yaml`, `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` | Bật augmentation aug2 cho train full: loss valid 1,57 → 0,97, accuracy test 43,2%, macro-F1 0,46 trên split local 10:3:2, một seed; vẫn trượt cổng phát hành. Chờ P3/P1 review và chạy nhiều seed | P3/Cường, P1/Huy |
 
 ## Commit đang chuẩn bị
 
 | Field | Value |
 |---|---|
-| Task/checkpoint | `T078–T080` (CP6) |
-| Proposed commit | `CP6 T078-T080(api): add opt-in admin inspect and single-job pilot API` |
-| Exact staged paths | 14 path: `config.py`, `main.py`, `api/admin.py`, `api/pilot.py`, `admin/` (5 file), test contract admin, `contracts/admin-tools.md`, `docs/security-report.md`, evidence CP6, README này |
-| Pre-commit sync | `PASS` — `0 0` trên `6d9a958` |
-| Gate commands | 30 test admin (5 lần liên tiếp đạt), 15/15 mutation; như CI 401 passed, 3 skipped và 44 passed, 2 skipped; Ruff, format, mypy 69 file; có `serving` 465 passed, 4 skipped; live uvicorn với pipeline thật |
-| Smoke evidence | `docs/evidence/checkpoints/CP6/T078-T080-p2-tin-admin-smoke.md` |
-| Local commit | `70f2601` |
-| Pre-push sync | `PASS` — `0 1` trên `6d9a958` |
-| Push status | `PUSHED` `6d9a958..70f2601`; CI [success](https://github.com/HiImNVH/ViSign/actions/runs/42417975667) |
+| Task/checkpoint | `T036` (CP5), ngoài scope P2 theo quyết định của Tín |
+| Proposed commit | `CP5 T036(train): enable aug2 landmark augmentation in full P0 config` |
+| Exact staged paths | 3 path: `ai/configs/p0-gru.yaml`, `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md`, README này |
+| Pre-commit sync | Điền sau commit |
+| Gate commands | Ruff; mypy 60 file; pytest AI 176 passed, 6 skipped, 35 failed có sẵn (CSV CRLF trên Windows, không liên quan); train lại bằng config mới trên `eed694d` cho weights giống hệt aug2 |
+| Smoke evidence | `docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md` |
+| Local commit | Điền sau commit |
+| Pre-push sync | Điền sau commit |
+| Push status | Điền sau push |
 
 ## Commit ledger
 

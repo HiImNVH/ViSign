@@ -16,3 +16,10 @@ group_weights:
   hands: 0.7
   face: 0.2
   shoulders: 0.1
+# Tang cuong chi cho tap train (bo aug2, P2 thu 2026-11-08): loss valid 1,57 -> 0,97 tren split local 10:3:2.
+# Xem docs/evidence/checkpoints/CP5/T036-p2-tin-aug2-smoke.md; cho P3 Cuong/P1 Huy review.
+augmentation:
+  noise_std: 0.08
+  time_warp: 0.35
+  scale: 0.2
+  rotate_deg: 20
