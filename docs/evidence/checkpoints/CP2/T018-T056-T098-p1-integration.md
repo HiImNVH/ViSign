@@ -26,3 +26,18 @@ Gói local `T018/T056/T098 review-20261108-v2` (Quang gửi, không có nhánh G
 - T009–T013 (entities/schema/validator/registry) đã vào `main` cùng gói; chờ P3 review lại các điểm cũ
   (nối `sampleId/rawPath` sang T017) trước khi tick.
 - Dữ liệu full còn thiếu quota (mục tiêu 200 video) và duyệt lớp; T077 chưa bắt đầu.
+
+## Independent review T009–T013 — P1/Huy (2026-11-08, lead xác nhận yêu cầu)
+
+| Task | Kiểm trên `main` | Kết quả |
+|---|---|---|
+| T009 | `entities.py`: `Meaning`, `SignClass`, enum `Category/Priority/Region/LicenseStatus/VerificationStatus/DataSplit`; kiểm ID/variant duy nhất và tham chiếu class → meaning | Đạt |
+| T010 | `manifest_schema.py`: `sampleId` = `{sourceId}_{12 hex SHA-256}` duy nhất trong tập, `recordingSessionId` bắt buộc, `licenseStatus`, `verificationStatus`, `split` | Đạt |
+| T011 | `test_manifest_validation.py`: trùng sample, trùng nội dung khác sourceId, nguồn chung xuyên meaning không được rò rỉ, release loại `unknown`/`restricted`/`rejected`/chưa split | Đạt |
+| T012 | `python -m visign_ai.dataset.validate_manifest` trên `p0-source-v5.DRAFT.csv`: `valid=true`, 101 dòng, 0 lỗi, coverage theo meaning/class/split, `splitEvidence=video-held-out`; chưa đủ điều kiện training full (thiếu quota) — báo đúng | Đạt |
+| T013 | `data/manifests/p0-meanings.csv`: đúng 10 meaning P0 đã chốt, `displayText`/`category`/`priority`/`active`, không trùng | Đạt |
+
+Gate: dataset **88 passed, 61 subtests**; ruff/mypy sạch; CI xanh. Điểm cũ của P3 (ruff/mypy) đã hết; việc nối
+`sampleId/rawPath` sang T017 chuyển thành theo dõi khi có manifest training full (T077).
+
+**Reviewer result**: `P1_VERIFIED`, tick `[X]` T009–T013.

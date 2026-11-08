@@ -115,11 +115,11 @@ Không dùng mã `VS-*` từ phản hồi senior làm backlog thứ hai. `tasks.
 **CRITICAL**: Full-model track không bắt đầu trước khi data foundation hoàn thành. Fixture integration
 track MAY bắt đầu khi T019–T028 ổn định và không được trình bày là model demo-ready.
 
-- [ ] T009 [P] Định nghĩa `Meaning`, `SignClass` và enum metadata theo các constraint trong `data-model.md` tại `ai/src/visign_ai/dataset/entities.py`
-- [ ] T010 [P] Định nghĩa schema hàng manifest gồm `sampleId` duy nhất, `recordingSessionId` bắt buộc, `licenseStatus`, `verificationStatus` và split tại `ai/src/visign_ai/dataset/manifest_schema.py`
-- [ ] T011 [P] Viết unit tests cho duplicate ID, license không approved, rejected sample và signer/session leakage tại `ai/tests/dataset/test_manifest_validation.py`
-- [ ] T012 Cài manifest validator và báo cáo coverage theo class/video gốc tại `ai/src/visign_ai/dataset/validate_manifest.py`
-- [ ] T013 Duy trì danh mục đúng 10 Meaning P0, display text/category/priority và invariant không trùng tại `data/manifests/p0-meanings.csv`
+- [X] T009 [P] Định nghĩa `Meaning`, `SignClass` và enum metadata theo các constraint trong `data-model.md` tại `ai/src/visign_ai/dataset/entities.py`
+- [X] T010 [P] Định nghĩa schema hàng manifest gồm `sampleId` duy nhất, `recordingSessionId` bắt buộc, `licenseStatus`, `verificationStatus` và split tại `ai/src/visign_ai/dataset/manifest_schema.py`
+- [X] T011 [P] Viết unit tests cho duplicate ID, license không approved, rejected sample và signer/session leakage tại `ai/tests/dataset/test_manifest_validation.py`
+- [X] T012 Cài manifest validator và báo cáo coverage theo class/video gốc tại `ai/src/visign_ai/dataset/validate_manifest.py`
+- [X] T013 Duy trì danh mục đúng 10 Meaning P0, display text/category/priority và invariant không trùng tại `data/manifests/p0-meanings.csv`
 - [X] T014 [P] Viết decoder/extractor tests cho WebM VP8/VP9 Chrome/Edge, giữ orientation camera, PTS tăng dần, corrupt clip, representative clips, tensor/mask `32×234` và golden offline→API parity tại `ai/tests/landmarks/test_video_pipeline.py`
 - [X] T015 Cài `VideoDecoder` PyAV cho WebM VP8/VP9 0.3–6 giây tối đa 10 MiB, giữ nguyên orientation, và MediaPipe video adapter với pinned `extractorVersion` tại `ai/src/visign_ai/landmarks/video_decoder.py` và `ai/src/visign_ai/landmarks/holistic_extractor.py`
 - [X] T016 Cài draft feature schema v0.3 tensor `32×234`, chuẩn hóa tọa độ, resampling và missing-landmark mask dùng chung train/API; chỉ chuyển APPROVED sau representative-clip review tại `ai/src/visign_ai/landmarks/sequence_transform.py` và `ai/configs/feature_schema.json`

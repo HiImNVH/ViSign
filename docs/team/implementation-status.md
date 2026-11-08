@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T08:30:00+07:00` trên `origin/main` `d763710`.
+Cập nhật `2026-11-08T08:50:00+07:00` trên `origin/main` `f749eeb`.
 
 ### Checkpoint
 
@@ -31,7 +31,7 @@ Cập nhật `2026-11-08T08:30:00+07:00` trên `origin/main` `d763710`.
 | T020, T022, T026 | P2 → P1, P5 | `VERIFIED`, `[X]` — fix của P2 đã được P1 kiểm chứng; P5 kiểm lại độc lập trên `bb40476` (179 passed, 1 skipped) và ghi `P5_VERIFIED` trong evidence CP2 |
 | T014–T016 shared pipeline | P3 → P1, P2 | `VERIFIED`, `[X]` — Huy duyệt schema v0.3 trên 6 clip; `status: APPROVED` (digest không đổi) |
 | T017 batch extraction CLI | P3 → P2, P1 | `VERIFIED`, `[X]` — P2 verify test batch; P3 verify fix `--help` của P1 (`d258baf`) |
-| T009–T013 dataset entities/schema/validator/registry | P4 → P3, P1 | Snapshot P4 review `CHANGES_REQUESTED` (P3): Ruff/mypy lỗi, T010 chưa nối `sampleId/rawPath` sang T017; inventory 27 clip, decode 24/27; **chưa push** |
+| T009–T013 dataset entities/schema/validator/registry | P4 → P1 | `VERIFIED`, `[X]` (P1, lead xác nhận 2026-11-08): validator chạy trên manifest v5 101 clip, 0 lỗi |
 | T061 dataset card | P4 → P1, P3 | Gói local 2026-11-08 (chưa push) **P1 `CHANGES_REQUESTED`**: `docs/dataset-card.md` vẫn là snapshot 27 clip (07/11) trong khi đã có bản 100 clip v3 và ghi chú v4 101 clip; card 27 ghi 24 clip website/3 tự quay và `licenseStatus=unknown` trái quyết định khai quyền mức dataset, còn manifest pilot T076 ghi cả 15 là tự quay; chưa có mục pilot Giấy tờ/Nhận 15 clip; link `../../Audit-100vid` ra ngoài repo; checksum `README.md` lệch. Điểm tốt: nêu rõ bias/khoảng trống, 5/5 test coverage đạt |
 | T098 data convention | P4 + P3 | Chờ xác nhận vùng `O` và variant (`data-convention.md` mục 8) rồi đóng băng |
 | T040 typed API client | P5 → P2, P1 | `VERIFIED`, `[X]` — contract (P2) + tích hợp FastAPI thật (P5, P1) |
