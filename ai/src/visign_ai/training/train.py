@@ -24,6 +24,7 @@ from visign_ai.cli import make_console_output_safe
 from visign_ai.evaluation.release_gate import build_model_metadata
 from visign_ai.landmarks.sequence_transform import schema_digest
 
+from .group_weights import feature_scale
 from .gru_classifier import GRUClassifier
 from .sequence_dataset import SequenceDataset, collate_sequences
 from .training_inputs import TrainingInputs, prepare_inputs
@@ -123,12 +124,18 @@ def fit(
     torch.backends.cudnn.benchmark = False
     if args.device == "cuda" and not torch.cuda.is_available():
         raise ValueError("CUDA is not available")
-    model_config = {
+    model_config: dict[str, Any] = {
         "input_size": config["input_size"],
         "hidden_size": config["hidden_size"],
         "num_classes": len(inputs.labels),
         "num_layers": config["num_layers"],
     }
+    group_weights = config.get("group_weights")
+    if group_weights is not None:
+        # He so theo dac trung di cung checkpoint de API nhan dung nhu luc train
+        model_config["feature_scale"] = feature_scale(
+            inputs.schema["landmarkOrder"], group_weights
+        )
     model = GRUClassifier(**model_config).to(args.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
     training = make_loader(inputs, args.feature_root, "train")
@@ -164,6 +171,7 @@ def fit(
         "modelConfig": model_config,
         "stateDict": best_state,
         "schemaSha256": schema_digest(inputs.schema),
+        "groupWeights": group_weights,
         "labelBinding": {
             "classLabels": inputs.labels,
             "meaningMap": inputs.meaning_map,
@@ -182,6 +190,7 @@ def fit(
         "validationThresholdSweep": sweep,
         "thresholdRule": "Maximize correct accepted minus incorrect accepted, then coverage, then lower threshold",
         "acceptanceThreshold": chosen["threshold"],
+        "groupWeights": group_weights,
     }
     return checkpoint, report
 

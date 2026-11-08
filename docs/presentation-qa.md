@@ -133,7 +133,7 @@ chạy một lần ở cuối. Toàn bộ pipeline này cũng là pipeline API d
 | 2. Trích landmark | MediaPipe Tasks 1.1.1: hand (2 tay), pose, face; lấy tối đa 64 khung đều theo thời gian | **78 điểm**: 42 điểm tay + 6 điểm vai/khuỷu/cổ tay + 30 điểm mặt; chỉ lấy x, y | `feature_schema.json` |
 | 3. Chuẩn hoá | Gốc toạ độ ở giữa hai vai, chia cho khoảng cách hai vai | Không phụ thuộc người đứng gần/xa, lệch trái/phải; điểm không thấy đặt 0 và đánh dấu | `sequence_transform.py` |
 | 4. Lấy lại mẫu 32 khung | Nội suy tuyến tính theo thời gian thật (PTS) | **Không nội suy qua đoạn bị mất** để không bịa chuyển động; mỗi khung = 156 toạ độ + 78 cờ hợp lệ = **234** | schema v0.3 (APPROVED) |
-| 5. Train | GRU 1 lớp, 64 nút ẩn → lớp tuyến tính ra số lớp; `pack_padded_sequence` cho chuỗi | Adam lr 0,001, batch 16, 30 epoch, cross-entropy, seed 42, CPU; **chọn checkpoint có loss validation thấp nhất** (pilot: epoch 24) | `train.py`, `gru_classifier.py` |
+| 5. Train | Nhân đặc trưng theo **trọng số nhóm tay 0,7 / mặt 0,2 / vai 0,1** (tay và vai ×1,30, mặt ×0,52 để tổng đóng góp đúng 70:20:10), rồi GRU 1 lớp, 64 nút ẩn → lớp tuyến tính; `pack_padded_sequence` cho chuỗi | Adam lr 0,001, batch 16, 30 epoch, cross-entropy, seed 42, CPU; **chọn checkpoint có loss validation thấp nhất** (pilot: epoch 24) | `train.py`, `gru_classifier.py` |
 | 6. Chọn ngưỡng và đánh giá | Quét ngưỡng 0,5–0,9 **trên validation**: tối đa (đúng được chấp nhận − sai được chấp nhận), rồi độ phủ | Pilot chọn 0,5; test 4 clip chạy **một lần**: accuracy 25%, Macro-F1 0,33 → `demoReady=false` | `train.py`, `pilot-report.md` |
 
 **Tái lập và truy vết:** mỗi artifact lưu SHA-256 manifest, digest schema, phiên bản extractor, lịch sử loss từng epoch,
@@ -144,6 +144,7 @@ kết quả.
 
 | Hỏi | Trả lời |
 |---|---|
+| Sao lại trọng số 70/20/10? | Tay quyết định từ; mặt chỉ biểu cảm; vai làm neo vị trí. Nếu để nguyên, mặt chiếm 38% đầu vào chỉ vì có 30 điểm. Với 15 clip pilot chưa đo được khác biệt (cùng 25% / 0,33); sẽ so trên bộ 10 nghĩa |
 | Sao chọn GRU mà không phải Transformer/3D-CNN? | Dữ liệu rất ít (15 clip pilot, 101 clip toàn bộ); model nhỏ ít overfit hơn, chạy CPU < 5 ms, dễ giải thích. Transformer cần nhiều dữ liệu hơn nhiều |
 | Sao dùng landmark mà không dùng ảnh? | Bỏ được nền, ánh sáng, màu da, quần áo; dữ liệu nhỏ hơn hàng nghìn lần; không phải lưu hình người; đổi lại mất thông tin khẩu hình chi tiết |
 | Có augmentation không? | **Chưa.** Pilot train trên dữ liệu gốc. Bước tiếp: lật trái/phải có đổi tay, co giãn thời gian, nhiễu nhẹ toạ độ — phải tách theo video gốc trước khi tăng cường để không rò rỉ |

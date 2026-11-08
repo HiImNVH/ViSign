@@ -19,6 +19,10 @@ ViSign nhận diện một ký hiệu VSL trong một clip camera và trả về
 
 MediaPipe trích landmark hai tay, thân trên và vùng mặt. Pipeline dùng chung chuẩn hóa chuỗi thành tensor **32 × 234** với tọa độ và tín hiệu landmark hợp lệ. GRU đọc chuyển động theo thời gian trên chuỗi đã xử lý. Nhóm chọn GRU một tầng làm baseline gọn để chạy và tái lập trên CPU, đồng thời giữ thông tin thứ tự động tác. Đây là lựa chọn kiến trúc của MVP, chưa có benchmark đối chứng với kiến trúc khác.
 
+**Trọng số nhóm điểm** (lead quyết định 2026-11-08): tay **0,7** (phần chính để nhận biết từ), mặt **0,2** (biểu cảm, đóng góp phụ), vai/cánh tay **0,1** (neo vị trí tay so với cơ thể). Model nhân mỗi đặc trưng của một điểm (x, y, cờ hợp lệ) với `trọng số nhóm × 78 / số điểm của nhóm` (tay 42 điểm → ×1,30; vai 6 điểm → ×1,30; mặt 30 điểm → ×0,52), nên tổng đóng góp đầu vào ba nhóm đúng tỉ lệ 70 : 20 : 10 (trước đây mặt chiếm 38% chỉ vì có nhiều điểm). Hệ số nằm trong `modelConfig.feature_scale` và buffer của checkpoint, nên API dùng đúng hệ số lúc train; artifact cũ không có hệ số vẫn nạp được. Bật bằng `group_weights` trong `ai/configs/pilot-gru.yaml` và `p0-gru.yaml`.
+
+Train lại pilot Giấy tờ/Nhận cùng dữ liệu, split và seed: không trọng số → epoch 24, ngưỡng 0,5, test accuracy 25% / Macro-F1 0,33 (khớp kết quả cũ); có trọng số → epoch 22, ngưỡng 0,6, test **25% / 0,33**. Bốn clip test không đủ để đo khác biệt; cần đánh giá lại trên bộ 101 clip / 10 nghĩa.
+
 Backend kiểm tra clip và chất lượng landmark trước khi gọi GRU. Model chọn lớp có xác suất softmax cao nhất, sau đó tra nghĩa qua class map. Khi confidence thấp hơn ngưỡng lưu trong artifact, giao diện trả “Không nhận diện được”. Confidence là điểm softmax của lớp, chưa có bằng chứng hiệu chuẩn để diễn giải như xác suất đúng ngoài thực tế.
 
 ## Protocol tái lập

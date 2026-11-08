@@ -196,3 +196,38 @@ def test_model_config_missing_a_dimension_is_rejected() -> None:
             pilot_artifact(),
             GruBundle(serving_schema(), checkpoint(modelConfig=model_config)),
         )
+
+
+def test_group_weighted_feature_scale_is_accepted() -> None:
+    # Trong so nhom diem tay/mat/vai (2026-11-08): he so theo tung dac trung di cung modelConfig
+    scale = [1.3] * 84 + [1.3] * 12 + [0.52] * 60 + [1.3] * 48 + [0.52] * 30
+    verify_gru_bundle(
+        pilot_artifact(),
+        GruBundle(serving_schema(), with_model_config(feature_scale=scale)),
+    )
+
+
+@pytest.mark.parametrize(
+    "bad_scale",
+    [
+        [1.0] * (INPUT_SIZE - 1),
+        [1.0] * (INPUT_SIZE - 1) + [0.0],
+        [1.0] * (INPUT_SIZE - 1) + [float("nan")],
+        [1.0] * (INPUT_SIZE - 1) + [True],
+        "1.0",
+    ],
+)
+def test_invalid_feature_scale_is_rejected(bad_scale: Any) -> None:
+    with pytest.raises(ArtifactRejectedError, match="feature_scale"):
+        verify_gru_bundle(
+            pilot_artifact(),
+            GruBundle(serving_schema(), with_model_config(feature_scale=bad_scale)),
+        )
+
+
+def test_unknown_model_config_key_is_still_rejected() -> None:
+    with pytest.raises(ArtifactRejectedError):
+        verify_gru_bundle(
+            pilot_artifact(),
+            GruBundle(serving_schema(), with_model_config(dropout=1)),
+        )

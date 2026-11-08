@@ -11,3 +11,8 @@ batch_size: 16
 epochs: 30
 learning_rate: 0.001
 threshold_candidates: [0.5, 0.6, 0.7, 0.8, 0.9]
+# Trong so dong gop theo nhom diem (lead 2026-11-08): tay nhan biet tu, mat bieu cam, vai/canh tay lam neo vi tri
+group_weights:
+  hands: 0.7
+  face: 0.2
+  shoulders: 0.1

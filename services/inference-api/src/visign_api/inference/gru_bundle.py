@@ -1,6 +1,7 @@
 # services/inference-api/src/visign_api/inference/gru_bundle.py
 # Kiem goi artifact GRU pilot/full truoc khi phuc vu: schema di kem APPROVED, trong so train tren dung schema
 # va label binding trung model_info theo dung thu tu lop. Khong can torch nen CI kiem duoc (T037).
+import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -18,6 +19,8 @@ REQUIRED_CHECKPOINT_KEYS = frozenset(
 MODEL_CONFIG_KEYS = frozenset(
     {"input_size", "hidden_size", "num_classes", "num_layers"}
 )
+# He so theo dac trung cho trong so nhom diem tay/mat/vai (tuy chon, artifact cu khong co)
+FEATURE_SCALE_KEY = "feature_scale"
 
 
 @dataclass(frozen=True)
@@ -97,13 +100,35 @@ def verify_model_config(loaded_artifact: LoadedArtifact, gru_bundle: GruBundle) 
         raise ArtifactRejectedError("input_size cua GRU khac so dac trung cua schema")
     if model_config["num_classes"] != len(loaded_artifact.metadata.classLabels):
         raise ArtifactRejectedError("num_classes cua GRU khac so classLabels")
+    if FEATURE_SCALE_KEY in model_config and not is_valid_feature_scale(
+        model_config[FEATURE_SCALE_KEY], model_config["input_size"]
+    ):
+        raise ArtifactRejectedError(
+            "feature_scale phai co input_size so duong huu han"
+        )
 
 
 def has_positive_integer_dimensions(model_config: Any) -> bool:
-    if not isinstance(model_config, Mapping) or set(model_config) != MODEL_CONFIG_KEYS:
+    if not isinstance(model_config, Mapping) or set(model_config) - {
+        FEATURE_SCALE_KEY
+    } != MODEL_CONFIG_KEYS:
         return False
     # bool la lop con cua int nen phai loai rieng
     return all(
-        isinstance(dimension, int) and not isinstance(dimension, bool) and dimension > 0
-        for dimension in model_config.values()
+        isinstance(model_config[key], int)
+        and not isinstance(model_config[key], bool)
+        and model_config[key] > 0
+        for key in MODEL_CONFIG_KEYS
+    )
+
+
+def is_valid_feature_scale(feature_scale: Any, input_size: int) -> bool:
+    if not isinstance(feature_scale, list) or len(feature_scale) != input_size:
+        return False
+    return all(
+        isinstance(value, int | float)
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+        and value > 0
+        for value in feature_scale
     )
