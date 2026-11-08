@@ -1,7 +1,7 @@
 // apps/web/src/App.tsx - Bo cuc trang camera va thong tin thu nghiem.
 import { useEffect } from 'react';
 import { CameraHelp } from './components/CameraHelp';
-import { LiveCamera } from './features/live/LiveCamera';
+import { CameraGuidance, LiveCamera } from './features/live/LiveCamera';
 import { useLiveRecognition } from './features/live/useLiveRecognition';
 import { HistoryPanel } from './features/recognition/HistoryPanel';
 import './styles.css';
@@ -33,6 +33,7 @@ export function App() {
   return (
     <main className="app-shell">
       <header className="app-header"><div className="brand"><h1>V<span className="brand-i">i</span>S<span className="brand-i">i</span>gn</h1></div>
+        <CameraGuidance live={recognition} />
         <div className="header-actions"><CameraHelp /></div></header>
       <div className="recognition-layout">
         <LiveCamera live={recognition} />

@@ -1,7 +1,7 @@
 # ViSign graphic refresh
 
-Only decorative vector assets and surface styling change. Preserve the existing grid, dimensions, typography, spacing, breakpoints, control positions, and camera behavior. The original camera icon is retained.
+Decorative vector assets and surface styling use gentle leaf green. The overall camera/history layout is preserved. The welcome screen shows ViSign and a subtitle above the raised start button. Camera guidance sits in the header, aligned with the camera's center.
 
-Palette: forest #006b4b, green #09865e, mint #e0f3e9, sage #cee4d9, pearl #fbfdfc.
+Palette: leaf #4e755a, camera #eef5e9, selection #e0edda, white #ffffff, ink #284333.
 
-corner-waves.svg and page-waves.svg are decorative vector assets.
+motion-arcs.svg is the current decorative vector asset; it is hidden during active camera use. The earlier corner-waves.svg and page-waves.svg are retained as unused assets. See docs/design/visign-visual-direction.md for the reference study and visual plan.

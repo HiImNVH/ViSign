@@ -20,6 +20,14 @@ function PresenceChips({ live }: { live: LiveRecognition }) {
   </ul>;
 }
 
+export function CameraGuidance({ live }: { live: LiveRecognition }) {
+  if (live.liveStatus === 'off') return null;
+  return <div className="camera-guidance">
+    {ACTIVE.includes(live.liveStatus) && <PresenceChips live={live} />}
+    <p className="live-hint" title={vi.live.hint[live.liveStatus]}>{vi.live.hint[live.liveStatus]}</p>
+  </div>;
+}
+
 export function LiveCamera({ live }: { live: LiveRecognition }) {
   const { camera, liveStatus, state, model, compatibilityError, transcript, paused } = live;
   const view = camera.view;
@@ -40,22 +48,24 @@ export function LiveCamera({ live }: { live: LiveRecognition }) {
   return <section className="camera-workspace" aria-label="Dịch ký hiệu trực tiếp bằng camera" aria-describedby="camera-privacy">
     <div className={`camera-viewport ${view.phase !== 'idle' && view.phase !== 'error' ? 'camera-active' : ''}`}
       data-live-status={liveStatus}>
-      <video ref={camera.videoRef} autoPlay muted playsInline aria-label={vi.preview} />
-      {!active && liveStatus !== 'error' && <div className="camera-placeholder"><div className="camera-guide" aria-hidden="true">
-        <svg className="camera-illustration" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 18l4-6h12l4 6h8a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6V24a6 6 0 0 1 6-6z" />
-          <circle cx="32" cy="35" r="11" /><path d="M46 26h2" />
-        </svg></div>
-        <p>Khuôn mặt và hai tay<br />trong khung hình</p></div>}
+      <div className="camera-video-frame">
+        <video ref={camera.videoRef} autoPlay muted playsInline aria-label={vi.preview}
+          onLoadedMetadata={event => {
+            const video = event.currentTarget;
+            if (video.videoWidth && video.videoHeight) {
+              video.style.setProperty('--camera-aspect-ratio', String(video.videoWidth / video.videoHeight));
+            }
+          }} />
+      </div>
       <span className={`status-badge live-${liveStatus}`} role="status" aria-atomic="true">
         <span aria-hidden="true" />{vi.live.status[liveStatus]}
       </span>
-      <div className="camera-guidance">
-        {active && <PresenceChips live={live} />}
-        {liveStatus !== 'off' && <p className="live-hint">{vi.live.hint[liveStatus]}</p>}
-      </div>
       <div className="sr-only"><TranscriptPanel entries={transcript} /></div>
       <div className="camera-dock">
+        {liveStatus === 'off' && <div className="camera-placeholder">
+          <div className="camera-welcome-brand">V<span className="brand-i">i</span>S<span className="brand-i">i</span>gn</div>
+          <p>Dịch ngôn ngữ ký hiệu Việt Nam sang văn bản</p>
+        </div>}
         {view.phase === 'error' && <RecognitionError type="camera" error={view.error} />}
         {live.detectorError && view.phase !== 'error' && <div className="capture-feedback error-feedback" role="alert">
           <h3>{vi.live.detectorFailed[0]}</h3><p>{vi.live.detectorFailed[1]}</p></div>}

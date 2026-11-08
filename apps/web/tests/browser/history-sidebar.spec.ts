@@ -4,7 +4,7 @@ test('camera and persistent history share desktop space without mobile overflow'
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Lịch sử', exact: true })).toHaveCount(0);
   const brand = page.getByRole('heading', { name: 'ViSign', level: 1 });
-  await expect(brand).toHaveCSS('font-size', '38px');
+  await expect(brand).toHaveCSS('font-size', page.viewportSize()!.width <= 380 ? '30px' : '38px');
   await expect(brand).toHaveCSS('color', 'rgb(17, 17, 17)');
   await expect(brand.locator('.brand-i')).toHaveCount(2);
   for (const letter of await brand.locator('.brand-i').all()) {

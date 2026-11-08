@@ -1,7 +1,7 @@
 // T106: luong dich truc tiep qua hook + giao dien that, voi bo phat hien, MediaRecorder va API gia lap.
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { LiveCamera } from '../../src/features/live/LiveCamera';
+import { CameraGuidance, LiveCamera } from '../../src/features/live/LiveCamera';
 import { useLiveRecognition } from '../../src/features/live/useLiveRecognition';
 import type { PresenceDetectorFactory, PresenceFrame } from '../../src/features/live/presenceDetector';
 import { InferenceApiError } from '../../src/services/inferenceApi';
@@ -49,7 +49,7 @@ const ready = (motion = 0): PresenceFrame => ({ person: true, face: true, hands:
 
 function Harness() {
   const live = useLiveRecognition(api, factory);
-  return <LiveCamera live={live} />;
+  return <><CameraGuidance live={live} /><LiveCamera live={live} /></>;
 }
 
 const status = () => screen.getByRole('status');

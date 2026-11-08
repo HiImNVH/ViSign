@@ -67,7 +67,7 @@ test('T104 two accepted clips form a transcript; rejected clip is excluded; hist
   const parsed = JSON.parse(stored!);
   expect(parsed.schemaVersion).toBe(1);
   expect(parsed.entries).toHaveLength(2);
-  expect(parsed.entries.map((item: { text: string }) => item.text)).toEqual(['Xin chào', 'Cảm ơn']);
+  expect(parsed.entries.map((item: { text: string }) => item.text)).toEqual(['Cảm ơn', 'Xin chào']);
   for (const entry of parsed.entries) {
     expect(Object.keys(entry).sort()).toEqual(['confidence', 'createdAt', 'modelVersion', 'requestId', 'text']);
   }
@@ -87,6 +87,7 @@ test('T104 two accepted clips form a transcript; rejected clip is excluded; hist
   await expect(history).toContainText('Xin chào');
   await expect(history).toContainText('Cảm ơn');
   await expect(history.locator('li')).toHaveCount(2);
+  await expect(history.locator('li strong')).toHaveText(['Cảm ơn', 'Xin chào']);
   await expect(history.locator('.history-disclosure')).toHaveCount(0);
   await history.getByRole('button', { name: 'Xoá toàn bộ lịch sử' }).click();
   await expect(history).toContainText('Xác nhận');
@@ -138,9 +139,10 @@ test('FE-T090-02 another tab refreshes open history on append and on clear', asy
 test('FE-T090-05 1200 valid entries stay stored while history renders 50 at a time', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(key => {
+    const now = Date.now();
     const entries = Array.from({ length: 1200 }, (_, n) => ({
       requestId: `123e4567-e89b-42d3-a456-${(n + 1).toString(16).padStart(12, '0')}`,
-      text: `Ký hiệu ${n}`, confidence: .93, modelVersion: 'pilot-v1', createdAt: new Date().toISOString(),
+      text: `Ký hiệu ${n}`, confidence: .93, modelVersion: 'pilot-v1', createdAt: new Date(now - (1199 - n) * 1000).toISOString(),
     }));
     localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, entries }));
   }, historyKey);

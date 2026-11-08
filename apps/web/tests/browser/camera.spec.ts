@@ -47,24 +47,27 @@ test('live status stays visible in the upper-left corner of the camera', async (
   expect(badgeBox.x + badgeBox.width).toBeLessThan(cameraBox.x + cameraBox.width / 2);
 });
 
-test('person, face and hands indicators stay at the top of the camera', async ({ page }) => {
+test('presence indicators share the header with the logo without shifting the camera', async ({ page }) => {
   await page.goto('/');
+  const before = await page.locator('.camera-viewport').boundingBox();
   await startLive(page, 'partial');
+  expect(await page.locator('.camera-viewport').boundingBox()).toEqual(before);
 
   const chips = page.getByRole('list', { name: 'Trạng thái phát hiện' });
-  const badge = page.locator('.status-badge');
   await expect(chips).toBeVisible();
 
-  for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 640 }]) {
+  for (const size of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }, { width: 320, height: 640 }]) {
     await page.setViewportSize(size);
-    const [chipsBox, badgeBox, cameraBox] = await Promise.all([
-      chips.boundingBox(), badge.boundingBox(), page.locator('.camera-viewport').boundingBox(),
+    const [chipsBox, cameraBox, headerBox] = await Promise.all([
+      chips.boundingBox(), page.locator('.camera-viewport').boundingBox(), page.locator('.app-header').boundingBox(),
     ]);
-    if (!chipsBox || !badgeBox || !cameraBox) throw new Error('Missing presence indicators or camera viewport');
-    expect(chipsBox.y).toBeGreaterThanOrEqual(cameraBox.y);
-    expect(chipsBox.y).toBeLessThan(cameraBox.y + cameraBox.height / 2);
-    if (size.width <= 480) expect(chipsBox.y).toBeGreaterThan(badgeBox.y + badgeBox.height);
-    else expect(chipsBox.x).toBeGreaterThan(badgeBox.x + badgeBox.width);
+    if (!chipsBox || !cameraBox || !headerBox) throw new Error('Missing presence indicators or camera viewport');
+    expect(chipsBox.y + chipsBox.height).toBeLessThan(cameraBox.y);
+    expect(chipsBox.y).toBeGreaterThanOrEqual(headerBox.y);
+    expect(chipsBox.y + chipsBox.height).toBeLessThanOrEqual(headerBox.y + headerBox.height);
+    if (size.width >= 1024) {
+      expect(Math.abs(chipsBox.x + chipsBox.width / 2 - cameraBox.x - cameraBox.width / 2)).toBeLessThan(2);
+    }
   }
 });
 
@@ -76,12 +79,13 @@ test('live instruction is centered directly below the presence indicators', asyn
   const hint = page.locator('.live-hint');
   for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 640 }]) {
     await page.setViewportSize(size);
-    const [chipsBox, hintBox, cameraBox] = await Promise.all([
-      chips.boundingBox(), hint.boundingBox(), page.locator('.camera-viewport').boundingBox(),
+    const [chipsBox, hintBox, cameraBox, guidanceBox] = await Promise.all([
+      chips.boundingBox(), hint.boundingBox(), page.locator('.camera-viewport').boundingBox(), page.locator('.camera-guidance').boundingBox(),
     ]);
-    if (!chipsBox || !hintBox || !cameraBox) throw new Error('Missing camera guidance');
+    if (!chipsBox || !hintBox || !cameraBox || !guidanceBox) throw new Error('Missing camera guidance');
     expect(hintBox.y).toBeGreaterThanOrEqual(chipsBox.y + chipsBox.height - 1);
-    expect(Math.abs(hintBox.x + hintBox.width / 2 - cameraBox.x - cameraBox.width / 2)).toBeLessThan(2);
+    expect(hintBox.y + hintBox.height).toBeLessThan(cameraBox.y);
+    expect(Math.abs(hintBox.x + hintBox.width / 2 - guidanceBox.x - guidanceBox.width / 2)).toBeLessThan(2);
   }
 });
 

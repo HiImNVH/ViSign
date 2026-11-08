@@ -1,65 +1,144 @@
-/* Visual treatment only: preserve all existing layout, type and control geometry. */
+/* ViSign visual system. Geometry and typography remain in styles.css. */
 .app-shell {
-  background: url('/images/page-waves.svg') center bottom / 100% 140px no-repeat,
-    linear-gradient(125deg, #fbfdfc, #f5faf8 68%, #f9fcfb);
+  --vs-canvas: #f5f8f3;
+  --vs-surface: #ffffff;
+  --vs-ink: #284333;
+  --vs-muted: #596c5d;
+  --vs-line: #d6e2d3;
+  --vs-green: #4e755a;
+  --vs-green-hover: #3f634a;
+  --vs-stage: #eef5e9;
+  --vs-selected: #e0edda;
+  --vs-shadow: 0 4px 18px #294a2e08, 0 1px 2px #294a2e06;
+  color: var(--vs-ink);
+  background: var(--vs-canvas);
 }
 .app-shell .camera-viewport {
-  background: url('/images/corner-waves.svg') center / 100% 100% no-repeat,
-    radial-gradient(ellipse at 55% 32%, #fff 15%, #fbfdfc 52%, #edf7f2 100%);
-  box-shadow: inset 0 0 0 1px #cee5da, inset 0 0 0 5px #ffffff70,
-    0 8px 24px #175a3f0b, 0 1px 3px #175a3f08;
+  background: url('/images/motion-arcs.svg') right top / 440px 440px no-repeat,
+    var(--vs-stage);
+  box-shadow: inset 0 0 0 1px #cfdeca, inset 0 0 60px #ffffff75, var(--vs-shadow);
 }
-.app-shell .camera-active { background: #e9f1ed; }
+.app-shell .camera-active {
+  background: #e7efe2;
+  box-shadow: inset 0 0 0 1px #cfdeca, var(--vs-shadow);
+}
+.app-shell .camera-placeholder { color: #4b654f; }
+.app-shell .camera-guide { color: #507857; }
+.app-shell .camera-guide::before,
+.app-shell .camera-guide::after { border-color: #aec7a6; }
+.app-shell .camera-illustration {
+  color: #4c7753;
+  background: #dcebd5;
+  box-shadow: inset 0 0 0 1px #c8ddc1;
+}
+.app-shell .camera-video-frame video { box-shadow: 0 2px 14px #03180d30; }
 .app-shell .status-badge {
-  border-color: #cfe4d9;
-  background: #fffffff2;
-  box-shadow: 0 3px 10px #15644410, inset 0 1px #fff;
+  color: #214434;
+  border-color: #d4e5da;
+  background: #fffffff5;
+  box-shadow: 0 2px 6px #00000012;
 }
-.app-shell .live-off > span { background: #168447; }
+.app-shell .live-off > span { background: #77877e; }
 .app-shell .primary-button {
-  background: linear-gradient(135deg, #09865e, #006b4b);
-  box-shadow: inset 0 1px #ffffff36, 0 4px 10px #006b4b28;
+  color: #fff;
+  background: var(--vs-green);
+  box-shadow: inset 0 1px #ffffff26, 0 3px 8px #2d50331a;
 }
 .app-shell .quiet-button {
-  background: linear-gradient(135deg, #f3faf6, #eaf4ef);
-  box-shadow: inset 0 0 0 1px #cee2d8, 0 2px 4px #0c503b06;
+  color: #45654c;
+  background: #f3f8ef;
+  box-shadow: inset 0 0 0 1px #d1dfca;
 }
 .app-shell .header-actions > .quiet-button {
-  background: linear-gradient(145deg, #fff, #f7fcf9);
-  box-shadow: inset 0 0 0 1px #d0e4da, 0 2px 5px #145c4210;
-}
-.app-shell .camera-off-button {
-  background: linear-gradient(135deg, #fff7f5, #fbefed);
-  box-shadow: inset 0 0 0 1px #efdcd7;
+  background: var(--vs-surface);
+  box-shadow: inset 0 0 0 1px #b8ccc0, 0 1px 2px #142c2308;
 }
 .app-shell .capture-controls {
-  background: #fffffff2;
-  box-shadow: 0 0 0 1px #d8e7df, 0 5px 16px #14583f12;
+  background: #fffffff5;
+  box-shadow: 0 0 0 1px #d0dfd5, 0 4px 14px #031a1126;
 }
-.app-shell .presence-chips li { background: #ffffffeb; }
-.app-shell .presence-chips .chip-on { background: #e0f3e9; }
-.app-shell .live-hint { border-color: #d9e9e0; box-shadow: 0 2px 8px #174f3a08; }
+.app-shell .camera-active .capture-controls {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.app-shell .camera-active .capture-controls .icon-button {
+  background: rgb(242 250 239 / 48%);
+  box-shadow: inset 0 0 0 1px rgb(220 239 216 / 80%);
+  backdrop-filter: blur(3px);
+}
+.app-shell .camera-active .capture-controls .camera-off-button {
+  background: rgb(255 239 235 / 48%);
+  box-shadow: inset 0 0 0 1px rgb(246 208 200 / 85%);
+}
+.app-shell .camera-off-button {
+  color: #943d35;
+  background: #fff1ee;
+  box-shadow: inset 0 0 0 1px #e9c4bd;
+}
+.app-shell .presence-chips li { background: #ffffffee; color: #485950; }
+.app-shell .presence-chips .chip-on { color: #155631; background: #d9f0df; }
+.app-shell .live-hint {
+  width: auto;
+  color: #45654c;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.app-shell .translation-panel {
+  color: var(--vs-ink);
+  background: rgb(255 255 255 / 25%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 65%);
+  backdrop-filter: blur(2px);
+}
+.app-shell .translation-text { color: #fff; text-shadow: 0 1px 2px #173727, 0 0 1px #173727; }
 .app-shell .history-sidebar {
-  border-color: #cee4d9;
-  background: linear-gradient(155deg, #fff 35%, #f7fcf9);
-  box-shadow: inset 0 1px #fff, 0 8px 24px #175a3f0b, 0 1px 3px #175a3f08;
+  color: var(--vs-ink);
+  border-color: var(--vs-line);
+  background: var(--vs-surface);
+  box-shadow: var(--vs-shadow);
 }
-.app-shell .history-count { background: #dff1e7; color: #086445; box-shadow: inset 0 1px #ffffff8c; }
-.app-shell .history-entries li { border-color: #e0ece5; }
+.app-shell .history-heading-icon { stroke: var(--vs-green); }
+.app-shell .history-count { color: #45674c; background: #e5efdf; box-shadow: none; }
+.app-shell .history-delete-selected { border-color: #c6d8cd; background: #f5f8f6; }
+.app-shell .history-entries li { border-color: #e3eae5; }
+.app-shell .history-entry-button { color: var(--vs-ink); }
 .app-shell .history-entry-highlighted .history-entry-button {
-  background: linear-gradient(110deg, #e0f3e9, #eaf7f0);
-  box-shadow: inset 3px 0 #078554, inset 0 0 0 1px #ffffff80;
+  color: #2f5236;
+  background: var(--vs-selected);
+  box-shadow: inset 3px 0 #80a774;
 }
-.app-shell .history-sidebar .history-entry-button time { color: #526d62; }
-.app-shell .history-empty { background: #f2f9f5; border-color: #d5e7dd; }
-.app-shell .history-actions { border-color: #d9e9e0; }
-.app-shell .history-content { scrollbar-color: #a8c1b5 #f1f7f4; }
-.app-shell .history-content::-webkit-scrollbar { background: #f1f7f4; }
-.app-shell .history-content::-webkit-scrollbar-thumb { background: #a8c1b5; border-radius: 10px; }
+.app-shell .history-sidebar .history-entry-button time { color: var(--vs-muted); }
+.app-shell .history-sidebar .history-entry-highlighted .history-entry-button time { color: #516a50; }
+.app-shell .history-empty {
+  color: var(--vs-muted);
+  background: #f6f8f6;
+  border-color: var(--vs-line);
+}
+.app-shell .history-actions { border-color: #e3eae5; }
+.app-shell .history-actions > .quiet-button:only-child {
+  color: #28563d;
+  background: #eef5f0;
+  box-shadow: inset 0 0 0 1px #c4d8cb;
+}
+.app-shell .history-content { scrollbar-color: #adbbb2 #f2f5f3; }
+.app-shell .history-content::-webkit-scrollbar { background: #f2f5f3; }
+.app-shell .history-content::-webkit-scrollbar-thumb { background: #adbbb2; border-radius: 10px; }
+.app-shell .app-footer { color: var(--vs-muted); }
 @media (hover: hover) and (pointer: fine) {
-  .app-shell .primary-button:hover { background: linear-gradient(135deg, #087451, #005c40); }
-  .app-shell .quiet-button:hover { background: #e1f0e7; }
-  .app-shell .camera-off-button:hover { background: #f7e6e1; }
-  .app-shell .history-entry-button:hover { background: #f0f8f3; }
-  .app-shell .history-entry-highlighted .history-entry-button:hover { background: #daf0e3; }
+  .app-shell .primary-button:hover { background: var(--vs-green-hover); }
+  .app-shell .quiet-button:hover { background: #e8f0eb; }
+  .app-shell .header-actions > .quiet-button:hover { background: #edf5f0; }
+  .app-shell .camera-off-button:hover { background: #fae3dc; }
+  .app-shell .camera-active .capture-controls .icon-button:hover { background: rgb(242 250 239 / 65%); }
+  .app-shell .camera-active .capture-controls .camera-off-button:hover { background: rgb(255 239 235 / 65%); }
+  .app-shell .history-entry-button:hover { background: #f0f5f2; }
+  .app-shell .history-entry-highlighted .history-entry-button:hover { background: #d5e6ce; }
+  .app-shell .history-actions > .quiet-button:only-child:hover { background: #e0eee4; }
+}
+@media (max-width: 480px) {
+  .app-shell .camera-viewport:not(.camera-active) { background-size: 230px 230px; }
+}
+@media (max-height: 420px) {
+  .app-shell .camera-viewport:not(.camera-active) { background-size: 180px 180px; }
 }
