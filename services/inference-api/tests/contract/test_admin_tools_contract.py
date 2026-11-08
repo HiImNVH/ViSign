@@ -250,6 +250,22 @@ def test_missing_or_invalid_token_is_401_without_leaking(
         assert leaked not in caplog.text
 
 
+@pytest.mark.parametrize("scheme", ["bearer", "BEARER", "BeArEr"])
+def test_bearer_scheme_is_case_insensitive(
+    admin_client: TestClient, scheme: str
+) -> None:
+    # T112, RFC 7235: ten scheme khong phan biet hoa/thuong; token van phai khop chinh xac
+    accepted = admin_client.get(
+        PILOT_PATH, headers={"Authorization": f"{scheme} {ADMIN_TOKEN}"}
+    )
+    rejected = admin_client.get(
+        PILOT_PATH, headers={"Authorization": f"{scheme} {ADMIN_TOKEN.upper()}"}
+    )
+
+    assert accepted.status_code == 200
+    assert rejected.status_code == 401
+
+
 def test_short_admin_token_is_rejected_at_startup() -> None:
     with pytest.raises(ValidationError):
         Settings(_env_file=None, visign_admin_token="ngan-qua")  # type: ignore[call-arg]

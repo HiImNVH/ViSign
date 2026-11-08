@@ -29,6 +29,7 @@ class ModelMetadata(BaseModel):
     meanings: list[str] = Field(min_length=1, max_length=MAX_SUPPORTED_MEANINGS)
     classLabels: list[str] = Field(default_factory=list)
     meaningMap: dict[str, str] = Field(default_factory=dict)
+    displayTextMap: dict[str, str] = Field(default_factory=dict)
     acceptanceThreshold: float = Field(DEFAULT_ACCEPTANCE_THRESHOLD, ge=0.0, le=1.0)
     accuracy: float | None = Field(None, ge=0.0, le=1.0)
     macroF1: float | None = Field(None, ge=0.0, le=1.0)
@@ -75,6 +76,8 @@ class ModelInfoResponse(BaseModel):
     perMeaningRecall: dict[str, float] | None
     evaluatedAt: str | None
     demoReady: bool
+    # T109 (FR-005): chu tieng Viet cua tung nghia de UI khong hien ma nghia; null khi artifact khong khai
+    meaningDisplayTexts: dict[str, str] | None = None
 
     @classmethod
     def from_metadata(cls, metadata: ModelMetadata) -> "ModelInfoResponse":
@@ -93,4 +96,10 @@ class ModelInfoResponse(BaseModel):
             perMeaningRecall=metadata.perMeaningRecall,
             evaluatedAt=evaluated_at,
             demoReady=metadata.demoReady,
+            meaningDisplayTexts={
+                meaning: metadata.displayTextMap[meaning]
+                for meaning in metadata.meanings
+                if metadata.displayTextMap.get(meaning, "").strip()
+            }
+            or None,
         )

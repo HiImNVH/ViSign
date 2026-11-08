@@ -103,15 +103,14 @@ def verify_model_config(loaded_artifact: LoadedArtifact, gru_bundle: GruBundle) 
     if FEATURE_SCALE_KEY in model_config and not is_valid_feature_scale(
         model_config[FEATURE_SCALE_KEY], model_config["input_size"]
     ):
-        raise ArtifactRejectedError(
-            "feature_scale phai co input_size so duong huu han"
-        )
+        raise ArtifactRejectedError("feature_scale phai co input_size so duong huu han")
 
 
 def has_positive_integer_dimensions(model_config: Any) -> bool:
-    if not isinstance(model_config, Mapping) or set(model_config) - {
-        FEATURE_SCALE_KEY
-    } != MODEL_CONFIG_KEYS:
+    if (
+        not isinstance(model_config, Mapping)
+        or set(model_config) - {FEATURE_SCALE_KEY} != MODEL_CONFIG_KEYS
+    ):
         return False
     # bool la lop con cua int nen phai loai rieng
     return all(

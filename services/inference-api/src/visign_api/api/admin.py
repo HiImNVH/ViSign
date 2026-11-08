@@ -22,9 +22,10 @@ def require_admin_token(request: Request) -> None:
     runtime_settings: Settings = request.app.state.settings
     expected_token = runtime_settings.visign_admin_token
     authorization = request.headers.get("authorization", "")
-    if expected_token is None or not authorization.startswith(BEARER_PREFIX):
+    # RFC 7235: ten scheme khong phan biet hoa/thuong (T112); token van so sanh chinh xac
+    scheme, _, provided_token = authorization.partition(" ")
+    if expected_token is None or scheme.lower() != BEARER_PREFIX.strip().lower():
         raise AdminApiException(ADMIN_UNAUTHORIZED)
-    provided_token = authorization.removeprefix(BEARER_PREFIX)
     if not hmac.compare_digest(
         provided_token.encode(), expected_token.get_secret_value().encode()
     ):

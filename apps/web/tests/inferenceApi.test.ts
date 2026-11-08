@@ -58,6 +58,13 @@ describe('inference API transport', () => {
     expect(init?.credentials).toBe('omit');
   });
 
+  it('T109 accepts optional meaning display texts, null or absent', async () => {
+    for (const meaningDisplayTexts of [{ NHAN: 'Nhận' }, null, undefined]) {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(JSON.stringify({ ...model, meaningDisplayTexts })));
+      expect((await createInferenceApi().modelInfo()).data.modelVersion).toBe('v1');
+    }
+  });
+
   it('reads model metadata with nullable metrics', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(model)));
     expect((await createInferenceApi().modelInfo()).data.modelVersion).toBe('v1');
@@ -69,6 +76,7 @@ describe('inference API transport', () => {
     { macroF1: 1.1 }, { perMeaningRecall: { CAM_ON: -0.1 } },
     { evaluatedAt: 'yesterday' }, { evaluatedAt: '2026-11-07T11:10:00' },
     { evaluatedAt: '2026-11-07T11:10:00Z', demoReady: 'yes' },
+    { meaningDisplayTexts: ['Nhận'] }, { meaningDisplayTexts: { NHAN: 1 } },
   ])('rejects out-of-contract model metadata %j', async invalid => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ ...model, ...invalid })));
     await expect(createInferenceApi().modelInfo()).rejects.toMatchObject({ kind: 'invalid-response' });

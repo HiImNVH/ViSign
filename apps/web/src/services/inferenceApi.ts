@@ -55,7 +55,9 @@ function isModelInfo(value: unknown): value is ModelInfo {
     && value.meanings.every(v => typeof v === 'string')
     && probability(value.acceptanceThreshold) && (value.macroF1 === null || probability(value.macroF1))
     && (value.perMeaningRecall === null || (object(value.perMeaningRecall) && Object.values(value.perMeaningRecall).every(probability)))
-    && (value.evaluatedAt === null || dateTime(value.evaluatedAt)) && typeof value.demoReady === 'boolean';
+    && (value.evaluatedAt === null || dateTime(value.evaluatedAt)) && typeof value.demoReady === 'boolean'
+    && (value.meaningDisplayTexts === undefined || value.meaningDisplayTexts === null
+      || (object(value.meaningDisplayTexts) && Object.values(value.meaningDisplayTexts).every(v => typeof v === 'string')));
 }
 
 function isHealth(value: unknown): value is HealthResponse {

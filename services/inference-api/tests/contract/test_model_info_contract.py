@@ -44,6 +44,7 @@ MODEL_INFO_FIELDS = {
     "perMeaningRecall",
     "evaluatedAt",
     "demoReady",
+    "meaningDisplayTexts",
 }
 
 
@@ -205,6 +206,10 @@ def test_pilot_model_info_is_never_demo_ready(tmp_path: Path) -> None:
     assert model_info["artifactKind"] == "pilot"
     assert model_info["meanings"] == P0_MEANINGS[:3]
     assert model_info["demoReady"] is False
+    # T109: chu hien thi theo dung danh sach meanings, khong lo ma nghia ra UI
+    assert model_info["meaningDisplayTexts"] == {
+        meaning: meaning.title() for meaning in P0_MEANINGS[:3]
+    }
 
 
 def test_full_model_info_exposes_metrics_and_demo_gate(tmp_path: Path) -> None:

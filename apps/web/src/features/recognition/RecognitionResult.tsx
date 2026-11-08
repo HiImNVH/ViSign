@@ -3,7 +3,8 @@ import { vi } from '../../content/vi';
 import type { Ref } from 'react';
 import type { ModelInfo, PredictionResponse } from '../../types/inference-api';
 
-export type RecognitionResultModel = Pick<ModelInfo, 'modelVersion' | 'artifactKind' | 'meanings' | 'demoReady'>;
+export type RecognitionResultModel = Pick<ModelInfo, 'modelVersion' | 'artifactKind' | 'meanings' | 'demoReady'>
+  & Partial<Pick<ModelInfo, 'meaningDisplayTexts'>>;
 
 interface RecognitionResultProps {
   result: PredictionResponse | null;
@@ -27,7 +28,8 @@ export function RecognitionResult({ result, model, onRetry, retryRef }: Recognit
     || !Number.isFinite(result.confidence) || result.confidence < 0 || result.confidence > 1) return null;
 
   const notReady = !model.demoReady || model.artifactKind !== 'full';
-  const meanings = model.meanings.join(', ');
+  // FR-005: hiển thị chữ tiếng Việt, chỉ dùng mã nghĩa khi artifact cũ không khai chữ hiển thị
+  const meanings = model.meanings.map(meaning => model.meaningDisplayTexts?.[meaning]?.trim() || meaning).join(', ');
 
   return <section className="translation-panel" aria-label="Văn bản dịch" aria-live="polite" aria-atomic="true">
     <p className="translation-text">{result.text.trim()}</p>

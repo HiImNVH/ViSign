@@ -260,6 +260,13 @@ components:
             type: number
             minimum: 0
             maximum: 1
+        meaningDisplayTexts:
+          type: [object, 'null']
+          description: >-
+            Optional (added 2026-11-08, T109). Vietnamese display text keyed by entry of `meanings`, so clients
+            never show meaning IDs (FR-005). Null when the artifact does not declare it.
+          additionalProperties:
+            type: string
         evaluatedAt:
           type: [string, 'null']
           format: date-time

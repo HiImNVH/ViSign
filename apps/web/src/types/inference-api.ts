@@ -47,6 +47,8 @@ export interface ModelInfo {
   perMeaningRecall: Record<string, number> | null;
   evaluatedAt: string | null;
   demoReady: boolean;
+  /** T109 (FR-005): chữ tiếng Việt của từng nghĩa; null/thiếu với artifact cũ. */
+  meaningDisplayTexts?: Record<string, string> | null;
 }
 
 export interface PredictionTimings {

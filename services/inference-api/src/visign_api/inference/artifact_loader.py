@@ -41,7 +41,8 @@ def load_artifact(
     fixture_response = parse_fixture_response(model_info.pop("fixtureResponse", None))
     loaded_artifact = LoadedArtifact(
         directory=artifact_directory,
-        metadata=parse_metadata(model_info),
+        # Giu chu hien thi trong metadata de /model-info tra meaningDisplayTexts (T109)
+        metadata=parse_metadata({**model_info, "displayTextMap": display_text_map}),
         displayTextMap=display_text_map,
         fixtureResponse=fixture_response,
     )
