@@ -18,8 +18,8 @@ origin EC2 chạy được, HTTPS tạm qua Cloudflare Quick Tunnel; CloudFront 
 |---|---|---|---|
 | `visign-storage` | [visign-storage.yml](../infra/aws/cloudformation/visign-storage.yml) | ECR `visign/inference-api`, `visign/web` (tag bất biến, scan on push, giữ 5 image); S3 `visign-artifacts-706101429579-ap-southeast-2` (private, versioning, SSE-S3, chỉ HTTPS) | `CREATE_COMPLETE` |
 | `visign-origin` | [visign-app.yml](../infra/aws/cloudformation/visign-app.yml) với `EnableCloudFront=false` | EC2 t3.small AL2023 (IMDSv2, EBS mã hoá, swap 2 GB), IAM role chỉ kéo `visign/*` + đọc S3 `artifacts/`, `deploy/` + SSM; Security Group không SSH, cổng 80 chỉ cho một IP vận hành; Elastic IP | `CREATE_COMPLETE` |
-| `visign-app` | cùng template, `EnableCloudFront=true` | thêm CloudFront (default cache theo header nginx; `/api/*` CachingDisabled + AllViewerExceptHostHeader, đủ method) | `ROLLBACK_COMPLETE` — rỗng, chờ xoá |
-| `visign-github-oidc` | bootstrap-github-oidc.yml | — | `ROLLBACK_COMPLETE` — SCP chặn OIDC, rỗng, chờ xoá |
+| `visign-app` | cùng template, `EnableCloudFront=true` | thêm CloudFront (default cache theo header nginx; `/api/*` CachingDisabled + AllViewerExceptHostHeader, đủ method) | Đã xoá 2026-11-08 (rỗng) |
+| `visign-github-oidc` | bootstrap-github-oidc.yml | — | Đã xoá 2026-11-08 (rỗng; SCP Free Plan chặn OIDC) |
 
 Lỗi CloudFront: `Your account must be verified before you can add new CloudFront resources` (403). Cần mở case
 **Account and billing** (miễn phí) trên AWS Support để xác minh tài khoản.
