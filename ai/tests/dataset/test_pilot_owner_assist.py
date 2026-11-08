@@ -7,15 +7,26 @@ from visign_ai.dataset.pilot_owner_assist import attested_subset
 
 class OwnerEvidenceTests(unittest.TestCase):
     def setUp(self):
-        self.row = {"sampleId": "fixture_0123456789ab", "classLabel": "NHAN_HCM_1",
-                    "sourceUri": "dataset:self-recorded", "licenseStatus": "approved",
-                    "signerId": "", "recordingSessionId": "fixture_0123456789ab",
-                    "verificationStatus": "unverified"}
-        self.inv = {**self.row, "sourceReviewStatus": "user-confirmed-self-recorded",
-                    "sha256": "0123456789ab" + "0" * 52,
-                    "groupEvidence": "user-confirmed-independently-recorded-clip"}
-        self.rights = {**self.row, "consentStatus": "user-declared-approved",
-                       "evidenceKind": "user-attestation-in-chat"}
+        self.row = {
+            "sampleId": "fixture_0123456789ab",
+            "classLabel": "NHAN_HCM_1",
+            "sourceUri": "dataset:self-recorded",
+            "licenseStatus": "approved",
+            "signerId": "",
+            "recordingSessionId": "fixture_0123456789ab",
+            "verificationStatus": "unverified",
+        }
+        self.inv = {
+            **self.row,
+            "sourceReviewStatus": "user-confirmed-self-recorded",
+            "sha256": "0123456789ab" + "0" * 52,
+            "groupEvidence": "user-confirmed-independently-recorded-clip",
+        }
+        self.rights = {
+            **self.row,
+            "consentStatus": "user-declared-approved",
+            "evidenceKind": "user-attestation-in-chat",
+        }
 
     def test_records_prior_attestation_without_changing_label_or_identity(self):
         selected, decisions = attested_subset([self.row], [self.inv], [self.rights])
@@ -41,11 +52,19 @@ class OwnerEvidenceTests(unittest.TestCase):
         self.assertFalse(attested_subset([self.row], [self.inv], [self.rights])[0])
 
     def test_hash_group_or_label_mismatch_is_not_silently_repaired(self):
-        for change in [{"sha256": "a" * 64}, {"classLabel": "NHAN_HCM_2"},
-                       {"recordingSessionId": "new-source-R01"}, {"signerId": "S002"},
-                       {"groupEvidence": "filename-only"}]:
+        for change in [
+            {"sha256": "a" * 64},
+            {"classLabel": "NHAN_HCM_2"},
+            {"recordingSessionId": "new-source-R01"},
+            {"signerId": "S002"},
+            {"groupEvidence": "filename-only"},
+        ]:
             with self.subTest(change=change):
-                self.assertFalse(attested_subset([self.row], [{**self.inv, **change}], [self.rights])[0])
+                self.assertFalse(
+                    attested_subset(
+                        [self.row], [{**self.inv, **change}], [self.rights]
+                    )[0]
+                )
 
     def test_duplicate_evidence_ids_are_rejected(self):
         with self.assertRaises(ValueError):
@@ -55,4 +74,6 @@ class OwnerEvidenceTests(unittest.TestCase):
         self.row["verificationStatus"] = "rejected"
         selected, decisions = attested_subset([self.row], [self.inv], [self.rights])
         self.assertFalse(selected)
-        self.assertEqual(decisions[0]["selectionReason"], "rejected-sample-not-selected")
+        self.assertEqual(
+            decisions[0]["selectionReason"], "rejected-sample-not-selected"
+        )

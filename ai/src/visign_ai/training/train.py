@@ -19,12 +19,13 @@ import numpy as np
 import torch
 import yaml
 from torch import Tensor
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 from visign_ai.cli import make_console_output_safe
 from visign_ai.evaluation.release_gate import build_model_metadata
 from visign_ai.landmarks.sequence_transform import schema_digest
 
+from .augmentation import AugmentedDataset
 from .group_weights import feature_scale
 from .gru_classifier import GRUClassifier
 from .sequence_dataset import SequenceDataset, collate_sequences
@@ -32,12 +33,16 @@ from .training_inputs import TrainingInputs, prepare_inputs
 
 
 def make_loader(inputs: TrainingInputs, root: Path, split: str) -> DataLoader[Any]:
-    dataset = SequenceDataset(
+    dataset: Dataset[Any] = SequenceDataset(
         (row for row in inputs.rows if row["split"] == split),
         root,
         inputs.labels,
         inputs.schema,
     )
+    augmentation = inputs.config.get("augmentation")
+    if split == "train" and augmentation:
+        # Chi tang cuong tap train; validation/test giu nguyen de chon checkpoint/nguong va danh gia trung thuc
+        dataset = AugmentedDataset(dataset, augmentation, inputs.config["seed"])
     return DataLoader(
         dataset,
         batch_size=inputs.config["batch_size"],

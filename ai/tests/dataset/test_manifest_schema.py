@@ -8,10 +8,15 @@ from visign_ai.dataset.manifest_schema import ManifestRow, ManifestSchemaError
 class ManifestSchemaTests(unittest.TestCase):
     def row(self):
         return ManifestRow(
-            sample_id="dataset-p0_0123456789ab", class_label="CAM_ON_HN_2",
-            meaning_id="CAM_ON", recording_session_id="dataset-p0_0123456789ab",
-            license_status=LicenseStatus.UNKNOWN, verification_status=VerificationStatus.UNVERIFIED,
-            raw_path="reviewed/dataset-p0/sample.mp4", duration_ms=1000, frame_count=30,
+            sample_id="dataset-p0_0123456789ab",
+            class_label="CAM_ON_HN_2",
+            meaning_id="CAM_ON",
+            recording_session_id="dataset-p0_0123456789ab",
+            license_status=LicenseStatus.UNKNOWN,
+            verification_status=VerificationStatus.UNVERIFIED,
+            raw_path="reviewed/dataset-p0/sample.mp4",
+            duration_ms=1000,
+            frame_count=30,
         )
 
     def test_optional_metadata_and_roundtrip(self):
@@ -24,7 +29,11 @@ class ManifestSchemaTests(unittest.TestCase):
         self.assertIs(replace(row, split="test").split, DataSplit.TEST)
 
     def test_strict_numeric_direct_construction(self):
-        for fields in [{"duration_ms": "1000"}, {"frame_count": True}, {"frame_count": 0}]:
+        for fields in [
+            {"duration_ms": "1000"},
+            {"frame_count": True},
+            {"frame_count": 0},
+        ]:
             with self.subTest(fields=fields), self.assertRaises(ManifestSchemaError):
                 replace(self.row(), **fields)
 

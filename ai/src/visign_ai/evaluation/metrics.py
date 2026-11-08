@@ -42,10 +42,16 @@ def evaluate_metrics(
     labels = list(meanings)
     allowed = set(labels)
     if not labels or len(allowed) != len(labels) or REJECTED in allowed:
-        raise ValueError("meanings must be nonempty, unique, and exclude the rejection label")
+        raise ValueError(
+            "meanings must be nonempty, unique, and exclude the rejection label"
+        )
     if not expected or len(expected) != len(predicted):
-        raise ValueError("expected and predicted must have the same nonzero sample count")
-    observed_predictions = [label if label is not None else REJECTED for label in predicted]
+        raise ValueError(
+            "expected and predicted must have the same nonzero sample count"
+        )
+    observed_predictions = [
+        label if label is not None else REJECTED for label in predicted
+    ]
     if not set(expected) <= allowed or any(
         label is not None and label not in allowed for label in predicted
     ):
@@ -60,7 +66,9 @@ def evaluate_metrics(
         if len(latencies_ms) != len(expected) or any(
             not isfinite(value) or value < 0 for value in latencies_ms
         ):
-            raise ValueError("latencies_ms must contain one finite nonnegative value per sample")
+            raise ValueError(
+                "latencies_ms must contain one finite nonnegative value per sample"
+            )
         percentiles: NDArray[np.float64] = np.percentile(latencies_ms, [50, 95])
         p50, p95 = percentiles
         latency = {"p50": float(p50), "p95": float(p95)}
@@ -69,7 +77,9 @@ def evaluate_metrics(
         expected, observed_predictions, labels=labels, zero_division=0
     )
     columns = [*labels, REJECTED] if REJECTED in observed_predictions else labels.copy()
-    matrix = confusion_matrix(expected, observed_predictions, labels=columns)[: len(labels)]
+    matrix = confusion_matrix(expected, observed_predictions, labels=columns)[
+        : len(labels)
+    ]
 
     return {
         "accuracy": float(accuracy_score(expected, observed_predictions)),
@@ -78,7 +88,9 @@ def evaluate_metrics(
         "perMeaningRecall": dict(zip(labels, map(float, recall), strict=True)),
         "testSampleCounts": dict(zip(labels, map(int, support), strict=True)),
         "testSignerCount": len(known_signers),
-        "testSamplesWithoutSigner": sum(not signer or not signer.strip() for signer in signers),
+        "testSamplesWithoutSigner": sum(
+            not signer or not signer.strip() for signer in signers
+        ),
         "meanings": labels,
         "confusionMatrixColumns": columns,
         "confusionMatrix": matrix.tolist(),

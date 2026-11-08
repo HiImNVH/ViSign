@@ -41,7 +41,9 @@ def read_p0_meanings(path: Path) -> dict[str, dict[str, str]]:
         display_texts: set[str] = set()
         for line, row in enumerate(reader, start=2):
             if set(row) != set(COLUMNS) or any(
-                not isinstance(value, str) or not value or value != value.strip()
+                not isinstance(value, str)
+                or not value
+                or value != value.strip()
                 or any(ord(c) < 32 or ord(c) == 127 for c in value)
                 for value in row.values()
             ):
@@ -50,29 +52,45 @@ def read_p0_meanings(path: Path) -> dict[str, dict[str, str]]:
             if not re.fullmatch(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*", meaning_id):
                 raise MeaningRegistryError(f"invalid meaningId: {meaning_id}")
             if meaning_id in result or row["displayText"] in display_texts:
-                raise MeaningRegistryError(f"duplicate meaningId/displayText at line {line}")
+                raise MeaningRegistryError(
+                    f"duplicate meaningId/displayText at line {line}"
+                )
             if row["category"] not in CATEGORIES:
                 raise MeaningRegistryError(f"invalid category at line {line}")
             if row["priority"] != "P0" or row["active"] != "true":
-                raise MeaningRegistryError("all ten P0 registry entries must be active P0")
+                raise MeaningRegistryError(
+                    "all ten P0 registry entries must be active P0"
+                )
             result[meaning_id] = row
             display_texts.add(row["displayText"])
     except csv.Error as exc:
         raise MeaningRegistryError("malformed registry CSV") from exc
     if len(result) != 10:
-        raise MeaningRegistryError(f"registry must contain exactly 10 meanings, got {len(result)}")
+        raise MeaningRegistryError(
+            f"registry must contain exactly 10 meanings, got {len(result)}"
+        )
     return result
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--registry", type=Path, default=Path("data/manifests/p0-meanings.csv"))
+    parser.add_argument(
+        "--registry", type=Path, default=Path("data/manifests/p0-meanings.csv")
+    )
     args = parser.parse_args()
     try:
         registry = read_p0_meanings(args.registry)
     except (MeaningRegistryError, OSError) as exc:
         parser.exit(1, f"Registry validation failed: {exc}\n")
-    print(json.dumps({
-        "valid": True, "meaningCount": len(registry), "meaningIds": list(registry),
-        "sha256": hashlib.sha256(args.registry.read_bytes()).hexdigest(),
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "valid": True,
+                "meaningCount": len(registry),
+                "meaningIds": list(registry),
+                "sha256": hashlib.sha256(args.registry.read_bytes()).hexdigest(),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )

@@ -16,9 +16,16 @@ REGISTRY = Path(__file__).resolve().parents[3] / "data/manifests/p0-meanings.csv
 
 
 def synthetic_rows(count=6):
-    return [{"sampleId": f"fixture_{i:012x}", "meaningId": "CAM_ON",
-             "classLabel": "CAM_ON_UNKNOWN_1", "recordingSessionId": f"fixture_{i:012x}",
-             "signerId": ""} for i in range(count)]
+    return [
+        {
+            "sampleId": f"fixture_{i:012x}",
+            "meaningId": "CAM_ON",
+            "classLabel": "CAM_ON_UNKNOWN_1",
+            "recordingSessionId": f"fixture_{i:012x}",
+            "signerId": "",
+        }
+        for i in range(count)
+    ]
 
 
 class SplitSolverTests(unittest.TestCase):
@@ -27,16 +34,25 @@ class SplitSolverTests(unittest.TestCase):
         quotas = {"CAM_ON": {"train": 3, "validation": 2, "test": 1}}
         first = assign_groups(rows, quotas)
         self.assertEqual(first["status"], "FEASIBLE")
-        self.assertEqual(first["assignment"], assign_groups(list(reversed(rows)), quotas)["assignment"])
+        self.assertEqual(
+            first["assignment"],
+            assign_groups(list(reversed(rows)), quotas)["assignment"],
+        )
         assigned = list(first["assignment"].values())
-        self.assertEqual([assigned.count(s) for s in ("train", "validation", "test")], [3, 2, 1])
+        self.assertEqual(
+            [assigned.count(s) for s in ("train", "validation", "test")], [3, 2, 1]
+        )
 
     def test_fewer_than_three_groups_is_infeasible(self):
         rows = synthetic_rows()
         for row in rows:
             row["recordingSessionId"] = "source-R01"
-        self.assertEqual(assign_groups(rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}})
-                         ["status"], "INFEASIBLE")
+        self.assertEqual(
+            assign_groups(rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}})[
+                "status"
+            ],
+            "INFEASIBLE",
+        )
 
     def test_known_signer_preference_and_fallback_preserve_input(self):
         rows = synthetic_rows()
@@ -46,8 +62,10 @@ class SplitSolverTests(unittest.TestCase):
         result = assign_groups(rows, quotas)
         self.assertEqual(result["signerPreference"], "satisfied-for-known-signers")
         for i in range(0, 6, 2):
-            self.assertEqual(result["assignment"][rows[i]["sampleId"]],
-                             result["assignment"][rows[i + 1]["sampleId"]])
+            self.assertEqual(
+                result["assignment"][rows[i]["sampleId"]],
+                result["assignment"][rows[i + 1]["sampleId"]],
+            )
         for row in rows:
             row["signerId"] = "S001"
         before = [dict(row) for row in rows]
@@ -58,36 +76,63 @@ class SplitSolverTests(unittest.TestCase):
 
     def test_multi_meaning_source_stays_together(self):
         rows = synthetic_rows(3)
-        others = [{**r, "sampleId": r["sampleId"].replace("fixture_", "other_"),
-                   "meaningId": "NHAN", "classLabel": "NHAN_UNKNOWN_1"} for r in rows]
-        quotas = {m: {"train": 1, "validation": 1, "test": 1} for m in ("CAM_ON", "NHAN")}
+        others = [
+            {
+                **r,
+                "sampleId": r["sampleId"].replace("fixture_", "other_"),
+                "meaningId": "NHAN",
+                "classLabel": "NHAN_UNKNOWN_1",
+            }
+            for r in rows
+        ]
+        quotas = {
+            m: {"train": 1, "validation": 1, "test": 1} for m in ("CAM_ON", "NHAN")
+        }
         assignment = assign_groups(rows + others, quotas)["assignment"]
         for first, second in zip(rows, others, strict=True):
-            self.assertEqual(assignment[first["sampleId"]], assignment[second["sampleId"]])
+            self.assertEqual(
+                assignment[first["sampleId"]], assignment[second["sampleId"]]
+            )
 
     def test_rare_variant_cannot_disappear_from_evaluation(self):
         rows = synthetic_rows()
         rows[0]["classLabel"] = "CAM_ON_UNKNOWN_2"
-        result = assign_groups(rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}})
+        result = assign_groups(
+            rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}}
+        )
         self.assertEqual(result["status"], "INFEASIBLE")
 
     def test_counts_wrong_and_invalid_quotas_are_not_rounded(self):
-        self.assertEqual(assign_groups(synthetic_rows(), {"CAM_ON": {"train": 12, "validation": 5, "test": 3}})
-                         ["status"], "INFEASIBLE")
+        self.assertEqual(
+            assign_groups(
+                synthetic_rows(), {"CAM_ON": {"train": 12, "validation": 5, "test": 3}}
+            )["status"],
+            "INFEASIBLE",
+        )
         with self.assertRaises(ValueError):
-            assign_groups(synthetic_rows(), {"CAM_ON": {"train": True, "validation": 2, "test": 3}})
+            assign_groups(
+                synthetic_rows(),
+                {"CAM_ON": {"train": True, "validation": 2, "test": 3}},
+            )
 
     def test_search_limit_is_distinct_from_infeasible(self):
-        result = assign_groups(synthetic_rows(), {"CAM_ON": {"train": 3, "validation": 2, "test": 1}},
-                               max_states=1)
+        result = assign_groups(
+            synthetic_rows(),
+            {"CAM_ON": {"train": 3, "validation": 2, "test": 1}},
+            max_states=1,
+        )
         self.assertEqual(result["status"], "SEARCH_LIMIT")
 
     def test_large_groups_cannot_be_split_to_fill_quota(self):
         rows = synthetic_rows(6)
         for i, row in enumerate(rows):
             row["recordingSessionId"] = f"source-R{i // 2 + 1:02}"
-        self.assertEqual(assign_groups(rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}})
-                         ["status"], "INFEASIBLE")
+        self.assertEqual(
+            assign_groups(rows, {"CAM_ON": {"train": 3, "validation": 2, "test": 1}})[
+                "status"
+            ],
+            "INFEASIBLE",
+        )
 
 
 class SplitPipelineTests(unittest.TestCase):
@@ -105,7 +150,9 @@ class SplitPipelineTests(unittest.TestCase):
 
     def write_rows(self):
         with self.manifest.open("w", encoding="utf-8", newline="") as stream:
-            writer = csv.DictWriter(stream, fieldnames=MANIFEST_COLUMNS, lineterminator="\n")
+            writer = csv.DictWriter(
+                stream, fieldnames=MANIFEST_COLUMNS, lineterminator="\n"
+            )
             writer.writeheader()
             writer.writerows(self.rows)
 
@@ -116,29 +163,61 @@ class SplitPipelineTests(unittest.TestCase):
         for meaning, allocation in targets.items():
             label = meaning + "_UNKNOWN_1"
             catalog.append(f"{label},{meaning},UNKNOWN,1,true,true")
-            quotas[meaning] = dict(zip(("train", "validation", "test"), allocation, strict=True))
+            quotas[meaning] = dict(
+                zip(("train", "validation", "test"), allocation, strict=True)
+            )
             for split_index, count in enumerate(allocation):
                 for i in range(count):
                     raw = f"synthetic {meaning} {split_index} {i}".encode()
                     sample_id = "fixture_" + hashlib.sha256(raw).hexdigest()[:12]
                     (self.root / (sample_id + ".mp4")).write_bytes(raw)
-                    self.rows.append(ManifestRow.from_mapping({
-                        "sampleId": sample_id, "classLabel": label, "meaningId": meaning,
-                        "signerId": f"S{split_index + 1:03}" if known_signers else "",
-                        "recordingSessionId": sample_id, "sourceUri": "dataset:synthetic",
-                        "licenseStatus": "approved", "verificationStatus": "verified", "rejectionReason": "",
-                        "rawPath": sample_id + ".mp4", "landmarkPath": "", "durationMs": "1000",
-                        "frameCount": "30", "split": "",
-                    }).to_csv_row())
-        self.classes.write_text("\n".join(catalog) + "\n", encoding="utf-8", newline="\n")
+                    self.rows.append(
+                        ManifestRow.from_mapping(
+                            {
+                                "sampleId": sample_id,
+                                "classLabel": label,
+                                "meaningId": meaning,
+                                "signerId": f"S{split_index + 1:03}"
+                                if known_signers
+                                else "",
+                                "recordingSessionId": sample_id,
+                                "sourceUri": "dataset:synthetic",
+                                "licenseStatus": "approved",
+                                "verificationStatus": "verified",
+                                "rejectionReason": "",
+                                "rawPath": sample_id + ".mp4",
+                                "landmarkPath": "",
+                                "durationMs": "1000",
+                                "frameCount": "30",
+                                "split": "",
+                            }
+                        ).to_csv_row()
+                    )
+        self.classes.write_text(
+            "\n".join(catalog) + "\n", encoding="utf-8", newline="\n"
+        )
         self.quotas.write_text(json.dumps(quotas), encoding="utf-8")
         self.write_rows()
 
     def args(self, mode="pilot"):
-        args = ["--manifest", str(self.manifest), "--registry", str(REGISTRY),
-                "--classes", str(self.classes), "--dataset-root", str(self.root),
-                "--output", str(self.output), "--report", str(self.report),
-                "--dataset-version", "fixture-v1", "--mode", mode]
+        args = [
+            "--manifest",
+            str(self.manifest),
+            "--registry",
+            str(REGISTRY),
+            "--classes",
+            str(self.classes),
+            "--dataset-root",
+            str(self.root),
+            "--output",
+            str(self.output),
+            "--report",
+            str(self.report),
+            "--dataset-version",
+            "fixture-v1",
+            "--mode",
+            mode,
+        ]
         return args + (["--pilot-quotas", str(self.quotas)] if mode == "pilot" else [])
 
     def test_session_only_pilot_explicit_and_input_unchanged(self):
@@ -156,7 +235,9 @@ class SplitPipelineTests(unittest.TestCase):
     def test_full_video_held_out_200_pipeline(self):
         from visign_ai.dataset.meaning_registry import read_p0_meanings
 
-        self.build({m: (12, 5, 3) for m in read_p0_meanings(REGISTRY)}, known_signers=True)
+        self.build(
+            {m: (12, 5, 3) for m in read_p0_meanings(REGISTRY)}, known_signers=True
+        )
         self.assertEqual(main(self.args("full")), 0)
         report = json.loads(self.report.read_text(encoding="utf-8"))
         self.assertEqual(report["splitEvidence"], "video-held-out")
@@ -165,7 +246,9 @@ class SplitPipelineTests(unittest.TestCase):
     def test_full_optional_signer_unverified_and_blank_source(self):
         from visign_ai.dataset.meaning_registry import read_p0_meanings
 
-        self.build({m: (12, 5, 3) for m in read_p0_meanings(REGISTRY)}, known_signers=False)
+        self.build(
+            {m: (12, 5, 3) for m in read_p0_meanings(REGISTRY)}, known_signers=False
+        )
         for row in self.rows:
             row.update(verificationStatus="unverified", sourceUri="")
         self.write_rows()
@@ -176,11 +259,19 @@ class SplitPipelineTests(unittest.TestCase):
         with self.output.open(encoding="utf-8", newline="") as stream:
             output_rows = list(csv.DictReader(stream))
         self.assertEqual(len(output_rows), 200)
-        self.assertTrue(all(r["verificationStatus"] == "unverified" and not r["signerId"]
-                            and not r["sourceUri"] for r in output_rows))
+        self.assertTrue(
+            all(
+                r["verificationStatus"] == "unverified"
+                and not r["signerId"]
+                and not r["sourceUri"]
+                for r in output_rows
+            )
+        )
 
     def test_rejected_sample_blocks_split_without_output(self):
-        self.rows[0].update(verificationStatus="rejected", rejectionReason="wrong label")
+        self.rows[0].update(
+            verificationStatus="rejected", rejectionReason="wrong label"
+        )
         self.write_rows()
         self.assertEqual(main(self.args()), 1)
         self.assertFalse(self.output.exists())
@@ -196,7 +287,9 @@ class SplitPipelineTests(unittest.TestCase):
         self.assertEqual(rows[0]["verificationStatus"], "unverified")
 
     def test_missing_p0_coverage_blocks_full_before_assignment(self):
-        report, assigned = prepare_split(self.manifest, REGISTRY, self.classes, self.root, mode="full")
+        report, assigned = prepare_split(
+            self.manifest, REGISTRY, self.classes, self.root, mode="full"
+        )
         self.assertEqual(report["issues"]["MISSING_P0_COVERAGE"], 1)
         self.assertNotIn("MISSING_SIGNER_ID", report["issues"])
         self.assertFalse(assigned)
@@ -213,17 +306,27 @@ class SplitPipelineTests(unittest.TestCase):
         self.rows[0]["verificationStatus"] = "unverified"
         self.write_rows()
         output = self.root / "review"
-        summary = build_package(self.manifest, REGISTRY, self.classes, self.root, output)
+        summary = build_package(
+            self.manifest, REGISTRY, self.classes, self.root, output
+        )
         self.assertFalse(summary["fullTrainingEligible"])
         self.assertFalse(summary["approvedPilotManifestCreated"])
         self.assertFalse((output / "pilot.csv").exists())
         self.assertFalse((output / "p0.csv").exists())
-        with (output / "sample-review.csv").open(encoding="utf-8", newline="") as stream:
+        with (output / "sample-review.csv").open(
+            encoding="utf-8", newline=""
+        ) as stream:
             rows = list(csv.DictReader(stream))
         self.assertEqual(len(rows), 6)
-        self.assertTrue(all(row["expertLabelDecision"] == "" and row["decision"] == "pending"
-                            and row["reviewer"] == "" and row["rightsEvidenceReference"] == ""
-                            for row in rows))
+        self.assertTrue(
+            all(
+                row["expertLabelDecision"] == ""
+                and row["decision"] == "pending"
+                and row["reviewer"] == ""
+                and row["rightsEvidenceReference"] == ""
+                for row in rows
+            )
+        )
         with self.assertRaises(ValueError):
             build_package(self.manifest, REGISTRY, self.classes, self.root, output)
 

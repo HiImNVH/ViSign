@@ -39,7 +39,11 @@ MANIFEST_COLUMNS = (
 )
 
 _REQUIRED_COLUMNS = frozenset(MANIFEST_COLUMNS) - {
-    "signerId", "sourceUri", "rejectionReason", "landmarkPath", "split"
+    "signerId",
+    "sourceUri",
+    "rejectionReason",
+    "landmarkPath",
+    "split",
 }
 _SAMPLE_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*_[0-9a-f]{12}\Z")
 _MEANING_ID = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*\Z")
@@ -51,8 +55,20 @@ _SESSION_ID = re.compile(
     r"(?:[a-z0-9]+(?:-[a-z0-9]+)*_[0-9a-f]{12}|S[0-9]{3}-R[0-9]{2})\Z"
 )
 _SENSITIVE_QUERY_KEYS = frozenset(
-    {"access_token", "api_key", "key", "password", "secret", "signature", "token",
-     "sig", "x-amz-signature", "x-amz-credential", "x-goog-signature", "x-goog-credential"}
+    {
+        "access_token",
+        "api_key",
+        "key",
+        "password",
+        "secret",
+        "signature",
+        "token",
+        "sig",
+        "x-amz-signature",
+        "x-amz-credential",
+        "x-goog-signature",
+        "x-goog-credential",
+    }
 )
 
 
@@ -121,31 +137,53 @@ class ManifestRow:
 
     def __post_init__(self) -> None:
         for name in (
-            "sample_id", "class_label", "meaning_id", "recording_session_id",
-            "license_status", "verification_status", "raw_path",
+            "sample_id",
+            "class_label",
+            "meaning_id",
+            "recording_session_id",
+            "license_status",
+            "verification_status",
+            "raw_path",
         ):
             _text(name, getattr(self, name))
-        for name in ("source_uri", "signer_id", "rejection_reason", "landmark_path", "split"):
+        for name in (
+            "source_uri",
+            "signer_id",
+            "rejection_reason",
+            "landmark_path",
+            "split",
+        ):
             _text(name, getattr(self, name), optional=True)
 
         if not _SAMPLE_ID.fullmatch(self.sample_id):
-            raise ManifestSchemaError("sampleId must be {sourceId}_{12 lowercase hex SHA-256}")
+            raise ManifestSchemaError(
+                "sampleId must be {sourceId}_{12 lowercase hex SHA-256}"
+            )
         if not _MEANING_ID.fullmatch(self.meaning_id):
             raise ManifestSchemaError("meaningId must be UPPER_SNAKE_CASE")
         if not _CLASS_LABEL.fullmatch(self.class_label):
-            raise ManifestSchemaError("classLabel must be {meaningId}_{region}_{variant}")
+            raise ManifestSchemaError(
+                "classLabel must be {meaningId}_{region}_{variant}"
+            )
         if self.class_label.rsplit("_", 2)[0] != self.meaning_id:
             raise ManifestSchemaError("classLabel must belong to meaningId")
         if self.signer_id is not None and not _SIGNER_ID.fullmatch(self.signer_id):
             raise ManifestSchemaError("signerId must match S###")
         if not _SESSION_ID.fullmatch(self.recording_session_id):
-            raise ManifestSchemaError("recordingSessionId must be a source sampleId, sourceId-R## or S###-R##")
-        if (self.recording_session_id.startswith("S") and self.signer_id is not None
-                and not self.recording_session_id.startswith(self.signer_id + "-R")):
+            raise ManifestSchemaError(
+                "recordingSessionId must be a source sampleId, sourceId-R## or S###-R##"
+            )
+        if (
+            self.recording_session_id.startswith("S")
+            and self.signer_id is not None
+            and not self.recording_session_id.startswith(self.signer_id + "-R")
+        ):
             raise ManifestSchemaError("signer session must match signerId")
 
         if self.license_status not in ("approved", "restricted", "unknown"):
-            raise ManifestSchemaError("licenseStatus must be approved, restricted or unknown")
+            raise ManifestSchemaError(
+                "licenseStatus must be approved, restricted or unknown"
+            )
         if self.verification_status not in ("verified", "unverified", "rejected"):
             raise ManifestSchemaError(
                 "verificationStatus must be verified, unverified or rejected"
@@ -153,11 +191,15 @@ class ManifestRow:
         if self.split is not None and self.split not in ("train", "validation", "test"):
             raise ManifestSchemaError("split must be train, validation, test or null")
         object.__setattr__(self, "license_status", LicenseStatus(self.license_status))
-        object.__setattr__(self, "verification_status", VerificationStatus(self.verification_status))
+        object.__setattr__(
+            self, "verification_status", VerificationStatus(self.verification_status)
+        )
         if self.split is not None:
             object.__setattr__(self, "split", DataSplit(self.split))
         if self.verification_status == "rejected" and self.rejection_reason is None:
-            raise ManifestSchemaError("rejectionReason is required for rejected samples")
+            raise ManifestSchemaError(
+                "rejectionReason is required for rejected samples"
+            )
 
         _relative_path("rawPath", self.raw_path)
         if self.landmark_path is not None:
@@ -167,19 +209,28 @@ class ManifestRow:
             parsed_source = urlsplit(self.source_uri or "")
         except ValueError as exc:
             raise ManifestSchemaError("sourceUri is malformed") from exc
-        if parsed_source.username or parsed_source.password or any(
-            key.lower() in _SENSITIVE_QUERY_KEYS
-            for key, _ in parse_qsl(parsed_source.query, keep_blank_values=True)
+        if (
+            parsed_source.username
+            or parsed_source.password
+            or any(
+                key.lower() in _SENSITIVE_QUERY_KEYS
+                for key, _ in parse_qsl(parsed_source.query, keep_blank_values=True)
+            )
         ):
             raise ManifestSchemaError("sourceUri must not contain credentials")
 
         # Direct construction is strictly typed; from_mapping parses CSV digits.
-        for name, value in (("durationMs", self.duration_ms), ("frameCount", self.frame_count)):
+        for name, value in (
+            ("durationMs", self.duration_ms),
+            ("frameCount", self.frame_count),
+        ):
             if type(value) is not int:
                 raise ManifestSchemaError(f"{name} must be an integer > 0")
             _positive_integer(name, value)
         if not 300 <= self.duration_ms <= 6000:
-            raise ManifestSchemaError("durationMs must be within pipeline limits 300..6000")
+            raise ManifestSchemaError(
+                "durationMs must be within pipeline limits 300..6000"
+            )
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, object]) -> ManifestRow:
@@ -209,7 +260,9 @@ class ManifestRow:
             recording_session_id=required("recordingSessionId"),
             source_uri=optional("sourceUri"),
             license_status=cast(LicenseStatus, required("licenseStatus")),
-            verification_status=cast(VerificationStatus, required("verificationStatus")),
+            verification_status=cast(
+                VerificationStatus, required("verificationStatus")
+            ),
             rejection_reason=optional("rejectionReason"),
             raw_path=required("rawPath"),
             landmark_path=optional("landmarkPath"),
@@ -221,10 +274,20 @@ class ManifestRow:
     def to_csv_row(self) -> dict[str, str]:
         """Return ordered CSV-compatible fields (empty string represents null)."""
         values = (
-            self.sample_id, self.class_label, self.meaning_id, self.signer_id,
-            self.recording_session_id, self.source_uri, self.license_status,
-            self.verification_status, self.rejection_reason, self.raw_path,
-            self.landmark_path, self.duration_ms, self.frame_count, self.split,
+            self.sample_id,
+            self.class_label,
+            self.meaning_id,
+            self.signer_id,
+            self.recording_session_id,
+            self.source_uri,
+            self.license_status,
+            self.verification_status,
+            self.rejection_reason,
+            self.raw_path,
+            self.landmark_path,
+            self.duration_ms,
+            self.frame_count,
+            self.split,
         )
         return {
             column: "" if value is None else str(value)
@@ -234,7 +297,9 @@ class ManifestRow:
     @property
     def passes_release_exclusions(self) -> bool:
         """Only first-pass gating; full release has additional quality checks."""
-        return self.license_status == "approved" and self.verification_status != "rejected"
+        return (
+            self.license_status == "approved" and self.verification_status != "rejected"
+        )
 
 
 def validate_unique_sample_ids(rows: Iterable[ManifestRow]) -> None:
@@ -269,7 +334,9 @@ def validate_rows(
         if row.meaning_id not in known_meanings:
             raise ManifestSchemaError(f"unknown meaningId: {row.meaning_id}")
         if known_classes.get(row.class_label) != row.meaning_id:
-            raise ManifestSchemaError(f"unknown/mismatched classLabel: {row.class_label}")
+            raise ManifestSchemaError(
+                f"unknown/mismatched classLabel: {row.class_label}"
+            )
         sessions.setdefault(row.recording_session_id, set()).add(row.split)
         if for_release and (not row.passes_release_exclusions or row.split is None):
             raise ManifestSchemaError(f"sample excluded from release: {row.sample_id}")
@@ -287,7 +354,9 @@ def validate_rows(
             hashes.add(digest)
     for group, splits in sessions.items():
         if len(splits) > 1:
-            raise ManifestSchemaError(f"recordingSessionId leakage/mixed assigned splits: {group}")
+            raise ManifestSchemaError(
+                f"recordingSessionId leakage/mixed assigned splits: {group}"
+            )
     return result
 
 
@@ -295,7 +364,9 @@ def read_manifest_csv(path: Path) -> list[ManifestRow]:
     """Read canonical UTF-8/no-BOM/LF CSV; inventory review files are separate."""
     raw = path.read_bytes()
     if raw.startswith(b"\xef\xbb\xbf") or b"\r" in raw or not raw.endswith(b"\n"):
-        raise ManifestSchemaError("CSV must be UTF-8 without BOM, LF, with final newline")
+        raise ManifestSchemaError(
+            "CSV must be UTF-8 without BOM, LF, with final newline"
+        )
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -313,5 +384,7 @@ def validate_dataset_version(value: str) -> str:
     """Version is manifest-level metadata, never inferred from the ZIP filename."""
     _text("datasetVersion", value)
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*-v[1-9][0-9]*", value):
-        raise ManifestSchemaError("datasetVersion must match {manifest}-v{positive integer}")
+        raise ManifestSchemaError(
+            "datasetVersion must match {manifest}-v{positive integer}"
+        )
     return value

@@ -49,9 +49,13 @@ class EntityValidationError(ValueError):
 
 
 def text(name: str, value: str) -> None:
-    if (not isinstance(value, str) or not value or value != value.strip()
-            or unicodedata.normalize("NFC", value) != value
-            or any(ord(c) < 32 or ord(c) == 127 for c in value)):
+    if (
+        not isinstance(value, str)
+        or not value
+        or value != value.strip()
+        or unicodedata.normalize("NFC", value) != value
+        or any(ord(c) < 32 or ord(c) == 127 for c in value)
+    ):
         raise EntityValidationError(f"{name} must be non-empty, trimmed NFC text")
 
 
@@ -99,15 +103,20 @@ class SignClass:
         except (TypeError, ValueError) as exc:
             raise EntityValidationError("invalid region") from exc
         if not re.fullmatch(r"[1-9][0-9]*", self.variant_name):
-            raise EntityValidationError("variantName must be a positive integer without zero padding")
+            raise EntityValidationError(
+                "variantName must be a positive integer without zero padding"
+            )
         if self.class_label != f"{self.meaning_id}_{self.region}_{self.variant_name}":
-            raise EntityValidationError("classLabel must match meaningId/region/variantName")
+            raise EntityValidationError(
+                "classLabel must match meaningId/region/variantName"
+            )
         if type(self.verified) is not bool or type(self.active) is not bool:
             raise EntityValidationError("verified and active must be booleans")
 
 
 def validate_catalog(
-    meanings: Iterable[Meaning], classes: Iterable[SignClass],
+    meanings: Iterable[Meaning],
+    classes: Iterable[SignClass],
 ) -> tuple[dict[str, Meaning], dict[str, SignClass]]:
     """Enforce unique IDs/variant identities and class-to-meaning references."""
     by_meaning: dict[str, Meaning] = {}
@@ -122,7 +131,9 @@ def validate_catalog(
             raise EntityValidationError("SignClass references missing Meaning")
         identity = (sign_class.meaning_id, sign_class.region, sign_class.variant_name)
         if sign_class.class_label in by_class or identity in variants:
-            raise EntityValidationError("duplicate classLabel or meaning/region/variant")
+            raise EntityValidationError(
+                "duplicate classLabel or meaning/region/variant"
+            )
         if sign_class.active and not by_meaning[sign_class.meaning_id].active:
             raise EntityValidationError("active SignClass requires an active Meaning")
         by_class[sign_class.class_label] = sign_class
