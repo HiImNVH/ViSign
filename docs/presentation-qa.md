@@ -117,6 +117,43 @@ pipeline** đã test khớp; và **chỉ được gắn nhãn sẵn sàng demo k
 Nhóm chọn đầu tư vào pipeline và cổng chất lượng trước, vì đây là phần quyết định có dám đưa cho người dùng thật hay
 không; thêm dữ liệu thì model cải thiện mà không phải viết lại hệ thống."
 
+### 1.3. "Mô hình được train như thế nào?" (Cường trả lời, Quang bổ sung phần dữ liệu)
+
+**Trả lời 30 giây:**
+"Nhóm **không train trên pixel**. Mỗi clip đi qua MediaPipe để lấy toạ độ tay, vai/tay trên và một phần khuôn mặt, chuẩn
+hoá theo vai, lấy lại mẫu thành **32 khung × 234 đặc trưng**, rồi đưa vào một **GRU một lớp, 64 nút ẩn, khoảng 58 nghìn
+tham số**, train trên CPU. Chọn checkpoint theo loss validation, chọn ngưỡng từ chối cũng trên validation, test chỉ
+chạy một lần ở cuối. Toàn bộ pipeline này cũng là pipeline API dùng khi chạy thật."
+
+**Giải thích 2 phút, theo 6 bước (mở `ai/configs/feature_schema.json`, `ai/configs/pilot-gru.yaml`):**
+
+| Bước | Làm gì | Chi tiết để trả lời vặn | File |
+|---|---|---|---|
+| 1. Dữ liệu và chia tập | Manifest đã kiểm, chia **theo video gốc** (`recordingSessionId`) để clip cắt từ cùng một video không rơi vào hai tập | Pilot: 15 clip, 4 lớp (Giấy tờ/Nhận × HCM/HN), train/val/test **7/4/4**, 13 video gốc; ghi `video-held-out` | `create_splits.py`, T018 |
+| 2. Trích landmark | MediaPipe Tasks 1.1.1: hand (2 tay), pose, face; lấy tối đa 64 khung đều theo thời gian | **78 điểm**: 42 điểm tay + 6 điểm vai/khuỷu/cổ tay + 30 điểm mặt; chỉ lấy x, y | `feature_schema.json` |
+| 3. Chuẩn hoá | Gốc toạ độ ở giữa hai vai, chia cho khoảng cách hai vai | Không phụ thuộc người đứng gần/xa, lệch trái/phải; điểm không thấy đặt 0 và đánh dấu | `sequence_transform.py` |
+| 4. Lấy lại mẫu 32 khung | Nội suy tuyến tính theo thời gian thật (PTS) | **Không nội suy qua đoạn bị mất** để không bịa chuyển động; mỗi khung = 156 toạ độ + 78 cờ hợp lệ = **234** | schema v0.3 (APPROVED) |
+| 5. Train | GRU 1 lớp, 64 nút ẩn → lớp tuyến tính ra số lớp; `pack_padded_sequence` cho chuỗi | Adam lr 0,001, batch 16, 30 epoch, cross-entropy, seed 42, CPU; **chọn checkpoint có loss validation thấp nhất** (pilot: epoch 24) | `train.py`, `gru_classifier.py` |
+| 6. Chọn ngưỡng và đánh giá | Quét ngưỡng 0,5–0,9 **trên validation**: tối đa (đúng được chấp nhận − sai được chấp nhận), rồi độ phủ | Pilot chọn 0,5; test 4 clip chạy **một lần**: accuracy 25%, Macro-F1 0,33 → `demoReady=false` | `train.py`, `pilot-report.md` |
+
+**Tái lập và truy vết:** mỗi artifact lưu SHA-256 manifest, digest schema, phiên bản extractor, lịch sử loss từng epoch,
+bảng quét ngưỡng; W&B chạy offline (run `kbj3bpvu`); weights 234 KB, SHA-256 `0c9a991b…`. Cùng manifest + seed → cùng
+kết quả.
+
+**Câu hỏi nối tiếp có thể gặp:**
+
+| Hỏi | Trả lời |
+|---|---|
+| Sao chọn GRU mà không phải Transformer/3D-CNN? | Dữ liệu rất ít (15 clip pilot, 101 clip toàn bộ); model nhỏ ít overfit hơn, chạy CPU < 5 ms, dễ giải thích. Transformer cần nhiều dữ liệu hơn nhiều |
+| Sao dùng landmark mà không dùng ảnh? | Bỏ được nền, ánh sáng, màu da, quần áo; dữ liệu nhỏ hơn hàng nghìn lần; không phải lưu hình người; đổi lại mất thông tin khẩu hình chi tiết |
+| Có augmentation không? | **Chưa.** Pilot train trên dữ liệu gốc. Bước tiếp: lật trái/phải có đổi tay, co giãn thời gian, nhiễu nhẹ toạ độ — phải tách theo video gốc trước khi tăng cường để không rò rỉ |
+| 7 clip train thì overfit chắc chắn? | Đúng, đó là lý do kết quả test thấp và hệ thống tự gắn `demoReady=false`. Pilot dùng để chứng minh pipeline train → artifact → API chạy đúng, không phải để chứng minh độ chính xác |
+| Sao 32 khung? | Ký hiệu dài 0,3–6 giây; 32 khung đủ giữ hình dạng chuyển động mà model vẫn nhỏ; cố định trong schema đã duyệt |
+| Phân biệt vùng HCM/HN thế nào? | Train theo **lớp** (nghĩa × vùng × biến thể), hiển thị theo **nghĩa**: 4 lớp gộp về 2 nghĩa khi trả kết quả |
+| Train ở đâu, bao lâu? | CPU laptop, vài giây cho pilot; không cần GPU |
+| Làm sao chắc train và chạy thật dùng cùng tiền xử lý? | Cùng code `visign_ai`; test parity offline ↔ API khớp tuyệt đối tensor/mask (T037, T064) |
+| Có train lại được khi có dữ liệu mới? | Có, bằng CLI hoặc công cụ admin (`/admin/train-model`, T078–T082); artifact mới phải qua cổng chất lượng mới được `demoReady` |
+
 ---
 
 ## 2. Bộ câu hỏi theo chủ đề
