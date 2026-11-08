@@ -83,6 +83,19 @@ Nhãn và confidence **trùng khớp** lần chạy Docker local (parity môi tr
 2 vCPU burst. Hướng xử lý: thử `c7i-flex.large` (cũng dùng credit Free Plan, CPU mới hơn, 4 GB) chỉ trong ngày demo,
 hoặc giảm độ phân giải/số frame giải mã (P3).
 
+## Dịch trực tiếp trên AWS (2026-11-08, `d7637107d8be`)
+
+Image web/API `d7637107d8be` (mã nguồn `de14b19`: dịch trực tiếp T105–T107) đẩy lên ECR, đổi `IMAGE_TAG` và chạy
+`deploy.sh` qua SSM; artifact vẫn pilot Giấy tờ/Nhận, tunnel giữ URL.
+
+| Kiểm | Kết quả |
+|---|---|
+| CSP thật qua HTTPS | `script-src 'self' 'wasm-unsafe-eval'`; WASM `application/wasm` 13,5 MB, model tay 7,8 MB + pose lite 5,8 MB phục vụ cùng origin |
+| MediaPipe trên trình duyệt (Edge, camera giả không có người) | Nạp xong và báo "Không phát hiện người" sau **6,9 s** lần đầu qua tunnel (0,9 s khi chạy local); không lỗi CSP/console |
+| Image web | 150 MB (trước 90,5 MB) do mang WASM + model |
+
+Chưa đo: webcam thật với người ký trên bản deploy và thời gian từ lúc tay dừng tới khi hiện chữ (T108).
+
 ## Rủi ro và việc tiếp theo
 
 1. **Camera cần HTTPS**: trình duyệt chỉ cho `getUserMedia` trên HTTPS hoặc localhost, nên người dùng chưa thử được
