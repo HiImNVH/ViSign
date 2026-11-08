@@ -60,7 +60,8 @@ Cập nhật `2026-11-08T12:00:00+07:00` trên `origin/main` (83/112 task).
 | T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá. **AWS (2026-11-08)**: Free Plan, credit 100 USD; Budget `visign-monthly-credit-guard` (5/20/50 USD); stack `visign-storage` (ECR + S3) tạo xong; image `3b29d4a2cec1` + artifact fixture đã đẩy; **EC2 chạy artifact pilot Giấy tờ/Nhận** qua HTTPS tạm (Cloudflare Quick Tunnel), webcam thật end-to-end đạt; processing 4–4,7 s/clip trên t3.small, **2,5–3,4 s trên c7i-flex.large** (đổi cho ngày demo) → round-trip 3,9–5,4 s, vẫn trượt SC-002; CloudFront chờ AWS xác minh ([báo cáo](../deployment-report.md)) |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
-| T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |
+| T089 | P3 → P1 | Robustness | P1_VERIFIED phần local/code; chờ OOD có người ký |
+| T094 | P3 → P1 | Chi phí và tài nguyên | `VERIFIED`, `[X]`: giá Pricing API, so sánh local / t3.small / c7i-flex.large, sửa rò rỉ RAM, quyết định demo local + c7i chỉ ngày demo ([cost-report](../cost-report.md)) |
 | T054, T057, T058 | P3 | Metric, release gate, CLI đánh giá | `VERIFIED`, `[X]` (P1) |
 | T055, T060 | P2 | `health`, `model-info` | `VERIFIED`, `[X]` |
 | T059 | P3 | Ghi `demoReady` theo gate full + phê duyệt lead `--approve-demo` | `VERIFIED`, `[X]` (P1) |
