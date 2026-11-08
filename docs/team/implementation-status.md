@@ -8,7 +8,7 @@ Source of truth: `specs/001-vsl-recognition-mvp/tasks.md`
 
 ## Current baseline
 
-Cập nhật `2026-11-08T08:50:00+07:00` trên `origin/main` `f749eeb`.
+Cập nhật `2026-11-08T09:20:00+07:00` trên `origin/main` `67683cb`.
 
 ### Checkpoint
 
@@ -57,7 +57,7 @@ Cập nhật `2026-11-08T08:50:00+07:00` trên `origin/main` `f749eeb`.
 | T027, T028, T031, T051 | P5 | Types, câu chữ, component test, kết quả bị từ chối | `VERIFIED`, `[X]` (P1) |
 | T063 | P5 | Audit accessibility (Hiển, `b5ca295`, sửa recorder `a6d8a9d`) | `VERIFIED`, `[X]` (P1): 90/90 lặp 3 lần; trình đọc màn hình thật NOT_RUN |
 | T088 | P5 + P1 | Audit UX (P1) + sửa a11y/bố cục 320 px (P5 `a40c68a`) | `VERIFIED`, `[X]` (review chéo) |
-| T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá. **AWS (2026-11-08)**: Free Plan, credit 100 USD; Budget `visign-monthly-credit-guard` (5/20/50 USD); stack `visign-storage` (ECR + S3) tạo xong; image `3b29d4a2cec1` + artifact fixture đã đẩy; **EC2 chạy artifact pilot Giấy tờ/Nhận** qua HTTPS tạm (Cloudflare Quick Tunnel), webcam thật end-to-end đạt; processing 4–4,7 s/clip trên t3.small → **trượt SC-002**; CloudFront chờ AWS xác minh ([báo cáo](../deployment-report.md)) |
+| T095 | P2 → P1 | Docker local (Tín bàn giao) | Local PASS sau bản vá P1 thêm `libegl1 libgles2` (thiếu → 500 mọi predict); API 2,86 GB, RAM đỉnh 962 MiB; chờ Tín review bản vá. **AWS (2026-11-08)**: Free Plan, credit 100 USD; Budget `visign-monthly-credit-guard` (5/20/50 USD); stack `visign-storage` (ECR + S3) tạo xong; image `3b29d4a2cec1` + artifact fixture đã đẩy; **EC2 chạy artifact pilot Giấy tờ/Nhận** qua HTTPS tạm (Cloudflare Quick Tunnel), webcam thật end-to-end đạt; processing 4–4,7 s/clip trên t3.small, **2,5–3,4 s trên c7i-flex.large** (đổi cho ngày demo) → round-trip 3,9–5,4 s, vẫn trượt SC-002; CloudFront chờ AWS xác minh ([báo cáo](../deployment-report.md)) |
 | T032, T047 | P1 | E2E camera giả + 3 backend FastAPI thật (`npm run test:e2e`, 6/6) | Chờ P5/P2 review |
 | T069, T085, T087, T093 | P1 | README, ma trận rubric, hồ sơ sáng tạo/khả thi, tác động cộng đồng | Bản đầu đã push; chờ P2/P5 review |
 | T089, T094 | P3 | Robustness, chi phí | P1_VERIFIED phần local/code; chờ artifact thật và production |

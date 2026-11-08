@@ -96,6 +96,22 @@ Image web/API `d7637107d8be` (mã nguồn `de14b19`: dịch trực tiếp T105�
 
 Chưa đo: webcam thật với người ký trên bản deploy và thời gian từ lúc tay dừng tới khi hiện chữ (T108).
 
+## Đổi sang c7i-flex.large cho ngày demo (2026-11-08)
+
+Lead chọn chạy một ngày rồi tắt: cập nhật stack `visign-origin` `InstanceType=c7i-flex.large` (2 vCPU thế hệ mới, 3,8 GB
+RAM, vẫn dùng credit Free Plan); instance giữ nguyên ID và Elastic IP, chỉ khởi động lại. URL tunnel mới:
+`https://slope-flexibility-preferences-attacks.trycloudflare.com`.
+
+| 4 clip test × 2 lượt | t3.small | c7i-flex.large |
+|---|---|---|
+| `processingTimeMs` trên server | 4.050–4.733 ms | **2.494–3.391 ms** |
+| Round-trip từ Việt Nam qua tunnel | 5,5–6,3 s | **3,9–5,4 s** (một lần 7,0 s do mạng) |
+| Nhãn/confidence | — | trùng khớp hoàn toàn |
+
+Phần còn lại chủ yếu là upload clip ~0,5–0,6 MB sang Sydney (1,4–3,6 s). SC-002 (≤ 3 s) vẫn chưa đạt; hướng tiếp theo là
+gửi landmark từ trình duyệt thay cho video. Tắt dự án sau demo: dừng EC2 (`aws ec2 stop-instances`) hoặc xoá stack
+`visign-origin` để ngừng tính phí EC2/EBS/Elastic IP.
+
 ## Rủi ro và việc tiếp theo
 
 1. **Camera cần HTTPS**: trình duyệt chỉ cho `getUserMedia` trên HTTPS hoặc localhost, nên người dùng chưa thử được
